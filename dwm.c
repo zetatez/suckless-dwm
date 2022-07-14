@@ -208,7 +208,7 @@ static void movemouse(const Arg *arg);
 static void movewin(const Arg *arg);                    // dwm-move-window
 static void resizewin(const Arg *arg);                  // dwm-resize-window
 static Client *nexttiled(Client *c);
-static void pop(Client *);
+static void pop(Client *c);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
@@ -233,8 +233,8 @@ static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
-// static void tile(Monitor *);                         // by myself
-static void tileright(Monitor *);                       // by myself
+// static void tile(Monitor *m);                         // by myself
+static void tileright(Monitor *m);                       // by myself
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);    // dwm-scratchpad
