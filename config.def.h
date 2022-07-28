@@ -34,13 +34,13 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      	         instance    title    tags mask     isfloating   centerfirstwindow?   isterminal     noswallow    monitor */
-	{ "st",                  NULL,       NULL,    0,            0,     	     1,		              1,             1,          -1 }, // dwm-centerfirstwindow // dwm-swallow
-	{ "netease-cloud-music", NULL,       NULL,    0,            0,     	     1,		              0,             0,          -1 }, // dwm-centerfirstwindow // dwm-swallow
-	{ "Gimp",                NULL,       NULL,    0,            1,           0,                   0,             0,          -1 }, // dwm-centerfirstwindow // dwm-swallow
-	{ "Firefox",             NULL,       NULL,    1 << 8,       0,           0,                   0,            -1,          -1 }, // dwm-centerfirstwindow // dwm-swallow
-    { "kitty",	             NULL,       NULL,	  0,		    0,			 1,                   0,             0,          -1 }, // dwm-centerfirstwindow // dwm-swallow
-    { "vimb",	             NULL,       NULL,	  0,		    0,			 0,                   0,             0,          -1 }, // dwm-centerfirstwindow // dwm-swallow
+	/* class      	         instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
+	{ "st",                  NULL,       NULL,    0,            0,     	      1,             1,          -1 }, // dwm-swallow
+	{ "netease-cloud-music", NULL,       NULL,    0,            0,     	      0,             0,          -1 }, // dwm-swallow
+	{ "Gimp",                NULL,       NULL,    0,            1,            0,             0,          -1 }, // dwm-swallow
+	{ "Firefox",             NULL,       NULL,    1 << 8,       0,            0,            -1,          -1 }, // dwm-swallow
+    { "kitty",	             NULL,       NULL,	  0,		    0,			  0,             0,          -1 }, // dwm-swallow
+    { "vimb",	             NULL,       NULL,	  0,		    0,			  0,             0,          -1 }, // dwm-swallow
 };
 
 static const SkipSwallow skipswallow[] = {                            // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
@@ -58,7 +58,6 @@ static const int nmaster            = 1;    /* number of clients in master area 
 // static const int resizehints     = 1;    /* 1 means respect size hints in tiled resizals */            // dwm-tatami
 static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */            // dwm-tatami
 static const int lockfullscreen     = 1;    /* 1 will force focus on the fullscreen window */
-static const int mcenterfirstwindow = 0;    /* factor of center first window size [0.20, 0.80] */         // dwm-centerfistwindow
 static const float firstwindowszw   = 0.64; /* factor of center first window size width  [0.20, 0.80] */  // dwm-centerfistwindow
 static const float firstwindowszh   = 0.48; /* factor of center first window size height [0.20, 0.80] */  // dwm-centerfistwindow
 static const float centerwindowszw  = 0.64; /* factor of center window size width  [0.20, 0.80] */        // dwm-center my layout
@@ -71,18 +70,18 @@ static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "Center ER",                 centerequalratio }, // dwm-center
 	{ "Center AS",                   centeranyshape }, // dwm-center
-	{ "Overlaylayer",              overlaylayergrid }, // dwm-overlaylayergrid
+    { "Grid",                                  grid }, // dwm-grid
 	{ "Overlaylayer",        overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
 	{ "Overlaylayer",          overlaylayervertical }, // dwm-overlaylayervertical
 	{ "Deck",                        deckhorizontal }, // dwm-deckhorizontal
 	{ "Deck",                          deckvertical }, // dwm-deckvertical
     { "Fibonacci",                           spiral }, // dwm-fibonacci
     { "Fibonacci",                          dwindle }, // dwm-fibonacci
-	{ "Bottom Stack",           bottomstackvertical }, // dwm-bottomstack
 	{ "Bottom Stack",         bottomstackhorizontal }, // dwm-bottomstack
+	{ "Bottom Stack",           bottomstackvertical }, // dwm-bottomstack
     { "Tile Right",                       tileright }, // tile -> tileright
     { "Tile Left",                         tileleft }, // dwm-leftstack
-    { "Grid",                                  grid }, // dwm-grid
+	{ "Overlaylayer",              overlaylayergrid }, // dwm-overlaylayergrid
 	{ "Tatami",                              tatami }, // dwm-tatami
 	{ "Logarithmic Spiral",       logarithmicspiral }, // dwm-logarithmicspiral
     { "Monocle",                            monocle },
@@ -138,18 +137,18 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio         dwm-layouts
     { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape           dwm-layouts
-    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // overlaylayergrid         dwm-layouts
+    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid                     dwm-layouts
     { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[3]} },  // overlaylayerhorizontal   dwm-layouts
     { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[4]} },  // overlaylayervertical     dwm-layouts
-	{ MODKEY,                       XK_e,          setlayout,         {.v = &layouts[5]} },  // deckvertical             dwm-layouts
-	{ MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[6]} },  // deckhorizontal           dwm-layouts
+	{ MODKEY,                       XK_y,          setlayout,         {.v = &layouts[5]} },  // deckhorizontal           dwm-layouts
+	{ MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[6]} },  // deckvertical             dwm-layouts
 	{ MODKEY,                       XK_r,          setlayout,         {.v = &layouts[7]} },  // sprial                   dwm-fibonacci
 	{ MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[8]} },  // dwindle                  dwm-fibonacci
-	{ MODKEY,                       XK_y,          setlayout,         {.v = &layouts[9]} },  // bstack                   dwm-bottomstackvertical
-	{ MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[10]} }, // bstack                   dwm-bottomstackhorizontal
+	{ MODKEY,                       XK_e,          setlayout,         {.v = &layouts[9]} },  // bstack                   dwm-bottomstackvertical
+	{ MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[10]} }, // bstack                   dwm-bottomstackhorizontal
 	{ MODKEY,                       XK_t,          setlayout,         {.v = &layouts[11]} }, // tileright                default tile
     { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[12]} }, // lefttile                 dwm-lefttile
-    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]} }, // gaplessgrid              dwm-gaplessgrid
+    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]} }, // overlaylayergrid         dwm-overlaylayergrid
 	{ MODKEY,                       XK_o,          setlayout,         {.v = &layouts[14]} }, // tatami                   dwm-tatami
     { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[15]} }, // logarithmicspiral        dwm-layouts
 	{ MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]} }, // monocle
