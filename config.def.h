@@ -117,6 +117,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_p,          spawn,             {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd } },
 	{ MODKEY,                       XK_b,          togglebar,         {0} },
+	{ MODKEY,                       XK_Return,     zoom,              {0} },
+	{ MODKEY,                       XK_Tab,        view,              {0} },
+	{ MODKEY|ShiftMask,             XK_c,          killclient,        {0} },
+	{ MODKEY,                       XK_space,      setlayout,         {0} },
+	{ MODKEY|ShiftMask,             XK_space,      togglefloating,    {0} },
+	{ MODKEY|ShiftMask,             XK_s,          togglesticky,      {0} },                   // dwm-sticky
+	{ MODKEY,                       XK_f,          togglefullscreen,  {0} },                   // dwm-actualfullscreen
 	{ MODKEY,                       XK_j,          focusstack,        {.i = +1 } },
 	{ MODKEY,                       XK_k,          focusstack,        {.i = -1 } },
 	{ MODKEY,                       XK_i,          incnmaster,        {.i = +1 } },
@@ -133,8 +140,13 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_period,     movestack,         {.i = -1 } },
     { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1 } },          // shiftview
     { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1 } },          // shiftview
+	{ MODKEY,                       XK_minus,      focusmon,          {.i = -1 } },
+	{ MODKEY,                       XK_equal,      focusmon,          {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_minus,      tagmon,            {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_equal,      tagmon,            {.i = +1 } },
 	{ MODKEY,                       XK_0,          view,              {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0 } },
+	{ MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd } }, // dwm-scratchpad
 	{ MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio         dwm-layouts
     { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape           dwm-layouts
     { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid                     dwm-layouts
@@ -155,18 +167,6 @@ static Key keys[] = {
 	{ MODKEY,                       XK_u,          setlayout,         {.v = &layouts[17]} }, // deckhorizontalvertical   dwm-layouts
 	{ MODKEY|ShiftMask,             XK_u,          setlayout,         {.v = &layouts[18]} }, // anywhereanysize          dwm-anywhereanysize
 	{ MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[19]} }, // no layout means floating
-	{ MODKEY,                       XK_Return,     zoom,              {0} },
-	{ MODKEY,                       XK_Tab,        view,              {0} },
-	{ MODKEY|ShiftMask,             XK_c,          killclient,        {0} },
-	{ MODKEY,                       XK_space,      setlayout,         {0} },
-	{ MODKEY|ShiftMask,             XK_space,      togglefloating,    {0} },
-	{ MODKEY|ShiftMask,             XK_s,          togglesticky,      {0} },                   // dwm-sticky
-	{ MODKEY,                       XK_f,          togglefullscreen,  {0} },                   // dwm-actualfullscreen
-	{ MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd } }, // dwm-scratchpad
-	{ MODKEY,                       XK_minus,      focusmon,          {.i = -1 } },
-	{ MODKEY,                       XK_equal,      focusmon,          {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_minus,      tagmon,            {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_equal,      tagmon,            {.i = +1 } },
     { MODKEY,                       XK_Up,         movewin,           {.ui = UP} },       // dwm-move-window
     { MODKEY,                       XK_Down,       movewin,           {.ui = DOWN} },     // dwm-move-window
     { MODKEY,                       XK_Left,       movewin,           {.ui = LEFT} },     // dwm-move-window
