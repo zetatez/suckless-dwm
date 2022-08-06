@@ -74,7 +74,7 @@ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms *
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { UP, DOWN, LEFT, RIGHT };                                          // dwm-move-window
-enum { V_EXPAND, V_REDUCE, H_EXPAND, H_REDUCE };                         // dwm-resize-win
+enum { VINCREASE, VDECREASE, HINCREASE, HDECREASE };                     // dwm-resize-win
 
 typedef union {
 	int i;
@@ -1436,19 +1436,19 @@ resizewin(const Arg *arg)                                                       
     cx = c->x + c->w/2;                                                                          // dwm-resize-window
     cy = c->y + c->h/2;                                                                          // dwm-resize-window
     switch (arg->ui) {                                                                           // dwm-resize-window
-        case H_EXPAND:                                                                           // dwm-resize-window
+        case HINCREASE:                                                                          // dwm-resize-window
             nx = cx - c->w/2 - c->mon->ww / 32;                                                  // dwm-resize-window
             nw = nw + 2 * c->mon->ww / 32;                                                       // dwm-resize-window
             break;                                                                               // dwm-resize-window
-        case H_REDUCE:                                                                           // dwm-resize-window
+        case HDECREASE:                                                                          // dwm-resize-window
             nx = cx - c->w/2 + c->mon->ww / 32;                                                  // dwm-resize-window
             nw = nw - 2 * c->mon->ww / 32;                                                       // dwm-resize-window
             break;                                                                               // dwm-resize-window
-        case V_EXPAND:                                                                           // dwm-resize-window
+        case VINCREASE:                                                                          // dwm-resize-window
             ny = cy - c->h/2 - c->mon->wh / 32;                                                  // dwm-resize-window
             nh = nh + 2 * c->mon->wh / 32;                                                       // dwm-resize-window
             break;                                                                               // dwm-resize-window
-        case V_REDUCE:                                                                           // dwm-resize-window
+        case VDECREASE:                                                                          // dwm-resize-window
             ny = cy - c->h/2 + c->mon->wh / 32;                                                  // dwm-resize-window
             nh = nh - 2 * c->mon->wh / 32;                                                       // dwm-resize-window
             break;                                                                               // dwm-resize-window

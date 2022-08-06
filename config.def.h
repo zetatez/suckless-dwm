@@ -49,7 +49,7 @@ static const SkipSwallow skipswallow[] = {                            // dwm-swa
     *                                                                 // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
     */                                                                // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
     {"st", "vimb"},                                                   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    {"st", "surf"},                                                   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+    {"sh", "vimb"},                                                   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
 };                                                                    // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
 
 /* layout(s) */
@@ -92,7 +92,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define SUPKEY Mod1Mask
+#define SUPKEY Mod4Mask
 #define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
@@ -101,21 +101,102 @@ static const Layout layouts[] = {
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/zsh", "-c", cmd, NULL } }
+#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
-static const char scratchpadname[] = "scratchpad";                                         // dwm-scratchpad
-static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "180x48", NULL }; // dwm-scratchpad
+static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static char scratchpadname[11]         = "scratchpad";                                         // dwm-scratchpad
+static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", scratchpadname, NULL }; // dwm-scratchpad
+static const char *termcmd[]           = { "st", NULL };
+static const char *slock[]             = { "slock", NULL };
+static const char *suspend[]           = { "sh", "-c", "systemctl suspend", NULL };
+static const char *shutdown[]          = { "sh", "-c", "sudo shutdown now", NULL };
+static const char *reboot[]            = { "sh", "-c", "sudo reboot", NULL };
+static const char *screenshot[]        = { "sh", "-c", "killall -q flameshot; flameshot gui", NULL };
+static const char *screenkey[]         = { "sh", "-c", "nohup screenkey --opacity 0 -s small --font-color yellow", NULL };
+static const char *killscreenkey[]     = { "sh", "-c", "killall -q screenkey", NULL };
+static const char *rec_audio[]         = { "st", "-e", "sh", "-c", "ffmpeg -y -r 60 -f alsa -i default -c:a flac $HOME/Videos/rec-a-$(date '+%F-%H-%M-%S').flac", NULL };
+static const char *rec_video[]         = { "st", "-e", "sh", "-c", "ffmpeg -y -s \"$(xdpyinfo | awk '/dimensions/ {print $2;}')\" -r 60 -f x11grab -i \"$DISPLAY\" -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac $HOME/Videos/rec-v-a-$(date '+%F-%H-%M-%S').mkv", NULL };
+static const char *email[]             = { "thunderbird", NULL };
+static const char *trojan[]            = { "sh", "-c", "nohup ~/.trojan/trojan -c ~/.trojan/config.json", NULL };
+static const char *browser[]           = { "sh", "-c", "google --proxy-server='socks5://127.0.0.1:1080'", NULL };
+static const char *wechat[]            = { "wechat-uos", NULL };
+static const char *music[]             = { "netease-cloud-music", NULL };
+static const char *photoshop[]         = { "gimp", NULL };
+static const char *illustrator[]       = { "krita", NULL };
+static const char *zeal[]              = { "zeal", NULL };
+static const char *ranger[]            = { "st", "-e", "sh", "-c", "ranger", NULL };
+static const char *task[]              = { "st", "-e", "sh", "-c", "task calendar; task list; sleep 2", NULL };
+static const char *calendar[]          = { "st", "-e", "sh", "-c", "vim -c 'Calendar -view=clock'", NULL };
+static const char *change_wallpaper[]  = { "sh", "-c", "feh --bg-fill --recursive --randomize ~/Pictures/wallpapers", NULL };
+static const char *volume_toggle[]     = { "st", "-e", "sh", "-c", "amixer set Master toggle", NULL };
+static const char *volume_dec[]        = { "sh", "-c", "amixer -qM set Master 5%- umute", NULL };
+static const char *volume_inc[]        = { "sh", "-c", "amixer -qM set Master 5%+ umute", NULL };
+static const char *screen_light_dec[]  = { "sh", "-c", "sudo light -U 5", NULL };
+static const char *screen_light_inc[]  = { "sh", "-c", "sudo light -A 5", NULL };
+static const char *kb_light_on[]       = { "sh", "-c", "sudo sh -c 'echo 1 > /sys/class/leds/tpacpi::kbd_backlight/brightness'", NULL };
+static const char *kb_light_off[]      = { "sh", "-c", "sudo sh -c 'echo 0 > /sys/class/leds/tpacpi::kbd_backlight/brightness'", NULL };
+static const char *weather[]           = { "st", "-e", "sh", "-c", "curl wttr.in/ShangHai; sleep 2", NULL };
+static const char *chopin_open[]       = { "st", "-e", "sh", "-c", "fd --type f --hidden --exclude .git . '/home/lorenzo'|fzf --prompt='open>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}", NULL };
+static const char *chopin_exec[]       = { "st", "-e", "sh", "-c", "fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . './'|fzf --prompt='exec>'  --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -e {}", NULL };
+static const char *chopin_copy[]       = { "st", "-e", "sh", "-c", "chopin -c \"$(fd --type f --hidden --exclude .git . './'|fzf --prompt='copy>'  --preview 'bat --color=always {}' --select-1 --exit-0)\"", NULL };
+static const char *chopin_move[]       = { "st", "-e", "sh", "-c", "chopin -m \"$(fd --type f --hidden --exclude .git . './'|fzf --prompt='move>' --preview 'bat --color=always {}' --select-1 --exit-0)\"", NULL };
+static const char *chopin_remove[]     = { "st", "-e", "sh", "-c", "chopin -r \"$(fd --type f --hidden --exclude .git . './'|fzf --prompt='remove>' --preview 'bat --color=always {}' --select-1 --exit-0)\"", NULL };
+static const char *chopin_open_wiki[]  = { "st", "-e", "sh", "-c", "fd --type f --hidden --exclude .git . '/home/lorenzo/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}", NULL };
+static const char *chopin_open_book[]  = { "st", "-e", "sh", "-c", "fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/lorenzo/obsidian/docs/'|fzf --prompt='books>' --reverse --select-1 --exit-0|xargs chopin -o {}", NULL };
+static const char *chopin_open_media[] = { "st", "-e", "sh", "-c", "fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/lorenzo/'|fzf --prompt='medias>' --reverse --select-1 --exit-0|xargs chopin -o {}", NULL };
+static const char *file_searcher[]     = { "st", "-e", "sh", "-c", "~/.suckless/arch-dwm/scripts/file_searcher.sh", NULL };
+static const char *picom_grayscale[]   = { "sh", "-c", "~/.suckless/arch-dwm/scripts/picom_grayscale.sh", NULL };
+static const char *picom_normal[]      = { "sh", "-c", "killall -q picom; nohup picom '$@' >>/dev/null", NULL };
 
 #include "movestack.c"
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key            function           argument */
-	{ MODKEY,                       XK_p,          spawn,             {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd } },
+    { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd          } },
+	{ MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
+    { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd           } },
+    { SUPKEY,                       XK_l,          spawn,             {.v = slock             } },
+    { SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = suspend           } },
+    { SUPKEY,                       XK_F4,         spawn,             {.v = shutdown          } },
+    { SUPKEY|ShiftMask,             XK_F4,         spawn,             {.v = reboot            } },
+    { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = screenshot        } },
+    { SUPKEY,                       XK_slash,      spawn,             {.v = screenkey         } },
+    { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = killscreenkey     } },
+    { SUPKEY,                       XK_backslash,  spawn,             {.v = rec_audio         } },
+    { SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v = rec_video         } },
+    { SUPKEY,                       XK_e,          spawn,             {.v = email             } },
+    { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = trojan            } },
+    { SUPKEY,                       XK_b,          spawn,             {.v = browser           } },
+    { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
+    { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = music             } },
+    { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = photoshop         } },
+    { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = illustrator       } },
+    { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = zeal              } },
+    { SUPKEY,                       XK_r,          spawn,             {.v = ranger            } },
+    { SUPKEY,                       XK_t,          spawn,             {.v = task              } },
+    { SUPKEY,                       XK_h,          spawn,             {.v = calendar          } },
+    { SUPKEY,                       XK_d,          spawn,             {.v = change_wallpaper  } },
+    { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle     } },
+    { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec        } },
+    { SUPKEY,                       XK_F3,         spawn,             {.v = volume_inc        } },
+    { SUPKEY,                       XK_F5,         spawn,             {.v = screen_light_dec  } },
+    { SUPKEY,                       XK_F6,         spawn,             {.v = screen_light_inc  } },
+    { SUPKEY,                       XK_F10,        spawn,             {.v = kb_light_off      } },
+    { SUPKEY,                       XK_F11,        spawn,             {.v = kb_light_on       } },
+    { SUPKEY,                       XK_F12,        spawn,             {.v = weather           } },
+    { SUPKEY,                       XK_f,          spawn,             {.v = chopin_open       } },
+    { SUPKEY,                       XK_x,          spawn,             {.v = chopin_exec       } },
+    { SUPKEY,                       XK_n,          spawn,             {.v = chopin_copy       } },
+    { SUPKEY,                       XK_v,          spawn,             {.v = chopin_move       } },
+    { SUPKEY,                       XK_z,          spawn,             {.v = chopin_remove     } },
+    { SUPKEY,                       XK_w,          spawn,             {.v = chopin_open_wiki  } },
+    { SUPKEY,                       XK_p,          spawn,             {.v = chopin_open_book  } },
+    { SUPKEY,                       XK_a,          spawn,             {.v = chopin_open_media } },
+    { SUPKEY,                       XK_s,          spawn,             {.v = file_searcher     } },
+    { SUPKEY,                       XK_comma,      spawn,             {.v = picom_grayscale   } },
+    { SUPKEY,                       XK_period,     spawn,             {.v = picom_normal      } },
 	{ MODKEY,                       XK_b,          togglebar,         {0} },
 	{ MODKEY,                       XK_Return,     zoom,              {0} },
 	{ MODKEY,                       XK_Tab,        view,              {0} },
@@ -146,7 +227,6 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_equal,      tagmon,            {.i = +1 } },
 	{ MODKEY,                       XK_0,          view,              {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0 } },
-	{ MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd } }, // dwm-scratchpad
 	{ MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio         dwm-layouts
     { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape           dwm-layouts
     { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid                     dwm-layouts
@@ -171,11 +251,10 @@ static Key keys[] = {
     { MODKEY,                       XK_Down,       movewin,           {.ui = DOWN} },     // dwm-move-window
     { MODKEY,                       XK_Left,       movewin,           {.ui = LEFT} },     // dwm-move-window
     { MODKEY,                       XK_Right,      movewin,           {.ui = RIGHT} },    // dwm-move-window
-    { MODKEY|ShiftMask,             XK_Up,         resizewin,         {.ui = V_EXPAND} }, // dwm-resize-window
-    { MODKEY|ShiftMask,             XK_Down,       resizewin,         {.ui = V_REDUCE} }, // dwm-resize-window
-    { MODKEY|ShiftMask,             XK_Left,       resizewin,         {.ui = H_REDUCE} }, // dwm-resize-window
-    { MODKEY|ShiftMask,             XK_Right,      resizewin,         {.ui = H_EXPAND} }, // dwm-resize-window
-
+    { MODKEY|ShiftMask,             XK_Down,       resizewin,         {.ui = VDECREASE} }, // dwm-resize-window
+    { MODKEY|ShiftMask,             XK_Up,         resizewin,         {.ui = VINCREASE} }, // dwm-resize-window
+    { MODKEY|ShiftMask,             XK_Left,       resizewin,         {.ui = HDECREASE} }, // dwm-resize-window
+    { MODKEY|ShiftMask,             XK_Right,      resizewin,         {.ui = HINCREASE} }, // dwm-resize-window
 	TAGKEYS(                        XK_1,          0)
 	TAGKEYS(                        XK_2,          1)
 	TAGKEYS(                        XK_3,          2)
