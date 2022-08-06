@@ -167,11 +167,14 @@ static Key keys[] = {
 	{ MODKEY,                       XK_equal,      focusmon,          {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_minus,      tagmon,            {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_equal,      tagmon,            {.i = +1 } },
-
-    { MODKEY|ShiftMask,             XK_Up,         movewin,           {.ui = UP} },              /* super ctrl up      |  移动窗口 */
-    { MODKEY|ShiftMask,             XK_Down,       movewin,           {.ui = DOWN} },            /* super ctrl down    |  移动窗口 */
-    { MODKEY|ShiftMask,             XK_Left,       movewin,           {.ui = LEFT} },            /* super ctrl left    |  移动窗口 */
-    { MODKEY|ShiftMask,             XK_Right,      movewin,           {.ui = RIGHT} },           /* super ctrl right   |  移动窗口 */
+    { MODKEY,                       XK_Up,         movewin,           {.ui = UP} },       // dwm-move-window
+    { MODKEY,                       XK_Down,       movewin,           {.ui = DOWN} },     // dwm-move-window
+    { MODKEY,                       XK_Left,       movewin,           {.ui = LEFT} },     // dwm-move-window
+    { MODKEY,                       XK_Right,      movewin,           {.ui = RIGHT} },    // dwm-move-window
+    { MODKEY|ShiftMask,             XK_Up,         resizewin,         {.ui = V_EXPAND} }, // dwm-resize-window
+    { MODKEY|ShiftMask,             XK_Down,       resizewin,         {.ui = V_REDUCE} }, // dwm-resize-window
+    { MODKEY|ShiftMask,             XK_Left,       resizewin,         {.ui = H_REDUCE} }, // dwm-resize-window
+    { MODKEY|ShiftMask,             XK_Right,      resizewin,         {.ui = H_EXPAND} }, // dwm-resize-window
 
 	TAGKEYS(                        XK_1,          0)
 	TAGKEYS(                        XK_2,          1)

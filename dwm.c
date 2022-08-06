@@ -74,6 +74,7 @@ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms *
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { UP, DOWN, LEFT, RIGHT };                                          // dwm-move-window
+enum { V_EXPAND, V_REDUCE, H_EXPAND, H_REDUCE };                         // dwm-resize-win
 
 typedef union {
 	int i;
@@ -210,6 +211,7 @@ static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static void movewin(const Arg *arg);                    // dwm-move-window
+static void resizewin(const Arg *arg);                  // dwm-resize-window
 static Client *nexttiled(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
@@ -1382,40 +1384,91 @@ movemouse(const Arg *arg)
 	}
 }
 
-void                                                                   // dwm-move-window
-movewin(const Arg *arg)                                                // dwm-move-window
-{                                                                      // dwm-move-window
-    Client *c;                                                         // dwm-move-window
-    int nx, ny;                                                        // dwm-move-window
-    c = selmon->sel;                                                   // dwm-move-window
-    if (!c)                                                            // dwm-move-window
-        return;                                                        // dwm-move-window
-    if (!c->isfloating)                                                // dwm-move-window
-        togglefloating(NULL);                                          // dwm-move-window
-    nx = c->x;                                                         // dwm-move-window
-    ny = c->y;                                                         // dwm-move-window
-    switch (arg->ui) {                                                 // dwm-move-window
-        case UP:                                                       // dwm-move-window
-            ny -= c->mon->wh / 16;                                     // dwm-move-window
-            ny = MAX(ny, c->mon->wy);                                  // dwm-move-window
-            break;                                                     // dwm-move-window
-        case DOWN:                                                     // dwm-move-window
-            ny += c->mon->wh / 16;                                     // dwm-move-window
-            ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));         // dwm-move-window
-            break;                                                     // dwm-move-window
-        case LEFT:                                                     // dwm-move-window
-            nx -= c->mon->ww / 32;                                     // dwm-move-window
-            nx = MAX(nx, c->mon->wx);                                  // dwm-move-window
-            break;                                                     // dwm-move-window
-        case RIGHT:                                                    // dwm-move-window
-            nx += c->mon->ww / 32;                                     // dwm-move-window
-            nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));          // dwm-move-window
-            break;                                                     // dwm-move-window
-    }                                                                  // dwm-move-window
-    resize(c, nx, ny, c->w, c->h, 1);                                  // dwm-move-window
-    focus(c);                                                          // dwm-move-window
-    pointerfocuswin(c);                                                // dwm-move-window
-}                                                                      // dwm-move-window
+void                                                                                             // dwm-move-window
+movewin(const Arg *arg)                                                                          // dwm-move-window
+{                                                                                                // dwm-move-window
+    Client *c;                                                                                   // dwm-move-window
+    int nx, ny;                                                                                  // dwm-move-window
+    c = selmon->sel;                                                                             // dwm-move-window
+    if (!c)                                                                                      // dwm-move-window
+        return;                                                                                  // dwm-move-window
+    if (!c->isfloating)                                                                          // dwm-move-window
+        togglefloating(NULL);                                                                    // dwm-move-window
+    nx = c->x;                                                                                   // dwm-move-window
+    ny = c->y;                                                                                   // dwm-move-window
+    switch (arg->ui) {                                                                           // dwm-move-window
+        case UP:                                                                                 // dwm-move-window
+            ny -= c->mon->wh / 16;                                                               // dwm-move-window
+            ny = MAX(ny, c->mon->wy);                                                            // dwm-move-window
+            break;                                                                               // dwm-move-window
+        case DOWN:                                                                               // dwm-move-window
+            ny += c->mon->wh / 16;                                                               // dwm-move-window
+            ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));                                   // dwm-move-window
+            break;                                                                               // dwm-move-window
+        case LEFT:                                                                               // dwm-move-window
+            nx -= c->mon->ww / 32;                                                               // dwm-move-window
+            nx = MAX(nx, c->mon->wx);                                                            // dwm-move-window
+            break;                                                                               // dwm-move-window
+        case RIGHT:                                                                              // dwm-move-window
+            nx += c->mon->ww / 32;                                                               // dwm-move-window
+            nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));                                    // dwm-move-window
+            break;                                                                               // dwm-move-window
+    }                                                                                            // dwm-move-window
+    resize(c, nx, ny, c->w, c->h, 1);                                                            // dwm-move-window
+    focus(c);                                                                                    // dwm-move-window
+    pointerfocuswin(c);                                                                          // dwm-move-window
+}                                                                                                // dwm-move-window
+
+void                                                                                             // dwm-resize-window
+resizewin(const Arg *arg)                                                                        // dwm-resize-window
+{                                                                                                // dwm-resize-window
+    Client *c;                                                                                   // dwm-resize-window
+    int nx, ny, nw, nh, cx, cy;                                                                  // dwm-resize-window
+    c = selmon->sel;                                                                             // dwm-resize-window
+    if (!c)                                                                                      // dwm-resize-window
+        return;                                                                                  // dwm-resize-window
+    if (!c->isfloating)                                                                          // dwm-resize-window
+        togglefloating(NULL);                                                                    // dwm-resize-window
+    nx = c->x;                                                                                   // dwm-resize-window
+    ny = c->y;                                                                                   // dwm-resize-window
+    nw = c->w;                                                                                   // dwm-resize-window
+    nh = c->h;                                                                                   // dwm-resize-window
+    cx = c->x + c->w/2;                                                                          // dwm-resize-window
+    cy = c->y + c->h/2;                                                                          // dwm-resize-window
+    switch (arg->ui) {                                                                           // dwm-resize-window
+        case H_EXPAND:                                                                           // dwm-resize-window
+            nx = cx - c->w/2 - c->mon->ww / 32;                                                  // dwm-resize-window
+            nw = nw + 2 * c->mon->ww / 32;                                                       // dwm-resize-window
+            break;                                                                               // dwm-resize-window
+        case H_REDUCE:                                                                           // dwm-resize-window
+            nx = cx - c->w/2 + c->mon->ww / 32;                                                  // dwm-resize-window
+            nw = nw - 2 * c->mon->ww / 32;                                                       // dwm-resize-window
+            break;                                                                               // dwm-resize-window
+        case V_EXPAND:                                                                           // dwm-resize-window
+            ny = cy - c->h/2 - c->mon->wh / 32;                                                  // dwm-resize-window
+            nh = nh + 2 * c->mon->wh / 32;                                                       // dwm-resize-window
+            break;                                                                               // dwm-resize-window
+        case V_REDUCE:                                                                           // dwm-resize-window
+            ny = cy - c->h/2 + c->mon->wh / 32;                                                  // dwm-resize-window
+            nh = nh - 2 * c->mon->wh / 32;                                                       // dwm-resize-window
+            break;                                                                               // dwm-resize-window
+    }                                                                                            // dwm-resize-window
+    nw = MAX(nw, 0);                                                                             // dwm-resize-window
+    nh = MAX(nh, 0);                                                                             // dwm-resize-window
+    nw = MIN(nw, c->mon->ww);                                                                    // dwm-resize-window
+    nh = MIN(nh, c->mon->wh);                                                                    // dwm-resize-window
+    nx = MAX(nx, c->mon->wx);                                                                    // dwm-resize-window
+    ny = MAX(ny, c->mon->wy);                                                                    // dwm-resize-window
+    nx = MIN(nx, c->mon->ww);                                                                    // dwm-resize-window
+    ny = MIN(ny, c->mon->wh);                                                                    // dwm-resize-window
+    if (nw == 0 || nh == 0) {                                                                    // dwm-resize-window
+        return;                                                                                  // dwm-resize-window
+    }                                                                                            // dwm-resize-window
+                                                                                                 // dwm-resize-window
+    resize(c, nx, ny, nw, nh, 1);                                                                // dwm-resize-window
+    focus(c);                                                                                    // dwm-resize-window
+    XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw); // dwm-resize-window
+}                                                                                                // dwm-resize-window
 
 Client *
 nexttiled(Client *c)
