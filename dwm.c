@@ -73,6 +73,7 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+enum { UP, DOWN, LEFT, RIGHT };                                          // dwm-move-window
 
 typedef union {
 	int i;
@@ -192,6 +193,7 @@ static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+static void pointerfocuswin(Client *c);                 // dwm-move-window
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -207,6 +209,7 @@ static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
+static void movewin(const Arg *arg);                    // dwm-move-window
 static Client *nexttiled(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
@@ -1018,6 +1021,16 @@ focusstack(const Arg *arg)
 	}
 }
 
+void
+pointerfocuswin(Client *c)
+{
+    if (c) {
+        XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w / 2, c->y + c->h / 2);
+        focus(c);
+    } else
+        XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 3, selmon->wy + selmon->wh / 2);
+}
+
 Atom
 getatomprop(Client *c, Atom prop)
 {
@@ -1368,6 +1381,41 @@ movemouse(const Arg *arg)
 		focus(NULL);
 	}
 }
+
+void                                                                   // dwm-move-window
+movewin(const Arg *arg)                                                // dwm-move-window
+{                                                                      // dwm-move-window
+    Client *c;                                                         // dwm-move-window
+    int nx, ny;                                                        // dwm-move-window
+    c = selmon->sel;                                                   // dwm-move-window
+    if (!c)                                                            // dwm-move-window
+        return;                                                        // dwm-move-window
+    if (!c->isfloating)                                                // dwm-move-window
+        togglefloating(NULL);                                          // dwm-move-window
+    nx = c->x;                                                         // dwm-move-window
+    ny = c->y;                                                         // dwm-move-window
+    switch (arg->ui) {                                                 // dwm-move-window
+        case UP:                                                       // dwm-move-window
+            ny -= c->mon->wh / 16;                                     // dwm-move-window
+            ny = MAX(ny, c->mon->wy);                                  // dwm-move-window
+            break;                                                     // dwm-move-window
+        case DOWN:                                                     // dwm-move-window
+            ny += c->mon->wh / 16;                                     // dwm-move-window
+            ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));         // dwm-move-window
+            break;                                                     // dwm-move-window
+        case LEFT:                                                     // dwm-move-window
+            nx -= c->mon->ww / 32;                                     // dwm-move-window
+            nx = MAX(nx, c->mon->wx);                                  // dwm-move-window
+            break;                                                     // dwm-move-window
+        case RIGHT:                                                    // dwm-move-window
+            nx += c->mon->ww / 32;                                     // dwm-move-window
+            nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));          // dwm-move-window
+            break;                                                     // dwm-move-window
+    }                                                                  // dwm-move-window
+    resize(c, nx, ny, c->w, c->h, 1);                                  // dwm-move-window
+    focus(c);                                                          // dwm-move-window
+    pointerfocuswin(c);                                                // dwm-move-window
+}                                                                      // dwm-move-window
 
 Client *
 nexttiled(Client *c)
