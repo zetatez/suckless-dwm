@@ -1459,8 +1459,8 @@ resizewin(const Arg *arg)                                                       
     nh = MIN(nh, c->mon->wh);                                                                    // dwm-resize-window
     nx = MAX(nx, c->mon->wx);                                                                    // dwm-resize-window
     ny = MAX(ny, c->mon->wy);                                                                    // dwm-resize-window
-    nx = MIN(nx, c->mon->ww);                                                                    // dwm-resize-window
-    ny = MIN(ny, c->mon->wh);                                                                    // dwm-resize-window
+    nx = MIN(nx, c->mon->ww - nw + c->mon->wx);                                                  // dwm-resize-window
+    ny = MIN(ny, c->mon->wh - nh + c->mon->wy);                                                  // dwm-resize-window
     if (nw == 0 || nh == 0) {                                                                    // dwm-resize-window
         return;                                                                                  // dwm-resize-window
     }                                                                                            // dwm-resize-window
