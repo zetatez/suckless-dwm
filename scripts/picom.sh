@@ -17,8 +17,11 @@ EOF
 )
 
 killall -q picom
-nohup picom "$@" --glx-fshader-win "$GRAYSCALE" --backend glx >>/dev/null 2>&1 &
+# wait picom be killed, or can not start
+sleep 0.05
 
-# back to normal mode
-# killall -q picom
-# nohup picom "$@" >>/dev/null 2>&1 &
+if [ "xgrayscale" == "x$1" ]; then
+    nohup picom --glx-fshader-win "$GRAYSCALE" --backend glx >>/dev/null 2>&1 &
+elif [ "xnormal" == "x$1" ]; then
+    nohup picom >>/dev/null 2>&1 &
+fi
