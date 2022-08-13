@@ -231,7 +231,6 @@ static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setfreeh(const Arg *arg);       // free h, by myself
-static void setfrees(const Arg *arg);       // free s, by myself
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
@@ -781,7 +780,6 @@ createmon(void)
 	m->tagset[0] = m->tagset[1] = 1;
 	m->mfact = mfact;
 	m->freeh = freeh;                        // free h, by myself
-	m->frees = frees;                        // free s, by myself
 	m->nmaster = nmaster;
 	m->showbar = showbar;
 	m->topbar = topbar;
@@ -1832,21 +1830,6 @@ setfreeh(const Arg *arg)                                                        
 	selmon->freeh = selmon->pertag->freehs[selmon->pertag->curtag] = f;                      // free h, by myself
 	arrange(selmon);                                                                         // free h, by myself
 }                                                                                            // free h, by myself
-
-/* arg > 1.0 will set frees absolutely */                                                    // free s, by myself
-void                                                                                         // free s, by myself
-setfrees(const Arg *arg)                                                                     // free s, by myself
-{                                                                                            // free s, by myself
-	float f;                                                                                 // free s, by myself
-                                                                                             // free s, by myself
-	if (!arg || !selmon->lt[selmon->sellt]->arrange)                                         // free s, by myself
-		return;                                                                              // free s, by myself
-	f = arg->f < 1.0 ? arg->f + selmon->frees : arg->f - 1.0;                                // free s, by myself
-    if (f < 0.00 || f > 1.00)                                                                // free s, by myself
-		return;                                                                              // free s, by myself
-	selmon->frees = selmon->pertag->freess[selmon->pertag->curtag] = f;                      // free s, by myself
-	arrange(selmon);                                                                         // free s, by myself
-}                                                                                            // free s, by myself
 
 void
 setup(void)

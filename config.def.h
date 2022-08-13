@@ -63,7 +63,6 @@ static const float firstwindowszh   = 0.48; /* factor of center first window siz
 static const float centerwindowszw  = 0.64; /* factor of center window size width  [0.20, 0.80] */        // dwm-center my layout
 static const float centerwindowszh  = 0.48; /* factor of center window size height [0.20, 0.80] */        // dwm-center my layout
 static const float freeh            = 0.50; /* factor of free h [0.00..1.00] */                           // free h, by myself
-static const float frees            = 0.50; /* factor of free s [0.00..1.00] */                           // free s, by myself
 
 #include "layouts.c"                                   // layouts
 static const Layout layouts[] = {
@@ -84,7 +83,6 @@ static const Layout layouts[] = {
 	{ "Overlaylayer",              overlaylayergrid }, // dwm-overlaylayergrid
 	{ "Logarithmic Spiral",       logarithmicspiral }, // dwm-logarithmicspiral
     { "Monocle",                            monocle },
-	{ "AnyAny",                     anywhereanysize }, // dwm-anywhereanysize
     { "∅",                                     NULL }, /* no layout function means floating behavior */
 	{ NULL,                                    NULL }, // dwm-cyclelayouts
 };
@@ -196,8 +194,8 @@ static Key keys[] = {
     { SUPKEY,                       XK_w,          spawn,             {.v = chopin_open_wiki  } },
 
     // System
-    { SUPKEY,                       XK_l,          spawn,             {.v = slock             } },
-    { SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = suspend           } },
+    { SUPKEY,                       XK_q,          spawn,             {.v = slock             } },
+    { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = suspend           } },
 
     // Picom
     { SUPKEY,                       XK_period,     spawn,             {.v = picom_normal      } },
@@ -209,7 +207,7 @@ static Key keys[] = {
 
     // Tools
     { SUPKEY,                       XK_d,          spawn,             {.v = dynamic_wallpaper  } },
-    { SUPKEY,                       XK_h,          spawn,             {.v = calendar          } },
+    { SUPKEY,                       XK_c,          spawn,             {.v = calendar          } },
     { SUPKEY,                       XK_r,          spawn,             {.v = ranger            } },
     { SUPKEY,                       XK_g,          spawn,             {.v = gotofile          } },
     { SUPKEY,                       XK_t,          spawn,             {.v = task              } },
@@ -253,8 +251,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025} },
 	{ MODKEY|ShiftMask,             XK_j,          setfreeh,          {.f = -0.025} },       // free h, by myself
 	{ MODKEY|ShiftMask,             XK_k,          setfreeh,          {.f = +0.025} },       // free h, by myself
-	{ MODKEY|ShiftMask,             XK_o,          setfrees,          {.f = -0.025} },       // free s, by myself
-	{ MODKEY|ShiftMask,             XK_i,          setfrees,          {.f = +0.025} },       // free s, by myself
+	/* { MODKEY|ShiftMask,             XK_o,          setfrees,          {.f = -0.025} },       // free s, by myself */
+	/* { MODKEY|ShiftMask,             XK_i,          setfrees,          {.f = +0.025} },       // free s, by myself */
 	{ MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio         dwm-layouts
     { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape           dwm-layouts
     { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid                     dwm-layouts
@@ -271,18 +269,19 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]} }, // overlaylayergrid         dwm-overlaylayergrid
     { MODKEY|ShiftMask,             XK_u,          setlayout,         {.v = &layouts[14]} }, // logarithmicspiral        dwm-layouts
 	{ MODKEY,                       XK_m,          setlayout,         {.v = &layouts[15]} }, // monocle
-	{ MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[16]} }, // anywhereanysize          dwm-anywhereanysize
 	{ MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]} }, // no layout means floating
 	{ MODKEY,                       XK_0,          view,              {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0 } },
-    { MODKEY,                       XK_Up,         movewin,           {.ui = UP} },          // dwm-move-window
-    { MODKEY,                       XK_Down,       movewin,           {.ui = DOWN} },        // dwm-move-window
-    { MODKEY,                       XK_Left,       movewin,           {.ui = LEFT} },        // dwm-move-window
-    { MODKEY,                       XK_Right,      movewin,           {.ui = RIGHT} },       // dwm-move-window
-    { MODKEY|ShiftMask,             XK_Down,       resizewin,         {.ui = VDECREASE} },   // dwm-resize-window
-    { MODKEY|ShiftMask,             XK_Up,         resizewin,         {.ui = VINCREASE} },   // dwm-resize-window
-    { MODKEY|ShiftMask,             XK_Left,       resizewin,         {.ui = HDECREASE} },   // dwm-resize-window
-    { MODKEY|ShiftMask,             XK_Right,      resizewin,         {.ui = HINCREASE} },   // dwm-resize-window
+
+    { SUPKEY,                       XK_k,          movewin,           {.ui = UP} },          // dwm-move-window
+    { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN} },        // dwm-move-window
+    { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT} },        // dwm-move-window
+    { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT} },       // dwm-move-window
+                                                                                             //
+    { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE} },   // dwm-resize-window
+    { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE} },   // dwm-resize-window
+    { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE} },   // dwm-resize-window
+    { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE} },   // dwm-resize-window
 	TAGKEYS(                        XK_1,          0)
 	TAGKEYS(                        XK_2,          1)
 	TAGKEYS(                        XK_3,          2)

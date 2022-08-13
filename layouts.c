@@ -1,25 +1,6 @@
 // layouts
 #include<math.h>
 
-/* dwm-anywhereanysize------------------------------------------------------------ */
-void
-anywhereanysize(Monitor *m) {
-    unsigned int n, i;
-    Client *c;
-
-    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
-    if(n == 0)
-        return;
-
-    for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-        if (i == 0) {
-            resize(c, m->wx + m->ww * m->mfact - m->ww * m->frees / 2 , m->wy + m->wh * (1 - m->freeh) - m->wh * m->frees / 2, m->ww * m->frees - 2 * c->bw, m->wh * m->frees - 2 * c->bw, False);
-        } else {
-            return;
-        }
-    }
-}
-
 /* dwm-overlaylayer ------------------------------------------------------------ */
 void
 overlaylayergrid(Monitor *m) {
