@@ -17,7 +17,7 @@ EOF
 )
 
 killall -q picom
-# wait picom be killed, or can not start
+# wait for picom to be killed, or can not be started
 sleep 0.05
 
 if [ "xgrayscale" == "x$1" ]; then
