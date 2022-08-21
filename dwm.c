@@ -161,10 +161,10 @@ typedef struct {
 	int monitor;
 } Rule;
 
-typedef struct {
-	const char *parrent_name;
-	const char *child_name;
-} SkipSwallow;
+typedef struct {              // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+	const char *parrent_name; // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+	const char *child_name;   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+} SkipSwallow;                // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
 
 /* function declarations */
 static void applyrules(Client *c);

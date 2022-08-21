@@ -35,12 +35,12 @@ static const Rule rules[] = {
      *    WM_NAME(STRING) = title
      */
     /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
-    { "st",                    NULL,       NULL,    0,            0,            1,             1,          -1 }, // dwm-swallow
-    { "netease-cloud-music",   NULL,       NULL,    0,            0,            0,             0,          -1 }, // dwm-swallow
-    { "Gimp",                  NULL,       NULL,    0,            1,            0,             0,          -1 }, // dwm-swallow
-    { "Firefox",               NULL,       NULL,    1 << 8,       0,            0,            -1,          -1 }, // dwm-swallow
-    { "kitty",                 NULL,       NULL,    0,            0,            0,             0,          -1 }, // dwm-swallow
-    { "vimb",                  NULL,       NULL,    0,            0,            0,             0,          -1 }, // dwm-swallow
+    { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
+    { "netease-cloud-music",   NULL,       NULL,    0,            0,            0,             0,           -1 },
+    { "Gimp",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
+    { "Firefox",               NULL,       NULL,    1 << 8,       0,            0,            -1,           -1 },
+    { "kitty",                 NULL,       NULL,    0,            0,            0,             0,           -1 },
+    { "vimb",                  NULL,       NULL,    0,            0,            0,             0,           -1 },
 };
 
 static const SkipSwallow skipswallow[] = {                            // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
@@ -55,13 +55,8 @@ static const SkipSwallow skipswallow[] = {                            // dwm-swa
 /* layout(s) */
 static const float mfact            = 0.50; /* factor of master area size [0.00..1.00] */                 // limit [0.05..0.95] had been extended to [0.00..1.00].
 static const int nmaster            = 1;    /* number of clients in master area */
-// static const int resizehints     = 1;    /* 1 means respect size hints in tiled resizals */            // dwm-tatami
-static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */            // dwm-tatami
+static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen     = 1;    /* 1 will force focus on the fullscreen window */
-static const float firstwindowszw   = 0.64; /* factor of center first window size width  [0.20, 0.80] */  // dwm-centerfistwindow
-static const float firstwindowszh   = 0.48; /* factor of center first window size height [0.20, 0.80] */  // dwm-centerfistwindow
-static const float centerwindowszw  = 0.64; /* factor of center window size width  [0.20, 0.80] */        // dwm-center my layout
-static const float centerwindowszh  = 0.48; /* factor of center window size height [0.20, 0.80] */        // dwm-center my layout
 static const float freeh            = 0.50; /* factor of free h [0.00..1.00] */                           // free h, by myself
 
 #include "layouts.c"                                   // layouts
@@ -139,9 +134,10 @@ static const char *email[]             = TM("mutt");
 static const char *gotofile[]          = TM("~/.suckless/arch-dwm/scripts/gotofile.sh");
 static const char *calculator[]        = TM("julia");
 static const char *slock[]             = SH("slock");
-static const char *ranger[]            = TM("ranger");
+static const char *vifm[]              = TM("vifm");
 static const char *task[]              = TM("task calendar; task list; sleep 1");
 static const char *togglescreenkey[]   = SH("ps -ef|grep screenkey|grep -v grep >>/dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey) || ([ \"$?\" != \"0\" ] && nohup screenkey --opacity 0 -s small --font-color yellow >>/dev/null 2>&1 &)");
+static const char *trans_en2zh[]       = TM("echo 'Translate EN to ZH > '; trans en:zh ");
 
 // SUPKEY + etc
 static const char *passmenu[]          = SH("passmenu");
@@ -168,6 +164,7 @@ static const char *trojan[]            = SH("nohup ~/.trojan/trojan -c ~/.trojan
 static const char *nudoku[]            = TM("nudoku -d hard");
 static const char *wechat[]            = SH("wechat-uos");
 static const char *zeal[]              = SH("zeal");
+static const char *trans_zh2en[]       = TM("echo 'Translate ZH to EN > '; trans zh:en ");
 
 // SUPKEY-ShiftMask + etc
 static const char *reboot[]            = SH("sudo reboot");
@@ -214,14 +211,14 @@ static Key keys[] = {
     { SUPKEY,                       XK_o,          spawn,             {.v = calculator        } },
     { SUPKEY,                       XK_p,          spawn,             {.v = chopin_open_book  } },
     { SUPKEY,                       XK_q,          spawn,             {.v = slock             } },
-    { SUPKEY,                       XK_r,          spawn,             {.v = ranger            } },
+    { SUPKEY,                       XK_r,          spawn,             {.v = vifm              } },
 //  { SUPKEY,                       XK_s,          spawn,             {.v =                   } },
     { SUPKEY,                       XK_t,          spawn,             {.v = task              } },
     { SUPKEY,                       XK_u,          spawn,             {.v = togglescreenkey   } },
     { SUPKEY,                       XK_v,          spawn,             {.v = chopin_move       } },
     { SUPKEY,                       XK_w,          spawn,             {.v = chopin_open_wiki  } },
     { SUPKEY,                       XK_x,          spawn,             {.v = chopin_exec       } },
-//  { SUPKEY,                       XK_y,          spawn,             {.v =                   } },
+    { SUPKEY,                       XK_y,          spawn,             {.v = trans_en2zh       } },
     { SUPKEY,                       XK_z,          spawn,             {.v = chopin_remove     } },
     { SUPKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
     { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
@@ -258,7 +255,7 @@ static Key keys[] = {
     { SUPKEY|ShiftMask,             XK_v,          spawn,             {.v = nudoku            } },
     { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
 //  { SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                   } },
+    { SUPKEY|ShiftMask,             XK_y,          spawn,             {.v = trans_zh2en       } },
     { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = zeal              } },
 //  { SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                   } },
     { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = reboot            } },
@@ -298,8 +295,8 @@ static Key keys[] = {
     { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid
     { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[3]} },  // overlaylayervertical
     { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[4]} },  // overlaylayerhorizontal
-    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[5]} },  // deckhorizontal
-    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[6]} },  // deckvertical
+    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[5]} },  // deckvertical
+    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[6]} },  // deckhorizontal
     { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[7]} },  // sprial
     { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[8]} },  // dwindle
     { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[9]} },  // bstack

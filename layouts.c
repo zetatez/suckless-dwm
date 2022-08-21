@@ -245,7 +245,7 @@ deckhorizontal(Monitor *m) {
         return;
 
     if(n > m->nmaster)
-        mh = m->nmaster ? m->wh * m->freeh : 0;
+        mh = m->nmaster ? m->wh * (1-m->freeh) : 0;
     else
         mh = m->wh;
 
@@ -432,8 +432,6 @@ logarithmicspiral(Monitor *m) {
 	for(i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen; c = nexttiled(c->next), i++) {
         if (i < 1) {
             resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->freeh)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->freeh - 2 * c->bw, False);
-        } else if (i == 1) {
-            resize(c, m->ww/2 + (m->ww * m->mfact)/2, m->wy + m->wh/2 + m->wh * m->freeh * (1 - 0.5 - 0.32) , m->ww * (1 - m->mfact)/2 - 2 * c->bw, m->wh * m->freeh * 0.32 - 2 * c->bw, False);
         } else {
             idx = logarithmicspirallen - 1 - i;
             wx[idx] = wx[idx] < 0 ? 0: wx[idx];
