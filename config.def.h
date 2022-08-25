@@ -121,6 +121,7 @@ static const char *calendar[]          = TM("vim -c 'Calendar -view=clock'");
 static const char *dynamic_wallpaper[] = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
 static const char *email[]             = TM("mutt");
 static const char *gotofile[]          = TM("~/.suckless/arch-dwm/scripts/gotofile.sh");
+static const char *irc[]               = TM("weechat");
 static const char *calculator[]        = TM("julia");
 static const char *slock[]             = SH("slock");
 static const char *vifm[]              = TM("vifm");
@@ -191,7 +192,7 @@ static Key keys[] = {
     { SUPKEY,                       XK_f,          spawn,             {.v = chopin_open       } },
     { SUPKEY,                       XK_g,          spawn,             {.v = gotofile          } },
 //  { SUPKEY,                       XK_h,          spawn,             {.v = x                 } },
-//  { SUPKEY,                       XK_i,          spawn,             {.v =                   } },
+    { SUPKEY,                       XK_i,          spawn,             {.v = irc               } },
 //  { SUPKEY,                       XK_j,          spawn,             {.v = x                 } },
 //  { SUPKEY,                       XK_k,          spawn,             {.v = x                 } },
 //  { SUPKEY,                       XK_l,          spawn,             {.v = x                 } },
