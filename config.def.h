@@ -36,21 +36,10 @@ static const Rule rules[] = {
      */
     /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
     { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
-    { "netease-cloud-music",   NULL,       NULL,    0,            0,            0,             0,           -1 },
-    { "Gimp",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
-    { "Firefox",               NULL,       NULL,    1 << 8,       0,            0,            -1,           -1 },
-    { "kitty",                 NULL,       NULL,    0,            0,            0,             0,           -1 },
-    { "vimb",                  NULL,       NULL,    0,            0,            0,             0,           -1 },
+    { "kitty",                 NULL,       NULL,    0,            0,            1,             0,           -1 },
 };
 
-static const SkipSwallow skipswallow[] = {                            // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    /* fix dwm-swallow annoying "swallow all parrent process problem" // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    * you can specify parrent and child process name to skip swallow  // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    *                                                                 // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    */                                                                // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    {"st", "vimb"},                                                   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    {"sh", "vimb"},                                                   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-};                                                                    // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
 
 /* layout(s) */
 static const float mfact            = 0.50; /* factor of master area size [0.00..1.00] */                 // limit [0.05..0.95] had been extended to [0.00..1.00].

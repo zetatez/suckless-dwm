@@ -161,11 +161,6 @@ typedef struct {
 	int monitor;
 } Rule;
 
-typedef struct {              // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-	const char *parrent_name; // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-	const char *child_name;   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-} SkipSwallow;                // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-
 /* function declarations */
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
@@ -509,10 +504,8 @@ swallow(Client *p, Client *c)                                                   
 	if (c->noswallow && !swallowfloating && c->isfloating)                            // dwm-swallow
 		return;                                                                       // dwm-swallow
                                                                                       // dwm-swallow
-    const SkipSwallow *ss;                                                            // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    for (unsigned int i = 0; i < LENGTH(skipswallow); i++) {                          // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-        ss = &skipswallow[i];                                                         // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-        if (!strcmp(p->name, ss->parrent_name) && !strcmp(c->name, ss->child_name)) { // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+    for (int i = 0; i < LENGTH(skipswallow); i++) {                                   // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+        if (!strcmp(c->name, skipswallow[i])) {                                       // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
            return;                                                                    // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
         }                                                                             // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
     }                                                                                 // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
