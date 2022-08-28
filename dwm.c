@@ -55,8 +55,9 @@
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-// #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))             // dwm-sticky
-#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky) // dwm-sticky
+// #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))                                       // dwm-sticky
+// #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)                        // dwm-sticky // dwm-overview
+#define ISVISIBLE(C)            ((C->mon->isoverview || C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)     // dwm-sticky // dwm-overview
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
@@ -148,6 +149,7 @@ struct Monitor {
 	Window barwin;
 	const Layout *lt[2];
 	Pertag *pertag; // dwm-pertag
+    int isoverview; // dwm-overview
 };
 
 typedef struct {
@@ -240,6 +242,7 @@ static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);    // dwm-scratchpad
 static void togglesticky(const Arg *arg);     // dwm-sticky
 static void togglefullscreen(const Arg *arg); // dwm-actualfullscreen
+static void toggleoverview(const Arg *arg);   // dwm-overview
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -477,6 +480,12 @@ arrange(Monitor *m)
 void
 arrangemon(Monitor *m)
 {
+    if (m->isoverview) {                                                 // dwm-overview
+        strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol); // dwm-overview
+        overviewlayout.arrange(m);                                       // dwm-overview
+        return;                                                          // dwm-overview
+    }                                                                    // dwm-overview
+
 	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
@@ -778,6 +787,7 @@ createmon(void)
 	m->topbar = topbar;
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
+    m->isoverview = 0;
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
 	m->pertag = ecalloc(1, sizeof(Pertag));                      // dwm-pertag
 	m->pertag->curtag = m->pertag->prevtag = 1;                  // dwm-pertag
@@ -873,16 +883,20 @@ drawbar(Monitor *m)
 			urg |= c->tags;
 	}
 	x = 0;
-	for (i = 0; i < LENGTH(tags); i++) {
-		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-//      if (occ & 1 << i)                                                 // dwm-hide_vacant_tags: do not draw rect
-//          drw_rect(drw, x + boxs, boxs, boxw, boxw,                     // dwm-hide_vacant_tags: do not draw rect
-//              m == selmon && selmon->sel && selmon->sel->tags & 1 << i, // dwm-hide_vacant_tags: do not draw rect
-//              urg & 1 << i);                                            // dwm-hide_vacant_tags: do not draw rect
-		x += w;
-	}
+    if (m->isoverview) {                                                                                                 // dwm-overview
+        // draw nothing;                                                                                                 // dwm-overview
+    } else {                                                                                                             // dwm-overview
+        for (i = 0; i < LENGTH(tags); i++) {
+            w = TEXTW(tags[i]);
+            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+            drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+//         if (occ & 1 << i)                                                 // dwm-hide_vacant_tags: do not draw rect
+//             drw_rect(drw, x + boxs, boxs, boxw, boxw,                     // dwm-hide_vacant_tags: do not draw rect
+//                 m == selmon && selmon->sel && selmon->sel->tags & 1 << i, // dwm-hide_vacant_tags: do not draw rect
+//                 urg & 1 << i);                                            // dwm-hide_vacant_tags: do not draw rect
+            x += w;
+        }
+    }                                                                                                                    // dwm-overview
 	w = blw = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
@@ -2079,6 +2093,14 @@ togglefullscreen(const Arg *arg)                            // dwm-actualfullscr
     setfullscreen(selmon->sel, !selmon->sel->isfullscreen); // dwm-actualfullscreen
 }                                                           // dwm-actualfullscreen
 
+void                                                                                 // dwm-overview
+toggleoverview(const Arg *arg)                                                       // dwm-overview
+{                                                                                    // dwm-overview
+    uint target = selmon->sel ? selmon->sel->tags : selmon->tagset[selmon->seltags]; // dwm-overview
+    selmon->isoverview ^= 1;                                                         // dwm-overview
+    view(&(Arg){ .ui = target });                                                    // dwm-overview
+}                                                                                    // dwm-overview
+
 void
 toggletag(const Arg *arg)
 {
@@ -2446,8 +2468,10 @@ view(const Arg *arg)
 	int i;                                                                                         // dwm-pertag
 	unsigned int tmptag;                                                                           // dwm-pertag
                                                                                                    // dwm-pertag
-	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
+	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) {
+        arrange(selmon);                                                                           // dwm-overview
 		return;
+    }
 	selmon->seltags ^= 1; /* toggle sel tagset */
 // 	if (arg->ui & TAGMASK)                                                                         // dwm-pertag
 	if (arg->ui & TAGMASK) {                                                                       // dwm-pertag

@@ -442,3 +442,34 @@ logarithmicspiral(Monitor *m) {
         }
 	}
 }
+
+/* dwm-overview ------------------------------------------------------------ */
+void
+overview(Monitor *m) {
+    unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
+    Client *c;
+
+    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next))
+        n++;
+
+    /* grid dimensions */
+    for(rows = 0; rows <= n/2; rows++)
+        if(rows*rows >= n)
+            break;
+    cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
+
+    /* window geoms (cell height/width) */
+    ch = (m->wh - 2 * gappoh) / (rows ? rows : 1);
+    cw = (m->ww - 2 * gappow) / (cols ? cols : 1);
+
+    /* round err adjust cx/cy */
+    ah = rows ? (m->wh - 2 * gappoh - rows * ch)/2: 0;
+    aw = cols ? (m->ww - 2 * gappow - cols * cw)/2: 0;
+
+    for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+        cx = m->wx + gappow + aw + (i / rows) * cw;
+        cy = m->wy + gappoh + ah + (i % rows) * ch;
+        resize(c, cx, cy, cw - gappiw/2 - 2 * c->bw, ch - gappih/2 - 2 * c->bw, False);
+        i++;
+    }
+}

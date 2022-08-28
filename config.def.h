@@ -29,6 +29,7 @@ static const char *const autostart[] = {                               // dwm-co
 /* tagging */
 static const char *tags[] = { "ζ(s)=∑1/n^s", "-e^iπ=1", "i", "o", "∞", "∫", "∇", "i", "0" };
 
+
 static const Rule rules[] = {
     /* xprop(1):
      *    WM_CLASS(STRING) = instance, class
@@ -43,10 +44,14 @@ static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm
 
 /* layout(s) */
 static const float mfact            = 0.50; /* factor of master area size [0.00..1.00] */                 // limit [0.05..0.95] had been extended to [0.00..1.00].
+static const float freeh            = 0.50; /* factor of free h [0.00..1.00] */                           // free h, by myself
 static const int nmaster            = 1;    /* number of clients in master area */
 static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen     = 1;    /* 1 will force focus on the fullscreen window */
-static const float freeh            = 0.50; /* factor of free h [0.00..1.00] */                           // free h, by myself
+static const unsigned int gappoh    = 24;   /* horiz outer gap between windows and screen edge */ // dwm-overview
+static const unsigned int gappow    = 32;   /* vert  outer gap between windows and screen edge */ // dwm-overview
+static const unsigned int gappih    = 12;   /* horiz inner gap between windows */                 // dwm-overview
+static const unsigned int gappiw    = 16;   /* vert  inner gap between windows */                 // dwm-overview
 
 #include "layouts.c"                                   // layouts
 static const Layout layouts[] = {
@@ -70,6 +75,8 @@ static const Layout layouts[] = {
     { "∅",                                     NULL }, /* no layout function means floating behavior */
     { NULL,                                    NULL }, // dwm-cyclelayouts
 };
+
+static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview // can be any layout
 
 /* key definitions */
 #define SUPKEY Mod4Mask
@@ -264,6 +271,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0} },
     { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0} },                 // dwm-sticky
     { MODKEY,                       XK_f,          togglefullscreen,  {0} },                 // dwm-actualfullscreen
+    { MODKEY,                       XK_o,          toggleoverview,    {0} },                 // dwm-overview
     { MODKEY,                       XK_k,          focusstack,        {.i = -1 } },
     { MODKEY,                       XK_j,          focusstack,        {.i = +1 } },
     { MODKEY,                       XK_d,          incnmaster,        {.i = -1 } },
