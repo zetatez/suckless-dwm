@@ -44,7 +44,7 @@ static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm
 
 /* layout(s) */
 static const float mfact            = 0.50; /* factor of master area size [0.00..1.00] */                 // limit [0.05..0.95] had been extended to [0.00..1.00].
-static const float freeh            = 0.50; /* factor of free h [0.00..1.00] */                           // free h, by myself
+static const float ffact            = 0.50; /* factor of ffact [0.00..1.00] */                            // ffact, by myself
 static const int nmaster            = 1;    /* number of clients in master area */
 static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen     = 1;    /* 1 will force focus on the fullscreen window */
@@ -286,8 +286,8 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1 } },          // move tag    to another monitor
     { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025} },
     { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025} },
-    { MODKEY|ShiftMask,             XK_j,          setfreeh,          {.f = -0.025} },       // free h, by myself
-    { MODKEY|ShiftMask,             XK_k,          setfreeh,          {.f = +0.025} },       // free h, by myself
+    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025} },       // ffact, by myself
+    { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025} },       // ffact, by myself
     { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio
     { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape
     { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid

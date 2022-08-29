@@ -57,7 +57,7 @@
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
 // #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))                                       // dwm-sticky
 // #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)                        // dwm-sticky // dwm-overview
-#define ISVISIBLE(C)            ((C->mon->isoverview || C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)     // dwm-sticky // dwm-overview
+#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky || C->mon->isoverview)     // dwm-sticky // dwm-overview
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
@@ -130,8 +130,7 @@ typedef struct Pertag Pertag; // dwm-pertag
 struct Monitor {
 	char ltsymbol[16];
 	float mfact;
-	float freeh;   // free h, by myself
-	float frees;   // free s, by myself
+	float ffact;   // ffact, by myself
 	int nmaster;
 	int num;
 	int by;               /* bar geometry */
@@ -227,7 +226,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setfreeh(const Arg *arg);       // free h, by myself
+static void setffact(const Arg *arg);       // ffact, by myself
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
@@ -315,8 +314,7 @@ struct Pertag {                                                                 
 	unsigned int curtag, prevtag; /* current and previous tag */                         // dwm-pertag
 	int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */               // dwm-pertag
 	float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */                                 // dwm-pertag
-	float freehs[LENGTH(tags) + 1]; /* freehs per tag */                                 // dwm-pertag // free h, by myself
-	float freess[LENGTH(tags) + 1]; /* freess per tag */                                 // dwm-pertag // free s, by myself
+	float ffacts[LENGTH(tags) + 1]; /* ffacts per tag */                                 // dwm-pertag // ffact, by myself
 	unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */                        // dwm-pertag
 	const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */ // dwm-pertag
 	int showbars[LENGTH(tags) + 1]; /* display bar for the current tag */                // dwm-pertag
@@ -781,7 +779,7 @@ createmon(void)
 	m = ecalloc(1, sizeof(Monitor));
 	m->tagset[0] = m->tagset[1] = 1;
 	m->mfact = mfact;
-	m->freeh = freeh;                        // free h, by myself
+	m->ffact = ffact;                        // ffact, by myself
 	m->nmaster = nmaster;
 	m->showbar = showbar;
 	m->topbar = topbar;
@@ -795,9 +793,7 @@ createmon(void)
 	for (i = 0; i <= LENGTH(tags); i++) {                        // dwm-pertag
 		m->pertag->nmasters[i] = m->nmaster;                     // dwm-pertag
 		m->pertag->mfacts[i] = m->mfact;                         // dwm-pertag
-		m->pertag->freehs[i] = m->freeh;                         // dwm-pertag // free h, by myself
-		m->pertag->freess[i] = m->frees;                         // dwm-pertag // free s, by myself
-                                                                 // dwm-pertag
+		m->pertag->ffacts[i] = m->ffact;                         // dwm-pertag // ffact, by myself
 		m->pertag->ltidxs[i][0] = m->lt[0];                      // dwm-pertag
 		m->pertag->ltidxs[i][1] = m->lt[1];                      // dwm-pertag
 		m->pertag->sellts[i] = m->sellt;                         // dwm-pertag
@@ -1823,20 +1819,20 @@ setmfact(const Arg *arg)
 	arrange(selmon);
 }
 
-/* arg > 1.0 will set freeh absolutely */                                                    // free h, by myself
-void                                                                                         // free h, by myself
-setfreeh(const Arg *arg)                                                                     // free h, by myself
-{                                                                                            // free h, by myself
-	float f;                                                                                 // free h, by myself
-                                                                                             // free h, by myself
-	if (!arg || !selmon->lt[selmon->sellt]->arrange)                                         // free h, by myself
-		return;                                                                              // free h, by myself
-	f = arg->f < 1.0 ? arg->f + selmon->freeh : arg->f - 1.0;                                // free h, by myself
-    if (f < 0.00 || f > 1.00)                                                                // free h, by myself
-		return;                                                                              // free h, by myself
-	selmon->freeh = selmon->pertag->freehs[selmon->pertag->curtag] = f;                      // free h, by myself
-	arrange(selmon);                                                                         // free h, by myself
-}                                                                                            // free h, by myself
+/* arg > 1.0 will set ffact absolutely */                                                    // ffact, by myself
+void                                                                                         // ffact, by myself
+setffact(const Arg *arg)                                                                     // ffact, by myself
+{                                                                                            // ffact, by myself
+	float f;                                                                                 // ffact, by myself
+                                                                                             // ffact, by myself
+	if (!arg || !selmon->lt[selmon->sellt]->arrange)                                         // ffact, by myself
+		return;                                                                              // ffact, by myself
+	f = arg->f < 1.0 ? arg->f + selmon->ffact : arg->f - 1.0;                                // ffact, by myself
+    if (f < 0.00 || f > 1.00)                                                                // ffact, by myself
+		return;                                                                              // ffact, by myself
+	selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag] = f;                      // ffact, by myself
+	arrange(selmon);                                                                         // ffact, by myself
+}                                                                                            // ffact, by myself
 
 void
 setup(void)
@@ -2140,8 +2136,7 @@ toggleview(const Arg *arg)
 		/* apply settings for this view */                                                             // dwm-pertag
 		selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                            // dwm-pertag
 		selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                // dwm-pertag
-		selmon->freeh = selmon->pertag->freehs[selmon->pertag->curtag];                                // dwm-pertag // free h, by myself
-		selmon->frees = selmon->pertag->freess[selmon->pertag->curtag];                                // dwm-pertag // free s, by myself
+		selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                // dwm-pertag // ffact, by myself
 		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                // dwm-pertag
 		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];     // dwm-pertag
 		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1]; // dwm-pertag
@@ -2472,6 +2467,7 @@ view(const Arg *arg)
         arrange(selmon);                                                                           // dwm-overview
 		return;
     }
+
 	selmon->seltags ^= 1; /* toggle sel tagset */
 // 	if (arg->ui & TAGMASK)                                                                         // dwm-pertag
 	if (arg->ui & TAGMASK) {                                                                       // dwm-pertag
@@ -2492,8 +2488,7 @@ view(const Arg *arg)
                                                                                                    // dwm-pertag
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                            // dwm-pertag
 	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                // dwm-pertag
-	selmon->freeh = selmon->pertag->freehs[selmon->pertag->curtag];                                // dwm-pertag // free h, by myself
-	selmon->frees = selmon->pertag->freess[selmon->pertag->curtag];                                // dwm-pertag // free h, by myself
+	selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                // dwm-pertag // ffact, by myself
 	selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                // dwm-pertag
 	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];     // dwm-pertag
 	selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1]; // dwm-pertag

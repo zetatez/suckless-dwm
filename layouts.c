@@ -15,9 +15,9 @@ overlaylayergrid(Monitor *m) {
         if (i == 0) {
             resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
         } else if (i < 1 + (n-1)%3) {
-            resize(c, m->wx + ((i-1)%3)*m->ww/((n-1)%3), m->wy + m->wh*(1-m->freeh) + ((n-i-1-(n-i-1)%3)/3)*m->wh*m->freeh/((n-1-(n-1-1)%3)/3+1), m->ww/((n-1)%3) - 2*c->bw, m->wh*m->freeh/((n-1-1)/3+1) - 2*c->bw, False);
+            resize(c, m->wx + ((i-1)%3)*m->ww/((n-1)%3), m->wy + m->wh*(1-m->ffact) + ((n-i-1-(n-i-1)%3)/3)*m->wh*m->ffact/((n-1-(n-1-1)%3)/3+1), m->ww/((n-1)%3) - 2*c->bw, m->wh*m->ffact/((n-1-1)/3+1) - 2*c->bw, False);
         } else {
-            resize(c, m->wx + ((i-1)%3)*m->ww/3 , m->wy + m->wh*(1-m->freeh) + ((n-i-1-(n-i-1)%3)/3)*m->wh*m->freeh/((n-1-(n-1-1)%3)/3+1), m->ww/3 - 2*c->bw, m->wh*m->freeh/((n-1-1)/3+1) - 2*c->bw, False);
+            resize(c, m->wx + ((i-1)%3)*m->ww/3 , m->wy + m->wh*(1-m->ffact) + ((n-i-1-(n-i-1)%3)/3)*m->wh*m->ffact/((n-1-(n-1-1)%3)/3+1), m->ww/3 - 2*c->bw, m->wh*m->ffact/((n-1-1)/3+1) - 2*c->bw, False);
         }
     }
 }
@@ -35,7 +35,7 @@ overlaylayerhorizontal(Monitor *m) {
         if (i == 0) {
             resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
         } else {
-            resize(c, m->wx, m->wy + m->wh * (1 - m->freeh) + (n - i - 1) * m->wh * m->freeh / (n - 1), m->ww - 2 * c->bw, m->wh * m->freeh / (n - 1) - 2 * c->bw, False);
+            resize(c, m->wx, m->wy + m->wh * (1 - m->ffact) + (n - i - 1) * m->wh * m->ffact / (n - 1), m->ww - 2 * c->bw, m->wh * m->ffact / (n - 1) - 2 * c->bw, False);
         }
     }
 }
@@ -53,7 +53,7 @@ overlaylayervertical(Monitor *m) {
         if (i == 0) {
             resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
         } else {
-            resize(c, m->wx + (n - i - 1) * m->ww  / (n - 1), m->wy + m->wh * (1 - m->freeh), m->ww / (n - 1) - 2 * c->bw, m->wh * m->freeh - 2 * c->bw, False);
+            resize(c, m->wx + (n - i - 1) * m->ww  / (n - 1), m->wy + m->wh * (1 - m->ffact), m->ww / (n - 1) - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
         }
     }
 }
@@ -69,7 +69,7 @@ centerequalratio(Monitor *m) {
 		return;
 
     for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-        resize(c, m->ww/2 - (m->ww * m->freeh)/2, m->wy + m->wh/2 - (m->wh * m->freeh)/2 , m->ww * m->freeh - 2 * c->bw, m->wh * m->freeh - 2 * c->bw, False);
+        resize(c, m->ww/2 - (m->ww * m->ffact)/2, m->wy + m->wh/2 - (m->wh * m->ffact)/2 , m->ww * m->ffact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
 	}
 }
 
@@ -83,7 +83,7 @@ centeranyshape(Monitor *m) {
 		return;
 
     for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-        resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->freeh)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->freeh - 2 * c->bw, False);
+        resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->ffact)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
 	}
 }
 
@@ -245,7 +245,7 @@ deckhorizontal(Monitor *m) {
         return;
 
     if(n > m->nmaster)
-        mh = m->nmaster ? m->wh * (1-m->freeh) : 0;
+        mh = m->nmaster ? m->wh * (1-m->ffact) : 0;
     else
         mh = m->wh;
 
@@ -268,7 +268,7 @@ bottomstackhorizontal(Monitor *m) {
 		return;
 
 	if (n > m->nmaster) {
-		mh = m->nmaster ? (1 - m->freeh) * m->wh : 0;
+		mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
 		th = (m->wh - mh) / (n - m->nmaster);
 		ty = m->wy + mh;
 	} else {
@@ -299,7 +299,7 @@ bottomstackvertical(Monitor *m) {
 		return;
 
 	if (n > m->nmaster) {
-		mh = m->nmaster ? (1 - m->freeh) * m->wh : 0;
+		mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
 		tw = m->ww / (n - m->nmaster);
 		ty = m->wy + mh;
 	} else {
@@ -431,7 +431,7 @@ logarithmicspiral(Monitor *m) {
 
 	for(i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen; c = nexttiled(c->next), i++) {
         if (i < 1) {
-            resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->freeh)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->freeh - 2 * c->bw, False);
+            resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->ffact)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
         } else {
             idx = logarithmicspirallen - 1 - i;
             wx[idx] = wx[idx] < 0 ? 0: wx[idx];
