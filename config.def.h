@@ -7,7 +7,7 @@ static const int swallowfloating    = 1;        /* 1 means swallow floating wind
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
-static const char *fonts[]          = { "monospace:size=10" };
+static const char *fonts[]          = { "monospace:size=12" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -37,7 +37,7 @@ static const Rule rules[] = {
      */
     /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
     { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
-    { "kitty",                 NULL,       NULL,    0,            0,            1,             0,           -1 },
+    { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
 };
 
 static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
@@ -302,7 +302,7 @@ static Key keys[] = {
     { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[11]} }, // tileright
     { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[12]} }, // lefttile
     { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]} }, // overlaylayergrid
-    { MODKEY|ShiftMask,             XK_u,          setlayout,         {.v = &layouts[14]} }, // logarithmicspiral
+    { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[14]} }, // logarithmicspiral
     { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[15]} }, // monocle
     { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]} }, // no layout means floating
     { MODKEY,                       XK_0,          view,              {.ui = ~0 } },
