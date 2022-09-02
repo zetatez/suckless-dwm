@@ -2125,7 +2125,6 @@ void                                                        // dwm-actualfullscr
 togglefullscreen(const Arg *arg)                            // dwm-actualfullscreen
 {                                                           // dwm-actualfullscreen
   if(selmon->sel)                                           // dwm-actualfullscreen
-	// togglebar(NULL);                                     // dwm-actualfullscreen
     setfullscreen(selmon->sel, !selmon->sel->isfullscreen); // dwm-actualfullscreen
 }                                                           // dwm-actualfullscreen
 

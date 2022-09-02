@@ -8,7 +8,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
 static const char *fonts[]          = { "monospace:size=12" };
-static const char dmenufont[]       = "monospace:size=10";
+static const char dmenufont[]       = "monospace:size=12";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -58,6 +58,7 @@ static const Layout layouts[] = {
     /* symbol     arrange function */
     { "Center ER",                 centerequalratio }, // dwm-center
     { "Center AS",                   centeranyshape }, // dwm-center
+    { "Columns",                            columns }, // dwm-columns
     { "Grid",                                  grid }, // dwm-grid
     { "Overlaylayer",          overlaylayervertical }, // dwm-overlaylayervertical
     { "Overlaylayer",        overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
@@ -291,20 +292,21 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025} },       // ffact, by myself
     { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio
     { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape
-    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]} },  // grid
-    { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[3]} },  // overlaylayervertical
-    { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[4]} },  // overlaylayerhorizontal
-    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[5]} },  // deckvertical
-    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[6]} },  // deckhorizontal
-    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[7]} },  // sprial
-    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[8]} },  // dwindle
-    { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[9]} },  // bstack
-    { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[10]} }, // bstack
-    { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[11]} }, // tileright
-    { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[12]} }, // lefttile
-    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]} }, // overlaylayergrid
-    { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[14]} }, // logarithmicspiral
-    { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[15]} }, // monocle
+    { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[2]} },  // columns
+    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]} },  // grid
+    { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[4]} },  // overlaylayervertical
+    { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[5]} },  // overlaylayerhorizontal
+    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[6]} },  // deckvertical
+    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[7]} },  // deckhorizontal
+    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[8]} },  // sprial
+    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[9]} },  // dwindle
+    { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[10]} },  // bstack
+    { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[11]} }, // bstack
+    { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[12]} }, // tileright
+    { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[13]} }, // lefttile
+    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]} }, // overlaylayergrid
+    { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[15]} }, // logarithmicspiral
+    { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]} }, // monocle
     { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]} }, // no layout means floating
     { MODKEY,                       XK_0,          view,              {.ui = ~0 } },
     { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0 } },

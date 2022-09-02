@@ -61,37 +61,64 @@ overlaylayervertical(Monitor *m) {
 /* dwm-center ------------------------------------------------------------ */
 void
 centerequalratio(Monitor *m) {
-	unsigned int n, i;
-	Client *c;
+    unsigned int n, i;
+    Client *c;
 
-	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
-	if(n == 0)
-		return;
+    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
+    if(n == 0)
+        return;
 
     for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
         resize(c, m->ww/2 - (m->ww * m->ffact)/2, m->wy + m->wh/2 - (m->wh * m->ffact)/2 , m->ww * m->ffact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
-	}
+    }
 }
 
 void
 centeranyshape(Monitor *m) {
-	unsigned int n, i;
-	Client *c;
+    unsigned int n, i;
+    Client *c;
 
-	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
-	if(n == 0)
-		return;
+    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) ;
+    if(n == 0)
+        return;
 
     for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
         resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->ffact)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
-	}
+    }
+}
+
+/* dwm-columns ------------------------------------------------------------ */
+void
+columns(Monitor *m)
+{
+    unsigned int i, n, h, w, x, y, mw;
+    Client *c;
+
+    for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+    if (n == 0)
+        return;
+
+    if (n > m->nmaster)
+        mw = m->nmaster ? m->ww * m->mfact : 0;
+    else
+        mw = m->ww;
+    for (i = x = y = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+        if (i < m->nmaster) {
+            w = (mw - x) / (MIN(n, m->nmaster) - i);
+            resize(c, x + m->wx, m->wy, w - (2 * c->bw), m->wh - (2 * c->bw), 0);
+            x += WIDTH(c);
+        } else {
+            h = (m->wh - y) / (n - i);
+            resize(c, x + m->wx, m->wy + y, m->ww - x - (2 * c->bw), h - (2 * c->bw), 0);
+            y += HEIGHT(c);
+        }
 }
 
 /* dwm-fibonacci ------------------------------------------------------------ */
 void
 fibonacci(Monitor *m, int s) {
-	unsigned int i, n, nx, ny, nw, nh;
-	Client *c;
+    unsigned int i, n, nx, ny, nw, nh;
+    Client *c;
 
     for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
     if(n == 0)
@@ -147,12 +174,12 @@ fibonacci(Monitor *m, int s) {
 
 void
 dwindle(Monitor *m) {
-	fibonacci(m, 1);
+    fibonacci(m, 1);
 }
 
 void
 spiral(Monitor *m) {
-	fibonacci(m, 0);
+    fibonacci(m, 0);
 }
 
 /* dwm-gridmode ------------------------------------------------------------ */
@@ -188,29 +215,29 @@ grid(Monitor *m) {
 void
 tileleft(Monitor *m)
 {
-	unsigned int i, n, h, mw, my, ty;
-	Client *c;
+    unsigned int i, n, h, mw, my, ty;
+    Client *c;
 
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if (n == 0)
-		return;
+    for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+    if (n == 0)
+        return;
 
-	if (n > m->nmaster)
-		mw = m->nmaster ? m->ww * (1 - m->mfact) : 0;
-	else
-		mw = m->ww;
-	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-		if (i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx + m->ww - mw, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
-			if (my + HEIGHT(c) < m->wh)
-				my += HEIGHT(c);
-		} else {
-			h = (m->wh - ty) / (n - i);
-			resize(c, m->wx, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
-			if (ty + HEIGHT(c) < m->wh)
-				ty += HEIGHT(c);
-		}
+    if (n > m->nmaster)
+        mw = m->nmaster ? m->ww * (1 - m->mfact) : 0;
+    else
+        mw = m->ww;
+    for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+        if (i < m->nmaster) {
+            h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+            resize(c, m->wx + m->ww - mw, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+            if (my + HEIGHT(c) < m->wh)
+                my += HEIGHT(c);
+        } else {
+            h = (m->wh - ty) / (n - i);
+            resize(c, m->wx, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+            if (ty + HEIGHT(c) < m->wh)
+                ty += HEIGHT(c);
+        }
 }
 
 /* dwm-deck ------------------------------------------------------------ */
@@ -259,66 +286,66 @@ deckhorizontal(Monitor *m) {
 /* dwm-bottomstack ------------------------------------------------------------ */
 static void
 bottomstackhorizontal(Monitor *m) {
-	int w, mh, mx, tx, ty, th;
-	unsigned int i, n;
-	Client *c;
+    int w, mh, mx, tx, ty, th;
+    unsigned int i, n;
+    Client *c;
 
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if (n == 0)
-		return;
+    for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+    if (n == 0)
+        return;
 
-	if (n > m->nmaster) {
-		mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
-		th = (m->wh - mh) / (n - m->nmaster);
-		ty = m->wy + mh;
-	} else {
-		th = mh = m->wh;
-		ty = m->wy;
-	}
-	for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-		if (i < m->nmaster) {
-			w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx + mx, m->wy, w - (2 * c->bw), mh - (2 * c->bw), 0);
-			mx += WIDTH(c);
-		} else {
-			resize(c, tx, ty, m->ww - (2 * c->bw), th - (2 * c->bw), 0);
-			if (th != m->wh)
-				ty += HEIGHT(c);
-		}
-	}
+    if (n > m->nmaster) {
+        mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
+        th = (m->wh - mh) / (n - m->nmaster);
+        ty = m->wy + mh;
+    } else {
+        th = mh = m->wh;
+        ty = m->wy;
+    }
+    for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i < m->nmaster) {
+            w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
+            resize(c, m->wx + mx, m->wy, w - (2 * c->bw), mh - (2 * c->bw), 0);
+            mx += WIDTH(c);
+        } else {
+            resize(c, tx, ty, m->ww - (2 * c->bw), th - (2 * c->bw), 0);
+            if (th != m->wh)
+                ty += HEIGHT(c);
+        }
+    }
 }
 
 static void
 bottomstackvertical(Monitor *m) {
-	int w, h, mh, mx, tx, ty, tw;
-	unsigned int i, n;
-	Client *c;
+    int w, h, mh, mx, tx, ty, tw;
+    unsigned int i, n;
+    Client *c;
 
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if (n == 0)
-		return;
+    for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+    if (n == 0)
+        return;
 
-	if (n > m->nmaster) {
-		mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
-		tw = m->ww / (n - m->nmaster);
-		ty = m->wy + mh;
-	} else {
-		mh = m->wh;
-		tw = m->ww;
-		ty = m->wy;
-	}
-	for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-		if (i < m->nmaster) {
-			w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx + mx, m->wy, w - (2 * c->bw), mh - (2 * c->bw), 0);
-			mx += WIDTH(c);
-		} else {
-			h = m->wh - mh;
-			resize(c, tx, ty, tw - (2 * c->bw), h - (2 * c->bw), 0);
-			if (tw != m->ww)
-				tx += WIDTH(c);
-		}
-	}
+    if (n > m->nmaster) {
+        mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
+        tw = m->ww / (n - m->nmaster);
+        ty = m->wy + mh;
+    } else {
+        mh = m->wh;
+        tw = m->ww;
+        ty = m->wy;
+    }
+    for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i < m->nmaster) {
+            w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
+            resize(c, m->wx + mx, m->wy, w - (2 * c->bw), mh - (2 * c->bw), 0);
+            mx += WIDTH(c);
+        } else {
+            h = m->wh - mh;
+            resize(c, tx, ty, tw - (2 * c->bw), h - (2 * c->bw), 0);
+            if (tw != m->ww)
+                tx += WIDTH(c);
+        }
+    }
 }
 
 /* dwm-logarithmic-spiral ------------------------------------------------------------ */
@@ -332,7 +359,7 @@ static const int   logarithmicspirallen   = (const int) ((logarithmicspiralstop 
 
 void
 logarithmicspiral(Monitor *m) {
-	unsigned int n, idx;
+    unsigned int n, idx;
     float i, v, minx, maxx, miny, maxy;
     float phi[logarithmicspirallen];
 
@@ -344,7 +371,7 @@ logarithmicspiral(Monitor *m) {
     float wx[logarithmicspirallen];
     float wy[logarithmicspirallen];
 
-	Client *c;
+    Client *c;
 
     for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
     if(n == 0)
@@ -429,7 +456,7 @@ logarithmicspiral(Monitor *m) {
     wx[idx] = wx[idx] - ww[idx]/2;
     wy[idx] = wy[idx];
 
-	for(i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen; c = nexttiled(c->next), i++) {
+    for(i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen; c = nexttiled(c->next), i++) {
         if (i < 1) {
             resize(c, m->ww/2 - (m->ww * m->mfact)/2, m->wy + m->wh/2 - (m->wh * m->ffact)/2 , m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
         } else {
@@ -440,7 +467,7 @@ logarithmicspiral(Monitor *m) {
             wy[idx] = wy[idx] + wh[idx] > m->wh ? m->wh - wh[idx]: wy[idx];
             resize(c, m->wx + wx[idx], m->wy + wy[idx], ww[idx] - 2 * c->bw, wh[idx] - 2 * c->bw, False);
         }
-	}
+    }
 }
 
 /* dwm-overview ------------------------------------------------------------ */
