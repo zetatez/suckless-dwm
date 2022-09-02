@@ -144,6 +144,7 @@ struct Monitor {
 	Client *clients;
 	Client *sel;
 	Client *stack;
+	Client *tagmarked[32]; // dwm-focusmaster
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];
@@ -188,6 +189,7 @@ static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
+static void focusmaster(const Arg *arg);                // dwm-focusmaster
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static void pointerfocuswin(Client *c);                 // dwm-move-window
@@ -226,7 +228,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setffact(const Arg *arg);       // ffact, by myself
+static void setffact(const Arg *arg);                   // ffact, by myself
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
@@ -234,8 +236,8 @@ static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
-// static void tile(Monitor *);   // by myself
-static void tileright(Monitor *); // by myself
+// static void tile(Monitor *);                         // by myself
+static void tileright(Monitor *);                       // by myself
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);    // dwm-scratchpad
@@ -821,6 +823,11 @@ detach(Client *c)
 {
 	Client **tc;
 
+    for (int i = 1; i < LENGTH(tags); i++) { // dwm-focusmaster
+        if (c == c->mon->tagmarked[i])       // dwm-focusmaster
+            c->mon->tagmarked[i] = NULL;     // dwm-focusmaster
+    }                                        // dwm-focusmaster
+
 	for (tc = &c->mon->clients; *tc && *tc != c; tc = &(*tc)->next);
 	*tc = c->next;
 }
@@ -982,6 +989,34 @@ focusin(XEvent *e)
 
 	if (selmon->sel && ev->window != selmon->sel->win)
 		setfocus(selmon->sel);
+}
+
+void
+focusmaster(const Arg *arg)
+{
+	Client *master;
+
+	if (selmon->nmaster > 1)
+		return;
+	if (!selmon->sel || (selmon->sel->isfullscreen && lockfullscreen))
+		return;
+
+	master = nexttiled(selmon->clients);
+
+	if (!master)
+		return;
+
+	int i;
+	for (i = 0; !(selmon->tagset[selmon->seltags] & 1 << i); i++);
+	i++;
+
+	if (selmon->sel == master) {
+		if (selmon->tagmarked[i] && ISVISIBLE(selmon->tagmarked[i]))
+			focus(selmon->tagmarked[i]);
+	} else {
+		selmon->tagmarked[i] = selmon->sel;
+		focus(master);
+	}
 }
 
 void
@@ -1481,6 +1516,11 @@ nexttiled(Client *c)
 void
 pop(Client *c)
 {
+    int i;                                                         // dwm-focusmaster
+    for (i = 0; !(selmon->tagset[selmon->seltags] & 1 << i); i++); // dwm-focusmaster
+    i++;                                                           // dwm-focusmaster
+    c->mon->tagmarked[i] = nexttiled(c->mon->clients);             // dwm-focusmaster
+
 	detach(c);
 	attach(c);
 	focus(c);

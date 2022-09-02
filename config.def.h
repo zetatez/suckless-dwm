@@ -272,6 +272,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0} },                 // dwm-sticky
     { MODKEY,                       XK_f,          togglefullscreen,  {0} },                 // dwm-actualfullscreen
     { MODKEY,                       XK_o,          toggleoverview,    {0} },                 // dwm-overview
+    { MODKEY|ControlMask,           XK_space,      focusmaster,       {0} },                 // dwm-focusmaster
     { MODKEY,                       XK_k,          focusstack,        {.i = -1 } },
     { MODKEY,                       XK_j,          focusstack,        {.i = +1 } },
     { MODKEY,                       XK_d,          incnmaster,        {.i = -1 } },
