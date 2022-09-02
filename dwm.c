@@ -2037,7 +2037,6 @@ tagmon(const Arg *arg)
 }
 
 void
-// tile(Monitor *m)  // by myself
 tileright(Monitor *m)
 {
 	unsigned int i, n, h, mw, my, ty;
