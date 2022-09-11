@@ -22,13 +22,12 @@ static const char *colors[][3]      = {
 
 static const char *const autostart[] = {                               // dwm-cool-autostart
     "dwmstatus", "2>&1 >>/dev/null &", NULL,                           // dwm-cool-autostart
-    "/home/lorenzo/.dwm/autostart.sh", NULL,                           // dwm-cool-autostart
+    "/home/dionysus/.dwm/autostart.sh", NULL,                          // dwm-cool-autostart
     NULL /* terminate */                                               // dwm-cool-autostart
 };                                                                     // dwm-cool-autostart
 
 /* tagging */
-static const char *tags[] = { "ζ(s)=∑1/n^s", "-e^iπ=1", "i", "o", "∞", "∫", "∇", "i", "0" };
-
+static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "-e^iπ=1", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -37,7 +36,7 @@ static const Rule rules[] = {
      */
     /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
     { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
-    { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
+//  { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
 };
 
 static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
@@ -114,42 +113,43 @@ static const char *toggle_kb_light[]   = SH("flag=$(cat /sys/class/leds/tpacpi::
 static const char *weather[]           = TMSP("curl wttr.in/ShangHai; sleep 2");
 
 // Chopin: open, exec, copy, move, remove, open wiki, open book, open media
-static const char *chopin_open[]       = TM("fd --type f --hidden --exclude .git . '/home/lorenzo'|fzf --prompt='open>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
-static const char *chopin_copy[]       = TM("chopin -c \"$(fd --type f --hidden --exclude .git . '/home/lorenzo'|fzf --prompt='copy>'  --preview 'bat --color=always {}' --select-1 --exit-0)\"");
-static const char *chopin_move[]       = TM("chopin -m \"$(fd --type f --hidden --exclude .git . '/home/lorenzo'|fzf --prompt='move>' --preview 'bat --color=always {}' --select-1 --exit-0)\"");
-static const char *chopin_exec[]       = TM("fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '/home/lorenzo'|fzf --prompt='exec>'  --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -e {}");
-static const char *chopin_remove[]     = TM("chopin -r \"$(fd --type f --hidden --exclude .git . '/home/lorenzo'|fzf --prompt='remove>' --preview 'bat --color=always {}' --select-1 --exit-0)\"");
-static const char *chopin_open_media[] = TM("fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/lorenzo/'|fzf --prompt='medias>' --reverse --select-1 --exit-0|xargs chopin -o {}");
-static const char *chopin_open_book[]  = TM("fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/lorenzo/obsidian/docs/'|fzf --prompt='books>' --reverse --select-1 --exit-0|xargs chopin -o {}");
-static const char *chopin_open_wiki[]  = TM("fd --type f --hidden --exclude .git . '/home/lorenzo/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
+static const char *chopin_open[]       = TM("fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='open>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
+static const char *chopin_copy[]       = TM("chopin -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>'  --preview 'bat --color=always {}' --select-1 --exit-0)\"");
+static const char *chopin_move[]       = TM("chopin -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'bat --color=always {}' --select-1 --exit-0)\"");
+static const char *chopin_exec[]       = TM("fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '/home/dionysus'|fzf --prompt='exec>'  --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -e {}");
+static const char *chopin_remove[]     = TM("chopin -r \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='remove>' --preview 'bat --color=always {}' --select-1 --exit-0)\"");
+static const char *chopin_open_media[] = TM("fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --reverse --select-1 --exit-0|xargs chopin -o {}");
+static const char *chopin_open_book[]  = TM("fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/obsidian/library/'|fzf --prompt='books>' --reverse --select-1 --exit-0|xargs chopin -o {}");
+static const char *chopin_open_wiki[]  = TM("fd --type f --hidden --exclude .git . '/home/dionysus/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
 
 // SUPKEY + a-z
 static const char *browser[]           = SH("google --proxy-server='socks5://127.0.0.1:1080'");
-static const char *calendar[]          = TM("vim -c 'Calendar -view=clock'");
+static const char *calendar[]          = TM("nvim -c 'Calendar -view=clock'");
 static const char *dynamic_wallpaper[] = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
-static const char *email[]             = TM("mutt");
+static const char *email[]             = TM("neomutt");
 static const char *gotofile[]          = TM("~/.suckless/arch-dwm/scripts/gotofile.sh");
 static const char *irc[]               = TM("weechat");
 static const char *calculator[]        = TM("julia");
 static const char *slock[]             = SH("slock");
 static const char *vifm[]              = TM("vifm");
 static const char *task[]              = TM("task calendar; task list; sleep 1");
-static const char *togglescreenkey[]   = SH("ps -ef|grep screenkey|grep -v grep >>/dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey) || ([ \"$?\" != \"0\" ] && nohup screenkey --opacity 0 -s small --font-color yellow >>/dev/null 2>&1 &)");
-static const char *trans_en2zh[]       = TM("echo 'Translate EN to ZH > '; trans en:zh ");
+static const char *togglescreenkey[]   = SH("ps -ef|grep screenkey|grep -v grep >>/dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey) || ([ \"$?\" != \"0\" ] && nohup screenkey --key-mode keysyms --opacity 0 -s small --font-color black >>/dev/null 2>&1 &)");
+static const char *trans_en2zh[]       = TM("echo 'Translate EN to ZH > '; trans -e bing en:zh ");
 
 // SUPKEY + etc
 static const char *passmenu[]          = SH("passmenu");
 static const char *shutdown[]          = SH("sudo shutdown now");
 static const char *htop[]              = TM("htop");
 static const char *screenshot[]        = SH("pkill flameshot; flameshot gui");
-static const char *diary[]             = TMSP("vim +$ ~/diary/`date +%Y-%m-%d`.md");
-static const char *todo[]              = TMSP("taskell ~/privacy/.taskell.md");
+static const char *diary[]             = TMSP("nvim +$ ~/diary/`date +%Y-%m-%d`.md");
+static const char *taskwarrior[]       = TM("taskwarrior-tui");
 static const char *picom_grayscale[]   = SH("~/.suckless/arch-dwm/scripts/picom.sh grayscale");
 static const char *picom_normal[]      = SH("~/.suckless/arch-dwm/scripts/picom.sh normal");
 
 // SUPKEY-ShiftMask + a-z
 static const char *addressbook[]       = TM("abook");
 static const char *lazydocker[]        = TM("lazydocker");
+static const char *gitter[]            = SH("gitter");
 static const char *illustrator[]       = SH("krita");
 static const char *music[]             = SH("netease-cloud-music");
 static const char *rss[]               = TM("newsboat");
@@ -162,11 +162,11 @@ static const char *trojan[]            = SH("nohup ~/.trojan/trojan -c ~/.trojan
 static const char *nudoku[]            = TM("nudoku -d hard");
 static const char *wechat[]            = SH("wechat-uos");
 static const char *zeal[]              = SH("zeal");
-static const char *trans_zh2en[]       = TM("echo 'Translate ZH to EN > '; trans zh:en ");
+static const char *trans_zh2en[]       = TM("echo 'Translate ZH to EN > '; trans -e bing zh:en ");
 
 // SUPKEY-ShiftMask + etc
 static const char *reboot[]            = SH("sudo reboot");
-static const char *vit[]               = TMSP("vit");
+static const char *todo[]              = TMSP("taskell ~/privacy/.taskell.md");
 static const char *rec_audio[]         = TM("ffmpeg -y -r 60 -f alsa -i default -c:a flac $HOME/Videos/rec-a-$(date '+%F-%H-%M-%S').flac");
 static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo | awk '/dimensions/ {print $2;}')\" -r 60 -f x11grab -i \"$DISPLAY\" -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac $HOME/Videos/rec-v-a-$(date '+%F-%H-%M-%S').mkv");
 
@@ -224,7 +224,7 @@ static Key keys[] = {
     { SUPKEY,                       XK_Escape,     spawn,             {.v = htop              } },
     { SUPKEY,                       XK_Print,      spawn,             {.v = screenshot        } },
     { SUPKEY,                       XK_backslash,  spawn,             {.v = diary             } },
-    { SUPKEY,                       XK_slash,      spawn,             {.v = todo              } },
+    { SUPKEY,                       XK_slash,      spawn,             {.v = taskwarrior       } },
     { SUPKEY,                       XK_comma,      spawn,             {.v = picom_grayscale   } },
     { SUPKEY,                       XK_period,     spawn,             {.v = picom_normal      } },
 
@@ -235,7 +235,7 @@ static Key keys[] = {
     { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = lazydocker        } },
 //  { SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                   } },
 //  { SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v =                   } },
+    { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v = gitter            } },
 //  { SUPKEY|ShiftMask,             XK_h,          spawn,             {.v = x                 } },
     { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = illustrator       } },
 //  { SUPKEY|ShiftMask,             XK_j,          spawn,             {.v = x                 } },
@@ -261,7 +261,7 @@ static Key keys[] = {
 //  { SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                   } },
 //  { SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                   } },
 //  { SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = vit               } },
+    { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = todo              } },
     { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = rec_audio         } },
     { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = rec_video         } },
 

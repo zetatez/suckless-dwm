@@ -343,19 +343,14 @@ static void bottomstackvertical(Monitor *m) {
 /* dwm-logarithmic-spiral
  * ------------------------------------------------------------ */
 // control the shape of logarithmic spiral
-static const float logarithmicspiralstart = -50;
-static const float logarithmicspiralstop = 50;
-static const float logarithmicspiralstep =
-    0.1; // control the interval of each window
-static const float logarithmicspiralalpha = 1;
-static const float logarithmicspiralkapa =
-    0.2; // control the interval of each window cycle: 0.2, 0.025, 0.05,
-         // 0.3063489(golden LS)
-static const int logarithmicspirallen =
-    (const int)((logarithmicspiralstop - logarithmicspiralstart) /
-                logarithmicspiralstep);
-
 void logarithmicspiral(Monitor *m) {
+  float logarithmicspiralstart = -50;
+  float logarithmicspiralstop = 50;
+  float logarithmicspiralstep = 0.1; // control the interval of each window
+  float logarithmicspiralalpha = 1;
+  float logarithmicspiralkapa = 0.2; // control the interval of each window cycle: 0.2, 0.025, 0.05, 0.3063489(golden LS)
+  int logarithmicspirallen = (const int)((logarithmicspiralstop - logarithmicspiralstart) / logarithmicspiralstep);
+
   unsigned int n, idx;
   float i, v, minx, maxx, miny, maxy;
   float phi[logarithmicspirallen];
@@ -375,10 +370,7 @@ void logarithmicspiral(Monitor *m) {
   if (n == 0)
     return;
 
-  for (idx = 0, i = logarithmicspiralstart;
-       i < logarithmicspiralstop && idx < sizeof(phi) / sizeof(phi[0]);
-       i += logarithmicspiralstep, phi[idx] = i, idx++)
-    ;
+  for (idx = 0, i = logarithmicspiralstart; i < logarithmicspiralstop && idx < sizeof(phi) / sizeof(phi[0]); i += logarithmicspiralstep, phi[idx] = i, idx++);
   for (idx = 0; idx < sizeof(phi) / sizeof(phi[0]); idx++) {
     v = logarithmicspiralalpha * exp(logarithmicspiralkapa * phi[idx]);
     x[idx] = v * cos(phi[idx]);
