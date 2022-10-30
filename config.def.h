@@ -172,7 +172,7 @@ static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo | awk '/d
 
 #include "movestack.c"
 #include "shiftview.c"
-static Key keys[] = {
+static const Key keys[] = {
     /* modifier                     key            function           argument */
     { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd          } },
     { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd           } },
@@ -339,7 +339,7 @@ static Key keys[] = {
 // Button3: right  click
 // Button4:
 // Button5:
-static Button buttons[] = {
+static const Button buttons[] = {
     /* click                event mask      button          function        argument */
     { ClkLtSymbol,          0,              Button1,        setlayout,      {0} },                   //          left   click : change layout to
     { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[16]} },   //          right  click : change layout to x
