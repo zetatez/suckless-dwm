@@ -7,7 +7,8 @@ static const int swallowfloating    = 1;        /* 1 means swallow floating wind
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int barheight          = 16;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
-static const char *fonts[]          = { "monospace:size=12" };
+static const char *fonts[]          = {"monospace:size=14"};
+/* static const char *fonts[]          = {"-misc-fixed-medium-r-semicondensed--13-100-100-100-c-60-iso8859-1"}; */
 static const char dmenufont[]       = "monospace:size=12";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -27,7 +28,7 @@ static const char *const autostart[] = {                               // dwm-co
 };                                                                     // dwm-cool-autostart
 
 /* tagging */
-static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "-e^iπ=1", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "𝒹𝒮=𝛅𝒬/𝒯", "𝛇(𝓈)" };
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -55,24 +56,24 @@ static const unsigned int gappiw    = 16;   /* vert  inner gap between windows *
 #include "layouts.c"                                   // layouts
 static const Layout layouts[] = {
     /* symbol     arrange function */
-    { "Center ER",                 centerequalratio }, // dwm-center
-    { "Center AS",                   centeranyshape }, // dwm-center
-    { "Columns",                            columns }, // dwm-columns
-    { "Grid",                                  grid }, // dwm-grid
-    { "Overlaylayer",          overlaylayervertical }, // dwm-overlaylayervertical
-    { "Overlaylayer",        overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
-    { "Deck",                          deckvertical }, // dwm-deckvertical
-    { "Deck",                        deckhorizontal }, // dwm-deckhorizontal
-    { "Fibonacci",                           spiral }, // dwm-fibonacci
-    { "Fibonacci",                          dwindle }, // dwm-fibonacci
-    { "Bottom Stack",           bottomstackvertical }, // dwm-bottomstack
-    { "Bottom Stack",         bottomstackhorizontal }, // dwm-bottomstack
-    { "Tile Right",                       tileright }, // tile -> tileright
-    { "Tile Left",                         tileleft }, // dwm-leftstack
-    { "Overlaylayer",              overlaylayergrid }, // dwm-overlaylayergrid
-    { "Logarithmic Spiral",       logarithmicspiral }, // dwm-logarithmicspiral
-    { "Monocle",                            monocle },
-    { "∅",                                     NULL }, /* no layout function means floating behavior */
+    { "𝒞",                         centerequalratio }, // dwm-center
+    { "𝒞",                           centeranyshape }, // dwm-center
+    { "𝒞",                                  columns }, // dwm-columns
+    { "𝒢",                                     grid }, // dwm-grid
+    { "𝒪",                     overlaylayervertical }, // dwm-overlaylayervertical
+    { "𝒪",                   overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
+    { "𝒟",                             deckvertical }, // dwm-deckvertical
+    { "𝒟",                           deckhorizontal }, // dwm-deckhorizontal
+    { "ℱ",                                   spiral }, // dwm-fibonacci
+    { "ℱ",                                  dwindle }, // dwm-fibonacci
+    { "ℬ" ,                     bottomstackvertical }, // dwm-bottomstack
+    { "ℬ",                    bottomstackhorizontal }, // dwm-bottomstack
+    { "𝒯",                                tileright }, // tile -> tileright
+    { "𝒯",                                 tileleft }, // dwm-leftstack
+    { "𝒪",                         overlaylayergrid }, // dwm-overlaylayergrid
+    { "ℒ",                        logarithmicspiral }, // dwm-logarithmicspiral
+    { "ℳ",                                  monocle },
+    { "⦱",                                     NULL }, /* no layout function means floating behavior */
     { NULL,                                    NULL }, // dwm-cyclelayouts
 };
 
@@ -123,7 +124,7 @@ static const char *chopin_open_book[]  = TM("fd -e pdf -e epub -e djvu -e mobi -
 static const char *chopin_open_wiki[]  = TM("fd --type f --hidden --exclude .git . '/home/dionysus/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
 
 // SUPKEY + a-z
-static const char *browser[]           = SH("google --proxy-server='socks5://127.0.0.1:1080'");
+static const char *browser[]           = SH("google --proxy-server='socks5://127.0.0.1:8000'");
 static const char *calendar[]          = TM("nvim -c 'Calendar -view=clock'");
 static const char *dynamic_wallpaper[] = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
 static const char *email[]             = TM("neomutt");
@@ -218,7 +219,7 @@ static const Key keys[] = {
     { SUPKEY,                       XK_x,          spawn,             {.v = chopin_exec       } },
     { SUPKEY,                       XK_y,          spawn,             {.v = trans_en2zh       } },
     { SUPKEY,                       XK_z,          spawn,             {.v = chopin_remove     } },
-    { SUPKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
+//  { SUPKEY,                       XK_apostrophe, spawn,             {.v =                   } },
     { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
     { SUPKEY,                       XK_Delete,     spawn,             {.v = shutdown          } },
     { SUPKEY,                       XK_Escape,     spawn,             {.v = htop              } },
@@ -265,60 +266,61 @@ static const Key keys[] = {
     { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = rec_audio         } },
     { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = rec_video         } },
 
-    { MODKEY,                       XK_b,          togglebar,         {0} },
-    { MODKEY,                       XK_Return,     zoom,              {0} },
-    { MODKEY,                       XK_Tab,        view,              {0} },
-    { MODKEY,                       XK_space,      setlayout,         {0} },
-    { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0} },
-    { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0} },                 // dwm-sticky
-    { MODKEY,                       XK_f,          togglefullscreen,  {0} },                 // dwm-actualfullscreen
-    { MODKEY,                       XK_o,          toggleoverview,    {0} },                 // dwm-overview
-    { MODKEY|ControlMask,           XK_space,      focusmaster,       {0} },                 // dwm-focusmaster
-    { MODKEY,                       XK_k,          focusstack,        {.i = -1 } },
-    { MODKEY,                       XK_j,          focusstack,        {.i = +1 } },
-    { MODKEY,                       XK_d,          incnmaster,        {.i = -1 } },
-    { MODKEY,                       XK_i,          incnmaster,        {.i = +1 } },
-    { MODKEY,                       XK_comma,      cyclelayout,       {.i = -1 } },
-    { MODKEY,                       XK_period,     cyclelayout,       {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1 } },
-    { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1 } },
-    { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1 } },          // shiftview
-    { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1 } },          // shiftview
-    { MODKEY,                       XK_slash,      focusmon,          {.i = +1 } },          // move cursor to another monitor
-    { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1 } },          // move tag    to another monitor
-    { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025} },
-    { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025} },
-    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025} },       // ffact, by myself
-    { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025} },       // ffact, by myself
-    { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]} },  // centerequalratio
-    { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]} },  // centeranyshape
-    { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[2]} },  // columns
-    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]} },  // grid
-    { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[4]} },  // overlaylayervertical
-    { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[5]} },  // overlaylayerhorizontal
-    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[6]} },  // deckvertical
-    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[7]} },  // deckhorizontal
-    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[8]} },  // sprial
-    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[9]} },  // dwindle
-    { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[10]} },  // bstack
-    { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[11]} }, // bstack
-    { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[12]} }, // tileright
-    { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[13]} }, // lefttile
-    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]} }, // overlaylayergrid
-    { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[15]} }, // logarithmicspiral
-    { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]} }, // monocle
-    { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]} }, // no layout means floating
-    { MODKEY,                       XK_0,          view,              {.ui = ~0 } },
-    { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0 } },
-
-    { SUPKEY,                       XK_k,          movewin,           {.ui = UP} },          // dwm-move-window
-    { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN} },        // dwm-move-window
-    { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT} },        // dwm-move-window
-    { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT} },       // dwm-move-window
-    { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE} },   // dwm-resize-window
-    { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE} },   // dwm-resize-window
-    { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE} },   // dwm-resize-window
-    { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE} },   // dwm-resize-window
+    { MODKEY,                       XK_b,          togglebar,         {0                      } },
+    { MODKEY,                       XK_Return,     zoom,              {0                      } },
+    { MODKEY,                       XK_Tab,        view,              {0                      } },
+    { MODKEY,                       XK_space,      setlayout,         {0                      } },
+    { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                      } },
+    { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // dwm-sticky
+    { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // dwm-actualfullscreen
+    { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // dwm-overview
+    { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // dwm-focusmaster
+                                                                                                   //
+    { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
+    { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
+    { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
+    { MODKEY,                       XK_i,          incnmaster,        {.i = +1                } },
+    { MODKEY,                       XK_comma,      cyclelayout,       {.i = -1                } },
+    { MODKEY,                       XK_period,     cyclelayout,       {.i = +1                } },
+    { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1                } },
+    { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                } },
+    { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                } }, // shiftview
+    { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                } }, // shiftview
+    { MODKEY,                       XK_slash,      focusmon,          {.i = +1                } }, // move cursor to another monitor
+    { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                } }, // move tag    to another monitor
+    { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025            } },
+    { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025            } },
+    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025            } }, // ffact, by myself
+    { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025            } }, // ffact, by myself
+    { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]       } }, // centerequalratio
+    { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]       } }, // centeranyshape
+    { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[2]       } }, // columns
+    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]       } }, // grid
+    { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[4]       } }, // overlaylayervertical
+    { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[5]       } }, // overlaylayerhorizontal
+    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[6]       } }, // deckvertical
+    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[7]       } }, // deckhorizontal
+    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[8]       } }, // sprial
+    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[9]       } }, // dwindle
+    { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[10]      } }, // bstack
+    { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[11]      } }, // bstack
+    { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[12]      } }, // tileright
+    { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[13]      } }, // lefttile
+    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]      } }, // overlaylayergrid
+    { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[15]      } }, // logarithmicspiral
+    { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]      } }, // monocle
+    { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]      } }, // no layout means floating
+    { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
+    { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
+    { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
+    { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // dwm-move-window
+    { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // dwm-move-window
+    { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // dwm-move-window
+    { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // dwm-move-window
+    { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE        } }, // dwm-resize-window
+    { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // dwm-resize-window
+    { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // dwm-resize-window
+    { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // dwm-resize-window
     TAGKEYS(                        XK_1,          0)
     TAGKEYS(                        XK_2,          1)
     TAGKEYS(                        XK_3,          2)
@@ -328,8 +330,8 @@ static const Key keys[] = {
     TAGKEYS(                        XK_7,          6)
     TAGKEYS(                        XK_8,          7)
     TAGKEYS(                        XK_9,          8)
-    { MODKEY|ShiftMask,             XK_c,          killclient,        {0} },
-    { MODKEY|ShiftMask,             XK_q,          quit,              {0} },
+    { MODKEY|ShiftMask,             XK_c,          killclient,        {0                      } },
+    { MODKEY|ShiftMask,             XK_q,          quit,              {0                      } },
 };
 
 /* button definitions */
