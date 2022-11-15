@@ -2,7 +2,7 @@
 #include <math.h>
 
 /* dwm-overlaylayer ------------------------------------------------------------
- */
+*/
 void overlaylayergrid(Monitor *m) {
   unsigned int n, i;
   Client *c;
@@ -215,7 +215,7 @@ void tileleft(Monitor *m) {
   else
     mw = m->ww;
   for (i = my = ty = 0, c = nexttiled(m->clients); c;
-       c = nexttiled(c->next), i++)
+      c = nexttiled(c->next), i++)
     if (i < m->nmaster) {
       h = (m->wh - my) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + m->ww - mw, m->wy + my, mw - (2 * c->bw), h - (2 * c->bw), 0);
@@ -273,7 +273,7 @@ void deckhorizontal(Monitor *m) {
 }
 
 /* dwm-bottomstack ------------------------------------------------------------
- */
+*/
 static void bottomstackhorizontal(Monitor *m) {
   int w, mh, mx, tx, ty, th;
   unsigned int i, n;
@@ -293,7 +293,7 @@ static void bottomstackhorizontal(Monitor *m) {
     ty = m->wy;
   }
   for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c;
-       c = nexttiled(c->next), i++) {
+      c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + mx, m->wy, w - (2 * c->bw), mh - (2 * c->bw), 0);
@@ -326,7 +326,7 @@ static void bottomstackvertical(Monitor *m) {
     ty = m->wy;
   }
   for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c;
-       c = nexttiled(c->next), i++) {
+      c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + mx, m->wy, w - (2 * c->bw), mh - (2 * c->bw), 0);
@@ -458,7 +458,7 @@ void logarithmicspiral(Monitor *m) {
   wy[idx] = wy[idx];
 
   for (i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen;
-       c = nexttiled(c->next), i++) {
+      c = nexttiled(c->next), i++) {
     if (i < 1) {
       resize(c, m->ww / 2 - (m->ww * m->mfact) / 2, m->wy + m->wh / 2 - (m->wh * m->ffact) / 2, m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
     } else {

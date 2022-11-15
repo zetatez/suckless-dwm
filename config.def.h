@@ -16,28 +16,28 @@ static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
-    /*               fg         bg         border   */
-    [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-    [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+  /*               fg         bg         border   */
+  [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+  [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const char *const autostart[] = {                               // dwm-cool-autostart
-    "dwmstatus", "2>&1 >>/dev/null &", NULL,                           // dwm-cool-autostart
-    "/home/dionysus/.dwm/autostart.sh", NULL,                          // dwm-cool-autostart
-    NULL /* terminate */                                               // dwm-cool-autostart
-};                                                                     // dwm-cool-autostart
+static const char *const autostart[] = {        // dwm-cool-autostart
+  "dwmstatus", "2>&1 >>/dev/null &", NULL,      // dwm-cool-autostart
+  "/home/dionysus/.dwm/autostart.sh", NULL,     // dwm-cool-autostart
+  NULL /* terminate */                          // dwm-cool-autostart
+};                                              // dwm-cool-autostart
 
 /* tagging */
 static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "𝒹𝒮=𝛅𝒬/𝒯", "𝛇(𝓈)" };
 
 static const Rule rules[] = {
-    /* xprop(1):
-     *    WM_CLASS(STRING) = instance, class
-     *    WM_NAME(STRING) = title
-     */
-    /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
-    { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
-//  { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
+  /* xprop(1):
+   *    WM_CLASS(STRING) = instance, class
+   *    WM_NAME(STRING) = title
+   */
+  /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
+  { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
+  //  { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
 };
 
 static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
@@ -55,26 +55,26 @@ static const unsigned int gappiw    = 16;   /* vert  inner gap between windows *
 
 #include "layouts.c"                                   // layouts
 static const Layout layouts[] = {
-    /* symbol     arrange function */
-    { "𝒞",                         centerequalratio }, // dwm-center
-    { "𝒞",                           centeranyshape }, // dwm-center
-    { "𝒞",                                  columns }, // dwm-columns
-    { "𝒢",                                     grid }, // dwm-grid
-    { "𝒪",                     overlaylayervertical }, // dwm-overlaylayervertical
-    { "𝒪",                   overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
-    { "𝒟",                             deckvertical }, // dwm-deckvertical
-    { "𝒟",                           deckhorizontal }, // dwm-deckhorizontal
-    { "ℱ",                                   spiral }, // dwm-fibonacci
-    { "ℱ",                                  dwindle }, // dwm-fibonacci
-    { "ℬ" ,                     bottomstackvertical }, // dwm-bottomstack
-    { "ℬ",                    bottomstackhorizontal }, // dwm-bottomstack
-    { "𝒯",                                tileright }, // tile -> tileright
-    { "𝒯",                                 tileleft }, // dwm-leftstack
-    { "𝒪",                         overlaylayergrid }, // dwm-overlaylayergrid
-    { "ℒ",                        logarithmicspiral }, // dwm-logarithmicspiral
-    { "ℳ",                                  monocle },
-    { "⦱",                                     NULL }, /* no layout function means floating behavior */
-    { NULL,                                    NULL }, // dwm-cyclelayouts
+  /* symbol     arrange function */
+  { "𝒞",                         centerequalratio }, // dwm-center
+  { "𝒞",                           centeranyshape }, // dwm-center
+  { "𝒞",                                  columns }, // dwm-columns
+  { "𝒢",                                     grid }, // dwm-grid
+  { "𝒪",                     overlaylayervertical }, // dwm-overlaylayervertical
+  { "𝒪",                   overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
+  { "𝒟",                             deckvertical }, // dwm-deckvertical
+  { "𝒟",                           deckhorizontal }, // dwm-deckhorizontal
+  { "ℱ",                                   spiral }, // dwm-fibonacci
+  { "ℱ",                                  dwindle }, // dwm-fibonacci
+  { "ℬ" ,                     bottomstackvertical }, // dwm-bottomstack
+  { "ℬ",                    bottomstackhorizontal }, // dwm-bottomstack
+  { "𝒯",                                tileright }, // tile -> tileright
+  { "𝒯",                                 tileleft }, // dwm-leftstack
+  { "𝒪",                         overlaylayergrid }, // dwm-overlaylayergrid
+  { "ℒ",                        logarithmicspiral }, // dwm-logarithmicspiral
+  { "ℳ",                                  monocle },
+  { "⦱",                                     NULL }, /* no layout function means floating behavior */
+  { NULL,                                    NULL }, // dwm-cyclelayouts
 };
 
 static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview // can be any layout
@@ -83,10 +83,10 @@ static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview 
 #define SUPKEY Mod4Mask
 #define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
-    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-    { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-    { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-    { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+  { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+  { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+  { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+  { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -174,164 +174,164 @@ static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo | awk '/d
 #include "movestack.c"
 #include "shiftview.c"
 static const Key keys[] = {
-    /* modifier                     key            function           argument */
-    { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd          } },
-    { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd           } },
+  /* modifier                     key            function           argument */
+  { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd          } },
+  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd           } },
 
-    // SUPKEY + F1-F12
-    { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle     } },
-    { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec        } },
-    { SUPKEY,                       XK_F3,         spawn,             {.v = volume_inc        } },
-//  { SUPKEY,                       XK_F4,         spawn,             {.v =                   } },
-    { SUPKEY,                       XK_F5,         spawn,             {.v = screen_light_dec  } },
-    { SUPKEY,                       XK_F6,         spawn,             {.v = screen_light_inc  } },
-//  { SUPKEY,                       XK_F7,         spawn,             {.v =                   } },
-    { SUPKEY,                       XK_F8,         spawn,             {.v = wifi              } },
-//  { SUPKEY,                       XK_F9,         spawn,             {.v =                   } },
-    { SUPKEY,                       XK_F10,        spawn,             {.v = bluetoothctl      } },
-    { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light   } },
-    { SUPKEY,                       XK_F12,        spawn,             {.v = weather           } },
+  // SUPKEY + F1-F12
+  { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle     } },
+  { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec        } },
+  { SUPKEY,                       XK_F3,         spawn,             {.v = volume_inc        } },
+//{ SUPKEY,                       XK_F4,         spawn,             {.v =                   } },
+  { SUPKEY,                       XK_F5,         spawn,             {.v = screen_light_dec  } },
+  { SUPKEY,                       XK_F6,         spawn,             {.v = screen_light_inc  } },
+//{ SUPKEY,                       XK_F7,         spawn,             {.v =                   } },
+  { SUPKEY,                       XK_F8,         spawn,             {.v = wifi              } },
+//{ SUPKEY,                       XK_F9,         spawn,             {.v =                   } },
+  { SUPKEY,                       XK_F10,        spawn,             {.v = bluetoothctl      } },
+  { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light   } },
+  { SUPKEY,                       XK_F12,        spawn,             {.v = weather           } },
 
-    // SUPKEY + a-z, etc
-    { SUPKEY,                       XK_a,          spawn,             {.v = chopin_open_media } },
-    { SUPKEY,                       XK_b,          spawn,             {.v = browser           } },
-    { SUPKEY,                       XK_c,          spawn,             {.v = calendar          } },
-    { SUPKEY,                       XK_d,          spawn,             {.v = dynamic_wallpaper } },
-    { SUPKEY,                       XK_e,          spawn,             {.v = email             } },
-    { SUPKEY,                       XK_f,          spawn,             {.v = chopin_open       } },
-    { SUPKEY,                       XK_g,          spawn,             {.v = gotofile          } },
-//  { SUPKEY,                       XK_h,          spawn,             {.v = x                 } },
-    { SUPKEY,                       XK_i,          spawn,             {.v = irc               } },
-//  { SUPKEY,                       XK_j,          spawn,             {.v = x                 } },
-//  { SUPKEY,                       XK_k,          spawn,             {.v = x                 } },
-//  { SUPKEY,                       XK_l,          spawn,             {.v = x                 } },
-//  { SUPKEY,                       XK_m,          spawn,             {.v =                   } },
-    { SUPKEY,                       XK_n,          spawn,             {.v = chopin_copy       } },
-    { SUPKEY,                       XK_o,          spawn,             {.v = calculator        } },
-    { SUPKEY,                       XK_p,          spawn,             {.v = chopin_open_book  } },
-    { SUPKEY,                       XK_q,          spawn,             {.v = slock             } },
-    { SUPKEY,                       XK_r,          spawn,             {.v = vifm              } },
-//  { SUPKEY,                       XK_s,          spawn,             {.v =                   } },
-    { SUPKEY,                       XK_t,          spawn,             {.v = task              } },
-    { SUPKEY,                       XK_u,          spawn,             {.v = togglescreenkey   } },
-    { SUPKEY,                       XK_v,          spawn,             {.v = chopin_move       } },
-    { SUPKEY,                       XK_w,          spawn,             {.v = chopin_open_wiki  } },
-    { SUPKEY,                       XK_x,          spawn,             {.v = chopin_exec       } },
-    { SUPKEY,                       XK_y,          spawn,             {.v = trans_en2zh       } },
-    { SUPKEY,                       XK_z,          spawn,             {.v = chopin_remove     } },
-//  { SUPKEY,                       XK_apostrophe, spawn,             {.v =                   } },
-    { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
-    { SUPKEY,                       XK_Delete,     spawn,             {.v = shutdown          } },
-    { SUPKEY,                       XK_Escape,     spawn,             {.v = htop              } },
-    { SUPKEY,                       XK_Print,      spawn,             {.v = screenshot        } },
-    { SUPKEY,                       XK_backslash,  spawn,             {.v = diary             } },
-    { SUPKEY,                       XK_slash,      spawn,             {.v = taskwarrior       } },
-    { SUPKEY,                       XK_comma,      spawn,             {.v = picom_grayscale   } },
-    { SUPKEY,                       XK_period,     spawn,             {.v = picom_normal      } },
+  // SUPKEY + a-z, etc
+  { SUPKEY,                       XK_a,          spawn,             {.v = chopin_open_media } },
+  { SUPKEY,                       XK_b,          spawn,             {.v = browser           } },
+  { SUPKEY,                       XK_c,          spawn,             {.v = calendar          } },
+  { SUPKEY,                       XK_d,          spawn,             {.v = dynamic_wallpaper } },
+  { SUPKEY,                       XK_e,          spawn,             {.v = email             } },
+  { SUPKEY,                       XK_f,          spawn,             {.v = chopin_open       } },
+  { SUPKEY,                       XK_g,          spawn,             {.v = gotofile          } },
+//{ SUPKEY,                       XK_h,          spawn,             {.v = x                 } },
+  { SUPKEY,                       XK_i,          spawn,             {.v = irc               } },
+//{ SUPKEY,                       XK_j,          spawn,             {.v = x                 } },
+//{ SUPKEY,                       XK_k,          spawn,             {.v = x                 } },
+//{ SUPKEY,                       XK_l,          spawn,             {.v = x                 } },
+//{ SUPKEY,                       XK_m,          spawn,             {.v =                   } },
+  { SUPKEY,                       XK_n,          spawn,             {.v = chopin_copy       } },
+  { SUPKEY,                       XK_o,          spawn,             {.v = calculator        } },
+  { SUPKEY,                       XK_p,          spawn,             {.v = chopin_open_book  } },
+  { SUPKEY,                       XK_q,          spawn,             {.v = slock             } },
+  { SUPKEY,                       XK_r,          spawn,             {.v = vifm              } },
+//{ SUPKEY,                       XK_s,          spawn,             {.v =                   } },
+  { SUPKEY,                       XK_t,          spawn,             {.v = task              } },
+  { SUPKEY,                       XK_u,          spawn,             {.v = togglescreenkey   } },
+  { SUPKEY,                       XK_v,          spawn,             {.v = chopin_move       } },
+  { SUPKEY,                       XK_w,          spawn,             {.v = chopin_open_wiki  } },
+  { SUPKEY,                       XK_x,          spawn,             {.v = chopin_exec       } },
+  { SUPKEY,                       XK_y,          spawn,             {.v = trans_en2zh       } },
+  { SUPKEY,                       XK_z,          spawn,             {.v = chopin_remove     } },
+//{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                   } },
+  { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
+  { SUPKEY,                       XK_Delete,     spawn,             {.v = shutdown          } },
+  { SUPKEY,                       XK_Escape,     spawn,             {.v = htop              } },
+  { SUPKEY,                       XK_Print,      spawn,             {.v = screenshot        } },
+  { SUPKEY,                       XK_backslash,  spawn,             {.v = diary             } },
+  { SUPKEY,                       XK_slash,      spawn,             {.v = taskwarrior       } },
+  { SUPKEY,                       XK_comma,      spawn,             {.v = picom_grayscale   } },
+  { SUPKEY,                       XK_period,     spawn,             {.v = picom_normal      } },
 
-    // SUPKEY-ShiftMask + a-z, etc
-    { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = addressbook       } },
-//  { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_c,          spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = lazydocker        } },
-//  { SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v = gitter            } },
-//  { SUPKEY|ShiftMask,             XK_h,          spawn,             {.v = x                 } },
-    { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = illustrator       } },
-//  { SUPKEY|ShiftMask,             XK_j,          spawn,             {.v = x                 } },
-//  { SUPKEY|ShiftMask,             XK_k,          spawn,             {.v = x                 } },
-//  { SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = x                 } },
-    { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = music             } },
-    { SUPKEY|ShiftMask,             XK_n,          spawn,             {.v = rss               } },
-    { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = obsidian          } },
-    { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = photoshop         } },
-    { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = suspend           } },
-    { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = wps               } },
-    { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = sublime           } },
-    { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = trojan            } },
-//  { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_v,          spawn,             {.v = nudoku            } },
-    { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
-//  { SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_y,          spawn,             {.v = trans_zh2en       } },
-    { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = zeal              } },
-//  { SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = reboot            } },
-//  { SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                   } },
-//  { SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                   } },
-    { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = todo              } },
-    { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = rec_audio         } },
-    { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = rec_video         } },
+  // SUPKEY-ShiftMask + a-z, etc
+  { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = addressbook       } },
+//{ SUPKEY|ShiftMask,             XK_b,          spawn,             {.v =                   } },
+//{ SUPKEY|ShiftMask,             XK_c,          spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = lazydocker        } },
+//{ SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                   } },
+//{ SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v = gitter            } },
+//{ SUPKEY|ShiftMask,             XK_h,          spawn,             {.v = x                 } },
+  { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = illustrator       } },
+//{ SUPKEY|ShiftMask,             XK_j,          spawn,             {.v = x                 } },
+//{ SUPKEY|ShiftMask,             XK_k,          spawn,             {.v = x                 } },
+//{ SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = x                 } },
+  { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = music             } },
+  { SUPKEY|ShiftMask,             XK_n,          spawn,             {.v = rss               } },
+  { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = obsidian          } },
+  { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = photoshop         } },
+  { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = suspend           } },
+  { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = wps               } },
+  { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = sublime           } },
+  { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = trojan            } },
+//{ SUPKEY|ShiftMask,             XK_u,          spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_v,          spawn,             {.v = nudoku            } },
+  { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
+//{ SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_y,          spawn,             {.v = trans_zh2en       } },
+  { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = zeal              } },
+//{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = reboot            } },
+//{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                   } },
+//{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                   } },
+//{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                   } },
+//{ SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = todo              } },
+  { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = rec_audio         } },
+  { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = rec_video         } },
 
-    { MODKEY,                       XK_b,          togglebar,         {0                      } },
-    { MODKEY,                       XK_Return,     zoom,              {0                      } },
-    { MODKEY,                       XK_Tab,        view,              {0                      } },
-    { MODKEY,                       XK_space,      setlayout,         {0                      } },
-    { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                      } },
-    { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // dwm-sticky
-    { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // dwm-actualfullscreen
-    { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // dwm-overview
-    { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // dwm-focusmaster
-                                                                                                   //
-    { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
-    { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
-    { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
-    { MODKEY,                       XK_i,          incnmaster,        {.i = +1                } },
-    { MODKEY,                       XK_comma,      cyclelayout,       {.i = -1                } },
-    { MODKEY,                       XK_period,     cyclelayout,       {.i = +1                } },
-    { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1                } },
-    { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                } },
-    { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                } }, // shiftview
-    { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                } }, // shiftview
-    { MODKEY,                       XK_slash,      focusmon,          {.i = +1                } }, // move cursor to another monitor
-    { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                } }, // move tag    to another monitor
-    { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025            } },
-    { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025            } },
-    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025            } }, // ffact, by myself
-    { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025            } }, // ffact, by myself
-    { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]       } }, // centerequalratio
-    { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]       } }, // centeranyshape
-    { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[2]       } }, // columns
-    { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]       } }, // grid
-    { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[4]       } }, // overlaylayervertical
-    { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[5]       } }, // overlaylayerhorizontal
-    { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[6]       } }, // deckvertical
-    { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[7]       } }, // deckhorizontal
-    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[8]       } }, // sprial
-    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[9]       } }, // dwindle
-    { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[10]      } }, // bstack
-    { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[11]      } }, // bstack
-    { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[12]      } }, // tileright
-    { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[13]      } }, // lefttile
-    { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]      } }, // overlaylayergrid
-    { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[15]      } }, // logarithmicspiral
-    { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]      } }, // monocle
-    { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]      } }, // no layout means floating
-    { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
-    { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
-    { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
-    { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // dwm-move-window
-    { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // dwm-move-window
-    { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // dwm-move-window
-    { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // dwm-move-window
-    { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE        } }, // dwm-resize-window
-    { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // dwm-resize-window
-    { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // dwm-resize-window
-    { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // dwm-resize-window
-    TAGKEYS(                        XK_1,          0)
-    TAGKEYS(                        XK_2,          1)
-    TAGKEYS(                        XK_3,          2)
-    TAGKEYS(                        XK_4,          3)
-    TAGKEYS(                        XK_5,          4)
-    TAGKEYS(                        XK_6,          5)
-    TAGKEYS(                        XK_7,          6)
-    TAGKEYS(                        XK_8,          7)
-    TAGKEYS(                        XK_9,          8)
-    { MODKEY|ShiftMask,             XK_c,          killclient,        {0                      } },
-    { MODKEY|ShiftMask,             XK_q,          quit,              {0                      } },
+  { MODKEY,                       XK_b,          togglebar,         {0                      } },
+  { MODKEY,                       XK_Return,     zoom,              {0                      } },
+  { MODKEY,                       XK_Tab,        view,              {0                      } },
+  { MODKEY,                       XK_space,      setlayout,         {0                      } },
+  { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                      } },
+  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // dwm-sticky
+  { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // dwm-actualfullscreen
+  { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // dwm-overview
+  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // dwm-focusmaster
+                                                                                                 //
+  { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
+  { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
+  { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
+  { MODKEY,                       XK_i,          incnmaster,        {.i = +1                } },
+  { MODKEY,                       XK_comma,      cyclelayout,       {.i = -1                } },
+  { MODKEY,                       XK_period,     cyclelayout,       {.i = +1                } },
+  { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1                } },
+  { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                } },
+  { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                } }, // shiftview
+  { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                } }, // shiftview
+  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                } }, // move cursor to another monitor
+  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                } }, // move tag    to another monitor
+  { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025            } },
+  { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025            } },
+  { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025            } }, // ffact, by myself
+  { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025            } }, // ffact, by myself
+  { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[0]       } }, // centerequalratio
+  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[1]       } }, // centeranyshape
+  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[2]       } }, // columns
+  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]       } }, // grid
+  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[4]       } }, // overlaylayervertical
+  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[5]       } }, // overlaylayerhorizontal
+  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[6]       } }, // deckvertical
+  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[7]       } }, // deckhorizontal
+  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[8]       } }, // sprial
+  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[9]       } }, // dwindle
+  { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[10]      } }, // bstack
+  { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[11]      } }, // bstack
+  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[12]      } }, // tileright
+  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[13]      } }, // lefttile
+  { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]      } }, // overlaylayergrid
+  { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[15]      } }, // logarithmicspiral
+  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]      } }, // monocle
+  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]      } }, // no layout means floating
+  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
+  { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
+  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
+  { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // dwm-move-window
+  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // dwm-move-window
+  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // dwm-move-window
+  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // dwm-move-window
+  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE        } }, // dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // dwm-resize-window
+  TAGKEYS(                        XK_1,          0)
+  TAGKEYS(                        XK_2,          1)
+  TAGKEYS(                        XK_3,          2)
+  TAGKEYS(                        XK_4,          3)
+  TAGKEYS(                        XK_5,          4)
+  TAGKEYS(                        XK_6,          5)
+  TAGKEYS(                        XK_7,          6)
+  TAGKEYS(                        XK_8,          7)
+  TAGKEYS(                        XK_9,          8)
+  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                      } },
+  { MODKEY|ShiftMask,             XK_q,          quit,              {0                      } },
 };
 
 /* button definitions */
@@ -342,16 +342,16 @@ static const Key keys[] = {
 // Button4:
 // Button5:
 static const Button buttons[] = {
-    /* click                event mask      button          function        argument */
-    { ClkLtSymbol,          0,              Button1,        setlayout,      {0} },                   //          left   click : change layout to
-    { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[16]} },   //          right  click : change layout to x
-    { ClkWinTitle,          0,              Button2,        zoom,           {0} },                   //          middle click : zoom
-    { ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },       //          middle click : open open st
-    { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },                   // modkey + left   click : move window with mouse
-    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },                   // modkey + middle click : togglefloating
-    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },                   // modkey + right  click : resize window with mouse
-    { ClkTagBar,            0,              Button1,        view,           {0} },                   //          left   click : change tag
-    { ClkTagBar,            0,              Button3,        toggleview,     {0} },                   // modkey + right  click : toggleview
-    { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },                   // modkey + left   click : move window to click tag
-    { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },                   // modkey + right  click : toggle tag
+  /* click                event mask      button          function        argument */
+  { ClkLtSymbol,          0,              Button1,        setlayout,      {0} },                   //          left   click : change layout to
+  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[16]} },   //          right  click : change layout to x
+  { ClkWinTitle,          0,              Button2,        zoom,           {0} },                   //          middle click : zoom
+  { ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },       //          middle click : open open st
+  { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },                   // modkey + left   click : move window with mouse
+  { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },                   // modkey + middle click : togglefloating
+  { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },                   // modkey + right  click : resize window with mouse
+  { ClkTagBar,            0,              Button1,        view,           {0} },                   //          left   click : change tag
+  { ClkTagBar,            0,              Button3,        toggleview,     {0} },                   // modkey + right  click : toggleview
+  { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },                   // modkey + left   click : move window to click tag
+  { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },                   // modkey + right  click : toggle tag
 };
