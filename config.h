@@ -6,10 +6,9 @@ static const unsigned int snap      = 0;        /* snap pixel */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */  // dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const int barheight          = 16;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
-static const char *fonts[]          = {"monospace:size=14"};
-/* static const char *fonts[]          = {"-misc-fixed-medium-r-semicondensed--13-100-100-100-c-60-iso8859-1"}; */
-static const char dmenufont[]       = "monospace:size=12";
+static const int barheight          = 14;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
+static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -28,7 +27,8 @@ static const char *const autostart[] = {        // dwm-cool-autostart
 };                                              // dwm-cool-autostart
 
 /* tagging */
-static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "𝒹𝒮=𝛅𝒬/𝒯", "𝛇(𝓈)" };
+/* static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "𝒹𝒮=𝛅𝒬/𝒯", "𝛇(𝓈)" }; */
+static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* xprop(1):
@@ -53,31 +53,31 @@ static const unsigned int gappow    = 32;   /* vert  outer gap between windows a
 static const unsigned int gappih    = 12;   /* horiz inner gap between windows */                 // dwm-overview
 static const unsigned int gappiw    = 16;   /* vert  inner gap between windows */                 // dwm-overview
 
-#include "layouts.c"                                   // layouts
+#include "layouts.c"                          // layouts
 static const Layout layouts[] = {
-  /* symbol     arrange function */
-  { "𝒞",                         centerequalratio }, // dwm-center
-  { "𝒞",                           centeranyshape }, // dwm-center
-  { "𝒞",                                  columns }, // dwm-columns
-  { "𝒢",                                     grid }, // dwm-grid
-  { "𝒪",                     overlaylayervertical }, // dwm-overlaylayervertical
-  { "𝒪",                   overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
-  { "𝒟",                             deckvertical }, // dwm-deckvertical
-  { "𝒟",                           deckhorizontal }, // dwm-deckhorizontal
-  { "ℱ",                                   spiral }, // dwm-fibonacci
-  { "ℱ",                                  dwindle }, // dwm-fibonacci
-  { "ℬ" ,                     bottomstackvertical }, // dwm-bottomstack
-  { "ℬ",                    bottomstackhorizontal }, // dwm-bottomstack
-  { "𝒯",                                tileright }, // tile -> tileright
-  { "𝒯",                                 tileleft }, // dwm-leftstack
-  { "𝒪",                         overlaylayergrid }, // dwm-overlaylayergrid
-  { "ℒ",                        logarithmicspiral }, // dwm-logarithmicspiral
-  { "ℳ",                                  monocle },
-  { "⦱",                                     NULL }, /* no layout function means floating behavior */
-  { NULL,                                    NULL }, // dwm-cyclelayouts
+  /* symbol               arrange function */
+  { "𝒞",                  centerequalratio }, // dwm-center
+  { "𝒞",                    centeranyshape }, // dwm-center
+  { "𝒞",                           columns }, // dwm-columns
+  { "𝒢",                              grid }, // dwm-grid
+  { "𝒪",              overlaylayervertical }, // dwm-overlaylayervertical
+  { "𝒪",            overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
+  { "𝒟",                      deckvertical }, // dwm-deckvertical
+  { "𝒟",                    deckhorizontal }, // dwm-deckhorizontal
+  { "ℱ",                            spiral }, // dwm-fibonacci
+  { "ℱ",                           dwindle }, // dwm-fibonacci
+  { "ℬ" ,              bottomstackvertical }, // dwm-bottomstack
+  { "ℬ",             bottomstackhorizontal }, // dwm-bottomstack
+  { "𝒯",                         tileright }, // tile -> tileright
+  { "𝒯",                          tileleft }, // dwm-leftstack
+  { "𝒪",                  overlaylayergrid }, // dwm-overlaylayergrid
+  { "ℒ",                 logarithmicspiral }, // dwm-logarithmicspiral
+  { "ℳ",                           monocle },
+  { "⦱",                              NULL }, // no layout function means floating behavior
+  { NULL,                             NULL }, // dwm-cyclelayouts
 };
 
-static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview // can be any layout
+static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview: can be any layout
 
 /* key definitions */
 #define SUPKEY Mod4Mask
@@ -94,9 +94,9 @@ static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *termcmd[]           = { "st", NULL };
 static char scratchpadname[11]         = "scratchpad";                                         // dwm-scratchpad
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", scratchpadname, NULL }; // dwm-scratchpad
-static const char *termcmd[]           = { "st", NULL };
 
 #define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
 #define TM(cmd)    { "st", "-e", "/bin/sh", "-c", cmd, NULL }
@@ -110,22 +110,21 @@ static const char *screen_light_dec[]  = SH("sudo light -U 5");
 static const char *screen_light_inc[]  = SH("sudo light -A 5");
 static const char *wifi[]              = TM("nmtui");
 static const char *bluetoothctl[]      = TM("bluetoothctl");
-static const char *toggle_kb_light[]   = SH("flag=$(cat /sys/class/leds/tpacpi::kbd_backlight/brightness); ([ \"$flag\" == \"0\" ] && sudo sh -c 'echo 1 > /sys/class/leds/tpacpi::kbd_backlight/brightness') || ([ \"$flag\" == \"1\" ] && sudo sh -c 'echo 0 > /sys/class/leds/tpacpi::kbd_backlight/brightness')");
-static const char *weather[]           = TMSP("curl wttr.in/ShangHai; sleep 2");
+static const char *toggle_kb_light[]   = SH("grep 1 /sys/class/leds/tpacpi::kbd_backlight/brightness > /dev/null; sudo sh -c \"echo $? > /sys/class/leds/tpacpi::kbd_backlight/brightness\"");
 
-// Chopin: open, exec, copy, move, remove, open wiki, open book, open media
-static const char *chopin_open[]       = TM("fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='open>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
-static const char *chopin_copy[]       = TM("chopin -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>'  --preview 'bat --color=always {}' --select-1 --exit-0)\"");
-static const char *chopin_move[]       = TM("chopin -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'bat --color=always {}' --select-1 --exit-0)\"");
-static const char *chopin_exec[]       = TM("fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '/home/dionysus'|fzf --prompt='exec>'  --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -e {}");
-static const char *chopin_remove[]     = TM("chopin -r \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='remove>' --preview 'bat --color=always {}' --select-1 --exit-0)\"");
-static const char *chopin_open_media[] = TM("fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --reverse --select-1 --exit-0|xargs chopin -o {}");
-static const char *chopin_open_book[]  = TM("fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/obsidian/library/'|fzf --prompt='books>' --reverse --select-1 --exit-0|xargs chopin -o {}");
-static const char *chopin_open_wiki[]  = TM("fd --type f --hidden --exclude .git . '/home/dionysus/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'bat --color=always {}' --select-1 --exit-0|xargs chopin -o {}");
+// lazy: open, exec, copy, rename, delete, open wiki, open book, open media
+static const char *lazy_open[]         = TM("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+/* static const char *lazy_copy[]      = TM("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\""); */
+/* static const char *lazy_move[]      = TM("lazy -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'lazy -p {}' --select-1 --exit-0)\""); */
+/* static const char *lazy_exec[]      = TM("lazy -e \"$(fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}"); */
+/* static const char *lazy_delete[]    = TM("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\""); */
+static const char *lazy_open_media[]   = TM("lazy -o \"$(fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *lazy_open_book[]    = TM("lazy -o \"$(fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/obsidian/library/'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *lazy_open_wiki[]    = TM("lazy -o \"$(fd --type f --hidden  --exclude .git . '/home/dionysus/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
 
 // SUPKEY + a-z
-static const char *browser[]           = SH("google --proxy-server='socks5://127.0.0.1:8000'");
-static const char *calendar[]          = TM("nvim -c 'Calendar -view=clock'");
+static const char *browser_proxy[]     = SH("google --proxy-server='socks5://127.0.0.1:8000'");
+static const char *calendar[]          = TM("nvim +'Calendar -view=week'");
 static const char *dynamic_wallpaper[] = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
 static const char *email[]             = TM("neomutt");
 static const char *gotofile[]          = TM("~/.suckless/arch-dwm/scripts/gotofile.sh");
@@ -133,9 +132,7 @@ static const char *irc[]               = TM("weechat");
 static const char *calculator[]        = TM("julia");
 static const char *slock[]             = SH("slock");
 static const char *vifm[]              = TM("vifm");
-static const char *task[]              = TM("task calendar; task list; sleep 1");
-static const char *togglescreenkey[]   = SH("ps -ef|grep screenkey|grep -v grep >>/dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey) || ([ \"$?\" != \"0\" ] && nohup screenkey --key-mode keysyms --opacity 0 -s small --font-color black >>/dev/null 2>&1 &)");
-static const char *trans_en2zh[]       = TM("echo 'Translate EN to ZH > '; trans -e bing en:zh ");
+static const char *toggle_screenkey[]  = SH("pgrep -x screenkey > /dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey > /dev/nul) || ([ \"$?\" == \"1\" ] && screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow >>/dev/null 2>&1 &)");
 
 // SUPKEY + etc
 static const char *passmenu[]          = SH("passmenu");
@@ -144,11 +141,10 @@ static const char *htop[]              = TM("htop");
 static const char *screenshot[]        = SH("pkill flameshot; flameshot gui");
 static const char *diary[]             = TMSP("nvim +$ ~/diary/`date +%Y-%m-%d`.md");
 static const char *taskwarrior[]       = TM("taskwarrior-tui");
-static const char *picom_grayscale[]   = SH("~/.suckless/arch-dwm/scripts/picom.sh grayscale");
-static const char *picom_normal[]      = SH("~/.suckless/arch-dwm/scripts/picom.sh normal");
 
 // SUPKEY-ShiftMask + a-z
 static const char *addressbook[]       = TM("abook");
+static const char *browser[]           = SH("google");
 static const char *lazydocker[]        = TM("lazydocker");
 static const char *gitter[]            = SH("gitter");
 static const char *illustrator[]       = SH("krita");
@@ -159,17 +155,15 @@ static const char *photoshop[]         = SH("gimp");
 static const char *suspend[]           = SH("systemctl suspend");
 static const char *wps[      ]         = SH("wps");
 static const char *sublime[]           = SH("subl");
-static const char *trojan[]            = SH("nohup ~/.trojan/trojan -c ~/.trojan/config.json >>/dev/null 2>&1 &");
+static const char *trojan[]            = SH("~/.trojan/trojan -c ~/.trojan/config.json >>/dev/null 2>&1 &");
+static const char *restart_network[]   = SH("sudo systemctl restart NetworkManager.service");
 static const char *nudoku[]            = TM("nudoku -d hard");
 static const char *wechat[]            = SH("wechat-uos");
 static const char *zeal[]              = SH("zeal");
-static const char *trans_zh2en[]       = TM("echo 'Translate ZH to EN > '; trans -e bing zh:en ");
 
 // SUPKEY-ShiftMask + etc
-static const char *reboot[]            = SH("sudo reboot");
-static const char *todo[]              = TMSP("taskell ~/privacy/.taskell.md");
 static const char *rec_audio[]         = TM("ffmpeg -y -r 60 -f alsa -i default -c:a flac $HOME/Videos/rec-a-$(date '+%F-%H-%M-%S').flac");
-static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo | awk '/dimensions/ {print $2;}')\" -r 60 -f x11grab -i \"$DISPLAY\" -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac $HOME/Videos/rec-v-a-$(date '+%F-%H-%M-%S').mkv");
+static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo|awk '/dimensions/ {print $2;}')\" -r 60 -f x11grab -i \"$DISPLAY\" -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac $HOME/Videos/rec-v-a-$(date '+%F-%H-%M-%S').mkv");
 
 #include "movestack.c"
 #include "shiftview.c"
@@ -190,35 +184,35 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_F9,         spawn,             {.v =                   } },
   { SUPKEY,                       XK_F10,        spawn,             {.v = bluetoothctl      } },
   { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light   } },
-  { SUPKEY,                       XK_F12,        spawn,             {.v = weather           } },
+//{ SUPKEY,                       XK_F12,        spawn,             {.v =                   } },
 
   // SUPKEY + a-z, etc
-  { SUPKEY,                       XK_a,          spawn,             {.v = chopin_open_media } },
-  { SUPKEY,                       XK_b,          spawn,             {.v = browser           } },
+  { SUPKEY,                       XK_a,          spawn,             {.v = lazy_open_media   } },
+  { SUPKEY,                       XK_b,          spawn,             {.v = browser_proxy     } },
   { SUPKEY,                       XK_c,          spawn,             {.v = calendar          } },
   { SUPKEY,                       XK_d,          spawn,             {.v = dynamic_wallpaper } },
   { SUPKEY,                       XK_e,          spawn,             {.v = email             } },
-  { SUPKEY,                       XK_f,          spawn,             {.v = chopin_open       } },
+  { SUPKEY,                       XK_f,          spawn,             {.v = lazy_open         } },
   { SUPKEY,                       XK_g,          spawn,             {.v = gotofile          } },
-//{ SUPKEY,                       XK_h,          spawn,             {.v = x                 } },
+//{ SUPKEY,                       XK_h,          spawn,             {.v =                   } },
   { SUPKEY,                       XK_i,          spawn,             {.v = irc               } },
 //{ SUPKEY,                       XK_j,          spawn,             {.v = x                 } },
 //{ SUPKEY,                       XK_k,          spawn,             {.v = x                 } },
 //{ SUPKEY,                       XK_l,          spawn,             {.v = x                 } },
 //{ SUPKEY,                       XK_m,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_n,          spawn,             {.v = chopin_copy       } },
+//{ SUPKEY,                       XK_n,          spawn,             {.v =                   } },
   { SUPKEY,                       XK_o,          spawn,             {.v = calculator        } },
-  { SUPKEY,                       XK_p,          spawn,             {.v = chopin_open_book  } },
+  { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_book    } },
   { SUPKEY,                       XK_q,          spawn,             {.v = slock             } },
   { SUPKEY,                       XK_r,          spawn,             {.v = vifm              } },
 //{ SUPKEY,                       XK_s,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_t,          spawn,             {.v = task              } },
-  { SUPKEY,                       XK_u,          spawn,             {.v = togglescreenkey   } },
-  { SUPKEY,                       XK_v,          spawn,             {.v = chopin_move       } },
-  { SUPKEY,                       XK_w,          spawn,             {.v = chopin_open_wiki  } },
-  { SUPKEY,                       XK_x,          spawn,             {.v = chopin_exec       } },
-  { SUPKEY,                       XK_y,          spawn,             {.v = trans_en2zh       } },
-  { SUPKEY,                       XK_z,          spawn,             {.v = chopin_remove     } },
+//{ SUPKEY,                       XK_t,          spawn,             {.v =                   } },
+  { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey  } },
+//{ SUPKEY,                       XK_v,          spawn,             {.v =                   } },
+  { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_wiki    } },
+//{ SUPKEY,                       XK_x,          spawn,             {.v =                   } },
+//{ SUPKEY,                       XK_y,          spawn,             {.v =                   } },
+//{ SUPKEY,                       XK_z,          spawn,             {.v =                   } },
 //{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                   } },
   { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
   { SUPKEY,                       XK_Delete,     spawn,             {.v = shutdown          } },
@@ -226,12 +220,12 @@ static const Key keys[] = {
   { SUPKEY,                       XK_Print,      spawn,             {.v = screenshot        } },
   { SUPKEY,                       XK_backslash,  spawn,             {.v = diary             } },
   { SUPKEY,                       XK_slash,      spawn,             {.v = taskwarrior       } },
-  { SUPKEY,                       XK_comma,      spawn,             {.v = picom_grayscale   } },
-  { SUPKEY,                       XK_period,     spawn,             {.v = picom_normal      } },
+//{ SUPKEY,                       XK_comma,      spawn,             {.v =                   } },
+//{ SUPKEY,                       XK_period,     spawn,             {.v =                   } },
 
   // SUPKEY-ShiftMask + a-z, etc
   { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = addressbook       } },
-//{ SUPKEY|ShiftMask,             XK_b,          spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v = browser           } },
 //{ SUPKEY|ShiftMask,             XK_c,          spawn,             {.v =                   } },
   { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = lazydocker        } },
 //{ SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                   } },
@@ -250,19 +244,19 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = wps               } },
   { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = sublime           } },
   { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = trojan            } },
-//{ SUPKEY|ShiftMask,             XK_u,          spawn,             {.v =                   } },
+  { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v = restart_network   } },
   { SUPKEY|ShiftMask,             XK_v,          spawn,             {.v = nudoku            } },
   { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
 //{ SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_y,          spawn,             {.v = trans_zh2en       } },
+//{ SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                   } },
   { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = zeal              } },
 //{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = reboot            } },
+//{ SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = todo              } },
+//{ SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v =                   } },
   { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = rec_audio         } },
   { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = rec_video         } },
 
@@ -275,7 +269,7 @@ static const Key keys[] = {
   { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // dwm-actualfullscreen
   { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // dwm-overview
   { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // dwm-focusmaster
-                                                                                                 //
+ 
   { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
   { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
   { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
@@ -286,8 +280,8 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                } },
   { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                } }, // shiftview
   { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                } }, // shiftview
-  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                } }, // move cursor to another monitor
-  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                } }, // move tag    to another monitor
+  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                } }, // move focus to another monitor
+  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                } }, // move tag   to another monitor
   { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025            } },
   { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025            } },
   { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025            } }, // ffact, by myself
