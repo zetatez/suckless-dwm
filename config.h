@@ -6,9 +6,11 @@ static const unsigned int snap      = 0;        /* snap pixel */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */  // dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
+static const int vertpad            = 8;        /* vertical padding of bar */                                                                                                                                                                                                    // patch: dwm-barpadding
+static const int sidepad            = 8;        /* horizontal padding of bar */                                                                                                                                                                                                  // patch: dmenu-alpha
 static const int barheight          = 14;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -269,7 +271,7 @@ static const Key keys[] = {
   { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // dwm-actualfullscreen
   { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // dwm-overview
   { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // dwm-focusmaster
- 
+
   { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
   { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
   { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
