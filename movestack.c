@@ -1,5 +1,5 @@
 // move
-/* dwm-movestack ------------------------------------------------------------ */
+/* patch: dwm-movestack ------------------------------------------------------------ */
 void
 movestack(const Arg *arg) {
   Client *c = NULL, *p = NULL, *pc = NULL, *i;

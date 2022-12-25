@@ -3,12 +3,12 @@
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 0;        /* snap pixel */
-static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */  // dwm-swallow
+static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */  // patch: dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const int vertpad            = 8;        /* vertical padding of bar */                                                                                                                                                                                                    // patch: dwm-barpadding
-static const int sidepad            = 8;        /* horizontal padding of bar */                                                                                                                                                                                                  // patch: dmenu-alpha
-static const int barheight          = 14;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // dwm-bar-height
+static const int vertpad            = 14;       /* vertical padding of bar */                                                                                                                                                                                                    // patch: dwm-barpadding
+static const int sidepad            = 1;        /* horizontal padding of bar */                                                                                                                                                                                                  // patch: dmenu-alpha
+static const int barheight          = 14;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
@@ -22,11 +22,11 @@ static const char *colors[][3]      = {
   [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const char *const autostart[] = {        // dwm-cool-autostart
-  "dwmstatus", "2>&1 >>/dev/null &", NULL,      // dwm-cool-autostart
-  "/home/dionysus/.dwm/autostart.sh", NULL,     // dwm-cool-autostart
-  NULL /* terminate */                          // dwm-cool-autostart
-};                                              // dwm-cool-autostart
+static const char *const autostart[] = {        // patch: dwm-cool-autostart
+  "dwmstatus", "2>&1 >>/dev/null &", NULL,      // patch: dwm-cool-autostart
+  "/home/dionysus/.dwm/autostart.sh", NULL,     // patch: dwm-cool-autostart
+  NULL /* terminate */                          // patch: dwm-cool-autostart
+};                                              // patch: dwm-cool-autostart
 
 /* tagging */
 /* static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "𝒹𝒮=𝛅𝒬/𝒯", "𝛇(𝓈)" }; */
@@ -42,7 +42,7 @@ static const Rule rules[] = {
   //  { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
 };
 
-static const char *skipswallow[] = { "vimb", "surf" };   // dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
+static const char *skipswallow[] = { "vimb", "surf" };   // patch: dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
 
 /* layout(s) */
 static const float mfact            = 0.50; /* factor of master area size [0.00..1.00] */                 // limit [0.05..0.95] had been extended to [0.00..1.00].
@@ -50,36 +50,36 @@ static const float ffact            = 0.50; /* factor of ffact [0.00..1.00] */  
 static const int nmaster            = 1;    /* number of clients in master area */
 static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen     = 1;    /* 1 will force focus on the fullscreen window */
-static const unsigned int gappoh    = 24;   /* horiz outer gap between windows and screen edge */ // dwm-overview
-static const unsigned int gappow    = 32;   /* vert  outer gap between windows and screen edge */ // dwm-overview
-static const unsigned int gappih    = 12;   /* horiz inner gap between windows */                 // dwm-overview
-static const unsigned int gappiw    = 16;   /* vert  inner gap between windows */                 // dwm-overview
+static const unsigned int gappoh    = 24;   /* horiz outer gap between windows and screen edge */ // patch: dwm-overview
+static const unsigned int gappow    = 32;   /* vert  outer gap between windows and screen edge */ // patch: dwm-overview
+static const unsigned int gappih    = 12;   /* horiz inner gap between windows */                 // patch: dwm-overview
+static const unsigned int gappiw    = 16;   /* vert  inner gap between windows */                 // patch: dwm-overview
 
 #include "layouts.c"                          // layouts
 static const Layout layouts[] = {
   /* symbol               arrange function */
-  { "𝒞",                  centerequalratio }, // dwm-center
-  { "𝒞",                    centeranyshape }, // dwm-center
-  { "𝒞",                           columns }, // dwm-columns
-  { "𝒢",                              grid }, // dwm-grid
-  { "𝒪",              overlaylayervertical }, // dwm-overlaylayervertical
-  { "𝒪",            overlaylayerhorizontal }, // dwm-overlaylayerhorizontal
-  { "𝒟",                      deckvertical }, // dwm-deckvertical
-  { "𝒟",                    deckhorizontal }, // dwm-deckhorizontal
-  { "ℱ",                            spiral }, // dwm-fibonacci
-  { "ℱ",                           dwindle }, // dwm-fibonacci
-  { "ℬ" ,              bottomstackvertical }, // dwm-bottomstack
-  { "ℬ",             bottomstackhorizontal }, // dwm-bottomstack
+  { "𝒞",                  centerequalratio }, // patch: dwm-center
+  { "𝒞",                    centeranyshape }, // patch: dwm-center
+  { "𝒞",                           columns }, // patch: dwm-columns
+  { "𝒢",                              grid }, // patch: dwm-grid
+  { "𝒪",              overlaylayervertical }, // patch: dwm-overlaylayervertical
+  { "𝒪",            overlaylayerhorizontal }, // patch: dwm-overlaylayerhorizontal
+  { "𝒟",                      deckvertical }, // patch: dwm-deckvertical
+  { "𝒟",                    deckhorizontal }, // patch: dwm-deckhorizontal
+  { "ℱ",                            spiral }, // patch: dwm-fibonacci
+  { "ℱ",                           dwindle }, // patch: dwm-fibonacci
+  { "ℬ" ,              bottomstackvertical }, // patch: dwm-bottomstack
+  { "ℬ",             bottomstackhorizontal }, // patch: dwm-bottomstack
   { "𝒯",                         tileright }, // tile -> tileright
-  { "𝒯",                          tileleft }, // dwm-leftstack
-  { "𝒪",                  overlaylayergrid }, // dwm-overlaylayergrid
-  { "ℒ",                 logarithmicspiral }, // dwm-logarithmicspiral
+  { "𝒯",                          tileleft }, // patch: dwm-leftstack
+  { "𝒪",                  overlaylayergrid }, // patch: dwm-overlaylayergrid
+  { "ℒ",                 logarithmicspiral }, // patch: dwm-logarithmicspiral
   { "ℳ",                           monocle },
   { "⦱",                              NULL }, // no layout function means floating behavior
-  { NULL,                             NULL }, // dwm-cyclelayouts
+  { NULL,                             NULL }, // patch: dwm-cyclelayouts
 };
 
-static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview: can be any layout
+static const Layout overviewlayout = { "OVERVIEW",  overview }; // patch: dwm-overview: can be any layout
 
 /* key definitions */
 #define SUPKEY Mod4Mask
@@ -97,8 +97,8 @@ static const Layout overviewlayout = { "OVERVIEW",  overview }; // dwm-overview:
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
-static char scratchpadname[11]         = "scratchpad";                                         // dwm-scratchpad
-static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", scratchpadname, NULL }; // dwm-scratchpad
+static char scratchpadname[11]         = "scratchpad";                                         // patch: dwm-scratchpad
+static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", scratchpadname, NULL }; // patch: dwm-scratchpad
 
 #define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
 #define TM(cmd)    { "st", "-e", "/bin/sh", "-c", cmd, NULL }
@@ -267,10 +267,10 @@ static const Key keys[] = {
   { MODKEY,                       XK_Tab,        view,              {0                      } },
   { MODKEY,                       XK_space,      setlayout,         {0                      } },
   { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                      } },
-  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // dwm-sticky
-  { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // dwm-actualfullscreen
-  { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // dwm-overview
-  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // dwm-focusmaster
+  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // patch: dwm-sticky
+  { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // patch: dwm-actualfullscreen
+  { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // patch: dwm-overview
+  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // patch: dwm-focusmaster
 
   { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
   { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
@@ -306,17 +306,17 @@ static const Key keys[] = {
   { MODKEY,                       XK_u,          setlayout,         {.v = &layouts[15]      } }, // logarithmicspiral
   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[16]      } }, // monocle
   { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[17]      } }, // no layout means floating
-  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // dwm-scratchpad
+  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // patch: dwm-scratchpad
   { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
-  { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // dwm-move-window
-  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // dwm-move-window
-  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // dwm-move-window
-  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // dwm-move-window
-  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE        } }, // dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // dwm-resize-window
+  { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // patch: dwm-move-window
+  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE        } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // patch: dwm-resize-window
   TAGKEYS(                        XK_1,          0)
   TAGKEYS(                        XK_2,          1)
   TAGKEYS(                        XK_3,          2)

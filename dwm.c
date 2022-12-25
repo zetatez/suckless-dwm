@@ -40,12 +40,12 @@
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
-#include <X11/Xlib-xcb.h> // dwm-swallow
-#include <xcb/res.h>      // dwm-swallow
-#ifdef __OpenBSD__        // dwm-swallow
-#include <sys/sysctl.h>   // dwm-swallow
-#include <kvm.h>          // dwm-swallow
-#endif /* __OpenBSD */    // dwm-swallow
+#include <X11/Xlib-xcb.h> // patch: dwm-swallow
+#include <xcb/res.h>      // patch: dwm-swallow
+#ifdef __OpenBSD__        // patch: dwm-swallow
+#include <sys/sysctl.h>   // patch: dwm-swallow
+#include <kvm.h>          // patch: dwm-swallow
+#endif /* __OpenBSD */    // patch: dwm-swallow
 
 #include "drw.h"
 #include "util.h"
@@ -54,9 +54,9 @@
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-//#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))                                       // dwm-sticky
-//#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)                        // dwm-sticky // dwm-overview
-#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky || C->mon->isoverview)    // dwm-sticky // dwm-overview
+//#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))                                       // patch: dwm-sticky
+//#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky)                        // patch: dwm-sticky // patch: dwm-overview
+#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]) || C->issticky || C->mon->isoverview)    // patch: dwm-sticky // patch: dwm-overview
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
@@ -70,8 +70,8 @@ enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck, NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
-enum { UP, DOWN, LEFT, RIGHT };                                          // dwm-move-window
-enum { VINCREASE, VDECREASE, HINCREASE, HDECREASE };                     // dwm-resize-win
+enum { UP, DOWN, LEFT, RIGHT };                                          // patch: dwm-move-window
+enum { VINCREASE, VDECREASE, HINCREASE, HDECREASE };                     // patch: dwm-resize-win
 
 typedef union {
   int i;
@@ -98,13 +98,13 @@ struct Client {
   int basew, baseh, incw, inch, maxw, maxh, minw, minh, hintsvalid;
   int bw, oldbw;
   unsigned int tags;
-//int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;                                       // dwm-sticky
-//int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky;                             // dwm-swallow
-  int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, isterminal, noswallow;      // dwm-swallow
-  pid_t pid;                                                                                                   // dwm-swallow
+//int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;                                       // patch: dwm-sticky
+//int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky;                             // patch: dwm-swallow
+  int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, issticky, isterminal, noswallow;      // patch: dwm-swallow
+  pid_t pid;                                                                                                   // patch: dwm-swallow
   Client *next;
   Client *snext;
-  Client *swallowing;                                                                                          // dwm-swallow
+  Client *swallowing;                                                                                          // patch: dwm-swallow
   Monitor *mon;
   Window win;
 };
@@ -121,7 +121,7 @@ typedef struct {
   void (*arrange)(Monitor *);
 } Layout;
 
-typedef struct Pertag Pertag;              // dwm-pertag
+typedef struct Pertag Pertag;              // patch: dwm-pertag
 
 struct Monitor {
   char ltsymbol[16];
@@ -140,12 +140,12 @@ struct Monitor {
   Client *clients;
   Client *sel;
   Client *stack;
-  Client *tagmarked[32];                   // dwm-focusmaster
+  Client *tagmarked[32];                   // patch: dwm-focusmaster
   Monitor *next;
   Window barwin;
   const Layout *lt[2];
-  Pertag *pertag;                          // dwm-pertag
-    int isoverview;                        // dwm-overview
+  Pertag *pertag;                          // patch: dwm-pertag
+    int isoverview;                        // patch: dwm-overview
 };
 
 typedef struct {
@@ -154,8 +154,8 @@ typedef struct {
   const char *title;
   unsigned int tags;
   int isfloating;
-  int isterminal;                          // dwm-swallow
-  int noswallow;                           // dwm-swallow
+  int isterminal;                          // patch: dwm-swallow
+  int noswallow;                           // patch: dwm-swallow
   int monitor;
 } Rule;
 
@@ -185,10 +185,10 @@ static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
-static void focusmaster(const Arg *arg);                                    // dwm-focusmaster
+static void focusmaster(const Arg *arg);                                    // patch: dwm-focusmaster
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
-static void pointerfocuswin(Client *c);                                     // dwm-move-window
+static void pointerfocuswin(Client *c);                                     // patch: dwm-move-window
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -204,8 +204,8 @@ static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
-static void movewin(const Arg *arg);                                        // dwm-move-window
-static void resizewin(const Arg *arg);                                      // dwm-resize-window
+static void movewin(const Arg *arg);                                        // patch: dwm-move-window
+static void resizewin(const Arg *arg);                                      // patch: dwm-resize-window
 static Client *nexttiled(Client *c);
 static void pop(Client *c);
 static void propertynotify(XEvent *e);
@@ -236,10 +236,10 @@ static void tagmon(const Arg *arg);
 static void tileright(Monitor *m);                                          // by myself
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
-static void togglescratch(const Arg *arg);                                  // dwm-scratchpad
-static void togglesticky(const Arg *arg);                                   // dwm-sticky
-static void togglefullscreen(const Arg *arg);                               // dwm-actualfullscreen
-static void toggleoverview(const Arg *arg);                                 // dwm-overview
+static void togglescratch(const Arg *arg);                                  // patch: dwm-scratchpad
+static void togglesticky(const Arg *arg);                                   // patch: dwm-sticky
+static void togglefullscreen(const Arg *arg);                               // patch: dwm-actualfullscreen
+static void toggleoverview(const Arg *arg);                                 // patch: dwm-overview
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -262,13 +262,13 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
-static void autostart_exec(void);                                           // dwm-cool-autostart
+static void autostart_exec(void);                                           // patch: dwm-cool-autostart
 static void cyclelayout(const Arg *arg);
-static pid_t getparentprocess(pid_t p);                                     // dwm-swallow
-static int isdescprocess(pid_t p, pid_t c);                                 // dwm-swallow
-static Client *swallowingclient(Window w);                                  // dwm-swallow
-static Client *termforwin(const Client *c);                                 // dwm-swallow
-static pid_t winpid(Window w);                                              // dwm-swallow
+static pid_t getparentprocess(pid_t p);                                     // patch: dwm-swallow
+static int isdescprocess(pid_t p, pid_t c);                                 // patch: dwm-swallow
+static Client *swallowingclient(Window w);                                  // patch: dwm-swallow
+static Client *termforwin(const Client *c);                                 // patch: dwm-swallow
+static pid_t winpid(Window w);                                              // patch: dwm-swallow
 
 /* variables */
 static const char broken[] = "broken";
@@ -305,22 +305,22 @@ static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
-static xcb_connection_t *xcon;                                              // dwm-swallow
+static xcb_connection_t *xcon;                                              // patch: dwm-swallow
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
-struct Pertag {                                                                        // dwm-pertag
-  unsigned int curtag, prevtag; /* current and previous tag */                         // dwm-pertag
-  int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */               // dwm-pertag
-  float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */                                 // dwm-pertag
-  float ffacts[LENGTH(tags) + 1]; /* ffacts per tag */                                 // dwm-pertag // ffact, by myself
-  unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */                        // dwm-pertag
-  const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */ // dwm-pertag
-  int showbars[LENGTH(tags) + 1]; /* display bar for the current tag */                // dwm-pertag
-};                                                                                     // dwm-pertag
+struct Pertag {                                                                        // patch: dwm-pertag
+  unsigned int curtag, prevtag; /* current and previous tag */                         // patch: dwm-pertag
+  int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */               // patch: dwm-pertag
+  float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */                                 // patch: dwm-pertag
+  float ffacts[LENGTH(tags) + 1]; /* ffacts per tag */                                 // patch: dwm-pertag // ffact, by myself
+  unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */                        // patch: dwm-pertag
+  const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */ // patch: dwm-pertag
+  int showbars[LENGTH(tags) + 1]; /* display bar for the current tag */                // patch: dwm-pertag
+};                                                                                     // patch: dwm-pertag
 
-static unsigned int scratchtag = 1 << LENGTH(tags);         // dwm-scratchpad
+static unsigned int scratchtag = 1 << LENGTH(tags);         // patch: dwm-scratchpad
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
@@ -330,28 +330,28 @@ static pid_t *autostart_pids;
 static size_t autostart_len;
 
 /* execute command from autostart array */
-static void                                                  // dwm-cool-autostart
-autostart_exec() {                                           // dwm-cool-autostart
-  const char *const *p;                                      // dwm-cool-autostart
-  size_t i = 0;                                              // dwm-cool-autostart
-                                                             // dwm-cool-autostart
-  /* count entries */                                        // dwm-cool-autostart
-  for (p = autostart; *p; autostart_len++, p++)              // dwm-cool-autostart
-    while (*++p);                                            // dwm-cool-autostart
-                                                             // dwm-cool-autostart
-  autostart_pids = malloc(autostart_len * sizeof(pid_t));    // dwm-cool-autostart
-  for (p = autostart; *p; i++, p++) {                        // dwm-cool-autostart
-    if ((autostart_pids[i] = fork()) == 0) {                 // dwm-cool-autostart
-      setsid();                                              // dwm-cool-autostart
-      execvp(*p, (char *const *)p);                          // dwm-cool-autostart
-      fprintf(stderr, "dwm: execvp %s\n", *p);               // dwm-cool-autostart
-      perror(" failed");                                     // dwm-cool-autostart
-      _exit(EXIT_FAILURE);                                   // dwm-cool-autostart
-    }                                                        // dwm-cool-autostart
-    /* skip arguments */                                     // dwm-cool-autostart
-    while (*++p);                                            // dwm-cool-autostart
-  }                                                          // dwm-cool-autostart
-}                                                            // dwm-cool-autostart
+static void                                                  // patch: dwm-cool-autostart
+autostart_exec() {                                           // patch: dwm-cool-autostart
+  const char *const *p;                                      // patch: dwm-cool-autostart
+  size_t i = 0;                                              // patch: dwm-cool-autostart
+                                                             // patch: dwm-cool-autostart
+  /* count entries */                                        // patch: dwm-cool-autostart
+  for (p = autostart; *p; autostart_len++, p++)              // patch: dwm-cool-autostart
+    while (*++p);                                            // patch: dwm-cool-autostart
+                                                             // patch: dwm-cool-autostart
+  autostart_pids = malloc(autostart_len * sizeof(pid_t));    // patch: dwm-cool-autostart
+  for (p = autostart; *p; i++, p++) {                        // patch: dwm-cool-autostart
+    if ((autostart_pids[i] = fork()) == 0) {                 // patch: dwm-cool-autostart
+      setsid();                                              // patch: dwm-cool-autostart
+      execvp(*p, (char *const *)p);                          // patch: dwm-cool-autostart
+      fprintf(stderr, "dwm: execvp %s\n", *p);               // patch: dwm-cool-autostart
+      perror(" failed");                                     // patch: dwm-cool-autostart
+      _exit(EXIT_FAILURE);                                   // patch: dwm-cool-autostart
+    }                                                        // patch: dwm-cool-autostart
+    /* skip arguments */                                     // patch: dwm-cool-autostart
+    while (*++p);                                            // patch: dwm-cool-autostart
+  }                                                          // patch: dwm-cool-autostart
+}                                                            // patch: dwm-cool-autostart
 
 /* function implementations */
 void
@@ -376,8 +376,8 @@ applyrules(Client *c)
     && (!r->class || strstr(class, r->class))
     && (!r->instance || strstr(instance, r->instance)))
     {
-      c->isterminal = r->isterminal; // dwm-swallow
-      c->noswallow  = r->noswallow;  // dwm-swallow
+      c->isterminal = r->isterminal; // patch: dwm-swallow
+      c->noswallow  = r->noswallow;  // patch: dwm-swallow
       c->isfloating = r->isfloating;
       c->tags |= r->tags;
 
@@ -478,11 +478,11 @@ arrange(Monitor *m)
 void
 arrangemon(Monitor *m)
 {
-    if (m->isoverview) {                                                 // dwm-overview
-        strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol); // dwm-overview
-        overviewlayout.arrange(m);                                       // dwm-overview
-        return;                                                          // dwm-overview
-    }                                                                    // dwm-overview
+    if (m->isoverview) {                                                 // patch: dwm-overview
+        strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol); // patch: dwm-overview
+        overviewlayout.arrange(m);                                       // patch: dwm-overview
+        return;                                                          // patch: dwm-overview
+    }                                                                    // patch: dwm-overview
 
   strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
   if (m->lt[m->sellt]->arrange)
@@ -503,57 +503,57 @@ attachstack(Client *c)
   c->mon->stack = c;
 }
 
-void                                                                                      // dwm-swallow
-swallow(Client *p, Client *c)                                                             // dwm-swallow
-{                                                                                         // dwm-swallow
-  if (c->noswallow || c->isterminal)                                                      // dwm-swallow
-    return;                                                                               // dwm-swallow
-  if (c->noswallow && !swallowfloating && c->isfloating)                                  // dwm-swallow
-    return;                                                                               // dwm-swallow
-                                                                                          // dwm-swallow
-  for (int i = 0; i < LENGTH(skipswallow); i++) {                                         // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    if (!strcmp(c->name, skipswallow[i])) {                                               // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-      return;                                                                             // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-    }                                                                                     // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-  }                                                                                       // dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
-                                                                                          // dwm-swallow
-  detach(c);                                                                              // dwm-swallow
-  detachstack(c);                                                                         // dwm-swallow
-                                                                                          // dwm-swallow
-  setclientstate(c, WithdrawnState);                                                      // dwm-swallow
-  XUnmapWindow(dpy, p->win);                                                              // dwm-swallow
-                                                                                          // dwm-swallow
-  p->swallowing = c;                                                                      // dwm-swallow
-  c->mon = p->mon;                                                                        // dwm-swallow
-                                                                                          // dwm-swallow
-  Window w = p->win;                                                                      // dwm-swallow
-  p->win = c->win;                                                                        // dwm-swallow
-  c->win = w;                                                                             // dwm-swallow
-  updatetitle(p);                                                                         // dwm-swallow
-  XMoveResizeWindow(dpy, p->win, p->x, p->y, p->w, p->h);                                 // dwm-swallow
-  arrange(p->mon);                                                                        // dwm-swallow
-  configure(p);                                                                           // dwm-swallow
-  updateclientlist();                                                                     // dwm-swallow
-}                                                                                         // dwm-swallow
+void                                                                                      // patch: dwm-swallow
+swallow(Client *p, Client *c)                                                             // patch: dwm-swallow
+{                                                                                         // patch: dwm-swallow
+  if (c->noswallow || c->isterminal)                                                      // patch: dwm-swallow
+    return;                                                                               // patch: dwm-swallow
+  if (c->noswallow && !swallowfloating && c->isfloating)                                  // patch: dwm-swallow
+    return;                                                                               // patch: dwm-swallow
+                                                                                          // patch: dwm-swallow
+  for (int i = 0; i < LENGTH(skipswallow); i++) {                                         // patch: dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+    if (!strcmp(c->name, skipswallow[i])) {                                               // patch: dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+      return;                                                                             // patch: dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+    }                                                                                     // patch: dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+  }                                                                                       // patch: dwm-swallow: fix dwm-swallow annoying "swallow all parrent process problem". by myself
+                                                                                          // patch: dwm-swallow
+  detach(c);                                                                              // patch: dwm-swallow
+  detachstack(c);                                                                         // patch: dwm-swallow
+                                                                                          // patch: dwm-swallow
+  setclientstate(c, WithdrawnState);                                                      // patch: dwm-swallow
+  XUnmapWindow(dpy, p->win);                                                              // patch: dwm-swallow
+                                                                                          // patch: dwm-swallow
+  p->swallowing = c;                                                                      // patch: dwm-swallow
+  c->mon = p->mon;                                                                        // patch: dwm-swallow
+                                                                                          // patch: dwm-swallow
+  Window w = p->win;                                                                      // patch: dwm-swallow
+  p->win = c->win;                                                                        // patch: dwm-swallow
+  c->win = w;                                                                             // patch: dwm-swallow
+  updatetitle(p);                                                                         // patch: dwm-swallow
+  XMoveResizeWindow(dpy, p->win, p->x, p->y, p->w, p->h);                                 // patch: dwm-swallow
+  arrange(p->mon);                                                                        // patch: dwm-swallow
+  configure(p);                                                                           // patch: dwm-swallow
+  updateclientlist();                                                                     // patch: dwm-swallow
+}                                                                                         // patch: dwm-swallow
 
-void                                                                                      // dwm-swallow
-unswallow(Client *c)                                                                      // dwm-swallow
-{                                                                                         // dwm-swallow
-  c->win = c->swallowing->win;                                                            // dwm-swallow
-                                                                                          // dwm-swallow
-  free(c->swallowing);                                                                    // dwm-swallow
-  c->swallowing = NULL;                                                                   // dwm-swallow
-                                                                                          // dwm-swallow
-  /* unfullscreen the client */                                                           // dwm-swallow
-  setfullscreen(c, 0);                                                                    // dwm-swallow
-  updatetitle(c);                                                                         // dwm-swallow
-  arrange(c->mon);                                                                        // dwm-swallow
-  XMapWindow(dpy, c->win);                                                                // dwm-swallow
-  XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);                                 // dwm-swallow
-  setclientstate(c, NormalState);                                                         // dwm-swallow
-  focus(NULL);                                                                            // dwm-swallow
-  arrange(c->mon);                                                                        // dwm-swallow
-}                                                                                         // dwm-swallow
+void                                                                                      // patch: dwm-swallow
+unswallow(Client *c)                                                                      // patch: dwm-swallow
+{                                                                                         // patch: dwm-swallow
+  c->win = c->swallowing->win;                                                            // patch: dwm-swallow
+                                                                                          // patch: dwm-swallow
+  free(c->swallowing);                                                                    // patch: dwm-swallow
+  c->swallowing = NULL;                                                                   // patch: dwm-swallow
+                                                                                          // patch: dwm-swallow
+  /* unfullscreen the client */                                                           // patch: dwm-swallow
+  setfullscreen(c, 0);                                                                    // patch: dwm-swallow
+  updatetitle(c);                                                                         // patch: dwm-swallow
+  arrange(c->mon);                                                                        // patch: dwm-swallow
+  XMapWindow(dpy, c->win);                                                                // patch: dwm-swallow
+  XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);                                 // patch: dwm-swallow
+  setclientstate(c, NormalState);                                                         // patch: dwm-swallow
+  focus(NULL);                                                                            // patch: dwm-swallow
+  arrange(c->mon);                                                                        // patch: dwm-swallow
+}                                                                                         // patch: dwm-swallow
 
 void
 buttonpress(XEvent *e)
@@ -775,7 +775,7 @@ Monitor *
 createmon(void)
 {
   Monitor *m;
-  unsigned int i;                                                 // dwm-pertag
+  unsigned int i;                                                 // patch: dwm-pertag
 
   m = ecalloc(1, sizeof(Monitor));
   m->tagset[0] = m->tagset[1] = 1;
@@ -788,20 +788,20 @@ createmon(void)
   m->lt[1] = &layouts[1 % LENGTH(layouts)];
     m->isoverview = 0;
   strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
-  m->pertag = ecalloc(1, sizeof(Pertag));                         // dwm-pertag
-  m->pertag->curtag = m->pertag->prevtag = 1;                     // dwm-pertag
-                                                                  // dwm-pertag
-  for (i = 0; i <= LENGTH(tags); i++) {                           // dwm-pertag
-    m->pertag->nmasters[i] = m->nmaster;                          // dwm-pertag
-    m->pertag->mfacts[i] = m->mfact;                              // dwm-pertag
-    m->pertag->ffacts[i] = m->ffact;                              // dwm-pertag       // ffact, by myself
-    m->pertag->ltidxs[i][0] = m->lt[0];                           // dwm-pertag
-    m->pertag->ltidxs[i][1] = m->lt[1];                           // dwm-pertag
-    m->pertag->sellts[i] = m->sellt;                              // dwm-pertag
-                                                                  // dwm-pertag
-    m->pertag->showbars[i] = m->showbar;                          // dwm-pertag
-  }                                                               // dwm-pertag
-                                                                  // dwm-pertag
+  m->pertag = ecalloc(1, sizeof(Pertag));                         // patch: dwm-pertag
+  m->pertag->curtag = m->pertag->prevtag = 1;                     // patch: dwm-pertag
+                                                                  // patch: dwm-pertag
+  for (i = 0; i <= LENGTH(tags); i++) {                           // patch: dwm-pertag
+    m->pertag->nmasters[i] = m->nmaster;                          // patch: dwm-pertag
+    m->pertag->mfacts[i] = m->mfact;                              // patch: dwm-pertag
+    m->pertag->ffacts[i] = m->ffact;                              // patch: dwm-pertag       // ffact, by myself
+    m->pertag->ltidxs[i][0] = m->lt[0];                           // patch: dwm-pertag
+    m->pertag->ltidxs[i][1] = m->lt[1];                           // patch: dwm-pertag
+    m->pertag->sellts[i] = m->sellt;                              // patch: dwm-pertag
+                                                                  // patch: dwm-pertag
+    m->pertag->showbars[i] = m->showbar;                          // patch: dwm-pertag
+  }                                                               // patch: dwm-pertag
+                                                                  // patch: dwm-pertag
   return m;
 }
 
@@ -813,8 +813,8 @@ destroynotify(XEvent *e)
 
   if ((c = wintoclient(ev->window)))
     unmanage(c, 1);
-  else if ((c = swallowingclient(ev->window))) // dwm-swallow
-    unmanage(c->swallowing, 1);                // dwm-swallow
+  else if ((c = swallowingclient(ev->window))) // patch: dwm-swallow
+    unmanage(c->swallowing, 1);                // patch: dwm-swallow
 }
 
 void
@@ -822,10 +822,10 @@ detach(Client *c)
 {
   Client **tc;
 
-    for (int i = 1; i < LENGTH(tags); i++) {   // dwm-focusmaster
-        if (c == c->mon->tagmarked[i])         // dwm-focusmaster
-            c->mon->tagmarked[i] = NULL;       // dwm-focusmaster
-    }                                          // dwm-focusmaster
+    for (int i = 1; i < LENGTH(tags); i++) {   // patch: dwm-focusmaster
+        if (c == c->mon->tagmarked[i])         // patch: dwm-focusmaster
+            c->mon->tagmarked[i] = NULL;       // patch: dwm-focusmaster
+    }                                          // patch: dwm-focusmaster
 
   for (tc = &c->mon->clients; *tc && *tc != c; tc = &(*tc)->next);
   *tc = c->next;
@@ -886,20 +886,20 @@ drawbar(Monitor *m)
       urg |= c->tags;
   }
   x = 0;
-    if (m->isoverview) {                                                                           // dwm-overview
-        // draw nothing;                                                                           // dwm-overview
-    } else {                                                                                       // dwm-overview
+    if (m->isoverview) {                                                                           // patch: dwm-overview
+        // draw nothing;                                                                           // patch: dwm-overview
+    } else {                                                                                       // patch: dwm-overview
         for (i = 0; i < LENGTH(tags); i++) {
             w = TEXTW(tags[i]);
             drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
             drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-//         if (occ & 1 << i)                                                                       // dwm-hide_vacant_tags: do not draw rect
-//             drw_rect(drw, x + boxs, boxs, boxw, boxw,                                           // dwm-hide_vacant_tags: do not draw rect
-//                 m == selmon && selmon->sel && selmon->sel->tags & 1 << i,                       // dwm-hide_vacant_tags: do not draw rect
-//                 urg & 1 << i);                                                                  // dwm-hide_vacant_tags: do not draw rect
+//         if (occ & 1 << i)                                                                       // patch: dwm-hide_vacant_tags: do not draw rect
+//             drw_rect(drw, x + boxs, boxs, boxw, boxw,                                           // patch: dwm-hide_vacant_tags: do not draw rect
+//                 m == selmon && selmon->sel && selmon->sel->tags & 1 << i,                       // patch: dwm-hide_vacant_tags: do not draw rect
+//                 urg & 1 << i);                                                                  // patch: dwm-hide_vacant_tags: do not draw rect
             x += w;
         }
-    }                                                                                              // dwm-overview
+    }                                                                                              // patch: dwm-overview
   w = TEXTW(m->ltsymbol);
   drw_setscheme(drw, scheme[SchemeNorm]);
   x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
@@ -1175,8 +1175,8 @@ grabkeys(void)
 void
 incnmaster(const Arg *arg)
 {
-// selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);                                                   // dwm-pertag
-  selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0); // dwm-pertag
+// selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);                                                   // patch: dwm-pertag
+  selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0); // patch: dwm-pertag
   arrange(selmon);
 }
 
@@ -1227,14 +1227,14 @@ killclient(const Arg *arg)
 void
 manage(Window w, XWindowAttributes *wa)
 {
-//Client *c, *t = NULL;                                                                            // dwm-swallow
-  Client *c, *t = NULL, *term = NULL;                                                              // dwm-swallow
+//Client *c, *t = NULL;                                                                            // patch: dwm-swallow
+  Client *c, *t = NULL, *term = NULL;                                                              // patch: dwm-swallow
   Window trans = None;
   XWindowChanges wc;
 
   c = ecalloc(1, sizeof(Client));
   c->win = w;
-  c->pid = winpid(w);                                                                              // dwm-swallow
+  c->pid = winpid(w);                                                                              // patch: dwm-swallow
   /* geometry */
   c->x = c->oldx = wa->x;
   c->y = c->oldy = wa->y;
@@ -1260,13 +1260,13 @@ manage(Window w, XWindowAttributes *wa)
   c->y = MAX(c->y, c->mon->wy);
   c->bw = borderpx;
 
-    selmon->tagset[selmon->seltags] &= ~scratchtag;                                                // dwm-scratchpad
-    if (!strcmp(c->name, scratchpadname)) {                                                        // dwm-scratchpad
-      c->mon->tagset[c->mon->seltags] |= c->tags = scratchtag;                                     // dwm-scratchpad
-      c->isfloating = True;                                                                        // dwm-scratchpad
-      c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);                                         // dwm-scratchpad
-      c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);                                        // dwm-scratchpad
-    }                                                                                              // dwm-scratchpad
+    selmon->tagset[selmon->seltags] &= ~scratchtag;                                                // patch: dwm-scratchpad
+    if (!strcmp(c->name, scratchpadname)) {                                                        // patch: dwm-scratchpad
+      c->mon->tagset[c->mon->seltags] |= c->tags = scratchtag;                                     // patch: dwm-scratchpad
+      c->isfloating = True;                                                                        // patch: dwm-scratchpad
+      c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);                                         // patch: dwm-scratchpad
+      c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);                                        // patch: dwm-scratchpad
+    }                                                                                              // patch: dwm-scratchpad
 
   wc.border_width = c->bw;
   XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1292,8 +1292,8 @@ manage(Window w, XWindowAttributes *wa)
   c->mon->sel = c;
   arrange(c->mon);
   XMapWindow(dpy, c->win);
-  if (term)                                                                                        // dwm-swallow
-    swallow(term, c);                                                                              // dwm-swallow
+  if (term)                                                                                        // patch: dwm-swallow
+    swallow(term, c);                                                                              // patch: dwm-swallow
   focus(NULL);
 }
 
@@ -1411,91 +1411,91 @@ movemouse(const Arg *arg)
   }
 }
 
-void                                                                                             // dwm-move-window
-movewin(const Arg *arg)                                                                          // dwm-move-window
-{                                                                                                // dwm-move-window
-    Client *c;                                                                                   // dwm-move-window
-    int nx, ny;                                                                                  // dwm-move-window
-    c = selmon->sel;                                                                             // dwm-move-window
-    if (!c)                                                                                      // dwm-move-window
-        return;                                                                                  // dwm-move-window
-    if (!c->isfloating)                                                                          // dwm-move-window
-        togglefloating(NULL);                                                                    // dwm-move-window
-    nx = c->x;                                                                                   // dwm-move-window
-    ny = c->y;                                                                                   // dwm-move-window
-    switch (arg->ui) {                                                                           // dwm-move-window
-        case UP:                                                                                 // dwm-move-window
-            ny -= c->mon->wh / 16;                                                               // dwm-move-window
-            ny = MAX(ny, c->mon->wy);                                                            // dwm-move-window
-            break;                                                                               // dwm-move-window
-        case DOWN:                                                                               // dwm-move-window
-            ny += c->mon->wh / 16;                                                               // dwm-move-window
-            ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));                                   // dwm-move-window
-            break;                                                                               // dwm-move-window
-        case LEFT:                                                                               // dwm-move-window
-            nx -= c->mon->ww / 32;                                                               // dwm-move-window
-            nx = MAX(nx, c->mon->wx);                                                            // dwm-move-window
-            break;                                                                               // dwm-move-window
-        case RIGHT:                                                                              // dwm-move-window
-            nx += c->mon->ww / 32;                                                               // dwm-move-window
-            nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));                                    // dwm-move-window
-            break;                                                                               // dwm-move-window
-    }                                                                                            // dwm-move-window
-    resize(c, nx, ny, c->w, c->h, 1);                                                            // dwm-move-window
-    focus(c);                                                                                    // dwm-move-window
-    pointerfocuswin(c);                                                                          // dwm-move-window
-}                                                                                                // dwm-move-window
+void                                                                                             // patch: dwm-move-window
+movewin(const Arg *arg)                                                                          // patch: dwm-move-window
+{                                                                                                // patch: dwm-move-window
+    Client *c;                                                                                   // patch: dwm-move-window
+    int nx, ny;                                                                                  // patch: dwm-move-window
+    c = selmon->sel;                                                                             // patch: dwm-move-window
+    if (!c)                                                                                      // patch: dwm-move-window
+        return;                                                                                  // patch: dwm-move-window
+    if (!c->isfloating)                                                                          // patch: dwm-move-window
+        togglefloating(NULL);                                                                    // patch: dwm-move-window
+    nx = c->x;                                                                                   // patch: dwm-move-window
+    ny = c->y;                                                                                   // patch: dwm-move-window
+    switch (arg->ui) {                                                                           // patch: dwm-move-window
+        case UP:                                                                                 // patch: dwm-move-window
+            ny -= c->mon->wh / 16;                                                               // patch: dwm-move-window
+            ny = MAX(ny, c->mon->wy);                                                            // patch: dwm-move-window
+            break;                                                                               // patch: dwm-move-window
+        case DOWN:                                                                               // patch: dwm-move-window
+            ny += c->mon->wh / 16;                                                               // patch: dwm-move-window
+            ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));                                   // patch: dwm-move-window
+            break;                                                                               // patch: dwm-move-window
+        case LEFT:                                                                               // patch: dwm-move-window
+            nx -= c->mon->ww / 32;                                                               // patch: dwm-move-window
+            nx = MAX(nx, c->mon->wx);                                                            // patch: dwm-move-window
+            break;                                                                               // patch: dwm-move-window
+        case RIGHT:                                                                              // patch: dwm-move-window
+            nx += c->mon->ww / 32;                                                               // patch: dwm-move-window
+            nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));                                    // patch: dwm-move-window
+            break;                                                                               // patch: dwm-move-window
+    }                                                                                            // patch: dwm-move-window
+    resize(c, nx, ny, c->w, c->h, 1);                                                            // patch: dwm-move-window
+    focus(c);                                                                                    // patch: dwm-move-window
+    pointerfocuswin(c);                                                                          // patch: dwm-move-window
+}                                                                                                // patch: dwm-move-window
 
-void                                                                                             // dwm-resize-window
-resizewin(const Arg *arg)                                                                        // dwm-resize-window
-{                                                                                                // dwm-resize-window
-    Client *c;                                                                                   // dwm-resize-window
-    int nx, ny, nw, nh, cx, cy;                                                                  // dwm-resize-window
-    c = selmon->sel;                                                                             // dwm-resize-window
-    if (!c)                                                                                      // dwm-resize-window
-        return;                                                                                  // dwm-resize-window
-    if (!c->isfloating)                                                                          // dwm-resize-window
-        togglefloating(NULL);                                                                    // dwm-resize-window
-    nx = c->x;                                                                                   // dwm-resize-window
-    ny = c->y;                                                                                   // dwm-resize-window
-    nw = c->w;                                                                                   // dwm-resize-window
-    nh = c->h;                                                                                   // dwm-resize-window
-    cx = c->x + c->w/2;                                                                          // dwm-resize-window
-    cy = c->y + c->h/2;                                                                          // dwm-resize-window
-    switch (arg->ui) {                                                                           // dwm-resize-window
-        case HINCREASE:                                                                          // dwm-resize-window
-            nx = cx - c->w/2 - c->mon->ww / 32;                                                  // dwm-resize-window
-            nw = nw + 2 * c->mon->ww / 32;                                                       // dwm-resize-window
-            break;                                                                               // dwm-resize-window
-        case HDECREASE:                                                                          // dwm-resize-window
-            nx = cx - c->w/2 + c->mon->ww / 32;                                                  // dwm-resize-window
-            nw = nw - 2 * c->mon->ww / 32;                                                       // dwm-resize-window
-            break;                                                                               // dwm-resize-window
-        case VINCREASE:                                                                          // dwm-resize-window
-            ny = cy - c->h/2 - c->mon->wh / 32;                                                  // dwm-resize-window
-            nh = nh + 2 * c->mon->wh / 32;                                                       // dwm-resize-window
-            break;                                                                               // dwm-resize-window
-        case VDECREASE:                                                                          // dwm-resize-window
-            ny = cy - c->h/2 + c->mon->wh / 32;                                                  // dwm-resize-window
-            nh = nh - 2 * c->mon->wh / 32;                                                       // dwm-resize-window
-            break;                                                                               // dwm-resize-window
-    }                                                                                            // dwm-resize-window
-    nw = MAX(nw, 0);                                                                             // dwm-resize-window
-    nh = MAX(nh, 0);                                                                             // dwm-resize-window
-    nw = MIN(nw, c->mon->ww);                                                                    // dwm-resize-window
-    nh = MIN(nh, c->mon->wh);                                                                    // dwm-resize-window
-    nx = MAX(nx, c->mon->wx);                                                                    // dwm-resize-window
-    ny = MAX(ny, c->mon->wy);                                                                    // dwm-resize-window
-    nx = MIN(nx, c->mon->ww - nw + c->mon->wx);                                                  // dwm-resize-window
-    ny = MIN(ny, c->mon->wh - nh + c->mon->wy);                                                  // dwm-resize-window
-    if (nw == 0 || nh == 0) {                                                                    // dwm-resize-window
-        return;                                                                                  // dwm-resize-window
-    }                                                                                            // dwm-resize-window
-                                                                                                 // dwm-resize-window
-    resize(c, nx, ny, nw, nh, 1);                                                                // dwm-resize-window
-    focus(c);                                                                                    // dwm-resize-window
-    XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw); // dwm-resize-window
-}                                                                                                // dwm-resize-window
+void                                                                                             // patch: dwm-resize-window
+resizewin(const Arg *arg)                                                                        // patch: dwm-resize-window
+{                                                                                                // patch: dwm-resize-window
+    Client *c;                                                                                   // patch: dwm-resize-window
+    int nx, ny, nw, nh, cx, cy;                                                                  // patch: dwm-resize-window
+    c = selmon->sel;                                                                             // patch: dwm-resize-window
+    if (!c)                                                                                      // patch: dwm-resize-window
+        return;                                                                                  // patch: dwm-resize-window
+    if (!c->isfloating)                                                                          // patch: dwm-resize-window
+        togglefloating(NULL);                                                                    // patch: dwm-resize-window
+    nx = c->x;                                                                                   // patch: dwm-resize-window
+    ny = c->y;                                                                                   // patch: dwm-resize-window
+    nw = c->w;                                                                                   // patch: dwm-resize-window
+    nh = c->h;                                                                                   // patch: dwm-resize-window
+    cx = c->x + c->w/2;                                                                          // patch: dwm-resize-window
+    cy = c->y + c->h/2;                                                                          // patch: dwm-resize-window
+    switch (arg->ui) {                                                                           // patch: dwm-resize-window
+        case HINCREASE:                                                                          // patch: dwm-resize-window
+            nx = cx - c->w/2 - c->mon->ww / 32;                                                  // patch: dwm-resize-window
+            nw = nw + 2 * c->mon->ww / 32;                                                       // patch: dwm-resize-window
+            break;                                                                               // patch: dwm-resize-window
+        case HDECREASE:                                                                          // patch: dwm-resize-window
+            nx = cx - c->w/2 + c->mon->ww / 32;                                                  // patch: dwm-resize-window
+            nw = nw - 2 * c->mon->ww / 32;                                                       // patch: dwm-resize-window
+            break;                                                                               // patch: dwm-resize-window
+        case VINCREASE:                                                                          // patch: dwm-resize-window
+            ny = cy - c->h/2 - c->mon->wh / 32;                                                  // patch: dwm-resize-window
+            nh = nh + 2 * c->mon->wh / 32;                                                       // patch: dwm-resize-window
+            break;                                                                               // patch: dwm-resize-window
+        case VDECREASE:                                                                          // patch: dwm-resize-window
+            ny = cy - c->h/2 + c->mon->wh / 32;                                                  // patch: dwm-resize-window
+            nh = nh - 2 * c->mon->wh / 32;                                                       // patch: dwm-resize-window
+            break;                                                                               // patch: dwm-resize-window
+    }                                                                                            // patch: dwm-resize-window
+    nw = MAX(nw, 0);                                                                             // patch: dwm-resize-window
+    nh = MAX(nh, 0);                                                                             // patch: dwm-resize-window
+    nw = MIN(nw, c->mon->ww);                                                                    // patch: dwm-resize-window
+    nh = MIN(nh, c->mon->wh);                                                                    // patch: dwm-resize-window
+    nx = MAX(nx, c->mon->wx);                                                                    // patch: dwm-resize-window
+    ny = MAX(ny, c->mon->wy);                                                                    // patch: dwm-resize-window
+    nx = MIN(nx, c->mon->ww - nw + c->mon->wx);                                                  // patch: dwm-resize-window
+    ny = MIN(ny, c->mon->wh - nh + c->mon->wy);                                                  // patch: dwm-resize-window
+    if (nw == 0 || nh == 0) {                                                                    // patch: dwm-resize-window
+        return;                                                                                  // patch: dwm-resize-window
+    }                                                                                            // patch: dwm-resize-window
+                                                                                                 // patch: dwm-resize-window
+    resize(c, nx, ny, nw, nh, 1);                                                                // patch: dwm-resize-window
+    focus(c);                                                                                    // patch: dwm-resize-window
+    XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw); // patch: dwm-resize-window
+}                                                                                                // patch: dwm-resize-window
 
 Client *
 nexttiled(Client *c)
@@ -1507,10 +1507,10 @@ nexttiled(Client *c)
 void
 pop(Client *c)
 {
-    int i;                                                         // dwm-focusmaster
-    for (i = 0; !(selmon->tagset[selmon->seltags] & 1 << i); i++); // dwm-focusmaster
-    i++;                                                           // dwm-focusmaster
-    c->mon->tagmarked[i] = nexttiled(c->mon->clients);             // dwm-focusmaster
+    int i;                                                         // patch: dwm-focusmaster
+    for (i = 0; !(selmon->tagset[selmon->seltags] & 1 << i); i++); // patch: dwm-focusmaster
+    i++;                                                           // patch: dwm-focusmaster
+    c->mon->tagmarked[i] = nexttiled(c->mon->clients);             // patch: dwm-focusmaster
 
   detach(c);
   attach(c);
@@ -1558,16 +1558,16 @@ propertynotify(XEvent *e)
 void
 quit(const Arg *arg)
 {
-  size_t i;                                       // dwm-cool-autostart
-                                                  // dwm-cool-autostart
-  /* kill child processes */                      // dwm-cool-autostart
-  for (i = 0; i < autostart_len; i++) {           // dwm-cool-autostart
-    if (0 < autostart_pids[i]) {                  // dwm-cool-autostart
-      kill(autostart_pids[i], SIGTERM);           // dwm-cool-autostart
-      waitpid(autostart_pids[i], NULL, 0);        // dwm-cool-autostart
-    }                                             // dwm-cool-autostart
-  }                                               // dwm-cool-autostart
-                                                  // dwm-cool-autostart
+  size_t i;                                       // patch: dwm-cool-autostart
+                                                  // patch: dwm-cool-autostart
+  /* kill child processes */                      // patch: dwm-cool-autostart
+  for (i = 0; i < autostart_len; i++) {           // patch: dwm-cool-autostart
+    if (0 < autostart_pids[i]) {                  // patch: dwm-cool-autostart
+      kill(autostart_pids[i], SIGTERM);           // patch: dwm-cool-autostart
+      waitpid(autostart_pids[i], NULL, 0);        // patch: dwm-cool-autostart
+    }                                             // patch: dwm-cool-autostart
+  }                                               // patch: dwm-cool-autostart
+                                                  // patch: dwm-cool-autostart
   running = 0;
 }
 
@@ -1821,11 +1821,11 @@ void
 setlayout(const Arg *arg)
 {
   if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
-//  selmon->sellt ^= 1;                                                                                           // dwm-pertag
-    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;                                          // dwm-pertag
+//  selmon->sellt ^= 1;                                                                                           // patch: dwm-pertag
+    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;                                          // patch: dwm-pertag
   if (arg && arg->v)
-//  selmon->lt[selmon->sellt] = (Layout *)arg->v;                                                                 // dwm-pertag
-    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v; // dwm-pertag
+//  selmon->lt[selmon->sellt] = (Layout *)arg->v;                                                                 // patch: dwm-pertag
+    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v; // patch: dwm-pertag
   strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
   if (selmon->sel)
     arrange(selmon);
@@ -1845,8 +1845,8 @@ setmfact(const Arg *arg)
     /* if (f < 0.05 || f > 0.95) */                                     // remove the limit of mfact, by myself
     if (f < 0.00 || f > 1.00)                                           // remove the limit of mfact, by myself
     return;
-// selmon->mfact = f;                                                   // dwm-pertag
-  selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;   // dwm-pertag
+// selmon->mfact = f;                                                   // patch: dwm-pertag
+  selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;   // patch: dwm-pertag
   arrange(selmon);
 }
 
@@ -1884,8 +1884,8 @@ setup(void)
   if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
     die("no fonts could be loaded.");
   lrpad = drw->fonts->h;
-//bh = drw->fonts->h + 2;                                                                                // dwm-bar-height
-  bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2; // dwm-bar-height
+//bh = drw->fonts->h + 2;                                                                                // patch: dwm-bar-height
+  bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2; // patch: dwm-bar-height
  	sp = sidepad;                                                                                                                                                                     // patch: dwm-barpadding
  	vp = (topbar == 1) ? vertpad : - vertpad;                                                                                                                                         // patch: dwm-barpadding
   updategeom();
@@ -1972,25 +1972,25 @@ showhide(Client *c)
 void
 sigchld(int unused)
 {
-  pid_t pid;                                                   // dwm-cool-autostart
+  pid_t pid;                                                   // patch: dwm-cool-autostart
 
   if (signal(SIGCHLD, sigchld) == SIG_ERR)
     die("can't install SIGCHLD handler:");
-  // while (0 < waitpid(-1, NULL, WNOHANG));                   // dwm-cool-autostart
-  while (0 < (pid = waitpid(-1, NULL, WNOHANG))) {             // dwm-cool-autostart
-    pid_t *p, *lim;                                            // dwm-cool-autostart
-                                                               // dwm-cool-autostart
-    if (!(p = autostart_pids))                                 // dwm-cool-autostart
-      continue;                                                // dwm-cool-autostart
-    lim = &p[autostart_len];                                   // dwm-cool-autostart
-                                                               // dwm-cool-autostart
-    for (; p < lim; p++) {                                     // dwm-cool-autostart
-      if (*p == pid) {                                         // dwm-cool-autostart
-        *p = -1;                                               // dwm-cool-autostart
-        break;                                                 // dwm-cool-autostart
-      }                                                        // dwm-cool-autostart
-    }                                                          // dwm-cool-autostart
-  }                                                            // dwm-cool-autostart
+  // while (0 < waitpid(-1, NULL, WNOHANG));                   // patch: dwm-cool-autostart
+  while (0 < (pid = waitpid(-1, NULL, WNOHANG))) {             // patch: dwm-cool-autostart
+    pid_t *p, *lim;                                            // patch: dwm-cool-autostart
+                                                               // patch: dwm-cool-autostart
+    if (!(p = autostart_pids))                                 // patch: dwm-cool-autostart
+      continue;                                                // patch: dwm-cool-autostart
+    lim = &p[autostart_len];                                   // patch: dwm-cool-autostart
+                                                               // patch: dwm-cool-autostart
+    for (; p < lim; p++) {                                     // patch: dwm-cool-autostart
+      if (*p == pid) {                                         // patch: dwm-cool-autostart
+        *p = -1;                                               // patch: dwm-cool-autostart
+        break;                                                 // patch: dwm-cool-autostart
+      }                                                        // patch: dwm-cool-autostart
+    }                                                          // patch: dwm-cool-autostart
+  }                                                            // patch: dwm-cool-autostart
 }
 
 void
@@ -1998,7 +1998,7 @@ spawn(const Arg *arg)
 {
   if (arg->v == dmenucmd)
     dmenumon[0] = '0' + selmon->num;
-  selmon->tagset[selmon->seltags] &= ~scratchtag;              // dwm-scratchpad
+  selmon->tagset[selmon->seltags] &= ~scratchtag;              // patch: dwm-scratchpad
   if (fork() == 0) {
     if (dpy)
       close(ConnectionNumber(dpy));
@@ -2058,8 +2058,8 @@ tileright(Monitor *m)
 void
 togglebar(const Arg *arg)
 {
-//selmon->showbar = !selmon->showbar;                                                    // dwm-pertag
-  selmon->showbar = selmon->pertag->showbars[selmon->pertag->curtag] = !selmon->showbar; // dwm-pertag
+//selmon->showbar = !selmon->showbar;                                                    // patch: dwm-pertag
+  selmon->showbar = selmon->pertag->showbars[selmon->pertag->curtag] = !selmon->showbar; // patch: dwm-pertag
   updatebarpos(selmon);
 //XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);                                                                                                   // patch: dwm-barpadding
  	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp, selmon->ww - 2 * sp, bh);                                                                                // patch: dwm-barpadding
@@ -2080,51 +2080,51 @@ togglefloating(const Arg *arg)
   arrange(selmon);
 }
 
-void                                                                               // dwm-scratchpad
-togglescratch(const Arg *arg)                                                      // dwm-scratchpad
-{                                                                                  // dwm-scratchpad
-  Client *c;                                                                       // dwm-scratchpad
-  unsigned int found = 0;                                                          // dwm-scratchpad
-                                                                                   // dwm-scratchpad
-  for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next);    // dwm-scratchpad
-  if (found) {                                                                     // dwm-scratchpad
-    unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;         // dwm-scratchpad
-    if (newtagset) {                                                               // dwm-scratchpad
-      selmon->tagset[selmon->seltags] = newtagset;                                 // dwm-scratchpad
-      focus(NULL);                                                                 // dwm-scratchpad
-      arrange(selmon);                                                             // dwm-scratchpad
-    }                                                                              // dwm-scratchpad
-    if (ISVISIBLE(c)) {                                                            // dwm-scratchpad
-      focus(c);                                                                    // dwm-scratchpad
-      restack(selmon);                                                             // dwm-scratchpad
-    }                                                                              // dwm-scratchpad
-  } else                                                                           // dwm-scratchpad
-    spawn(arg);                                                                    // dwm-scratchpad
-}                                                                                  // dwm-scratchpad
+void                                                                               // patch: dwm-scratchpad
+togglescratch(const Arg *arg)                                                      // patch: dwm-scratchpad
+{                                                                                  // patch: dwm-scratchpad
+  Client *c;                                                                       // patch: dwm-scratchpad
+  unsigned int found = 0;                                                          // patch: dwm-scratchpad
+                                                                                   // patch: dwm-scratchpad
+  for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next);    // patch: dwm-scratchpad
+  if (found) {                                                                     // patch: dwm-scratchpad
+    unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;         // patch: dwm-scratchpad
+    if (newtagset) {                                                               // patch: dwm-scratchpad
+      selmon->tagset[selmon->seltags] = newtagset;                                 // patch: dwm-scratchpad
+      focus(NULL);                                                                 // patch: dwm-scratchpad
+      arrange(selmon);                                                             // patch: dwm-scratchpad
+    }                                                                              // patch: dwm-scratchpad
+    if (ISVISIBLE(c)) {                                                            // patch: dwm-scratchpad
+      focus(c);                                                                    // patch: dwm-scratchpad
+      restack(selmon);                                                             // patch: dwm-scratchpad
+    }                                                                              // patch: dwm-scratchpad
+  } else                                                                           // patch: dwm-scratchpad
+    spawn(arg);                                                                    // patch: dwm-scratchpad
+}                                                                                  // patch: dwm-scratchpad
 
-void                                                // dwm-sticky
-togglesticky(const Arg *arg)                        // dwm-sticky
-{                                                   // dwm-sticky
-    if (!selmon->sel)                               // dwm-sticky
-        return;                                     // dwm-sticky
-    selmon->sel->issticky = !selmon->sel->issticky; // dwm-sticky
-    arrange(selmon);                                // dwm-sticky
-}                                                   // dwm-sticky
+void                                                // patch: dwm-sticky
+togglesticky(const Arg *arg)                        // patch: dwm-sticky
+{                                                   // patch: dwm-sticky
+    if (!selmon->sel)                               // patch: dwm-sticky
+        return;                                     // patch: dwm-sticky
+    selmon->sel->issticky = !selmon->sel->issticky; // patch: dwm-sticky
+    arrange(selmon);                                // patch: dwm-sticky
+}                                                   // patch: dwm-sticky
 
-void                                                        // dwm-actualfullscreen
-togglefullscreen(const Arg *arg)                            // dwm-actualfullscreen
-{                                                           // dwm-actualfullscreen
-  if(selmon->sel)                                           // dwm-actualfullscreen
-    setfullscreen(selmon->sel, !selmon->sel->isfullscreen); // dwm-actualfullscreen
-}                                                           // dwm-actualfullscreen
+void                                                        // patch: dwm-actualfullscreen
+togglefullscreen(const Arg *arg)                            // patch: dwm-actualfullscreen
+{                                                           // patch: dwm-actualfullscreen
+  if(selmon->sel)                                           // patch: dwm-actualfullscreen
+    setfullscreen(selmon->sel, !selmon->sel->isfullscreen); // patch: dwm-actualfullscreen
+}                                                           // patch: dwm-actualfullscreen
 
-void                                                                                 // dwm-overview
-toggleoverview(const Arg *arg)                                                       // dwm-overview
-{                                                                                    // dwm-overview
-    uint target = selmon->sel ? selmon->sel->tags : selmon->tagset[selmon->seltags]; // dwm-overview
-    selmon->isoverview ^= 1;                                                         // dwm-overview
-    view(&(Arg){ .ui = target });                                                    // dwm-overview
-}                                                                                    // dwm-overview
+void                                                                                 // patch: dwm-overview
+toggleoverview(const Arg *arg)                                                       // patch: dwm-overview
+{                                                                                    // patch: dwm-overview
+    uint target = selmon->sel ? selmon->sel->tags : selmon->tagset[selmon->seltags]; // patch: dwm-overview
+    selmon->isoverview ^= 1;                                                         // patch: dwm-overview
+    view(&(Arg){ .ui = target });                                                    // patch: dwm-overview
+}                                                                                    // patch: dwm-overview
 
 void
 toggletag(const Arg *arg)
@@ -2145,34 +2145,34 @@ void
 toggleview(const Arg *arg)
 {
   unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
-  int i;                                                                                                // dwm-pertag
+  int i;                                                                                                // patch: dwm-pertag
 
   if (newtagset) {
     selmon->tagset[selmon->seltags] = newtagset;
-                                                                                                        // dwm-pertag
-    if (newtagset == ~0) {                                                                              // dwm-pertag
-      selmon->pertag->prevtag = selmon->pertag->curtag;                                                 // dwm-pertag
-      selmon->pertag->curtag = 0;                                                                       // dwm-pertag
-    }                                                                                                   // dwm-pertag
-                                                                                                        // dwm-pertag
-    /* test if the user did not select the same tag */                                                  // dwm-pertag
-    if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {                                             // dwm-pertag
-      selmon->pertag->prevtag = selmon->pertag->curtag;                                                 // dwm-pertag
-      for (i = 0; !(newtagset & 1 << i); i++) ;                                                         // dwm-pertag
-      selmon->pertag->curtag = i + 1;                                                                   // dwm-pertag
-    }                                                                                                   // dwm-pertag
-                                                                                                        // dwm-pertag
-    /* apply settings for this view */                                                                  // dwm-pertag
-    selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                                 // dwm-pertag
-    selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                     // dwm-pertag
-    selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                     // dwm-pertag // ffact, by myself
-    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                     // dwm-pertag
-    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];          // dwm-pertag
-    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];      // dwm-pertag
-                                                                                                        // dwm-pertag
-    if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])                            // dwm-pertag
-      togglebar(NULL);                                                                                  // dwm-pertag
-                                                                                                        // dwm-pertag
+                                                                                                        // patch: dwm-pertag
+    if (newtagset == ~0) {                                                                              // patch: dwm-pertag
+      selmon->pertag->prevtag = selmon->pertag->curtag;                                                 // patch: dwm-pertag
+      selmon->pertag->curtag = 0;                                                                       // patch: dwm-pertag
+    }                                                                                                   // patch: dwm-pertag
+                                                                                                        // patch: dwm-pertag
+    /* test if the user did not select the same tag */                                                  // patch: dwm-pertag
+    if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {                                             // patch: dwm-pertag
+      selmon->pertag->prevtag = selmon->pertag->curtag;                                                 // patch: dwm-pertag
+      for (i = 0; !(newtagset & 1 << i); i++) ;                                                         // patch: dwm-pertag
+      selmon->pertag->curtag = i + 1;                                                                   // patch: dwm-pertag
+    }                                                                                                   // patch: dwm-pertag
+                                                                                                        // patch: dwm-pertag
+    /* apply settings for this view */                                                                  // patch: dwm-pertag
+    selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                                 // patch: dwm-pertag
+    selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                     // patch: dwm-pertag
+    selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                     // patch: dwm-pertag // ffact, by myself
+    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                     // patch: dwm-pertag
+    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];          // patch: dwm-pertag
+    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];      // patch: dwm-pertag
+                                                                                                        // patch: dwm-pertag
+    if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])                            // patch: dwm-pertag
+      togglebar(NULL);                                                                                  // patch: dwm-pertag
+                                                                                                        // patch: dwm-pertag
     focus(NULL);
     arrange(selmon);
   }
@@ -2197,19 +2197,19 @@ unmanage(Client *c, int destroyed)
   Monitor *m = c->mon;
   XWindowChanges wc;
 
-   if (c->swallowing) {                    // dwm-swallow
-     unswallow(c);                         // dwm-swallow
-     return;                               // dwm-swallow
-   }                                       // dwm-swallow
-                                           // dwm-swallow
-   Client *s = swallowingclient(c->win);   // dwm-swallow
-   if (s) {                                // dwm-swallow
-     free(s->swallowing);                  // dwm-swallow
-     s->swallowing = NULL;                 // dwm-swallow
-     arrange(m);                           // dwm-swallow
-     focus(NULL);                          // dwm-swallow
-     return;                               // dwm-swallow
-   }                                       // dwm-swallow
+   if (c->swallowing) {                    // patch: dwm-swallow
+     unswallow(c);                         // patch: dwm-swallow
+     return;                               // patch: dwm-swallow
+   }                                       // patch: dwm-swallow
+                                           // patch: dwm-swallow
+   Client *s = swallowingclient(c->win);   // patch: dwm-swallow
+   if (s) {                                // patch: dwm-swallow
+     free(s->swallowing);                  // patch: dwm-swallow
+     s->swallowing = NULL;                 // patch: dwm-swallow
+     arrange(m);                           // patch: dwm-swallow
+     focus(NULL);                          // patch: dwm-swallow
+     return;                               // patch: dwm-swallow
+   }                                       // patch: dwm-swallow
 
   detach(c);
   detachstack(c);
@@ -2227,15 +2227,15 @@ unmanage(Client *c, int destroyed)
   }
 
   free(c);
-//focus(NULL);                // dwm-swallow
-//updateclientlist();         // dwm-swallow
-//arrange(m);                 // dwm-swallow
-                              // dwm-swallow
-  if (!s) {                   // dwm-swallow
-    arrange(m);               // dwm-swallow
-    focus(NULL);              // dwm-swallow
-    updateclientlist();       // dwm-swallow
-  }                           // dwm-swallow
+//focus(NULL);                // patch: dwm-swallow
+//updateclientlist();         // patch: dwm-swallow
+//arrange(m);                 // patch: dwm-swallow
+                              // patch: dwm-swallow
+  if (!s) {                   // patch: dwm-swallow
+    arrange(m);               // patch: dwm-swallow
+    focus(NULL);              // patch: dwm-swallow
+    updateclientlist();       // patch: dwm-swallow
+  }                           // patch: dwm-swallow
 }
 
 void
@@ -2494,175 +2494,175 @@ updatewmhints(Client *c)
 void
 view(const Arg *arg)
 {
-  int i;                                                                                            // dwm-pertag
-  unsigned int tmptag;                                                                              // dwm-pertag
-                                                                                                    // dwm-pertag
+  int i;                                                                                            // patch: dwm-pertag
+  unsigned int tmptag;                                                                              // patch: dwm-pertag
+                                                                                                    // patch: dwm-pertag
   if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) {
-        arrange(selmon);                                                                            // dwm-overview
+        arrange(selmon);                                                                            // patch: dwm-overview
     return;
     }
 
   selmon->seltags ^= 1; /* toggle sel tagset */
-//if (arg->ui & TAGMASK)                                                                            // dwm-pertag
-  if (arg->ui & TAGMASK) {                                                                          // dwm-pertag
-    selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;                                            // dwm-pertag
-    selmon->pertag->prevtag = selmon->pertag->curtag;                                               // dwm-pertag
-                                                                                                    // dwm-pertag
-    if (arg->ui == ~0)                                                                              // dwm-pertag
-      selmon->pertag->curtag = 0;                                                                   // dwm-pertag
-    else {                                                                                          // dwm-pertag
-      for (i = 0; !(arg->ui & 1 << i); i++) ;                                                       // dwm-pertag
-      selmon->pertag->curtag = i + 1;                                                               // dwm-pertag
-    }                                                                                               // dwm-pertag
-  } else {                                                                                          // dwm-pertag
-    tmptag = selmon->pertag->prevtag;                                                               // dwm-pertag
-    selmon->pertag->prevtag = selmon->pertag->curtag;                                               // dwm-pertag
-    selmon->pertag->curtag = tmptag;                                                                // dwm-pertag
-  }                                                                                                 // dwm-pertag
-                                                                                                    // dwm-pertag
-  selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                               // dwm-pertag
-  selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                   // dwm-pertag
-  selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                   // dwm-pertag // ffact, by myself
-  selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                   // dwm-pertag
-  selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];        // dwm-pertag
-  selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];    // dwm-pertag
-                                                                                                    // dwm-pertag
-  if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])                          // dwm-pertag
-    togglebar(NULL);                                                                                // dwm-pertag
-                                                                                                    // dwm-pertag
+//if (arg->ui & TAGMASK)                                                                            // patch: dwm-pertag
+  if (arg->ui & TAGMASK) {                                                                          // patch: dwm-pertag
+    selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;                                            // patch: dwm-pertag
+    selmon->pertag->prevtag = selmon->pertag->curtag;                                               // patch: dwm-pertag
+                                                                                                    // patch: dwm-pertag
+    if (arg->ui == ~0)                                                                              // patch: dwm-pertag
+      selmon->pertag->curtag = 0;                                                                   // patch: dwm-pertag
+    else {                                                                                          // patch: dwm-pertag
+      for (i = 0; !(arg->ui & 1 << i); i++) ;                                                       // patch: dwm-pertag
+      selmon->pertag->curtag = i + 1;                                                               // patch: dwm-pertag
+    }                                                                                               // patch: dwm-pertag
+  } else {                                                                                          // patch: dwm-pertag
+    tmptag = selmon->pertag->prevtag;                                                               // patch: dwm-pertag
+    selmon->pertag->prevtag = selmon->pertag->curtag;                                               // patch: dwm-pertag
+    selmon->pertag->curtag = tmptag;                                                                // patch: dwm-pertag
+  }                                                                                                 // patch: dwm-pertag
+                                                                                                    // patch: dwm-pertag
+  selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                               // patch: dwm-pertag
+  selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                   // patch: dwm-pertag
+  selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                   // patch: dwm-pertag // ffact, by myself
+  selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                   // patch: dwm-pertag
+  selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];        // patch: dwm-pertag
+  selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];    // patch: dwm-pertag
+                                                                                                    // patch: dwm-pertag
+  if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])                          // patch: dwm-pertag
+    togglebar(NULL);                                                                                // patch: dwm-pertag
+                                                                                                    // patch: dwm-pertag
   focus(NULL);
   arrange(selmon);
 }
 
-pid_t                                                                                                                                                               // dwm-swallow
-winpid(Window w)                                                                                                                                                    // dwm-swallow
-{                                                                                                                                                                   // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  pid_t result = 0;                                                                                                                                                 // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-#ifdef __linux__                                                                                                                                                    // dwm-swallow
-  xcb_res_client_id_spec_t spec = {0};                                                                                                                              // dwm-swallow
-  spec.client = w;                                                                                                                                                  // dwm-swallow
-  spec.mask = XCB_RES_CLIENT_ID_MASK_LOCAL_CLIENT_PID;                                                                                                              // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  xcb_generic_error_t *e = NULL;                                                                                                                                    // dwm-swallow
-  xcb_res_query_client_ids_cookie_t c = xcb_res_query_client_ids(xcon, 1, &spec);                                                                                   // dwm-swallow
-  xcb_res_query_client_ids_reply_t *r = xcb_res_query_client_ids_reply(xcon, c, &e);                                                                                // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  if (!r)                                                                                                                                                           // dwm-swallow
-    return (pid_t)0;                                                                                                                                                // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  xcb_res_client_id_value_iterator_t i = xcb_res_query_client_ids_ids_iterator(r);                                                                                  // dwm-swallow
-  for (; i.rem; xcb_res_client_id_value_next(&i)) {                                                                                                                 // dwm-swallow
-    spec = i.data->spec;                                                                                                                                            // dwm-swallow
-    if (spec.mask & XCB_RES_CLIENT_ID_MASK_LOCAL_CLIENT_PID) {                                                                                                      // dwm-swallow
-      uint32_t *t = xcb_res_client_id_value_value(i.data);                                                                                                          // dwm-swallow
-      result = *t;                                                                                                                                                  // dwm-swallow
-      break;                                                                                                                                                        // dwm-swallow
-    }                                                                                                                                                               // dwm-swallow
-  }                                                                                                                                                                 // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  free(r);                                                                                                                                                          // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  if (result == (pid_t)-1)                                                                                                                                          // dwm-swallow
-    result = 0;                                                                                                                                                     // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-#endif /* __linux__ */                                                                                                                                              // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-#ifdef __OpenBSD__                                                                                                                                                  // dwm-swallow
-        Atom type;                                                                                                                                                  // dwm-swallow
-        int format;                                                                                                                                                 // dwm-swallow
-        unsigned long len, bytes;                                                                                                                                   // dwm-swallow
-        unsigned char *prop;                                                                                                                                        // dwm-swallow
-        pid_t ret;                                                                                                                                                  // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-        if (XGetWindowProperty(dpy, w, XInternAtom(dpy, "_NET_WM_PID", 0), 0, 1, False, AnyPropertyType, &type, &format, &len, &bytes, &prop) != Success || !prop)  // dwm-swallow
-               return 0;                                                                                                                                            // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-        ret = *(pid_t*)prop;                                                                                                                                        // dwm-swallow
-        XFree(prop);                                                                                                                                                // dwm-swallow
-        result = ret;                                                                                                                                               // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-#endif /* __OpenBSD__ */                                                                                                                                            // dwm-swallow
-  return result;                                                                                                                                                    // dwm-swallow
-}                                                                                                                                                                   // dwm-swallow
+pid_t                                                                                                                                                               // patch: dwm-swallow
+winpid(Window w)                                                                                                                                                    // patch: dwm-swallow
+{                                                                                                                                                                   // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  pid_t result = 0;                                                                                                                                                 // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+#ifdef __linux__                                                                                                                                                    // patch: dwm-swallow
+  xcb_res_client_id_spec_t spec = {0};                                                                                                                              // patch: dwm-swallow
+  spec.client = w;                                                                                                                                                  // patch: dwm-swallow
+  spec.mask = XCB_RES_CLIENT_ID_MASK_LOCAL_CLIENT_PID;                                                                                                              // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  xcb_generic_error_t *e = NULL;                                                                                                                                    // patch: dwm-swallow
+  xcb_res_query_client_ids_cookie_t c = xcb_res_query_client_ids(xcon, 1, &spec);                                                                                   // patch: dwm-swallow
+  xcb_res_query_client_ids_reply_t *r = xcb_res_query_client_ids_reply(xcon, c, &e);                                                                                // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  if (!r)                                                                                                                                                           // patch: dwm-swallow
+    return (pid_t)0;                                                                                                                                                // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  xcb_res_client_id_value_iterator_t i = xcb_res_query_client_ids_ids_iterator(r);                                                                                  // patch: dwm-swallow
+  for (; i.rem; xcb_res_client_id_value_next(&i)) {                                                                                                                 // patch: dwm-swallow
+    spec = i.data->spec;                                                                                                                                            // patch: dwm-swallow
+    if (spec.mask & XCB_RES_CLIENT_ID_MASK_LOCAL_CLIENT_PID) {                                                                                                      // patch: dwm-swallow
+      uint32_t *t = xcb_res_client_id_value_value(i.data);                                                                                                          // patch: dwm-swallow
+      result = *t;                                                                                                                                                  // patch: dwm-swallow
+      break;                                                                                                                                                        // patch: dwm-swallow
+    }                                                                                                                                                               // patch: dwm-swallow
+  }                                                                                                                                                                 // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  free(r);                                                                                                                                                          // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  if (result == (pid_t)-1)                                                                                                                                          // patch: dwm-swallow
+    result = 0;                                                                                                                                                     // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+#endif /* __linux__ */                                                                                                                                              // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+#ifdef __OpenBSD__                                                                                                                                                  // patch: dwm-swallow
+        Atom type;                                                                                                                                                  // patch: dwm-swallow
+        int format;                                                                                                                                                 // patch: dwm-swallow
+        unsigned long len, bytes;                                                                                                                                   // patch: dwm-swallow
+        unsigned char *prop;                                                                                                                                        // patch: dwm-swallow
+        pid_t ret;                                                                                                                                                  // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+        if (XGetWindowProperty(dpy, w, XInternAtom(dpy, "_NET_WM_PID", 0), 0, 1, False, AnyPropertyType, &type, &format, &len, &bytes, &prop) != Success || !prop)  // patch: dwm-swallow
+               return 0;                                                                                                                                            // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+        ret = *(pid_t*)prop;                                                                                                                                        // patch: dwm-swallow
+        XFree(prop);                                                                                                                                                // patch: dwm-swallow
+        result = ret;                                                                                                                                               // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+#endif /* __OpenBSD__ */                                                                                                                                            // patch: dwm-swallow
+  return result;                                                                                                                                                    // patch: dwm-swallow
+}                                                                                                                                                                   // patch: dwm-swallow
 
-pid_t                                                                                                                                                               // dwm-swallow
-getparentprocess(pid_t p)                                                                                                                                           // dwm-swallow
-{                                                                                                                                                                   // dwm-swallow
-  unsigned int v = 0;                                                                                                                                               // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-#ifdef __linux__                                                                                                                                                    // dwm-swallow
-  FILE *f;                                                                                                                                                          // dwm-swallow
-  char buf[256];                                                                                                                                                    // dwm-swallow
-  snprintf(buf, sizeof(buf) - 1, "/proc/%u/stat", (unsigned)p);                                                                                                     // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  if (!(f = fopen(buf, "r")))                                                                                                                                       // dwm-swallow
-    return 0;                                                                                                                                                       // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  fscanf(f, "%*u %*s %*c %u", &v);                                                                                                                                  // dwm-swallow
-  fclose(f);                                                                                                                                                        // dwm-swallow
-#endif /* __linux__*/                                                                                                                                               // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-#ifdef __OpenBSD__                                                                                                                                                  // dwm-swallow
-  int n;                                                                                                                                                            // dwm-swallow
-  kvm_t *kd;                                                                                                                                                        // dwm-swallow
-  struct kinfo_proc *kp;                                                                                                                                            // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  kd = kvm_openfiles(NULL, NULL, NULL, KVM_NO_FILES, NULL);                                                                                                         // dwm-swallow
-  if (!kd)                                                                                                                                                          // dwm-swallow
-    return 0;                                                                                                                                                       // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  kp = kvm_getprocs(kd, KERN_PROC_PID, p, sizeof(*kp), &n);                                                                                                         // dwm-swallow
-  v = kp->p_ppid;                                                                                                                                                   // dwm-swallow
-#endif /* __OpenBSD__ */                                                                                                                                            // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  return (pid_t)v;                                                                                                                                                  // dwm-swallow
-}                                                                                                                                                                   // dwm-swallow
+pid_t                                                                                                                                                               // patch: dwm-swallow
+getparentprocess(pid_t p)                                                                                                                                           // patch: dwm-swallow
+{                                                                                                                                                                   // patch: dwm-swallow
+  unsigned int v = 0;                                                                                                                                               // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+#ifdef __linux__                                                                                                                                                    // patch: dwm-swallow
+  FILE *f;                                                                                                                                                          // patch: dwm-swallow
+  char buf[256];                                                                                                                                                    // patch: dwm-swallow
+  snprintf(buf, sizeof(buf) - 1, "/proc/%u/stat", (unsigned)p);                                                                                                     // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  if (!(f = fopen(buf, "r")))                                                                                                                                       // patch: dwm-swallow
+    return 0;                                                                                                                                                       // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  fscanf(f, "%*u %*s %*c %u", &v);                                                                                                                                  // patch: dwm-swallow
+  fclose(f);                                                                                                                                                        // patch: dwm-swallow
+#endif /* __linux__*/                                                                                                                                               // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+#ifdef __OpenBSD__                                                                                                                                                  // patch: dwm-swallow
+  int n;                                                                                                                                                            // patch: dwm-swallow
+  kvm_t *kd;                                                                                                                                                        // patch: dwm-swallow
+  struct kinfo_proc *kp;                                                                                                                                            // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  kd = kvm_openfiles(NULL, NULL, NULL, KVM_NO_FILES, NULL);                                                                                                         // patch: dwm-swallow
+  if (!kd)                                                                                                                                                          // patch: dwm-swallow
+    return 0;                                                                                                                                                       // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  kp = kvm_getprocs(kd, KERN_PROC_PID, p, sizeof(*kp), &n);                                                                                                         // patch: dwm-swallow
+  v = kp->p_ppid;                                                                                                                                                   // patch: dwm-swallow
+#endif /* __OpenBSD__ */                                                                                                                                            // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  return (pid_t)v;                                                                                                                                                  // patch: dwm-swallow
+}                                                                                                                                                                   // patch: dwm-swallow
 
-int                                                                                                                                                                 // dwm-swallow
-isdescprocess(pid_t p, pid_t c)                                                                                                                                     // dwm-swallow
-{                                                                                                                                                                   // dwm-swallow
-  while (p != c && c != 0)                                                                                                                                          // dwm-swallow
-    c = getparentprocess(c);                                                                                                                                        // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  return (int)c;                                                                                                                                                    // dwm-swallow
-}                                                                                                                                                                   // dwm-swallow
+int                                                                                                                                                                 // patch: dwm-swallow
+isdescprocess(pid_t p, pid_t c)                                                                                                                                     // patch: dwm-swallow
+{                                                                                                                                                                   // patch: dwm-swallow
+  while (p != c && c != 0)                                                                                                                                          // patch: dwm-swallow
+    c = getparentprocess(c);                                                                                                                                        // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  return (int)c;                                                                                                                                                    // patch: dwm-swallow
+}                                                                                                                                                                   // patch: dwm-swallow
 
-Client *                                                                                                                                                            // dwm-swallow
-termforwin(const Client *w)                                                                                                                                         // dwm-swallow
-{                                                                                                                                                                   // dwm-swallow
-  Client *c;                                                                                                                                                        // dwm-swallow
-  Monitor *m;                                                                                                                                                       // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  if (!w->pid || w->isterminal)                                                                                                                                     // dwm-swallow
-    return NULL;                                                                                                                                                    // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  for (m = mons; m; m = m->next) {                                                                                                                                  // dwm-swallow
-    for (c = m->clients; c; c = c->next) {                                                                                                                          // dwm-swallow
-      if (c->isterminal && !c->swallowing && c->pid && isdescprocess(c->pid, w->pid))                                                                               // dwm-swallow
-        return c;                                                                                                                                                   // dwm-swallow
-    }                                                                                                                                                               // dwm-swallow
-  }                                                                                                                                                                 // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  return NULL;                                                                                                                                                      // dwm-swallow
-}                                                                                                                                                                   // dwm-swallow
+Client *                                                                                                                                                            // patch: dwm-swallow
+termforwin(const Client *w)                                                                                                                                         // patch: dwm-swallow
+{                                                                                                                                                                   // patch: dwm-swallow
+  Client *c;                                                                                                                                                        // patch: dwm-swallow
+  Monitor *m;                                                                                                                                                       // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  if (!w->pid || w->isterminal)                                                                                                                                     // patch: dwm-swallow
+    return NULL;                                                                                                                                                    // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  for (m = mons; m; m = m->next) {                                                                                                                                  // patch: dwm-swallow
+    for (c = m->clients; c; c = c->next) {                                                                                                                          // patch: dwm-swallow
+      if (c->isterminal && !c->swallowing && c->pid && isdescprocess(c->pid, w->pid))                                                                               // patch: dwm-swallow
+        return c;                                                                                                                                                   // patch: dwm-swallow
+    }                                                                                                                                                               // patch: dwm-swallow
+  }                                                                                                                                                                 // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  return NULL;                                                                                                                                                      // patch: dwm-swallow
+}                                                                                                                                                                   // patch: dwm-swallow
 
-Client *                                                                                                                                                            // dwm-swallow
-swallowingclient(Window w)                                                                                                                                          // dwm-swallow
-{                                                                                                                                                                   // dwm-swallow
-  Client *c;                                                                                                                                                        // dwm-swallow
-  Monitor *m;                                                                                                                                                       // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  for (m = mons; m; m = m->next) {                                                                                                                                  // dwm-swallow
-    for (c = m->clients; c; c = c->next) {                                                                                                                          // dwm-swallow
-      if (c->swallowing && c->swallowing->win == w)                                                                                                                 // dwm-swallow
-        return c;                                                                                                                                                   // dwm-swallow
-    }                                                                                                                                                               // dwm-swallow
-  }                                                                                                                                                                 // dwm-swallow
-                                                                                                                                                                    // dwm-swallow
-  return NULL;                                                                                                                                                      // dwm-swallow
-}                                                                                                                                                                   // dwm-swallow
+Client *                                                                                                                                                            // patch: dwm-swallow
+swallowingclient(Window w)                                                                                                                                          // patch: dwm-swallow
+{                                                                                                                                                                   // patch: dwm-swallow
+  Client *c;                                                                                                                                                        // patch: dwm-swallow
+  Monitor *m;                                                                                                                                                       // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  for (m = mons; m; m = m->next) {                                                                                                                                  // patch: dwm-swallow
+    for (c = m->clients; c; c = c->next) {                                                                                                                          // patch: dwm-swallow
+      if (c->swallowing && c->swallowing->win == w)                                                                                                                 // patch: dwm-swallow
+        return c;                                                                                                                                                   // patch: dwm-swallow
+    }                                                                                                                                                               // patch: dwm-swallow
+  }                                                                                                                                                                 // patch: dwm-swallow
+                                                                                                                                                                    // patch: dwm-swallow
+  return NULL;                                                                                                                                                      // patch: dwm-swallow
+}                                                                                                                                                                   // patch: dwm-swallow
 
 Client *
 wintoclient(Window w)
@@ -2770,14 +2770,14 @@ main(int argc, char *argv[])
     fputs("warning: no locale support\n", stderr);
   if (!(dpy = XOpenDisplay(NULL)))
     die("dwm: cannot open display");
-  if (!(xcon = XGetXCBConnection(dpy)))               // dwm-swallow
-    die("dwm: cannot get xcb connection\n");          // dwm-swallow
+  if (!(xcon = XGetXCBConnection(dpy)))               // patch: dwm-swallow
+    die("dwm: cannot get xcb connection\n");          // patch: dwm-swallow
   checkotherwm();
-  autostart_exec();                                   // dwm-cool-autostart
+  autostart_exec();                                   // patch: dwm-cool-autostart
   setup();
 #ifdef __OpenBSD__
-//if (pledge("stdio rpath proc exec", NULL) == -1)    // dwm-swallow
-  if (pledge("stdio rpath proc exec ps", NULL) == -1) // dwm-swallow
+//if (pledge("stdio rpath proc exec", NULL) == -1)    // patch: dwm-swallow
+  if (pledge("stdio rpath proc exec ps", NULL) == -1) // patch: dwm-swallow
     die("pledge");
 #endif /* __OpenBSD__ */
   scan();
