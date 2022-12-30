@@ -328,6 +328,7 @@ static const Key keys[] = {
   TAGKEYS(                        XK_9,          8)
   { MODKEY|ShiftMask,             XK_c,          killclient,        {0                      } },
   { MODKEY|ShiftMask,             XK_q,          quit,              {0                      } },
+  { MODKEY|ShiftMask,             XK_p,          quit,              {1                      } }, // patch: dwm-restartsig
 };
 
 /* button definitions */
