@@ -2,12 +2,14 @@
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 0;        /* snap pixel */
-static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */  // patch: dwm-swallow
+static const unsigned int snap      = 0;        /* snap pixel */                                                                                            // patch: dwm-tag-preview
+static const int scalepreview       = 4;        /* preview scaling (display w and h / scalepreview) */                                                      // patch: dwm-tag-preview
+static const int previewbar         = 1;        /* show the bar in the preview window */
+static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const int vertpad            = 8;        /* vertical padding of bar */                                                                                                                                                                                                    // patch: dwm-barpadding
-static const int sidepad            = 1;        /* horizontal padding of bar */                                                                                                                                                                                                  // patch: dmenu-alpha
+static const int vertpad            = 8;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
+static const int sidepad            = 1;        /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
 static const int barheight          = 12;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=10"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=10";
@@ -88,7 +90,10 @@ static const Layout overviewlayout = { "OVERVIEW",  overview }; // patch: dwm-ov
   { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
   { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
   { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-  { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+  { MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \
+
+//{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} }, \  // patch: dwm-tag-preview
+//{ MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \  // patch: dwm-tag-preview
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }

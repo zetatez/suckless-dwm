@@ -19,14 +19,20 @@ FREETYPELIBS = -lfontconfig -lXft
 FREETYPEINC = /usr/include/freetype2
 # OpenBSD (uncomment)
 #FREETYPEINC = ${X11INC}/freetype2
+
+# Imlib2 (tag previews)
+IMLIB2LIBS = -lImlib2
+
 #KVMLIB = -lkvm                              # dwm-swallow
 #MANPREFIX = ${PREFIX}/man
 
 # includes and libs
 INCS = -I${X11INC} -I${FREETYPEINC}
-# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}                                       # dwm-swallow
-# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res ${KVMLIB}   # dwm-swallow
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB} # dwm-swallow + dwm-logarithmicspiral
+# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}                                                       # dwm-swallow
+# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res ${KVMLIB}                   # dwm-swallow
+# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB}               # dwm-swallow + dwm-logarithmicspiral
+# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} ${IMLIB2LIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB} # dwm-swallow + dwm-logarithmicspiral + dwm-tag-preview                                     # dwm -swallow + dwm-logarithmicspiral + dwm-tag-preview
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} ${IMLIB2LIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB}
 
 # flags
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}

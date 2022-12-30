@@ -46,6 +46,7 @@
 #include <sys/sysctl.h>              // patch: dwm-swallow
 #include <kvm.h>                     // patch: dwm-swallow
 #endif /* __OpenBSD */               // patch: dwm-swallow
+#include <Imlib2.h>                  // patch: dwm-tag-preview
 
 #include "drw.h"
 #include "util.h"
@@ -121,9 +122,12 @@ typedef struct {
   void (*arrange)(Monitor *);
 } Layout;
 
-typedef struct Pertag Pertag;                                                                             // patch: dwm-pertag
+typedef struct Pertag Pertag;                                                                            // patch: dwm-pertag
 
 struct Monitor {
+ 	int previewshow;                                                                                       // patch: dwm-tag-preview
+ 	Window tagwin;                                                                                         // patch: dwm-tag-preview
+ 	Pixmap *tagmap;                                                                                        // patch: dwm-tag-preview
   char ltsymbol[16];
   float mfact;
   float ffact;                                                                                           // ffact, by myself
@@ -145,7 +149,7 @@ struct Monitor {
   Window barwin;
   const Layout *lt[2];
   Pertag *pertag;                                                                                         // patch: dwm-pertag
-    int isoverview;                                                                                       // patch: dwm-overview
+  int isoverview;                                                                                         // patch: dwm-overview
 };
 
 typedef struct {
@@ -271,6 +275,9 @@ static int isdescprocess(pid_t p, pid_t c);                                     
 static Client *swallowingclient(Window w);                                                      // patch: dwm-swallow
 static Client *termforwin(const Client *c);                                                     // patch: dwm-swallow
 static pid_t winpid(Window w);                                                                  // patch: dwm-swallow
+static void showtagpreview(unsigned int i);                                                     // patch: dwm-tag-preview
+static void takepreview(void);                                                                  // patch: dwm-tag-preview
+static void previewtag(const Arg *arg);                                                         // patch: dwm-tag-preview
 
 /* variables */
 static const char broken[] = "broken";
@@ -582,6 +589,11 @@ buttonpress(XEvent *e)
     if (i < LENGTH(tags)) {
       click = ClkTagBar;
       arg.ui = 1 << i;
+ 			/* hide preview if we click the bar */                             // patch: dwm-tag-preview
+ 			if (selmon->previewshow) {                                         // patch: dwm-tag-preview
+ 				selmon->previewshow = 0;                                         // patch: dwm-tag-preview
+ 				XUnmapWindow(dpy, selmon->tagwin);                               // patch: dwm-tag-preview
+ 			}                                                                  // patch: dwm-tag-preview
     } else if (ev->x < x + TEXTW(selmon->ltsymbol))
       click = ClkLtSymbol;
     else if (ev->x > selmon->ww - (int)TEXTW(stext))
@@ -643,6 +655,7 @@ void
 cleanupmon(Monitor *mon)
 {
   Monitor *m;
+	size_t i;                                           // patch: dwm-tag-preview
 
   if (mon == mons)
     mons = mons->next;
@@ -650,8 +663,14 @@ cleanupmon(Monitor *mon)
     for (m = mons; m && m->next != mon; m = m->next);
     m->next = mon->next;
   }
+ 	for (i = 0; i < LENGTH(tags); i++)                  // patch: dwm-tag-preview
+ 		if (mon->tagmap[i])                               // patch: dwm-tag-preview
+ 			XFreePixmap(dpy, mon->tagmap[i]);               // patch: dwm-tag-preview
+ 	free(mon->tagmap);                                  // patch: dwm-tag-preview
   XUnmapWindow(dpy, mon->barwin);
   XDestroyWindow(dpy, mon->barwin);
+ 	XUnmapWindow(dpy, mon->tagwin);                     // patch: dwm-tag-preview
+ 	XDestroyWindow(dpy, mon->tagwin);                   // patch: dwm-tag-preview
   free(mon);
 }
 
@@ -789,7 +808,8 @@ createmon(void)
   m->topbar = topbar;
   m->lt[0] = &layouts[0];
   m->lt[1] = &layouts[1 % LENGTH(layouts)];
-    m->isoverview = 0;
+	m->tagmap = ecalloc(LENGTH(tags), sizeof(Pixmap));                     // patch: dwm-tag-preview
+  m->isoverview = 0;
   strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
   m->pertag = ecalloc(1, sizeof(Pertag));                                // patch: dwm-pertag
   m->pertag->curtag = m->pertag->prevtag = 1;                            // patch: dwm-pertag
@@ -1354,6 +1374,36 @@ motionnotify(XEvent *e)
   static Monitor *mon = NULL;
   Monitor *m;
   XMotionEvent *ev = &e->xmotion;
+  unsigned int i, x;                                                    // patch: dwm-tag-preview
+                                                                        // patch: dwm-tag-preview
+  if (ev->window == selmon->barwin) {                                   // patch: dwm-tag-preview
+    i = x = 0;                                                          // patch: dwm-tag-preview
+    do                                                                  // patch: dwm-tag-preview
+      x += TEXTW(tags[i]);                                              // patch: dwm-tag-preview
+    while (ev->x >= x && ++i < LENGTH(tags));                           // patch: dwm-tag-preview
+    /* FIXME when hovering the mouse over the tags and we view the tag, // patch: dwm-tag-preview
+     * the preview window get's in the preview shot                     // patch: dwm-tag-preview
+     * */                                                               // patch: dwm-tag-preview
+    if (i < LENGTH(tags)) {                                             // patch: dwm-tag-preview
+      if (selmon->previewshow != (i + 1)                                // patch: dwm-tag-preview
+          && !(selmon->tagset[selmon->seltags] & 1 << i)) {             // patch: dwm-tag-preview
+        selmon->previewshow = i + 1;                                    // patch: dwm-tag-preview
+        showtagpreview(i);                                              // patch: dwm-tag-preview
+      } else if (selmon->tagset[selmon->seltags] & 1 << i) {            // patch: dwm-tag-preview
+        selmon->previewshow = 0;                                        // patch: dwm-tag-preview
+        XUnmapWindow(dpy, selmon->tagwin);                              // patch: dwm-tag-preview
+      }                                                                 // patch: dwm-tag-preview
+    } else if (selmon->previewshow) {                                   // patch: dwm-tag-preview
+      selmon->previewshow = 0;                                          // patch: dwm-tag-preview
+      XUnmapWindow(dpy, selmon->tagwin);                                // patch: dwm-tag-preview
+    }                                                                   // patch: dwm-tag-preview
+  } else if (ev->window == selmon->tagwin) {                            // patch: dwm-tag-preview
+    selmon->previewshow = 0;                                            // patch: dwm-tag-preview
+    XUnmapWindow(dpy, selmon->tagwin);                                  // patch: dwm-tag-preview
+  } else if (selmon->previewshow) {                                     // patch: dwm-tag-preview
+    selmon->previewshow = 0;                                            // patch: dwm-tag-preview
+    XUnmapWindow(dpy, selmon->tagwin);                                  // patch: dwm-tag-preview
+  }                                                                     // patch: dwm-tag-preview
 
   if (ev->window != root)
     return;
@@ -1880,6 +1930,82 @@ setffact(const Arg *arg)                                                        
   arrange(selmon);                                                                            // ffact, by myself
 }                                                                                             // ffact, by myself
 
+void                                                                                                                                         // patch: dwm-tag-preview
+showtagpreview(unsigned int i)                                                                                                               // patch: dwm-tag-preview
+{                                                                                                                                            // patch: dwm-tag-preview
+	if (!selmon->previewshow || !selmon->tagmap[i]) {                                                                                          // patch: dwm-tag-preview
+		XUnmapWindow(dpy, selmon->tagwin);                                                                                                       // patch: dwm-tag-preview
+		return;                                                                                                                                  // patch: dwm-tag-preview
+	}                                                                                                                                          // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+	XSetWindowBackgroundPixmap(dpy, selmon->tagwin, selmon->tagmap[i]);                                                                        // patch: dwm-tag-preview
+	XCopyArea(dpy, selmon->tagmap[i], selmon->tagwin, drw->gc, 0, 0,                                                                           // patch: dwm-tag-preview
+			selmon->mw / scalepreview, selmon->mh / scalepreview,                                                                                  // patch: dwm-tag-preview
+			0, 0);                                                                                                                                 // patch: dwm-tag-preview
+	XSync(dpy, False);                                                                                                                         // patch: dwm-tag-preview
+	XMapRaised(dpy, selmon->tagwin);                                                                                                           // patch: dwm-tag-preview
+}                                                                                                                                            // patch: dwm-tag-preview
+
+void                                                                                                                                         // patch: dwm-tag-preview
+takepreview(void)                                                                                                                            // patch: dwm-tag-preview
+{                                                                                                                                            // patch: dwm-tag-preview
+	Client *c;                                                                                                                                 // patch: dwm-tag-preview
+	Imlib_Image image;                                                                                                                         // patch: dwm-tag-preview
+	unsigned int occ = 0, i;                                                                                                                   // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+	for (c = selmon->clients; c; c = c->next)                                                                                                  // patch: dwm-tag-preview
+		occ |= c->tags;                                                                                                                          // patch: dwm-tag-preview
+		//occ |= c->tags == 255 ? 0 : c->tags; /* hide vacants */                                                                                // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+	for (i = 0; i < LENGTH(tags); i++) {                                                                                                       // patch: dwm-tag-preview
+		/* searching for tags that are occupied && selected */                                                                                   // patch: dwm-tag-preview
+		if (!(occ & 1 << i) || !(selmon->tagset[selmon->seltags] & 1 << i))                                                                      // patch: dwm-tag-preview
+			continue;                                                                                                                              // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+		if (selmon->tagmap[i]) { /* tagmap exist, clean it */                                                                                    // patch: dwm-tag-preview
+			XFreePixmap(dpy, selmon->tagmap[i]);                                                                                                   // patch: dwm-tag-preview
+			selmon->tagmap[i] = 0;                                                                                                                 // patch: dwm-tag-preview
+		}                                                                                                                                        // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+		/* try to unmap the window so it doesn't show the preview on the preview */                                                              // patch: dwm-tag-preview
+		selmon->previewshow = 0;                                                                                                                 // patch: dwm-tag-preview
+		XUnmapWindow(dpy, selmon->tagwin);                                                                                                       // patch: dwm-tag-preview
+		XSync(dpy, False);                                                                                                                       // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+		if (!(image = imlib_create_image(sw, sh))) {                                                                                             // patch: dwm-tag-preview
+			fprintf(stderr, "dwm: imlib: failed to create image, skipping.");                                                                      // patch: dwm-tag-preview
+			continue;                                                                                                                              // patch: dwm-tag-preview
+		}                                                                                                                                        // patch: dwm-tag-preview
+		imlib_context_set_image(image);                                                                                                          // patch: dwm-tag-preview
+		imlib_context_set_display(dpy);                                                                                                          // patch: dwm-tag-preview
+		/* uncomment if using alpha patch */                                                                                                     // patch: dwm-tag-preview
+		//imlib_image_set_has_alpha(1);                                                                                                          // patch: dwm-tag-preview
+		//imlib_context_set_blend(0);                                                                                                            // patch: dwm-tag-preview
+		//imlib_context_set_visual(visual);                                                                                                      // patch: dwm-tag-preview
+		imlib_context_set_visual(DefaultVisual(dpy, screen));                                                                                    // patch: dwm-tag-preview
+		imlib_context_set_drawable(root);                                                                                                        // patch: dwm-tag-preview
+                                                                                                                                             // patch: dwm-tag-preview
+		if (previewbar)                                                                                                                          // patch: dwm-tag-preview
+			imlib_copy_drawable_to_image(0, selmon->wx, selmon->wy, selmon->ww, selmon->wh, 0, 0, 1);                                              // patch: dwm-tag-preview
+		else                                                                                                                                     // patch: dwm-tag-preview
+			imlib_copy_drawable_to_image(0, selmon->mx, selmon->my, selmon->mw ,selmon->mh, 0, 0, 1);                                              // patch: dwm-tag-preview
+		selmon->tagmap[i] = XCreatePixmap(dpy, selmon->tagwin, selmon->mw / scalepreview, selmon->mh / scalepreview, DefaultDepth(dpy, screen)); // patch: dwm-tag-preview
+		imlib_context_set_drawable(selmon->tagmap[i]);                                                                                           // patch: dwm-tag-preview
+		imlib_render_image_part_on_drawable_at_size(0, 0, selmon->mw, selmon->mh, 0, 0, selmon->mw / scalepreview, selmon->mh / scalepreview);   // patch: dwm-tag-preview
+		imlib_free_image();                                                                                                                      // patch: dwm-tag-preview
+	}                                                                                                                                          // patch: dwm-tag-preview
+}                                                                                                                                            // patch: dwm-tag-preview
+
+void                                                                                                                                         // patch: dwm-tag-preview
+previewtag(const Arg *arg)                                                                                                                   // patch: dwm-tag-preview
+{                                                                                                                                            // patch: dwm-tag-preview
+	if (selmon->previewshow != (arg->ui + 1))                                                                                                  // patch: dwm-tag-preview
+		selmon->previewshow = arg->ui + 1;                                                                                                       // patch: dwm-tag-preview
+	else                                                                                                                                       // patch: dwm-tag-preview
+		selmon->previewshow = 0;                                                                                                                 // patch: dwm-tag-preview
+	showtagpreview(arg->ui);                                                                                                                   // patch: dwm-tag-preview
+}                                                                                                                                            // patch: dwm-tag-preview
+
 void
 setup(void)
 {
@@ -2177,34 +2303,35 @@ void
 toggleview(const Arg *arg)
 {
   unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
-  int i;                                                                                                // patch: dwm-pertag
+  int i;                                                                                                 // patch: dwm-pertag
 
   if (newtagset) {
+	  takepreview();                                                                                       // patch: dwm-tag-preview
     selmon->tagset[selmon->seltags] = newtagset;
-                                                                                                        // patch: dwm-pertag
-    if (newtagset == ~0) {                                                                              // patch: dwm-pertag
-      selmon->pertag->prevtag = selmon->pertag->curtag;                                                 // patch: dwm-pertag
-      selmon->pertag->curtag = 0;                                                                       // patch: dwm-pertag
-    }                                                                                                   // patch: dwm-pertag
-                                                                                                        // patch: dwm-pertag
-    /* test if the user did not select the same tag */                                                  // patch: dwm-pertag
-    if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {                                             // patch: dwm-pertag
-      selmon->pertag->prevtag = selmon->pertag->curtag;                                                 // patch: dwm-pertag
-      for (i = 0; !(newtagset & 1 << i); i++) ;                                                         // patch: dwm-pertag
-      selmon->pertag->curtag = i + 1;                                                                   // patch: dwm-pertag
-    }                                                                                                   // patch: dwm-pertag
-                                                                                                        // patch: dwm-pertag
-    /* apply settings for this view */                                                                  // patch: dwm-pertag
-    selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                                 // patch: dwm-pertag
-    selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                     // patch: dwm-pertag
-    selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                     // patch: dwm-pertag // ffact, by myself
-    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                     // patch: dwm-pertag
-    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];          // patch: dwm-pertag
-    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];      // patch: dwm-pertag
-                                                                                                        // patch: dwm-pertag
-    if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])                            // patch: dwm-pertag
-      togglebar(NULL);                                                                                  // patch: dwm-pertag
-                                                                                                        // patch: dwm-pertag
+                                                                                                         // patch: dwm-pertag
+    if (newtagset == ~0) {                                                                               // patch: dwm-pertag
+      selmon->pertag->prevtag = selmon->pertag->curtag;                                                  // patch: dwm-pertag
+      selmon->pertag->curtag = 0;                                                                        // patch: dwm-pertag
+    }                                                                                                    // patch: dwm-pertag
+                                                                                                         // patch: dwm-pertag
+    /* test if the user did not select the same tag */                                                   // patch: dwm-pertag
+    if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {                                              // patch: dwm-pertag
+      selmon->pertag->prevtag = selmon->pertag->curtag;                                                  // patch: dwm-pertag
+      for (i = 0; !(newtagset & 1 << i); i++) ;                                                          // patch: dwm-pertag
+      selmon->pertag->curtag = i + 1;                                                                    // patch: dwm-pertag
+    }                                                                                                    // patch: dwm-pertag
+                                                                                                         // patch: dwm-pertag
+    /* apply settings for this view */                                                                   // patch: dwm-pertag
+    selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];                                  // patch: dwm-pertag
+    selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];                                      // patch: dwm-pertag
+    selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];                                      // patch: dwm-pertag // ffact, by myself
+    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];                                      // patch: dwm-pertag
+    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];           // patch: dwm-pertag
+    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];       // patch: dwm-pertag
+                                                                                                         // patch: dwm-pertag
+    if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])                             // patch: dwm-pertag
+      togglebar(NULL);                                                                                   // patch: dwm-pertag
+                                                                                                         // patch: dwm-pertag
     focus(NULL);
     arrange(selmon);
   }
@@ -2290,10 +2417,19 @@ updatebars(void)
   XSetWindowAttributes wa = {
     .override_redirect = True,
     .background_pixmap = ParentRelative,
-    .event_mask = ButtonPressMask|ExposureMask
+//  .event_mask = ButtonPressMask|ExposureMask                                                                     // patch: dwm-tag-preview
+		.event_mask = ButtonPressMask|ExposureMask|PointerMotionMask                                                   // patch: dwm-tag-preview
   };
+
   XClassHint ch = {"dwm", "dwm"};
   for (m = mons; m; m = m->next) {
+		if (!m->tagwin) {                                                                                              // patch: dwm-tag-preview
+			m->tagwin = XCreateWindow(dpy, root, m->wx, m->by + bh, m->mw / scalepreview,                                // patch: dwm-tag-preview
+				m->mh / scalepreview, 0, DefaultDepth(dpy, screen), CopyFromParent,                                        // patch: dwm-tag-preview
+				DefaultVisual(dpy, screen), CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);                             // patch: dwm-tag-preview
+			XDefineCursor(dpy, m->tagwin, cursor[CurNormal]->cursor);                                                    // patch: dwm-tag-preview
+			XUnmapWindow(dpy, m->tagwin);                                                                                // patch: dwm-tag-preview
+		}                                                                                                              // patch: dwm-tag-preview
     if (m->barwin)
       continue;
 //  m->barwin = XCreateWindow(dpy, root, m->wx, m->by, m->ww, bh, 0, DefaultDepth(dpy, screen),                    // patch: dwm-barpadding
@@ -2529,9 +2665,10 @@ view(const Arg *arg)
   unsigned int tmptag;                                                                              // patch: dwm-pertag
                                                                                                     // patch: dwm-pertag
   if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) {
-        arrange(selmon);                                                                            // patch: dwm-overview
+    arrange(selmon);                                                                                // patch: dwm-overview
     return;
-    }
+  }
+	takepreview();                                                                                    // patch: dwm-tag-preview
 
   selmon->seltags ^= 1; /* toggle sel tagset */
 //if (arg->ui & TAGMASK)                                                                            // patch: dwm-pertag
