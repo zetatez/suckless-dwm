@@ -899,8 +899,8 @@ drawbar(Monitor *m)
   if (m == selmon) { /* status is only drawn on selected monitor */
     drw_setscheme(drw, scheme[SchemeNorm]);
     tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-//  drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);                                           // patch: dwm-barpadding
-  	drw_text(drw, m->ww - tw - 2 * sp, 0, tw, bh, 0, stext, 0);                                  // patch: dwm-barpadding
+//  drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);                                     // patch: dwm-barpadding
+  	drw_text(drw, m->ww - tw - 2 * sp, 0, tw, bh, 0, stext, 0);                            // patch: dwm-barpadding
   }
 
   for (c = m->clients; c; c = c->next) {
@@ -909,20 +909,20 @@ drawbar(Monitor *m)
       urg |= c->tags;
   }
   x = 0;
-    if (m->isoverview) {                                                                         // patch: dwm-overview
-        // draw nothing;                                                                         // patch: dwm-overview
-    } else {                                                                                     // patch: dwm-overview
-        for (i = 0; i < LENGTH(tags); i++) {
-            w = TEXTW(tags[i]);
-            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-            drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-//         if (occ & 1 << i)                                                                     // patch: dwm-hide_vacant_tags: do not draw rect
-//             drw_rect(drw, x + boxs, boxs, boxw, boxw,                                         // patch: dwm-hide_vacant_tags: do not draw rect
-//                 m == selmon && selmon->sel && selmon->sel->tags & 1 << i,                     // patch: dwm-hide_vacant_tags: do not draw rect
-//                 urg & 1 << i);                                                                // patch: dwm-hide_vacant_tags: do not draw rect
-            x += w;
-        }
-    }                                                                                            // patch: dwm-overview
+  if (m->isoverview) {                                                                     // patch: dwm-overview
+    // draw nothing;                                                                       // patch: dwm-overview
+  } else {                                                                                 // patch: dwm-overview
+    for (i = 0; i < LENGTH(tags); i++) {
+      w = TEXTW(tags[i]);
+      drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+      drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+      if (occ & 1 << i)                                                                    // patch: do not draw rect
+        drw_rect(drw, x + boxs, boxs, boxw, boxw,                                          // patch: do not draw rect
+          m == selmon && selmon->sel && selmon->sel->tags & 1 << i,                        // patch: do not draw rect
+          urg & 1 << i);                                                                   // patch: do not draw rect
+      x += w;
+    }
+  }                                                                                        // patch: dwm-overview
   w = TEXTW(m->ltsymbol);
   drw_setscheme(drw, scheme[SchemeNorm]);
   x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
@@ -930,14 +930,14 @@ drawbar(Monitor *m)
   if ((w = m->ww - tw - x) > bh) {
     if (m->sel) {
       drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-//   	drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);                                    // patch: dwm-barpadding
- 			drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2, m->sel->name, 0);                           // patch: dwm-barpadding
+//   	drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);                              // patch: dwm-barpadding
+ 			drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2, m->sel->name, 0);                     // patch: dwm-barpadding
       if (m->sel->isfloating)
         drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
     } else {
       drw_setscheme(drw, scheme[SchemeNorm]);
-//    drw_rect(drw, x, 0, w, bh, 1, 1);                                                          // patch: dwm-barpadding
- 			drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);                                                 // patch: dwm-barpadding
+//    drw_rect(drw, x, 0, w, bh, 1, 1);                                                    // patch: dwm-barpadding
+ 			drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);                                           // patch: dwm-barpadding
     }
   }
   drw_map(drw, m->barwin, 0, 0, m->ww, bh);

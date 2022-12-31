@@ -116,59 +116,55 @@ static const char *volume_inc[]        = SH("amixer -qM set Master 5%+ umute");
 static const char *screen_light_dec[]  = SH("sudo light -U 5");
 static const char *screen_light_inc[]  = SH("sudo light -A 5");
 static const char *wifi[]              = TM("nmtui");
-static const char *bluetoothctl[]      = TM("bluetoothctl");
-static const char *toggle_kb_light[]   = SH("grep 1 /sys/class/leds/tpacpi::kbd_backlight/brightness > /dev/null; sudo sh -c \"echo $? > /sys/class/leds/tpacpi::kbd_backlight/brightness\"");
+static const char *kb_light_toggle[]   = SH("grep 1 /sys/class/leds/tpacpi::kbd_backlight/brightness > /dev/null; sudo sh -c \"echo $? > /sys/class/leds/tpacpi::kbd_backlight/brightness\"");
 
-// lazy: open, exec, copy, rename, delete, open wiki, open book, open media
+// sys
+// static const char *reboot[]            = SH("systemctl reboot");
+static const char *shutdown[]          = SH("systemctl poweroff -i");
+static const char *suspend[]           = SH("systemctl suspend");
+static const char *screenslock[]       = SH("slock & sleep .5; xset dpms force off");
+
+// lazy
 static const char *lazy_open[]         = TM("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-/* static const char *lazy_copy[]      = TM("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\""); */
-/* static const char *lazy_move[]      = TM("lazy -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'lazy -p {}' --select-1 --exit-0)\""); */
-/* static const char *lazy_exec[]      = TM("lazy -e \"$(fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}"); */
-/* static const char *lazy_delete[]    = TM("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\""); */
 static const char *lazy_open_media[]   = TM("lazy -o \"$(fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
 static const char *lazy_open_book[]    = TM("lazy -o \"$(fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/obsidian/library/'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
 static const char *lazy_open_wiki[]    = TM("lazy -o \"$(fd --type f --hidden  --exclude .git . '/home/dionysus/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *lazy_copy[]         = TM("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *lazy_move[]         = TM("lazy -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *lazy_exec[]         = TM("lazy -e \"$(fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
+// static const char *lazy_delete[]       = TM("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
 
-// SUPKEY + a-z
-static const char *browser_proxy[]     = SH("google --proxy-server='socks5://127.0.0.1:8000'");
-static const char *calendar[]          = TM("nvim +'Calendar -view=week'");
-static const char *dynamic_wallpaper[] = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
-static const char *email[]             = TM("neomutt");
-static const char *gotofile[]          = TM("~/.suckless/arch-dwm/scripts/gotofile.sh");
-static const char *irc[]               = TM("weechat");
-static const char *calculator[]        = TM("julia");
-static const char *slock[]             = SH("slock");
-static const char *vifm[]              = TM("vifm");
-static const char *toggle_screenkey[]  = SH("pgrep -x screenkey > /dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey > /dev/nul) || ([ \"$?\" == \"1\" ] && screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow >>/dev/null 2>&1 &)");
-
-// SUPKEY + etc
-static const char *passmenu[]          = SH("passmenu");
-static const char *shutdown[]          = SH("sudo shutdown now");
-static const char *htop[]              = TM("htop");
-static const char *screenshot[]        = SH("pkill flameshot; flameshot gui");
-static const char *diary[]             = TMSP("nvim +$ ~/diary/`date +%Y-%m-%d`.md");
-static const char *taskwarrior[]       = TM("taskwarrior-tui");
-
-// SUPKEY-ShiftMask + a-z
+// apps
 static const char *addressbook[]       = TM("abook");
 static const char *browser[]           = SH("google");
-static const char *lazydocker[]        = TM("lazydocker");
+static const char *browser_proxy[]     = SH("google --proxy-server='socks5://127.0.0.1:8000'");
+static const char *calendar[]          = TM("nvim +'Calendar -view=week'");
+static const char *diary[]             = TMSP("nvim +$ ~/diary/`date +%Y-%m-%d`.md");
+static const char *email[]             = TMSP("neomutt");
 static const char *gitter[]            = SH("gitter");
+static const char *find_file_rg[]      = TMSP("~/.suckless/suckless-dwm/scripts/find_file_rg.sh");
 static const char *illustrator[]       = SH("krita");
+static const char *irc[]               = TM("irssi");
+static const char *julia[]             = TM("julia");
+static const char *lazydocker[]        = TM("lazydocker");
 static const char *music[]             = SH("netease-cloud-music");
-static const char *rss[]               = TM("newsboat");
 static const char *obsidian[]          = SH("obsidian");
+static const char *passmenu[]          = SH("passmenu");
 static const char *photoshop[]         = SH("gimp");
-static const char *suspend[]           = SH("systemctl suspend");
-static const char *wps[      ]         = SH("wps");
-static const char *sublime[]           = SH("subl");
-static const char *trojan[]            = SH("~/.trojan/trojan -c ~/.trojan/config.json >>/dev/null 2>&1 &");
 static const char *restart_network[]   = SH("sudo systemctl restart NetworkManager.service");
-static const char *nudoku[]            = TM("nudoku -d hard");
+static const char *rss[]               = TM("newsboat");
+static const char *screenshot[]        = SH("pkill flameshot; flameshot gui");
+static const char *sublime[]           = SH("subl");
+static const char *taskwarrior[]       = TM("taskwarrior-tui");
+static const char *screenkey_toggle[]  = SH("pgrep -x screenkey > /dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey > /dev/nul) || ([ \"$?\" == \"1\" ] && screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow >>/dev/null 2>&1 &)");
+static const char *top[]               = TM("htop");
+static const char *trojan[]            = SH("~/.trojan/trojan -c ~/.trojan/config.json >>/dev/null 2>&1 &");
+static const char *vifm[]              = TM("vifm");
+static const char *wallpaper[]         = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
 static const char *wechat[]            = SH("wechat-uos");
-static const char *zeal[]              = SH("zeal");
+static const char *wps[      ]         = SH("wps");
 
-// SUPKEY-ShiftMask + etc
+// rec: audio/video
 static const char *rec_audio[]         = TM("ffmpeg -y -r 60 -f alsa -i default -c:a flac $HOME/Videos/rec-a-$(date '+%F-%H-%M-%S').flac");
 static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo|awk '/dimensions/ {print $2;}')\" -r 60 -f x11grab -i \"$DISPLAY\" -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac $HOME/Videos/rec-v-a-$(date '+%F-%H-%M-%S').mkv");
 
@@ -189,18 +185,18 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_F7,         spawn,             {.v =                   } },
   { SUPKEY,                       XK_F8,         spawn,             {.v = wifi              } },
 //{ SUPKEY,                       XK_F9,         spawn,             {.v =                   } },
-  { SUPKEY,                       XK_F10,        spawn,             {.v = bluetoothctl      } },
-  { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light   } },
+//{ SUPKEY,                       XK_F10,        spawn,             {.v =                   } },
+  { SUPKEY,                       XK_F11,        spawn,             {.v = kb_light_toggle   } },
 //{ SUPKEY,                       XK_F12,        spawn,             {.v =                   } },
 
   // SUPKEY + a-z, etc
   { SUPKEY,                       XK_a,          spawn,             {.v = lazy_open_media   } },
   { SUPKEY,                       XK_b,          spawn,             {.v = browser_proxy     } },
   { SUPKEY,                       XK_c,          spawn,             {.v = calendar          } },
-  { SUPKEY,                       XK_d,          spawn,             {.v = dynamic_wallpaper } },
+  { SUPKEY,                       XK_d,          spawn,             {.v = wallpaper         } },
   { SUPKEY,                       XK_e,          spawn,             {.v = email             } },
   { SUPKEY,                       XK_f,          spawn,             {.v = lazy_open         } },
-  { SUPKEY,                       XK_g,          spawn,             {.v = gotofile          } },
+  { SUPKEY,                       XK_g,          spawn,             {.v = find_file_rg      } },
 //{ SUPKEY,                       XK_h,          spawn,             {.v =                   } },
   { SUPKEY,                       XK_i,          spawn,             {.v = irc               } },
 //{ SUPKEY,                       XK_j,          spawn,             {.v = x                 } },
@@ -208,13 +204,13 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_l,          spawn,             {.v = x                 } },
 //{ SUPKEY,                       XK_m,          spawn,             {.v =                   } },
 //{ SUPKEY,                       XK_n,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_o,          spawn,             {.v = calculator        } },
+  { SUPKEY,                       XK_o,          spawn,             {.v = julia             } },
   { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_book    } },
-  { SUPKEY,                       XK_q,          spawn,             {.v = slock             } },
+  { SUPKEY,                       XK_q,          spawn,             {.v = screenslock       } },
   { SUPKEY,                       XK_r,          spawn,             {.v = vifm              } },
 //{ SUPKEY,                       XK_s,          spawn,             {.v =                   } },
 //{ SUPKEY,                       XK_t,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey  } },
+  { SUPKEY,                       XK_u,          spawn,             {.v = screenkey_toggle  } },
 //{ SUPKEY,                       XK_v,          spawn,             {.v =                   } },
   { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_wiki    } },
 //{ SUPKEY,                       XK_x,          spawn,             {.v =                   } },
@@ -223,7 +219,7 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                   } },
   { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
   { SUPKEY,                       XK_Delete,     spawn,             {.v = shutdown          } },
-  { SUPKEY,                       XK_Escape,     spawn,             {.v = htop              } },
+  { SUPKEY,                       XK_Escape,     spawn,             {.v = top               } },
   { SUPKEY,                       XK_Print,      spawn,             {.v = screenshot        } },
   { SUPKEY,                       XK_backslash,  spawn,             {.v = diary             } },
   { SUPKEY,                       XK_slash,      spawn,             {.v = taskwarrior       } },
@@ -252,11 +248,11 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = sublime           } },
   { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = trojan            } },
   { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v = restart_network   } },
-  { SUPKEY|ShiftMask,             XK_v,          spawn,             {.v = nudoku            } },
+//{ SUPKEY|ShiftMask,             XK_v,          spawn,             {.v =                   } },
   { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
 //{ SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = zeal              } },
+//{ SUPKEY|ShiftMask,             XK_z,          spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v =                   } },
 //{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                   } },
