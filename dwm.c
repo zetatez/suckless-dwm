@@ -1667,6 +1667,13 @@ resizeclient(Client *c, int x, int y, int w, int h)
   c->oldw = c->w; c->w = wc.width = w;
   c->oldh = c->h; c->h = wc.height = h;
   wc.border_width = c->bw;
+	if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next)) // patch: dwm-noborder
+	    || &monocle == c->mon->lt[c->mon->sellt]->arrange)        // patch: dwm-noborder
+	    && !c->isfullscreen && !c->isfloating) {                  // patch: dwm-noborder
+		c->w = wc.width += c->bw * 2;                               // patch: dwm-noborder
+		c->h = wc.height += c->bw * 2;                              // patch: dwm-noborder
+		wc.border_width = 0;                                        // patch: dwm-noborder
+	}                                                             // patch: dwm-noborder
   XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
   configure(c);
   XSync(dpy, False);
