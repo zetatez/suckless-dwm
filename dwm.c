@@ -487,11 +487,11 @@ arrange(Monitor *m)
 void
 arrangemon(Monitor *m)
 {
-    if (m->isoverview) {                                                 // patch: dwm-overview
-        strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol); // patch: dwm-overview
-        overviewlayout.arrange(m);                                       // patch: dwm-overview
-        return;                                                          // patch: dwm-overview
-    }                                                                    // patch: dwm-overview
+  if (m->isoverview) {                                                 // patch: dwm-overview
+    strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol);   // patch: dwm-overview
+    overviewlayout.arrange(m);                                         // patch: dwm-overview
+    return;                                                            // patch: dwm-overview
+  }                                                                    // patch: dwm-overview
 
   strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
   if (m->lt[m->sellt]->arrange)
@@ -1669,8 +1669,8 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next)) // patch: dwm-noborder
 	    || &monocle == c->mon->lt[c->mon->sellt]->arrange)        // patch: dwm-noborder
 	    && !c->isfullscreen && !c->isfloating) {                  // patch: dwm-noborder
-		c->w = wc.width += c->bw * 2;                               // patch: dwm-noborder
-		c->h = wc.height += c->bw * 2;                              // patch: dwm-noborder
+		c->w = wc.width  += c->bw * 2 + 1;                          // patch: dwm-noborder
+		c->h = wc.height += c->bw * 2;                              // patch: dwm-noborder: +1 to adjust
 		wc.border_width = 0;                                        // patch: dwm-noborder
 	}                                                             // patch: dwm-noborder
   XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);

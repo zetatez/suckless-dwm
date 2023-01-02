@@ -263,14 +263,13 @@ static const Key keys[] = {
 
   { MODKEY,                       XK_b,          togglebar,         {0                      } },
   { MODKEY,                       XK_Return,     zoom,              {0                      } },
-  { MODKEY,                       XK_Tab,        view,              {0                      } },
-  { MODKEY,                       XK_space,      setlayout,         {0                      } },
+  { MODKEY,                       XK_Tab,        view,              {0                      } }, // switch current tag    with previous tag
+  { MODKEY,                       XK_space,      setlayout,         {0                      } }, // switch current layout with previous layout
   { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                      } },
   { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // patch: dwm-sticky
   { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // patch: dwm-actualfullscreen
   { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // patch: dwm-overview
   { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // patch: dwm-focusmaster
-
   { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
   { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
   { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
@@ -302,8 +301,6 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[12]      } }, // logarithmicspiral
   { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]      } }, // no layout means floating
   { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // patch: dwm-scratchpad
-  { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
-  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
   { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // patch: dwm-move-window
   { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // patch: dwm-move-window
   { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // patch: dwm-move-window
@@ -312,6 +309,8 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // patch: dwm-resize-window
   { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // patch: dwm-resize-window
   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // patch: dwm-resize-window
+  { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
+  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
   TAGKEYS(                        XK_1,          0)
   TAGKEYS(                        XK_2,          1)
   TAGKEYS(                        XK_3,          2)
@@ -336,14 +335,14 @@ static const Key keys[] = {
 static const Button buttons[] = {
   /* click                event mask      button          function        argument */
   { ClkLtSymbol,          0,              Button1,        setlayout,      {0} },                   //          left   click : change layout to
-  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[16]} },   //          right  click : change layout to x
+  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },    //          right  click : change layout to x
   { ClkWinTitle,          0,              Button2,        zoom,           {0} },                   //          middle click : zoom
   { ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },       //          middle click : open open st
   { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },                   // modkey + left   click : move window with mouse
   { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },                   // modkey + middle click : togglefloating
   { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },                   // modkey + right  click : resize window with mouse
-  { ClkTagBar,            0,              Button1,        view,           {0} },                   //          left   click : change tag
-  { ClkTagBar,            0,              Button3,        toggleview,     {0} },                   // modkey + right  click : toggleview
-  { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },                   // modkey + left   click : move window to click tag
+  { ClkTagBar,            0,              Button1,        view,           {0} },                   //          left   click : view tag
+  { ClkTagBar,            0,              Button3,        toggleview,     {0} },                   // modkey + right  click : toggle view: view multiple tags
+  { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },                   // modkey + left   click : move window to tag clicked
   { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },                   // modkey + right  click : toggle tag
 };
