@@ -1,29 +1,7 @@
 // layouts
-#include <math.h>
 
-/* dwm-overlaylayer ------------------------------------------------------------
-*/
-void overlaylayergrid(Monitor *m) {
-  unsigned int n, i;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-
-  if (n == 0)
-    return;
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i == 0) {
-      resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
-    } else if (i < 1 + (n - 1) % 3) {
-      resize(c, m->wx + ((i - 1) % 3) * m->ww / ((n - 1) % 3), m->wy + m->wh * (1 - m->ffact) + ((n - i - 1 - (n - i - 1) % 3) / 3) * m->wh * m->ffact / ((n - 1 - (n - 1 - 1) % 3) / 3 + 1), m->ww / ((n - 1) % 3) - 2 * c->bw, m->wh * m->ffact / ((n - 1 - 1) / 3 + 1) - 2 * c->bw, False);
-    } else {
-      resize(c, m->wx + ((i - 1) % 3) * m->ww / 3, m->wy + m->wh * (1 - m->ffact) + ((n - i - 1 - (n - i - 1) % 3) / 3) * m->wh * m->ffact / ((n - 1 - (n - 1 - 1) % 3) / 3 + 1), m->ww / 3 - 2 * c->bw, m->wh * m->ffact / ((n - 1 - 1) / 3 + 1) - 2 * c->bw, False);
-    }
-  }
-}
-
-void overlaylayerhorizontal(Monitor *m) {
+/* dwm-overlaylayer ------------------------------------------------------- */
+void overlaylayerhori(Monitor *m) {
   unsigned int n, i;
   Client *c;
 
@@ -41,7 +19,7 @@ void overlaylayerhorizontal(Monitor *m) {
   }
 }
 
-void overlaylayervertical(Monitor *m) {
+void overlaylayervert(Monitor *m) {
   unsigned int n, i;
   Client *c;
 
@@ -86,31 +64,6 @@ void centeranyshape(Monitor *m) {
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     resize(c, m->ww / 2 - (m->ww * m->mfact) / 2, m->wy + m->wh / 2 - (m->wh * m->ffact) / 2, m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
   }
-}
-
-/* dwm-columns ------------------------------------------------------------ */
-void columns(Monitor *m) {
-  unsigned int i, n, h, w, mw;
-  w = 0;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-
-  if (n == 0)
-    return;
-
-  if (n > m->nmaster)
-    mw = m->nmaster ? m->ww * m->mfact : 0;
-  else
-    mw = m->ww;
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-    if (i < m->nmaster) {
-      w = mw / MIN(n, m->nmaster);
-      resize(c, m->wx + i * w, m->wy, w - (2 * c->bw), m->wh - (2 * c->bw), 0);
-    } else {
-      h = m->wh / (n - m->nmaster);
-      resize(c, m->wx + mw, m->wy + (i - m->nmaster) * h, m->ww - w * m->nmaster - (2 * c->bw), h - (2 * c->bw), 0);
-    }
 }
 
 /* dwm-fibonacci ------------------------------------------------------------ */
@@ -167,9 +120,9 @@ void fibonacci(Monitor *m, int s) {
   }
 }
 
-void dwindle(Monitor *m) { fibonacci(m, 1); }
+void fibonaccidwindle(Monitor *m) { fibonacci(m, 1); }
 
-void spiral(Monitor *m) { fibonacci(m, 0); }
+void fibonaccispiral(Monitor *m) { fibonacci(m, 0); }
 
 /* dwm-gridmode ------------------------------------------------------------ */
 void grid(Monitor *m) {
@@ -200,7 +153,35 @@ void grid(Monitor *m) {
   }
 }
 
-/* dwm-lefttile ------------------------------------------------------------ */
+/* dwm-tile ---------------------------------------------------------------- */
+void
+tileright(Monitor *m)
+{
+  unsigned int i, n, h, mw, my, ty;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+  if (n == 0)
+    return;
+
+  if (n > m->nmaster)
+    mw = m->nmaster ? m->ww * m->mfact : 0;
+  else
+    mw = m->ww;
+  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+    if (i < m->nmaster) {
+      h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+      resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+      if (my + HEIGHT(c) < m->wh)
+        my += HEIGHT(c);
+    } else {
+      h = (m->wh - ty) / (n - i);
+      resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+      if (ty + HEIGHT(c) < m->wh)
+        ty += HEIGHT(c);
+    }
+}
+
 void tileleft(Monitor *m) {
   unsigned int i, n, h, mw, my, ty;
   Client *c;
@@ -230,7 +211,7 @@ void tileleft(Monitor *m) {
 }
 
 /* dwm-deck ------------------------------------------------------------ */
-void deckvertical(Monitor *m) {
+void deckvert(Monitor *m) {
   unsigned int i, n, mw;
   Client *c;
 
@@ -251,7 +232,7 @@ void deckvertical(Monitor *m) {
       resize(c, m->wx + mw + (i - m->nmaster) * (m->ww - mw) / (n - m->nmaster), m->wy, m->ww - (mw + (i - m->nmaster) * (m->ww - mw) / (n - m->nmaster)) - 2 * c->bw, m->wh - 2 * c->bw, c->bw);
 }
 
-void deckhorizontal(Monitor *m) {
+void deckhori(Monitor *m) {
   unsigned int i, n, mh;
   Client *c;
 
@@ -274,7 +255,7 @@ void deckhorizontal(Monitor *m) {
 
 /* dwm-bottomstack ------------------------------------------------------------
 */
-static void bottomstackhorizontal(Monitor *m) {
+static void bottomstackhori(Monitor *m) {
   int w, mh, mx, tx, ty, th;
   unsigned int i, n;
   Client *c;
@@ -306,7 +287,7 @@ static void bottomstackhorizontal(Monitor *m) {
   }
 }
 
-static void bottomstackvertical(Monitor *m) {
+static void bottomstackvert(Monitor *m) {
   int w, h, mh, mx, tx, ty, tw;
   unsigned int i, n;
   Client *c;
@@ -342,8 +323,9 @@ static void bottomstackvertical(Monitor *m) {
 
 /* dwm-logarithmic-spiral
  * ------------------------------------------------------------ */
-// control the shape of logarithmic spiral
+#include <math.h>
 void logarithmicspiral(Monitor *m) {
+  // control the shape of logarithmic spiral
   float logarithmicspiralstart = -50;
   float logarithmicspiralstop = 50;
   float logarithmicspiralstep = 0.1; // control the interval of each window
