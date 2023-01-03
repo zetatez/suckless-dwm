@@ -33,8 +33,8 @@ static const char *const autostart[] = {        // patch: dwm-cool-autostart
 };                                              // patch: dwm-cool-autostart
 
 /* tagging */
-/* static const char *tags[] = { "0", "1", "i", "o", "∞", "∫", "∇", "𝒹𝒮=𝛅𝒬/𝒯", "𝛇(𝓈)" }; */
-static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "ζ(s)=∑1/n^s" };
+/* static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" }; */
+static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* xprop(1):
