@@ -1474,91 +1474,91 @@ movemouse(const Arg *arg)
   }
 }
 
-void                                                                                             // patch: dwm-move-window
-movewin(const Arg *arg)                                                                          // patch: dwm-move-window
-{                                                                                                // patch: dwm-move-window
-    Client *c;                                                                                   // patch: dwm-move-window
-    int nx, ny;                                                                                  // patch: dwm-move-window
-    c = selmon->sel;                                                                             // patch: dwm-move-window
-    if (!c)                                                                                      // patch: dwm-move-window
-        return;                                                                                  // patch: dwm-move-window
-    if (!c->isfloating)                                                                          // patch: dwm-move-window
-        togglefloating(NULL);                                                                    // patch: dwm-move-window
-    nx = c->x;                                                                                   // patch: dwm-move-window
-    ny = c->y;                                                                                   // patch: dwm-move-window
-    switch (arg->ui) {                                                                           // patch: dwm-move-window
-        case UP:                                                                                 // patch: dwm-move-window
-            ny -= c->mon->wh / 16;                                                               // patch: dwm-move-window
-            ny = MAX(ny, c->mon->wy);                                                            // patch: dwm-move-window
-            break;                                                                               // patch: dwm-move-window
-        case DOWN:                                                                               // patch: dwm-move-window
-            ny += c->mon->wh / 16;                                                               // patch: dwm-move-window
-            ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));                                   // patch: dwm-move-window
-            break;                                                                               // patch: dwm-move-window
-        case LEFT:                                                                               // patch: dwm-move-window
-            nx -= c->mon->ww / 32;                                                               // patch: dwm-move-window
-            nx = MAX(nx, c->mon->wx);                                                            // patch: dwm-move-window
-            break;                                                                               // patch: dwm-move-window
-        case RIGHT:                                                                              // patch: dwm-move-window
-            nx += c->mon->ww / 32;                                                               // patch: dwm-move-window
-            nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));                                    // patch: dwm-move-window
-            break;                                                                               // patch: dwm-move-window
-    }                                                                                            // patch: dwm-move-window
-    resize(c, nx, ny, c->w, c->h, 1);                                                            // patch: dwm-move-window
-    focus(c);                                                                                    // patch: dwm-move-window
-    pointerfocuswin(c);                                                                          // patch: dwm-move-window
-}                                                                                                // patch: dwm-move-window
+void                                                                                            // patch: dwm-move-window
+movewin(const Arg *arg)                                                                         // patch: dwm-move-window
+{                                                                                               // patch: dwm-move-window
+  Client *c;                                                                                    // patch: dwm-move-window
+  int nx, ny;                                                                                   // patch: dwm-move-window
+  c = selmon->sel;                                                                              // patch: dwm-move-window
+  if (!c)                                                                                       // patch: dwm-move-window
+    return;                                                                                     // patch: dwm-move-window
+  if (!c->isfloating)                                                                           // patch: dwm-move-window
+    togglefloating(NULL);                                                                       // patch: dwm-move-window
+  nx = c->x;                                                                                    // patch: dwm-move-window
+  ny = c->y;                                                                                    // patch: dwm-move-window
+  switch (arg->ui) {                                                                            // patch: dwm-move-window
+    case UP:                                                                                    // patch: dwm-move-window
+      ny -= c->mon->wh / 16;                                                                    // patch: dwm-move-window
+      ny = MAX(ny, c->mon->wy);                                                                 // patch: dwm-move-window
+      break;                                                                                    // patch: dwm-move-window
+    case DOWN:                                                                                  // patch: dwm-move-window
+      ny += c->mon->wh / 16;                                                                    // patch: dwm-move-window
+      ny = MIN(ny, c->mon->wy + c->mon->wh - HEIGHT(c));                                        // patch: dwm-move-window
+      break;                                                                                    // patch: dwm-move-window
+    case LEFT:                                                                                  // patch: dwm-move-window
+      nx -= c->mon->ww / 32;                                                                    // patch: dwm-move-window
+      nx = MAX(nx, c->mon->wx);                                                                 // patch: dwm-move-window
+      break;                                                                                    // patch: dwm-move-window
+    case RIGHT:                                                                                 // patch: dwm-move-window
+      nx += c->mon->ww / 32;                                                                    // patch: dwm-move-window
+      nx = MIN(nx, c->mon->wx + c->mon->ww - WIDTH(c));                                         // patch: dwm-move-window
+      break;                                                                                    // patch: dwm-move-window
+  }                                                                                             // patch: dwm-move-window
+  resize(c, nx, ny, c->w, c->h, 1);                                                             // patch: dwm-move-window
+  focus(c);                                                                                     // patch: dwm-move-window
+  pointerfocuswin(c);                                                                           // patch: dwm-move-window
+}                                                                                               // patch: dwm-move-window
 
-void                                                                                             // patch: dwm-resize-window
-resizewin(const Arg *arg)                                                                        // patch: dwm-resize-window
-{                                                                                                // patch: dwm-resize-window
-    Client *c;                                                                                   // patch: dwm-resize-window
-    int nx, ny, nw, nh, cx, cy;                                                                  // patch: dwm-resize-window
-    c = selmon->sel;                                                                             // patch: dwm-resize-window
-    if (!c)                                                                                      // patch: dwm-resize-window
-        return;                                                                                  // patch: dwm-resize-window
-    if (!c->isfloating)                                                                          // patch: dwm-resize-window
-        togglefloating(NULL);                                                                    // patch: dwm-resize-window
-    nx = c->x;                                                                                   // patch: dwm-resize-window
-    ny = c->y;                                                                                   // patch: dwm-resize-window
-    nw = c->w;                                                                                   // patch: dwm-resize-window
-    nh = c->h;                                                                                   // patch: dwm-resize-window
-    cx = c->x + c->w/2;                                                                          // patch: dwm-resize-window
-    cy = c->y + c->h/2;                                                                          // patch: dwm-resize-window
-    switch (arg->ui) {                                                                           // patch: dwm-resize-window
-        case HINCREASE:                                                                          // patch: dwm-resize-window
-            nx = cx - c->w/2 - c->mon->ww / 32;                                                  // patch: dwm-resize-window
-            nw = nw + 2 * c->mon->ww / 32;                                                       // patch: dwm-resize-window
-            break;                                                                               // patch: dwm-resize-window
-        case HDECREASE:                                                                          // patch: dwm-resize-window
-            nx = cx - c->w/2 + c->mon->ww / 32;                                                  // patch: dwm-resize-window
-            nw = nw - 2 * c->mon->ww / 32;                                                       // patch: dwm-resize-window
-            break;                                                                               // patch: dwm-resize-window
-        case VINCREASE:                                                                          // patch: dwm-resize-window
-            ny = cy - c->h/2 - c->mon->wh / 32;                                                  // patch: dwm-resize-window
-            nh = nh + 2 * c->mon->wh / 32;                                                       // patch: dwm-resize-window
-            break;                                                                               // patch: dwm-resize-window
-        case VDECREASE:                                                                          // patch: dwm-resize-window
-            ny = cy - c->h/2 + c->mon->wh / 32;                                                  // patch: dwm-resize-window
-            nh = nh - 2 * c->mon->wh / 32;                                                       // patch: dwm-resize-window
-            break;                                                                               // patch: dwm-resize-window
-    }                                                                                            // patch: dwm-resize-window
-    nw = MAX(nw, 0);                                                                             // patch: dwm-resize-window
-    nh = MAX(nh, 0);                                                                             // patch: dwm-resize-window
-    nw = MIN(nw, c->mon->ww);                                                                    // patch: dwm-resize-window
-    nh = MIN(nh, c->mon->wh);                                                                    // patch: dwm-resize-window
-    nx = MAX(nx, c->mon->wx);                                                                    // patch: dwm-resize-window
-    ny = MAX(ny, c->mon->wy);                                                                    // patch: dwm-resize-window
-    nx = MIN(nx, c->mon->ww - nw + c->mon->wx);                                                  // patch: dwm-resize-window
-    ny = MIN(ny, c->mon->wh - nh + c->mon->wy);                                                  // patch: dwm-resize-window
-    if (nw == 0 || nh == 0) {                                                                    // patch: dwm-resize-window
-        return;                                                                                  // patch: dwm-resize-window
-    }                                                                                            // patch: dwm-resize-window
-                                                                                                 // patch: dwm-resize-window
-    resize(c, nx, ny, nw, nh, 1);                                                                // patch: dwm-resize-window
-    focus(c);                                                                                    // patch: dwm-resize-window
-    XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw); // patch: dwm-resize-window
-}                                                                                                // patch: dwm-resize-window
+void                                                                                            // patch: dwm-resize-window
+resizewin(const Arg *arg)                                                                       // patch: dwm-resize-window
+{                                                                                               // patch: dwm-resize-window
+  Client *c;                                                                                    // patch: dwm-resize-window
+  int nx, ny, nw, nh, cx, cy;                                                                   // patch: dwm-resize-window
+  c = selmon->sel;                                                                              // patch: dwm-resize-window
+  if (!c)                                                                                       // patch: dwm-resize-window
+    return;                                                                                     // patch: dwm-resize-window
+  if (!c->isfloating)                                                                           // patch: dwm-resize-window
+    togglefloating(NULL);                                                                       // patch: dwm-resize-window
+  nx = c->x;                                                                                    // patch: dwm-resize-window
+  ny = c->y;                                                                                    // patch: dwm-resize-window
+  nw = c->w;                                                                                    // patch: dwm-resize-window
+  nh = c->h;                                                                                    // patch: dwm-resize-window
+  cx = c->x + c->w/2;                                                                           // patch: dwm-resize-window
+  cy = c->y + c->h/2;                                                                           // patch: dwm-resize-window
+  switch (arg->ui) {                                                                            // patch: dwm-resize-window
+    case HINCREASE:                                                                             // patch: dwm-resize-window
+      nx = cx - c->w/2 - c->mon->ww / 32;                                                       // patch: dwm-resize-window
+      nw = nw + 2 * c->mon->ww / 32;                                                            // patch: dwm-resize-window
+      break;                                                                                    // patch: dwm-resize-window
+    case HDECREASE:                                                                             // patch: dwm-resize-window
+      nx = cx - c->w/2 + c->mon->ww / 32;                                                       // patch: dwm-resize-window
+      nw = nw - 2 * c->mon->ww / 32;                                                            // patch: dwm-resize-window
+      break;                                                                                    // patch: dwm-resize-window
+    case VINCREASE:                                                                             // patch: dwm-resize-window
+      ny = cy - c->h/2 - c->mon->wh / 32;                                                       // patch: dwm-resize-window
+      nh = nh + 2 * c->mon->wh / 32;                                                            // patch: dwm-resize-window
+      break;                                                                                    // patch: dwm-resize-window
+    case VDECREASE:                                                                             // patch: dwm-resize-window
+      ny = cy - c->h/2 + c->mon->wh / 32;                                                       // patch: dwm-resize-window
+      nh = nh - 2 * c->mon->wh / 32;                                                            // patch: dwm-resize-window
+      break;                                                                                    // patch: dwm-resize-window
+  }                                                                                             // patch: dwm-resize-window
+  nw = MAX(nw, 0);                                                                              // patch: dwm-resize-window
+  nh = MAX(nh, 0);                                                                              // patch: dwm-resize-window
+  nw = MIN(nw, c->mon->ww);                                                                     // patch: dwm-resize-window
+  nh = MIN(nh, c->mon->wh);                                                                     // patch: dwm-resize-window
+  nx = MAX(nx, c->mon->wx);                                                                     // patch: dwm-resize-window
+  ny = MAX(ny, c->mon->wy);                                                                     // patch: dwm-resize-window
+  nx = MIN(nx, c->mon->ww - nw + c->mon->wx);                                                   // patch: dwm-resize-window
+  ny = MIN(ny, c->mon->wh - nh + c->mon->wy);                                                   // patch: dwm-resize-window
+  if (nw == 0 || nh == 0) {                                                                     // patch: dwm-resize-window
+    return;                                                                                     // patch: dwm-resize-window
+  }                                                                                             // patch: dwm-resize-window
+                                                                                                // patch: dwm-resize-window
+  resize(c, nx, ny, nw, nh, 1);                                                                 // patch: dwm-resize-window
+  focus(c);                                                                                     // patch: dwm-resize-window
+  XWarpPointer(dpy, None, root, 0, 0, 0, 0, c->x + c->w - 2 * c->bw, c->y + c->h - 2 * c->bw);  // patch: dwm-resize-window
+}                                                                                               // patch: dwm-resize-window
 
 Client *
 nexttiled(Client *c)
@@ -1570,10 +1570,10 @@ nexttiled(Client *c)
 void
 pop(Client *c)
 {
-    int i;                                                                                       // patch: dwm-focusmaster
-    for (i = 0; !(selmon->tagset[selmon->seltags] & 1 << i); i++);                               // patch: dwm-focusmaster
-    i++;                                                                                         // patch: dwm-focusmaster
-    c->mon->tagmarked[i] = nexttiled(c->mon->clients);                                           // patch: dwm-focusmaster
+  int i;                                                                                        // patch: dwm-focusmaster
+  for (i = 0; !(selmon->tagset[selmon->seltags] & 1 << i); i++);                                // patch: dwm-focusmaster
+  i++;                                                                                          // patch: dwm-focusmaster
+  c->mon->tagmarked[i] = nexttiled(c->mon->clients);                                            // patch: dwm-focusmaster
 
   detach(c);
   attach(c);
