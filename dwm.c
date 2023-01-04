@@ -72,7 +72,7 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck, NetWMFullscreen, NetActi
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { UP, DOWN, LEFT, RIGHT };                                          // patch: dwm-move-window
-enum { VINCREASE, VDECREASE, HINCREASE, HDECREASE };                     // patch: dwm-resize-win
+enum { VECINC, VECDEC, HORINC, HORDEC };                                 // patch: dwm-resize-win
 
 typedef union {
   int i;
@@ -1526,19 +1526,19 @@ resizewin(const Arg *arg)                                                       
   cx = c->x + c->w/2;                                                                           // patch: dwm-resize-window
   cy = c->y + c->h/2;                                                                           // patch: dwm-resize-window
   switch (arg->ui) {                                                                            // patch: dwm-resize-window
-    case HINCREASE:                                                                             // patch: dwm-resize-window
+    case HORINC:                                                                                // patch: dwm-resize-window
       nx = cx - c->w/2 - c->mon->ww / 32;                                                       // patch: dwm-resize-window
       nw = nw + 2 * c->mon->ww / 32;                                                            // patch: dwm-resize-window
       break;                                                                                    // patch: dwm-resize-window
-    case HDECREASE:                                                                             // patch: dwm-resize-window
+    case HORDEC:                                                                                // patch: dwm-resize-window
       nx = cx - c->w/2 + c->mon->ww / 32;                                                       // patch: dwm-resize-window
       nw = nw - 2 * c->mon->ww / 32;                                                            // patch: dwm-resize-window
       break;                                                                                    // patch: dwm-resize-window
-    case VINCREASE:                                                                             // patch: dwm-resize-window
+    case VECINC:                                                                                // patch: dwm-resize-window
       ny = cy - c->h/2 - c->mon->wh / 32;                                                       // patch: dwm-resize-window
       nh = nh + 2 * c->mon->wh / 32;                                                            // patch: dwm-resize-window
       break;                                                                                    // patch: dwm-resize-window
-    case VDECREASE:                                                                             // patch: dwm-resize-window
+    case VECDEC:                                                                                // patch: dwm-resize-window
       ny = cy - c->h/2 + c->mon->wh / 32;                                                       // patch: dwm-resize-window
       nh = nh - 2 * c->mon->wh / 32;                                                            // patch: dwm-resize-window
       break;                                                                                    // patch: dwm-resize-window

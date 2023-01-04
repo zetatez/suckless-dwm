@@ -305,10 +305,10 @@ static const Key keys[] = {
   { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // patch: dwm-move-window
   { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // patch: dwm-move-window
   { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // patch: dwm-move-window
-  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VINCREASE        } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VDECREASE        } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HDECREASE        } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HINCREASE        } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC           } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC           } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC           } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC           } }, // patch: dwm-resize-window
   { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
   TAGKEYS(                        XK_1,          0)
