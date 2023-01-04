@@ -1,5 +1,7 @@
 [dwm](https://dwm.suckless.org/)
 
+![](https://github.com/zetatez/suckless-dwm/blob/master/dwm.png)
+
 # dwm - dynamic window manager
 dwm is an extremely fast, small, and dynamic window manager for X.
 

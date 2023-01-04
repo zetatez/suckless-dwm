@@ -1,42 +1,5 @@
 // layouts
 
-/* dwm-overlaylayer ------------------------------------------------------- */
-void overlaylayerhori(Monitor *m) {
-  unsigned int n, i;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-
-  if (n == 0)
-    return;
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i == 0) {
-      resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
-    } else {
-      resize(c, m->wx, m->wy + m->wh * (1 - m->ffact) + (n - i - 1) * m->wh * m->ffact / (n - 1), m->ww - 2 * c->bw, m->wh * m->ffact / (n - 1) - 2 * c->bw, False);
-    }
-  }
-}
-
-void overlaylayervert(Monitor *m) {
-  unsigned int n, i;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-
-  if (n == 0)
-    return;
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i == 0) {
-      resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
-    } else {
-      resize(c, m->wx + (n - i - 1) * m->ww / (n - 1), m->wy + m->wh * (1 - m->ffact), m->ww / (n - 1) - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
-    }
-  }
-}
-
 /* dwm-center ------------------------------------------------------------ */
 void centerequalratio(Monitor *m) {
   unsigned int n, i;

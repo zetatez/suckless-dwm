@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# git log --pretty=oneline
+git show $(echo "$1"|awk '{print $1}')

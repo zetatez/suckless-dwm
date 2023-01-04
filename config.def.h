@@ -13,7 +13,7 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 0;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
 static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
-static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=10"};
+static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -34,7 +34,7 @@ static const char *const autostart[] = {        // patch: dwm-cool-autostart
 
 /* tagging */
 /* static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" }; */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "🎻", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* xprop(1):
@@ -43,7 +43,9 @@ static const Rule rules[] = {
    */
   /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
   { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
-  //  { "netease-cloud-music",   NULL,       NULL,    1 << 8,       0,            0,             0,           -1 },
+  {"music",                  NULL,       NULL,    0,            1,            1,             0,           -1 },
+  {"cava",                   NULL,       NULL,    0,            1,            1,             0,           -1 },
+  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 },
 };
 
 static const char *skipswallow[] = { "vimb", "surf" };   // patch: dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
@@ -94,223 +96,225 @@ static const Layout overviewlayout = { "OVERVIEW",  overview }; // patch: dwm-ov
 //{ MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \  // patch: dwm-tag-preview
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
+#define ST(cmd)    { "st", "-e", "/bin/sh", "-c", cmd, NULL }
+#define STSP(cmd)  { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
-static char scratchpadname[11]         = "scratchpad";                                         // patch: dwm-scratchpad
+static const char scratchpadname[11]   = "scratchpad";                                         // patch: dwm-scratchpad
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", scratchpadname, NULL }; // patch: dwm-scratchpad
 
-#define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
-#define TM(cmd)    { "st", "-e", "/bin/sh", "-c", cmd, NULL }
-#define TMSP(cmd)  { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
-
 // SUPKEY + F1-F12
-static const char *volume_toggle[]     = SH("amixer set Master toggle");
-static const char *volume_dec[]        = SH("amixer -qM set Master 5%- umute");
-static const char *volume_inc[]        = SH("amixer -qM set Master 5%+ umute");
-static const char *screen_light_dec[]  = SH("sudo light -U 5");
-static const char *screen_light_inc[]  = SH("sudo light -A 5");
-static const char *wifi[]              = TM("nmtui");
-static const char *kb_light_toggle[]   = SH("grep 1 /sys/class/leds/tpacpi::kbd_backlight/brightness > /dev/null; sudo sh -c \"echo $? > /sys/class/leds/tpacpi::kbd_backlight/brightness\"");
+static const char *cmd_volume_toggle[]         = SH("amixer set Master toggle");
+static const char *cmd_volume_dec[]            = SH("amixer -qM set Master 5%- umute");
+static const char *cmd_volume_inc[]            = SH("amixer -qM set Master 5%+ umute");
+static const char *cmd_screen_light_dec[]      = SH("sudo light -U 5");
+static const char *cmd_screen_light_inc[]      = SH("sudo light -A 5");
+static const char *toggle_screen[]             = SH("~/.suckless/suckless-dwm/utils/toggle-screen.py");
+static const char *toggle_wifi[]               = SH("~/.suckless/suckless-dwm/utils/toggle-wifi.py");
+static const char *toggle_kb_light[]           = SH("~/.suckless/suckless-dwm/utils/toggle-kb-light");
 
 // sys
-// static const char *reboot[]            = SH("systemctl reboot");
-static const char *shutdown[]          = SH("systemctl poweroff -i");
-static const char *suspend[]           = SH("systemctl suspend");
-static const char *screenslock[]       = SH("slock & sleep .5; xset dpms force off");
+// static const char *cmd_reboot[]             = SH("systemctl reboot");
+static const char *cmd_shutdown[]              = SH("systemctl poweroff -i");
+static const char *cmd_suspend[]               = SH("systemctl suspend");
+static const char *cmd_screenslock[]           = SH("slock & sleep .5; xset dpms force off");
 
 // lazy
-static const char *lazy_open[]         = TM("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-static const char *lazy_open_media[]   = TM("lazy -o \"$(fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
-static const char *lazy_open_book[]    = TM("lazy -o \"$(fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/obsidian/library/'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
-static const char *lazy_open_wiki[]    = TM("lazy -o \"$(fd --type f --hidden  --exclude .git . '/home/dionysus/obsidian/wiki/'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *lazy_copy[]         = TM("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *lazy_move[]         = TM("lazy -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *lazy_exec[]         = TM("lazy -e \"$(fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
-// static const char *lazy_delete[]       = TM("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+static const char *cmd_lazy_open[]             = ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_media[]       = ST("lazy -o \"$(fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_book[]        = ST("lazy -o \"$(fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_wiki[]        = ST("lazy -o \"$(fd --type f --hidden  --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *cmd_lazy_copy[]          = ST("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *cmd_lazy_move[]          = ST("lazy -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *cmd_lazy_exec[]          = ST("lazy -e \"$(fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
+// static const char *cmd_lazy_delete[]        = ST("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
 
 // apps
-static const char *addressbook[]       = TM("abook");
-static const char *browser[]           = SH("google");
-static const char *browser_proxy[]     = SH("google --proxy-server='socks5://127.0.0.1:8000'");
-static const char *calendar[]          = TM("nvim +'Calendar -view=week'");
-static const char *diary[]             = TMSP("nvim +$ ~/diary/`date +%Y-%m-%d`.md");
-static const char *email[]             = TMSP("neomutt");
-static const char *gitter[]            = SH("gitter");
-static const char *find_file_rg[]      = TMSP("~/.suckless/suckless-dwm/scripts/find_file_rg.sh");
-static const char *illustrator[]       = SH("krita");
-static const char *irc[]               = TM("irssi");
-static const char *julia[]             = TM("julia");
-static const char *lazydocker[]        = TM("lazydocker");
-static const char *music[]             = SH("netease-cloud-music");
-static const char *obsidian[]          = SH("obsidian");
-static const char *passmenu[]          = SH("passmenu");
-static const char *photoshop[]         = SH("gimp");
-static const char *restart_network[]   = SH("sudo systemctl restart NetworkManager.service");
-static const char *rss[]               = TM("newsboat");
-static const char *screenshot[]        = SH("pkill flameshot; flameshot gui");
-static const char *sublime[]           = SH("subl");
-static const char *taskwarrior[]       = TM("taskwarrior-tui");
-static const char *screenkey_toggle[]  = SH("pgrep -x screenkey > /dev/null; ([ \"$?\" == \"0\" ] && pkill screenkey > /dev/nul) || ([ \"$?\" == \"1\" ] && screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow >>/dev/null 2>&1 &)");
-static const char *top[]               = TM("htop");
-static const char *trojan[]            = SH("~/.trojan/trojan -c ~/.trojan/config.json >>/dev/null 2>&1 &");
-static const char *vifm[]              = TM("vifm");
-static const char *wallpaper[]         = SH("feh --bg-fill --recursive --randomize ~/Pictures/wallpapers");
-static const char *wechat[]            = SH("wechat-uos");
-static const char *wps[      ]         = SH("wps");
-
-// rec: audio/video
-static const char *rec_audio[]         = TM("ffmpeg -y -r 60 -f alsa -i default -c:a flac $HOME/Videos/rec-a-$(date '+%F-%H-%M-%S').flac");
-static const char *rec_video[]         = TM("ffmpeg -y -s \"$(xdpyinfo|awk '/dimensions/ {print $2;}')\" -r 60 -f x11grab -i \"$DISPLAY\" -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac $HOME/Videos/rec-v-a-$(date '+%F-%H-%M-%S').mkv");
+static const char *download_arxiv_to_lib[]     = SH("~/.suckless/suckless-dwm/utils/download-arxiv-to-lib.py");
+static const char *download_cur_to_download[]  = SH("~/.suckless/suckless-dwm/utils/download-cur-to-download.py");
+static const char *open_copied[]               = SH("~/.suckless/suckless-dwm/utils/open-copied.py");
+static const char *open_find_file_rg[]         = ST("~/.suckless/suckless-dwm/utils/open-find-file-with-rg");
+static const char *open_my_play[]              = SH("~/.suckless/suckless-dwm/utils/open-my-play.py");
+static const char *open_note_taking[]          = SH("~/.suckless/suckless-dwm/utils/open-note-taking.py");
+static const char *open_passmenu[]             = SH("~/.suckless/suckless-dwm/utils/open-passmenu.py");
+static const char *open_sketchpad[]            = SH("~/.suckless/suckless-dwm/utils/open-sketchpad.py");
+static const char *open_sublime[]              = SH("~/.suckless/suckless-dwm/utils/open-sublime.py");
+static const char *open_wps[]                  = SH("~/.suckless/suckless-dwm/utils/open-wps.py");
+static const char *toggle_addressbook[]        = SH("~/.suckless/suckless-dwm/utils/toggle-addressbook.py");
+static const char *toggle_browser[]            = SH("~/.suckless/suckless-dwm/utils/toggle-browser.py");
+static const char *toggle_browser_with_proxy[] = SH("~/.suckless/suckless-dwm/utils/toggle-browser-with-proxy.py");
+static const char *toggle_calendar[]           = SH("~/.suckless/suckless-dwm/utils/toggle-calendar.py");
+static const char *toggle_diary[]              = SH("~/.suckless/suckless-dwm/utils/toggle-diary.py");
+static const char *toggle_email[]              = SH("~/.suckless/suckless-dwm/utils/toggle-mutt.py");
+static const char *toggle_flameshot[]          = SH("~/.suckless/suckless-dwm/utils/toggle-flameshot.py");
+static const char *toggle_gitter[]             = SH("~/.suckless/suckless-dwm/utils/toggle-gitter.py");
+static const char *toggle_irc[]                = SH("~/.suckless/suckless-dwm/utils/toggle-irc.py");
+static const char *toggle_julia[]              = SH("~/.suckless/suckless-dwm/utils/toggle-julia.py");
+static const char *toggle_lazydocker[]         = SH("~/.suckless/suckless-dwm/utils/toggle-lazydocker.py");
+static const char *toggle_mathpix[]            = SH("~/.suckless/suckless-dwm/utils/toggle-mathpix.py");
+static const char *toggle_music[]              = SH("~/.suckless/suckless-dwm/utils/toggle-music.py");
+static const char *toggle_music_net_cloud[]    = SH("~/.suckless/suckless-dwm/utils/toggle-music-net-cloud.py");
+static const char *toggle_photoshop[]          = SH("~/.suckless/suckless-dwm/utils/open-photoshop.py");
+static const char *toggle_rss[]                = SH("~/.suckless/suckless-dwm/utils/toggle-rss.py");
+static const char *toggle_screenkey[]          = SH("~/.suckless/suckless-dwm/utils/toggle-screenkey.py");
+static const char *toggle_show[]               = SH("~/.suckless/suckless-dwm/utils/toggle-show.py");
+static const char *toggle_top[]                = SH("~/.suckless/suckless-dwm/utils/toggle-top.py");
+static const char *toggle_trojan[]             = SH("~/.suckless/suckless-dwm/utils/toggle-trojan.py");
+static const char *toggle_vifm[]               = SH("~/.suckless/suckless-dwm/utils/toggle-vifm.py");
+static const char *toggle_wallpaper[]          = SH("~/.suckless/suckless-dwm/utils/toggle-wallpaper.py");
+static const char *toggle_wechat[]             = SH("~/.suckless/suckless-dwm/utils/toggle-wechat.py");
+static const char *toggle_rec_audio[]          = SH("~/.suckless/suckless-dwm/utils/toggle-rec-audio.py");
+static const char *toggle_rec_video[]          = SH("~/.suckless/suckless-dwm/utils/toggle-rec-video.py");
 
 #include "movestack.c"
 #include "shiftview.c"
 static const Key keys[] = {
   /* modifier                     key            function           argument */
-  { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd          } },
-  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd           } },
+  { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                 } },
+  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                  } },
 
   // SUPKEY + F1-F12
-  { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle     } },
-  { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec        } },
-  { SUPKEY,                       XK_F3,         spawn,             {.v = volume_inc        } },
-//{ SUPKEY,                       XK_F4,         spawn,             {.v =                   } },
-  { SUPKEY,                       XK_F5,         spawn,             {.v = screen_light_dec  } },
-  { SUPKEY,                       XK_F6,         spawn,             {.v = screen_light_inc  } },
-//{ SUPKEY,                       XK_F7,         spawn,             {.v =                   } },
-  { SUPKEY,                       XK_F8,         spawn,             {.v = wifi              } },
-//{ SUPKEY,                       XK_F9,         spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_F10,        spawn,             {.v =                   } },
-  { SUPKEY,                       XK_F11,        spawn,             {.v = kb_light_toggle   } },
-//{ SUPKEY,                       XK_F12,        spawn,             {.v =                   } },
+  { SUPKEY,                       XK_F1,         spawn,             {.v = cmd_volume_toggle        } },
+  { SUPKEY,                       XK_F2,         spawn,             {.v = cmd_volume_dec           } },
+  { SUPKEY,                       XK_F3,         spawn,             {.v = cmd_volume_inc           } },
+//{ SUPKEY,                       XK_F4,         spawn,             {.v =                          } },
+  { SUPKEY,                       XK_F5,         spawn,             {.v = cmd_screen_light_dec     } },
+  { SUPKEY,                       XK_F6,         spawn,             {.v = cmd_screen_light_inc     } },
+  { SUPKEY,                       XK_F7,         spawn,             {.v = toggle_screen            } },
+  { SUPKEY,                       XK_F8,         spawn,             {.v = toggle_wifi              } },
+//{ SUPKEY,                       XK_F9,         spawn,             {.v =                          } },
+//{ SUPKEY,                       XK_F10,        spawn,             {.v =                          } },
+  { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light          } },
+//{ SUPKEY,                       XK_F12,        spawn,             {.v =                          } },
 
   // SUPKEY + a-z, etc
-  { SUPKEY,                       XK_a,          spawn,             {.v = lazy_open_media   } },
-  { SUPKEY,                       XK_b,          spawn,             {.v = browser_proxy     } },
-  { SUPKEY,                       XK_c,          spawn,             {.v = calendar          } },
-  { SUPKEY,                       XK_d,          spawn,             {.v = wallpaper         } },
-  { SUPKEY,                       XK_e,          spawn,             {.v = email             } },
-  { SUPKEY,                       XK_f,          spawn,             {.v = lazy_open         } },
-  { SUPKEY,                       XK_g,          spawn,             {.v = find_file_rg      } },
-//{ SUPKEY,                       XK_h,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_i,          spawn,             {.v = irc               } },
-//{ SUPKEY,                       XK_j,          spawn,             {.v = x                 } },
-//{ SUPKEY,                       XK_k,          spawn,             {.v = x                 } },
-//{ SUPKEY,                       XK_l,          spawn,             {.v = x                 } },
-//{ SUPKEY,                       XK_m,          spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_n,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_o,          spawn,             {.v = julia             } },
-  { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_book    } },
-  { SUPKEY,                       XK_q,          spawn,             {.v = screenslock       } },
-  { SUPKEY,                       XK_r,          spawn,             {.v = vifm              } },
-//{ SUPKEY,                       XK_s,          spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_t,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_u,          spawn,             {.v = screenkey_toggle  } },
-//{ SUPKEY,                       XK_v,          spawn,             {.v =                   } },
-  { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_wiki    } },
-//{ SUPKEY,                       XK_x,          spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_y,          spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_z,          spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                   } },
-  { SUPKEY,                       XK_BackSpace,  spawn,             {.v = passmenu          } },
-  { SUPKEY,                       XK_Delete,     spawn,             {.v = shutdown          } },
-  { SUPKEY,                       XK_Escape,     spawn,             {.v = top               } },
-  { SUPKEY,                       XK_Print,      spawn,             {.v = screenshot        } },
-  { SUPKEY,                       XK_backslash,  spawn,             {.v = diary             } },
-  { SUPKEY,                       XK_slash,      spawn,             {.v = taskwarrior       } },
-//{ SUPKEY,                       XK_comma,      spawn,             {.v =                   } },
-//{ SUPKEY,                       XK_period,     spawn,             {.v =                   } },
+  { SUPKEY,                       XK_a,          spawn,             {.v = download_arxiv_to_lib    } },
+  { SUPKEY,                       XK_b,          spawn,             {.v = toggle_browser_with_proxy} },
+  { SUPKEY,                       XK_c,          spawn,             {.v = toggle_calendar          } },
+  { SUPKEY,                       XK_d,          spawn,             {.v = download_cur_to_download } },
+  { SUPKEY,                       XK_e,          spawn,             {.v = toggle_email             } },
+  { SUPKEY,                       XK_f,          spawn,             {.v = cmd_lazy_open            } },
+  { SUPKEY,                       XK_g,          spawn,             {.v = open_find_file_rg        } },
+//{ SUPKEY,                       XK_h,          spawn,             {.v = x                        } },
+  { SUPKEY,                       XK_i,          spawn,             {.v = open_sketchpad           } },
+//{ SUPKEY,                       XK_j,          spawn,             {.v = x                        } },
+//{ SUPKEY,                       XK_k,          spawn,             {.v = x                        } },
+//{ SUPKEY,                       XK_l,          spawn,             {.v = x                        } },
+  { SUPKEY,                       XK_m,          spawn,             {.v = toggle_music             } },
+  { SUPKEY,                       XK_n,          spawn,             {.v = open_note_taking         } },
+  { SUPKEY,                       XK_o,          spawn,             {.v = open_copied              } },
+  { SUPKEY,                       XK_p,          spawn,             {.v = cmd_lazy_open_book       } },
+  { SUPKEY,                       XK_q,          spawn,             {.v = cmd_screenslock          } },
+  { SUPKEY,                       XK_r,          spawn,             {.v = toggle_vifm              } },
+  { SUPKEY,                       XK_s,          spawn,             {.v = toggle_show              } },
+//{ SUPKEY,                       XK_t,          spawn,             {.v =                          } },
+  { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey         } },
+  { SUPKEY,                       XK_v,          spawn,             {.v = cmd_lazy_open_media      } },
+  { SUPKEY,                       XK_w,          spawn,             {.v = cmd_lazy_open_wiki       } },
+  { SUPKEY,                       XK_x,          spawn,             {.v = toggle_wallpaper         } },
+//{ SUPKEY,                       XK_y,          spawn,             {.v =                          } },
+//{ SUPKEY,                       XK_z,          spawn,             {.v =                          } },
+//{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                          } },
+  { SUPKEY,                       XK_BackSpace,  spawn,             {.v = open_passmenu            } },
+  { SUPKEY,                       XK_Delete,     spawn,             {.v = cmd_shutdown             } },
+  { SUPKEY,                       XK_Escape,     spawn,             {.v = toggle_top               } },
+  { SUPKEY,                       XK_Print,      spawn,             {.v = toggle_flameshot         } },
+  { SUPKEY,                       XK_backslash,  spawn,             {.v = toggle_diary             } },
+  { SUPKEY,                       XK_slash,      spawn,             {.v = open_my_play             } },
+//{ SUPKEY,                       XK_comma,      spawn,             {.v =                          } },
+//{ SUPKEY,                       XK_period,     spawn,             {.v =                          } },
 
   // SUPKEY-ShiftMask + a-z, etc
-  { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = addressbook       } },
-  { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v = browser           } },
-//{ SUPKEY|ShiftMask,             XK_c,          spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = lazydocker        } },
-//{ SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v = gitter            } },
-//{ SUPKEY|ShiftMask,             XK_h,          spawn,             {.v = x                 } },
-  { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = illustrator       } },
-//{ SUPKEY|ShiftMask,             XK_j,          spawn,             {.v = x                 } },
-//{ SUPKEY|ShiftMask,             XK_k,          spawn,             {.v = x                 } },
-//{ SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = x                 } },
-  { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = music             } },
-  { SUPKEY|ShiftMask,             XK_n,          spawn,             {.v = rss               } },
-  { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = obsidian          } },
-  { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = photoshop         } },
-  { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = suspend           } },
-  { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = wps               } },
-  { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = sublime           } },
-  { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = trojan            } },
-  { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v = restart_network   } },
-//{ SUPKEY|ShiftMask,             XK_v,          spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = wechat            } },
-//{ SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_z,          spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                   } },
-//{ SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v =                   } },
-  { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = rec_audio         } },
-  { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = rec_video         } },
+  { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = toggle_addressbook       } },
+  { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v = toggle_browser           } },
+//{ SUPKEY|ShiftMask,             XK_c,          spawn,             {.v =                          } },
+  { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = toggle_lazydocker        } },
+  { SUPKEY|ShiftMask,             XK_e,          spawn,             {.v = toggle_mathpix           } },
+//{ SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                          } },
+  { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v = toggle_gitter            } },
+//{ SUPKEY|ShiftMask,             XK_h,          spawn,             {.v = x                        } },
+  { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = toggle_irc               } },
+//{ SUPKEY|ShiftMask,             XK_j,          spawn,             {.v = x                        } },
+//{ SUPKEY|ShiftMask,             XK_k,          spawn,             {.v = x                        } },
+//{ SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = x                        } },
+  { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = toggle_music_net_cloud   } },
+  { SUPKEY|ShiftMask,             XK_n,          spawn,             {.v = toggle_rss               } },
+  { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = toggle_julia             } },
+  { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = toggle_photoshop         } },
+  { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = cmd_suspend              } },
+//{ SUPKEY|ShiftMask,             XK_r,          spawn,             {.v =                          } },
+  { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = open_sublime             } },
+  { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = toggle_trojan            } },
+  { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v = open_wps                 } },
+//{ SUPKEY|ShiftMask,             XK_v,          spawn,             {.v =                          } },
+  { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = toggle_wechat            } },
+//{ SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_z,          spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                          } },
+//{ SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v =                          } },
+  { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio         } },
+  { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_video         } },
 
-  { MODKEY,                       XK_b,          togglebar,         {0                      } },
-  { MODKEY,                       XK_Return,     zoom,              {0                      } },
-  { MODKEY,                       XK_Tab,        view,              {0                      } }, // switch current tag    with previous tag
-  { MODKEY,                       XK_space,      setlayout,         {0                      } }, // switch current layout with previous layout
-  { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                      } },
-  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                      } }, // patch: dwm-sticky
-  { MODKEY,                       XK_f,          togglefullscreen,  {0                      } }, // patch: dwm-actualfullscreen
-  { MODKEY,                       XK_o,          toggleoverview,    {0                      } }, // patch: dwm-overview
-  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                      } }, // patch: dwm-focusmaster
-  { MODKEY,                       XK_k,          focusstack,        {.i = -1                } },
-  { MODKEY,                       XK_j,          focusstack,        {.i = +1                } },
-  { MODKEY,                       XK_d,          incnmaster,        {.i = -1                } },
-  { MODKEY,                       XK_i,          incnmaster,        {.i = +1                } },
-  { MODKEY,                       XK_comma,      cyclelayout,       {.i = -1                } },
-  { MODKEY,                       XK_period,     cyclelayout,       {.i = +1                } },
-  { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1                } },
-  { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                } },
-  { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                } }, // shiftview
-  { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                } }, // shiftview
-  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                } }, // move focus to another monitor
-  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                } }, // move tag   to another monitor
-  { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025            } },
-  { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025            } },
-  { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025            } }, // ffact, by myself
-  { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025            } }, // ffact, by myself
-  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]       } }, // centeranyshape
-  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]       } }, // centerequalratio
-  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]       } }, // grid
-  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[3]       } }, // deckvert
-  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[4]       } }, // deckhori
-  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[5]       } }, // sprial
-  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[6]       } }, // dwindle
-  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[7]       } }, // bstack
-  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[8]       } }, // bstack
-  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[9]       } }, // tileright
-  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[10]      } }, // tileleft
-  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[11]      } }, // monocle
-  { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[12]      } }, // logarithmicspiral
-  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]      } }, // no layout means floating
-  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd     } }, // patch: dwm-scratchpad
-  { SUPKEY,                       XK_k,          movewin,           {.ui = UP               } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN             } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT             } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT            } }, // patch: dwm-move-window
-  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC           } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC           } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC           } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC           } }, // patch: dwm-resize-window
-  { MODKEY,                       XK_0,          view,              {.ui = ~0               } },
-  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0               } },
+  { MODKEY,                       XK_b,          togglebar,         {0                             } },
+  { MODKEY,                       XK_Return,     zoom,              {0                             } },
+  { MODKEY,                       XK_Tab,        view,              {0                             } }, // switch current tag    with previous tag
+  { MODKEY,                       XK_space,      setlayout,         {0                             } }, // switch current layout with previous layout
+  { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                             } },
+  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                             } }, // patch: dwm-sticky
+  { MODKEY,                       XK_f,          togglefullscreen,  {0                             } }, // patch: dwm-actualfullscreen
+  { MODKEY,                       XK_o,          toggleoverview,    {0                             } }, // patch: dwm-overview
+  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                             } }, // patch: dwm-focusmaster
+  { MODKEY,                       XK_k,          focusstack,        {.i = -1                       } },
+  { MODKEY,                       XK_j,          focusstack,        {.i = +1                       } },
+  { MODKEY,                       XK_d,          incnmaster,        {.i = -1                       } },
+  { MODKEY,                       XK_i,          incnmaster,        {.i = +1                       } },
+  { MODKEY,                       XK_comma,      cyclelayout,       {.i = -1                       } },
+  { MODKEY,                       XK_period,     cyclelayout,       {.i = +1                       } },
+  { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1                       } },
+  { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                       } },
+  { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                       } }, // shiftview
+  { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                       } }, // shiftview
+  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                       } }, // move focus to another monitor
+  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                       } }, // move tag   to another monitor
+  { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025                   } },
+  { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                   } },
+  { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                   } }, // ffact, by myself
+  { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                   } }, // ffact, by myself
+  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]              } }, // centeranyshape
+  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]              } }, // centerequalratio
+  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]              } }, // grid
+  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[3]              } }, // deckvert
+  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[4]              } }, // deckhori
+  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[5]              } }, // sprial
+  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[6]              } }, // dwindle
+  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[7]              } }, // bstack
+  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[8]              } }, // bstack
+  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[9]              } }, // tileright
+  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[10]             } }, // tileleft
+  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[11]             } }, // monocle
+  { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[12]             } }, // logarithmicspiral
+  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]             } }, // no layout means floating
+  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd            } }, // patch: dwm-scratchpad
+  { SUPKEY,                       XK_k,          movewin,           {.ui = UP                      } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                    } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                    } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                   } }, // patch: dwm-move-window
+  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                  } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                  } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                  } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                  } }, // patch: dwm-resize-window
+  { MODKEY,                       XK_0,          view,              {.ui = ~0                      } },
+  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                      } },
   TAGKEYS(                        XK_1,          0)
   TAGKEYS(                        XK_2,          1)
   TAGKEYS(                        XK_3,          2)
@@ -320,9 +324,9 @@ static const Key keys[] = {
   TAGKEYS(                        XK_7,          6)
   TAGKEYS(                        XK_8,          7)
   TAGKEYS(                        XK_9,          8)
-  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                      } },
-  { MODKEY|ShiftMask,             XK_q,          quit,              {0                      } },
-  { MODKEY|ShiftMask,             XK_p,          quit,              {1                      } }, // patch: dwm-restartsig
+  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                           } },
+  { MODKEY|ShiftMask,             XK_q,          quit,              {0                           } },
+  { MODKEY|ShiftMask,             XK_p,          quit,              {1                           } }, // patch: dwm-restartsig
 };
 
 /* button definitions */

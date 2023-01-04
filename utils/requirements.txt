@@ -1,0 +1,5 @@
+
+psutil
+shutil
+pyqt5
+wget
