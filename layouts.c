@@ -10,6 +10,9 @@ void centerequalratio(Monitor *m) {
   if (n == 0)
     return;
 
+  if (n > 0) /* override layout symbol */
+    snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s-%d", selmon->lt[selmon->sellt]->symbol, n);
+
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     resize(c, m->ww / 2 - (m->ww * m->ffact) / 2, m->wy + m->wh / 2 - (m->wh * m->ffact) / 2, m->ww * m->ffact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
   }
@@ -23,6 +26,9 @@ void centeranyshape(Monitor *m) {
 
   if (n == 0)
     return;
+
+  if (n > 0) /* override layout symbol */
+    snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s-%d", selmon->lt[selmon->sellt]->symbol, n);
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     resize(c, m->ww / 2 - (m->ww * m->mfact) / 2, m->wy + m->wh / 2 - (m->wh * m->ffact) / 2, m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
