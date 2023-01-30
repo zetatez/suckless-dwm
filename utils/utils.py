@@ -257,7 +257,7 @@ def open_sketchpad():
 
 
 def open_sublime():
-    cmd = "sublime"
+    cmd = "subl"
     os.system(cmd)
 
     return
@@ -288,8 +288,7 @@ def toggle_calendar():
 
 def toggle_diary():
     time_str = time.strftime("%Y-%m-%d", time.localtime())
-    cmd = "st -t {} -c {} -e nvim {}/diary/{}.md".format(
-        win_name_scratchpad, win_name_scratchpad, my_home_path, time_str)
+    cmd = "st -e nvim {}/diary/{}.md".format(my_home_path, time_str)
     toggle_by_cmd(cmd)
 
     return
@@ -310,14 +309,14 @@ def toggle_trojan():
 
 
 def toggle_flameshot():
-    cmd = "st -e flameshot gui"
+    cmd = "flameshot gui"
     toggle_by_cmd(cmd)
 
     return
 
 
 def toggle_google():
-    cmd = "st -e google"
+    cmd = "google"
     toggle_by_cmd(cmd)
 
     return
@@ -331,7 +330,7 @@ def toggle_google_with_proxy():
 
 
 def toggle_gitter():
-    cmd = "st -e gitter"
+    cmd = "gitter"
     toggle_by_cmd(cmd)
 
     return
@@ -360,7 +359,7 @@ def toggle_lazydocker():
 
 
 def toggle_mathpix():
-    cmd = "st -e mathpix"
+    cmd = "mathpix"
     toggle_by_cmd(cmd)
 
     return
@@ -379,29 +378,28 @@ def toggle_music():
 
 
 def toggle_music_net_cloud():
-    cmd = "st -e netease-cloud-music"
+    cmd = "netease-cloud-music"
     toggle_by_cmd(cmd)
 
     return
 
 
 def toggle_mutt():
-    cmd = "st -g {} -e mutt"
+    cmd = "st -e mutt"
     toggle_by_cmd(cmd)
 
     return
 
 
 def toggle_rss():
-    cmd = "st -t {} -c {} -e newsboat".format(win_name_scratchpad,
-                                              win_name_scratchpad)
+    cmd = "st -e newsboat"
     toggle_by_cmd(cmd)
 
     return
 
 
 def toggle_screenkey():
-    cmd = "st -e screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow"
+    cmd = "screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow"
     toggle_by_cmd(cmd)
 
     return
@@ -471,6 +469,8 @@ def toggle_screen():
     second_screen = popen(cmd).strip()
 
     if not second_screen:
+        msg = "have no second screen"
+        os.system("notify-send '{}'".format(msg))
         return
 
     cmd = "echo 'only\nleft-of\nright-of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p 'please select screen position'"
@@ -499,10 +499,10 @@ def toggle_screen():
         cmd = "xrandr --output {} --auto --{} {} --auto".format(
             second_screen, option, primary_screen)
     elif option == "rotate left":
-        cmd = "xrandr --output {} --auto --{} {} --auto".format(
+        cmd = "xrandr --output {} --auto --{} --output {} --off".format(
             second_screen, option, primary_screen)
     elif option == "rotate right":
-        cmd = "xrandr --output {} --auto --{} {} --auto".format(
+        cmd = "xrandr --output {} --auto --{} --output {} --off".format(
             second_screen, option, primary_screen)
 
     os.system(cmd)
@@ -618,5 +618,4 @@ def download_cur_to_download():
 
 
 if __name__ == '__main__':
-    toogle_screen()
     pass

@@ -34,7 +34,7 @@ static const char *const autostart[] = {        // patch: dwm-cool-autostart
 
 /* tagging */
 /* static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" }; */
-static const char *tags[] = { "🎻", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* xprop(1):
@@ -42,7 +42,7 @@ static const Rule rules[] = {
    *    WM_NAME(STRING) = title
    */
   /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
-  { "st",                    NULL,       NULL,    0,            0,            1,             1,           -1 },
+  {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
   {"music",                  NULL,       NULL,    0,            1,            1,             0,           -1 },
   {"cava",                   NULL,       NULL,    0,            1,            1,             0,           -1 },
   {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 },
@@ -64,24 +64,24 @@ static const unsigned int gappiw    = 16;   /* vert  inner gap between windows *
 #include "layouts.c"                          // layouts
 static const Layout layouts[] = {
   /* symbol    arrange function */
-  { "𝒞",         centeranyshape }, // patch: dwm-center
-  { "𝒞",       centerequalratio }, // patch: dwm-center
-  { "𝒢",                   grid }, // patch: dwm-grid
-  { "𝒟",               deckvert }, // patch: dwm-deckvert
-  { "𝒟",               deckhori }, // patch: dwm-deckhori
-  { "ℱ",        fibonaccispiral }, // patch: dwm-fibonacci: spiral
-  { "ℱ",       fibonaccidwindle }, // patch: dwm-fibonacci: dwindle
-  { "ℬ" ,       bottomstackvert }, // patch: dwm-bottomstack
-  { "ℬ",        bottomstackhori }, // patch: dwm-bottomstack
-  { "𝒯",              tileright }, // tile -> tileright
-  { "𝒯",               tileleft }, // patch: dwm-leftstack
-  { "ℳ",                monocle },
+  { "",         centeranyshape }, // patch: dwm-center
+  { "",       centerequalratio }, // patch: dwm-center
+  { "ﱖ",                  grid }, // patch: dwm-grid
+  { "ﮇ",               deckvert }, // patch: dwm-deckvert
+  { "ﮆ",               deckhori }, // patch: dwm-deckhori
+  { "⧉",        fibonaccispiral }, // patch: dwm-fibonacci: spiral
+  { "⧉",       fibonaccidwindle }, // patch: dwm-fibonacci: dwindle
+  { "⬓" ,       bottomstackvert }, // patch: dwm-bottomstack
+  { "⬓",        bottomstackhori }, // patch: dwm-bottomstack
+  { "◨",              tileright }, // tile -> tileright
+  { "◧",               tileleft }, // patch: dwm-leftstack
+  { "",                monocle },
   { "ℒ",      logarithmicspiral }, // patch: dwm-logarithmicspiral
-  { "⦱",                   NULL }, // no layout function means floating behavior
+  { "∅",                   NULL }, // no layout function means floating behavior
   { NULL,                  NULL }, // patch: dwm-cyclelayouts
 };
 
-static const Layout overviewlayout = { "OVERVIEW",  overview }; // patch: dwm-overview: can be any layout
+static const Layout overviewlayout = { "",  overview }; // patch: dwm-overview: can be any layout
 
 /* key definitions */
 #define SUPKEY Mod4Mask
@@ -125,12 +125,12 @@ static const char *cmd_screenslock[]           = SH("slock & sleep .5; xset dpms
 
 // lazy
 static const char *cmd_lazy_open[]             = ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_media[]       = ST("lazy -o \"$(fd -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_book[]        = ST("lazy -o \"$(fd -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_wiki[]        = ST("lazy -o \"$(fd --type f --hidden  --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_wiki[]        = ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_book[]        = ST("lazy -o \"$(fd --type f -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_media[]       = ST("lazy -o \"$(fd --type f -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+// static const char *cmd_lazy_exec[]          = ST("lazy -e \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
 // static const char *cmd_lazy_copy[]          = ST("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *cmd_lazy_move[]          = ST("lazy -m \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='move>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *cmd_lazy_exec[]          = ST("lazy -e \"$(fd -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
+// static const char *cmd_lazy_rename[]        = ST("lazy -r \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='rename>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
 // static const char *cmd_lazy_delete[]        = ST("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
 
 // apps
