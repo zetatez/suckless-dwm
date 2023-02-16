@@ -102,22 +102,30 @@ void grid(Monitor *m) {
     n++;
 
   /* grid dimensions */
-  for (rows = 0; rows <= n / 2; rows++)
-    if (rows * rows >= n)
+  for (cols = 0; cols <= n / 2; cols++)
+    if (cols * cols >= n)
       break;
 
-  cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
+  rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
 
   /* window geoms (cell height/width) */
   ch = m->wh / (rows ? rows : 1);
   cw = m->ww / (cols ? cols : 1);
+
+  /* round err adjust */
+  ah = rows ? (m->wh - rows * ch) / 2 : 0;
+  aw = cols ? (m->ww - cols * cw) / 2 : 0;
+
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-    cx = m->wx + (i / rows) * cw;
-    cy = m->wy + (i % rows) * ch;
-    /* adjust height/width of last row/column's windows */
-    ah = ((i + 1) % rows == 0) ? m->wh - ch * rows : 0;
-    aw = (i >= rows * (cols - 1)) ? m->ww - cw * cols : 0;
-    resize(c, cx, cy, cw - 2 * c->bw + aw, ch - 2 * c->bw + ah, False);
+    cx = m->wx + aw + (i % cols) * cw;
+    cy = m->wy + ah + (i / cols) * ch;
+
+    if (i > cols * (rows - 1) - 1 && n != cols * rows) {
+      cx = m->wx + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
+      cy = m->wy + ah + (i / cols) * ch;
+    }
+
+    resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
     i++;
   }
 }
@@ -432,23 +440,29 @@ void overview(Monitor *m) {
     n++;
 
   /* grid dimensions */
-  for (rows = 0; rows <= n / 2; rows++)
-    if (rows * rows >= n)
+  for (cols = 0; cols <= n / 2; cols++)
+    if (cols * cols >= n)
       break;
 
-  cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
+  rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
 
   /* window geoms (cell height/width) */
   ch = (m->wh - 2 * gappoh) / (rows ? rows : 1);
   cw = (m->ww - 2 * gappow) / (cols ? cols : 1);
 
-  /* round err adjust cx/cy */
+  /* round err adjust */
   ah = rows ? (m->wh - 2 * gappoh - rows * ch) / 2 : 0;
   aw = cols ? (m->ww - 2 * gappow - cols * cw) / 2 : 0;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-    cx = m->wx + gappow + aw + (i / rows) * cw;
-    cy = m->wy + gappoh + ah + (i % rows) * ch;
+    cx = m->wx + gappow + aw + (i % cols) * cw;
+    cy = m->wy + gappoh + ah + (i / cols) * ch;
+
+    if (i > cols * (rows - 1) - 1 && n != cols * rows) {
+      cx = m->wx + gappow + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
+      cy = m->wy + gappoh + ah + (i / cols) * ch;
+    }
+
     resize(c, cx, cy, cw - gappiw / 2 - 2 * c->bw, ch - gappih / 2 - 2 * c->bw, False);
     i++;
   }
