@@ -104,6 +104,7 @@ static const Layout overviewlayout = { "",  overview }; // patch: dwm-overvie
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
+static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
 static const char scratchpadname[11]   = "scratchpad";                                         // patch: dwm-scratchpad
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", scratchpadname, NULL }; // patch: dwm-scratchpad
 
@@ -176,6 +177,7 @@ static const Key keys[] = {
   /* modifier                     key            function           argument */
   { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                 } },
   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                  } },
+  { SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v = tabbedtermcmd            } },
 
   // SUPKEY + F1-F12
   { SUPKEY,                       XK_F1,         spawn,             {.v = cmd_volume_toggle        } },
