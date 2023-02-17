@@ -1363,7 +1363,7 @@ monocle(Monitor *m)
       n++;
   if (n > 0) /* override layout symbol */
 //  snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);                                     // patch: by myself
-    snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s-%d", selmon->lt[selmon->sellt]->symbol, n); // patch: by myself
+    snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n); // patch: by myself
   for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
     resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
 }
