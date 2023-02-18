@@ -14,7 +14,7 @@ my_library_path = "/home/dionysus/my-library"
 my_play_path = "/home/dionysus/my-play"
 my_trojan_path = "/home/dionysus/.trojan"
 my_wallpaper_path = "/home/dionysus/Pictures/wallpapers"
-my_default_wallpaper = "013.jpeg"
+my_default_wallpaper = "Magritte-001.jpg"
 
 win_name_float = "00001011"
 win_name_scratchpad = "scratchpad"
@@ -277,9 +277,17 @@ def toggle_addressbook():
     return
 
 
-def toggle_calendar():
+def toggle_calendar_scheduling():
+    cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format(
+        "shceduling", "shceduling")
+    toggle_by_cmd(cmd)
+
+    return
+
+
+def toggle_calendar_schedule():
     cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
-        get_geometry_for_st(0.74, 0.08, 40, 24), win_name_float,
+        get_geometry_for_st(0.80, 0.04, 40, 32), win_name_float,
         win_name_float)
     toggle_by_cmd(cmd)
 
@@ -394,6 +402,19 @@ def toggle_mutt():
 def toggle_rss():
     cmd = "st -e newsboat"
     toggle_by_cmd(cmd)
+
+    return
+
+
+# systemctl --user enable redshift.service now
+def toggle_redshift():
+    cmd = "systemctl --user status redshift.service|grep 'active (running)'"
+    text = popen(cmd)
+    if text:
+        cmd = "systemctl --user stop redshift.service"
+    else:
+        cmd = "systemctl --user start redshift.service"
+    os.system(cmd)
 
     return
 

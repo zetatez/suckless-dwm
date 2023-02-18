@@ -232,7 +232,6 @@ static void setffact(const Arg *arg);                                           
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
-//static void sigchld(int unused);
 static void sighup(int unused);                                                                // patch: dwm-restartsig
 static void sigterm(int unused);                                                               // patch: dwm-restartsig
 static void spawn(const Arg *arg);
@@ -2021,10 +2020,6 @@ setup(void)
   XSetWindowAttributes wa;
   Atom utf8string;
   struct sigaction sa;
-  
-
-///* clean up any zombies immediately */
-//sigchld(0);
 
 	/* do not transform children into zombies when they terminate */
 	sigemptyset(&sa.sa_mask);
@@ -2132,30 +2127,6 @@ showhide(Client *c)
     XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
   }
 }
-
-//void
-//sigchld(int unused)
-//{
-//  pid_t pid;                                                   // patch: dwm-cool-autostart
-//
-//  if (signal(SIGCHLD, sigchld) == SIG_ERR)
-//    die("can't install SIGCHLD handler:");
-//  // while (0 < waitpid(-1, NULL, WNOHANG));                   // patch: dwm-cool-autostart
-//  while (0 < (pid = waitpid(-1, NULL, WNOHANG))) {             // patch: dwm-cool-autostart
-//    pid_t *p, *lim;                                            // patch: dwm-cool-autostart
-//                                                               // patch: dwm-cool-autostart
-//    if (!(p = autostart_pids))                                 // patch: dwm-cool-autostart
-//      continue;                                                // patch: dwm-cool-autostart
-//    lim = &p[autostart_len];                                   // patch: dwm-cool-autostart
-//                                                               // patch: dwm-cool-autostart
-//    for (; p < lim; p++) {                                     // patch: dwm-cool-autostart
-//      if (*p == pid) {                                         // patch: dwm-cool-autostart
-//        *p = -1;                                               // patch: dwm-cool-autostart
-//        break;                                                 // patch: dwm-cool-autostart
-//      }                                                        // patch: dwm-cool-autostart
-//    }                                                          // patch: dwm-cool-autostart
-//  }                                                            // patch: dwm-cool-autostart
-//}
 
 void                                                           // patch: dwm-restartsig
 sighup(int unused)                                             // patch: dwm-restartsig

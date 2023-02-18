@@ -3,4 +3,4 @@
 
 import utils
 
-utils.toggle_calendar()
+utils.toggle_calendar_scheduling()
