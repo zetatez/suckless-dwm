@@ -685,7 +685,8 @@ clientmessage(XEvent *e)
     if (cme->data.l[1] == netatom[NetWMFullscreen]
     || cme->data.l[2] == netatom[NetWMFullscreen])
       setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
-        || (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
+//      || (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen))); // patch: dwm-fakefullscreen-20210714-138b405.diff
+        || cme->data.l[0] == 2  /* _NET_WM_STATE_TOGGLE */));                      // patch: dwm-fakefullscreen-20210714-138b405.diff
   } else if (cme->message_type == netatom[NetActiveWindow]) {
     if (c != selmon->sel && !c->isurgent)
       seturgent(c, 1);
@@ -715,7 +716,7 @@ void
 configurenotify(XEvent *e)
 {
   Monitor *m;
-  Client *c;
+//Client *c;                                             // patch: dwm-fakefullscreen-20210714-138b405.diff
   XConfigureEvent *ev = &e->xconfigure;
   int dirty;
 
@@ -728,9 +729,9 @@ configurenotify(XEvent *e)
       drw_resize(drw, sw, bh);
       updatebars();
       for (m = mons; m; m = m->next) {
-        for (c = m->clients; c; c = c->next)
-          if (c->isfullscreen)
-            resizeclient(c, m->mx, m->my, m->mw, m->mh);
+//      for (c = m->clients; c; c = c->next)             // patch: dwm-fakefullscreen-20210714-138b405.diff
+//        if (c->isfullscreen)                           // patch: dwm-fakefullscreen-20210714-138b405.diff
+//          resizeclient(c, m->mx, m->my, m->mw, m->mh); // patch: dwm-fakefullscreen-20210714-138b405.diff
 //      XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);                                        // patch: dwm-barpadding
       	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, m->ww -  2 * sp, bh);                    // patch: dwm-barpadding
       }
@@ -1426,8 +1427,8 @@ movemouse(const Arg *arg)
 
   if (!(c = selmon->sel))
     return;
-  if (c->isfullscreen) /* no support moving fullscreen windows by mouse */
-    return;
+//if (c->isfullscreen) /* no support moving fullscreen windows by mouse */ // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  return;                                                                // patch: dwm-fakefullscreen-20210714-138b405.diff
   restack(selmon);
   ocx = c->x;
   ocy = c->y;
@@ -1690,8 +1691,8 @@ resizemouse(const Arg *arg)
 
   if (!(c = selmon->sel))
     return;
-  if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */
-    return;
+//if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */ // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  return;                                                                  // patch: dwm-fakefullscreen-20210714-138b405.diff
   restack(selmon);
   ocx = c->x;
   ocy = c->y;
@@ -1868,24 +1869,24 @@ setfullscreen(Client *c, int fullscreen)
     XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
       PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
     c->isfullscreen = 1;
-    c->oldstate = c->isfloating;
-    c->oldbw = c->bw;
-    c->bw = 0;
-    c->isfloating = 1;
-    resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh);
-    XRaiseWindow(dpy, c->win);
+//  c->oldstate = c->isfloating;                                     // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->oldbw = c->bw;                                                // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->bw = 0;                                                       // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->isfloating = 1;                                               // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh); // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  XRaiseWindow(dpy, c->win);                                       // patch: dwm-fakefullscreen-20210714-138b405.diff
   } else if (!fullscreen && c->isfullscreen){
     XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
       PropModeReplace, (unsigned char*)0, 0);
     c->isfullscreen = 0;
-    c->isfloating = c->oldstate;
-    c->bw = c->oldbw;
-    c->x = c->oldx;
-    c->y = c->oldy;
-    c->w = c->oldw;
-    c->h = c->oldh;
-    resizeclient(c, c->x, c->y, c->w, c->h);
-    arrange(c->mon);
+//  c->isfloating = c->oldstate;                                     // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->bw = c->oldbw;                                                // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->x = c->oldx;                                                  // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->y = c->oldy;                                                  // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->w = c->oldw;                                                  // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  c->h = c->oldh;                                                  // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  resizeclient(c, c->x, c->y, c->w, c->h);                         // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  arrange(c->mon);                                                 // patch: dwm-fakefullscreen-20210714-138b405.diff
   }
 }
 
@@ -2110,7 +2111,8 @@ showhide(Client *c)
   if (ISVISIBLE(c)) {
     /* show clients top down */
     XMoveWindow(dpy, c->win, c->x, c->y);
-    if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
+//  if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen) // patch: dwm-fakefullscreen-20210714-138b405.diff
+    if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)                       // patch: dwm-fakefullscreen-20210714-138b405.diff
       resize(c, c->x, c->y, c->w, c->h, 0);
     showhide(c->snext);
   } else {
@@ -2235,8 +2237,8 @@ togglefloating(const Arg *arg)
 {
   if (!selmon->sel)
     return;
-  if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
-    return;
+//if (selmon->sel->isfullscreen) /* no support for fullscreen windows */ // patch: dwm-fakefullscreen-20210714-138b405.diff
+//  return;                                                              // patch: dwm-fakefullscreen-20210714-138b405.diff
   selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
   if (selmon->sel->isfloating)
     resize(selmon->sel, selmon->sel->x, selmon->sel->y,
