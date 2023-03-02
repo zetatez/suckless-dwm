@@ -1,5 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
+#define SESSION_FILE "/tmp/dwm-session"         // dwm-restoreafterrestart-20220709-d3f93c7.diff
+
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 0;        /* snap pixel */                                                                                            // patch: dwm-tag-preview
@@ -8,8 +10,8 @@ static const int previewbar         = 1;        /* show the bar in the preview w
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-/* static const int vertpad            = 8;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
-/* static const int sidepad            = 256;      /1* horizontal padding of bar *1/                                                                             // patch: dmenu-alpha */
+// static const int vertpad         = 8;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
+// static const int sidepad         = 256;      /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
 static const int vertpad            = 0;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
 static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
@@ -318,18 +320,18 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                    } }, // patch: dwm-resize-window
   { MODKEY,                       XK_0,          view,              {.ui = ~0                        } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                        } },
-  TAGKEYS(                        XK_1,          0)
-  TAGKEYS(                        XK_2,          1)
-  TAGKEYS(                        XK_3,          2)
-  TAGKEYS(                        XK_4,          3)
-  TAGKEYS(                        XK_5,          4)
-  TAGKEYS(                        XK_6,          5)
-  TAGKEYS(                        XK_7,          6)
-  TAGKEYS(                        XK_8,          7)
-  TAGKEYS(                        XK_9,          8)
   { MODKEY|ShiftMask,             XK_c,          killclient,        {0                               } },
   { MODKEY|ShiftMask,             XK_q,          quit,              {0                               } },
   { MODKEY|ShiftMask,             XK_p,          quit,              {1                               } }, // patch: dwm-restartsig
+    TAGKEYS(XK_1, 0)
+    TAGKEYS(XK_2, 1)
+    TAGKEYS(XK_3, 2)
+    TAGKEYS(XK_4, 3)
+    TAGKEYS(XK_5, 4)
+    TAGKEYS(XK_6, 5)
+    TAGKEYS(XK_7, 6)
+    TAGKEYS(XK_8, 7)
+    TAGKEYS(XK_9, 8)
 };
 
 /* button definitions */

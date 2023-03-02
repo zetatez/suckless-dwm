@@ -276,6 +276,8 @@ static pid_t winpid(Window w);                                                  
 static void showtagpreview(unsigned int i);                                                     // patch: dwm-tag-preview
 static void takepreview(void);                                                                  // patch: dwm-tag-preview
 static void previewtag(const Arg *arg);                                                         // patch: dwm-tag-preview
+static void savesession();                                                         // patch: dwm-tag-preview
+static void restoresession();                                                         // patch: dwm-tag-preview
 
 /* variables */
 static const char broken[] = "broken";
@@ -1634,6 +1636,8 @@ quit(const Arg *arg)
 
   if(arg->i) restart = 1;
   running = 0;
+
+	if (restart == 1) savesession();                // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
 }
 
 Monitor *
@@ -2918,6 +2922,55 @@ cyclelayout(const Arg *arg) {
   }
 }
 
+void                                                          // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+savesession(void)                                             // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+{                                                             // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	FILE *fw = fopen(SESSION_FILE, "w");                        // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	for (Client *c = selmon->clients; c != NULL; c = c->next) { // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		fprintf(fw, "%lu %u\n", c->win, c->tags);                 // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	}                                                           // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	fclose(fw);                                                 // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+}                                                             // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+
+void                                                          // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+restoresession(void)                                          // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+{                                                             // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	// restore session                                          // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	FILE *fr = fopen(SESSION_FILE, "r");                        // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	if (!fr)                                                    // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		return;                                                   // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+                                                              // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	char *str = malloc(23 * sizeof(char));                      // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	while (fscanf(fr, "%[^\n] ", str) != EOF) {                 // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		long unsigned int winId;                                  // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		unsigned int tagsForWin;                                  // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		int check = sscanf(str, "%lu %u", &winId, &tagsForWin);   // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		if (check != 2)                                           // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+			break;                                                  // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		                                                          // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		for (Client *c = selmon->clients; c ; c = c->next) {      // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+			if (c->win == winId) {                                  // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+				c->tags = tagsForWin;                                 // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+				break;                                                // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+			}                                                       // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		}                                                         // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+    }                                                         // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+                                                              // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	for (Client *c = selmon->clients; c ; c = c->next) {        // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		focus(c);                                                 // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		restack(c->mon);                                          // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	}                                                           // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+                                                              // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	for (Monitor *m = selmon; m; m = m->next)                   // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+		arrange(m);                                               // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+                                                              // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	free(str);                                                  // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	fclose(fr);                                                 // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	                                                            // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	// delete a file                                            // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+	remove(SESSION_FILE);                                       // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+}                                                             // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
+
 int
 main(int argc, char *argv[])
 {
@@ -2940,6 +2993,7 @@ main(int argc, char *argv[])
     die("pledge");
 #endif /* __OpenBSD__ */
   scan();
+	restoresession();                                   // patch: dwm-restoreafterrestart-20220709-d3f93c7.diff
   run();
 	if(restart) execvp(argv[0], argv);                  // patch: dwm-restartsig
   cleanup();
