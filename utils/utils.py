@@ -1,11 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os, sys, signal
+import os
+import sys
+import signal
 import re
 import time
 import wget
-import shutil, psutil
+import shutil
+import psutil
 from PyQt5 import QtWidgets
 
 my_home_path = "/home/dionysus"
@@ -62,8 +65,7 @@ def get_pids(pname):
 
 
 def in_running(cmd):
-    cmd_ps = "ps -ef|grep '{}'".format(
-        cmd.rstrip(" &")) + "|grep -v grep|awk '{print $2}'"
+    cmd_ps = "ps -ef|grep '{}'".format(cmd.rstrip(" &")) + "|grep -v grep|awk '{print $2}'"
     pids = popen(cmd_ps).strip().replace("\n", " ").strip()
     if pids:
         return pids, True
@@ -187,13 +189,11 @@ def open_my_play():
     if not os.path.exists(my_play_notes_today_note_xoj):
         shutil.copyfile(template_note_xoj, my_play_notes_today_note_xoj)
 
-    cmd_tex = "st -g {} -t {} -c {} -e nvim {} &".format(
-        get_geometry_for_st(0.01, 0.03, 88, 54), win_name_float,
-        win_name_float, my_play_notes_today_note_tex)
+    cmd_tex = "st -g {} -t {} -c {} -e nvim {} &".format(get_geometry_for_st(0.01, 0.03, 88, 54), win_name_float,
+                                                         win_name_float, my_play_notes_today_note_tex)
 
-    cmd_xoj = "st -g {} -t {} -c {} -e xournalpp {} &".format(
-        get_geometry_for_st(0.52, 0.16, 88, 38), win_name_float,
-        win_name_float, my_play_notes_today_note_xoj)
+    cmd_xoj = "st -g {} -t {} -c {} -e xournalpp {} &".format(get_geometry_for_st(0.52, 0.16, 88, 38), win_name_float,
+                                                              win_name_float, my_play_notes_today_note_xoj)
 
     _, ok = in_running(cmd_tex)
     if not ok:
@@ -278,8 +278,7 @@ def toggle_addressbook():
 
 
 def toggle_calendar_scheduling():
-    cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format(
-        "shceduling", "shceduling")
+    cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format("shceduling", "shceduling")
     toggle_by_cmd(cmd)
 
     return
@@ -287,8 +286,7 @@ def toggle_calendar_scheduling():
 
 def toggle_calendar_schedule():
     cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
-        get_geometry_for_st(0.80, 0.04, 40, 32), win_name_float,
-        win_name_float)
+        get_geometry_for_st(0.80, 0.04, 40, 32), win_name_float, win_name_float)
     toggle_by_cmd(cmd)
 
     return
@@ -352,8 +350,7 @@ def toggle_irc():
 
 
 def toggle_julia():
-    cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad,
-                                           win_name_scratchpad)
+    cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad, win_name_scratchpad)
     toggle_by_cmd(cmd)
 
     return
@@ -374,10 +371,8 @@ def toggle_mathpix():
 
 
 def toggle_music():
-    cmd_cava = "st -g {} -t cava -c cava -e cava &".format(
-        get_geometry_for_st(0.74, 0.08, 40, 12))
-    cmd_ncmpcpp = "st -g {} -t music -c music -e ncmpcpp &".format(
-        get_geometry_for_st(0.52, 0.08, 40, 12))
+    cmd_cava = "st -g {} -t cava -c cava -e cava &".format(get_geometry_for_st(0.74, 0.08, 40, 12))
+    cmd_ncmpcpp = "st -g {} -t music -c music -e ncmpcpp &".format(get_geometry_for_st(0.52, 0.08, 40, 12))
 
     toggle_by_cmd(cmd_cava)
     toggle_by_cmd(cmd_ncmpcpp)
@@ -428,8 +423,7 @@ def toggle_screenkey():
 
 def toggle_show():
     cmd = "st -g {} -t {} -c {} -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0".format(
-        get_geometry_for_st(0.74, 0.08, 40, 12), win_name_float,
-        win_name_float)
+        get_geometry_for_st(0.74, 0.08, 40, 12), win_name_float, win_name_float)
     toggle_by_cmd(cmd)
 
     return
@@ -477,8 +471,7 @@ def toggle_rec_video():
     w, h = get_cur_screen_geometry()
     dpy = os.environ.get("DISPLAY")
     cmd = "st  -t {} -c {} -e ffmpeg -y -s '{}x{}' -r 60 -f x11grab -i {} -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac {}/Videos/rec-v-a-{}.mkv".format(
-        win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path,
-        time_str)
+        win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path, time_str)
     toggle_by_cmd(cmd)
 
     return
@@ -494,7 +487,7 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
-    cmd = "echo 'only\nleft-of\nright-of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p 'please select screen position'"
+    cmd = "echo 'only\nprimary only\nleft-of\nright-of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p 'please select screen position'"
     option = popen(cmd).strip()
     if not option:
         return
@@ -502,29 +495,19 @@ def toggle_screen():
     msg = "setting monitor: {}".format(option)
     os.system("notify-send '{}'".format(msg))
 
-    cmd = "xrandr --output {} --auto --output {} --off".format(
-        second_screen, primary_screen)
-    if option == "only":
-        cmd = "xrandr --output {} --auto --output {} --off".format(
-            second_screen, primary_screen)
-    elif option == "left-of":
-        cmd = "xrandr --output {} --auto --{} {} --auto".format(
-            second_screen, option, primary_screen)
-    elif option == "right-of":
-        cmd = "xrandr --output {} --auto --{} {} --auto".format(
-            second_screen, option, primary_screen)
-    elif option == "above":
-        cmd = "xrandr --output {} --auto --{} {} --auto".format(
-            second_screen, option, primary_screen)
-    elif option == "below":
-        cmd = "xrandr --output {} --auto --{} {} --auto".format(
-            second_screen, option, primary_screen)
-    elif option == "rotate left":
-        cmd = "xrandr --output {} --auto --{} --output {} --off".format(
-            second_screen, option, primary_screen)
-    elif option == "rotate right":
-        cmd = "xrandr --output {} --auto --{} --output {} --off".format(
-            second_screen, option, primary_screen)
+    cmds = {}
+
+    cmds["only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
+    cmds["primary only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
+    cmds["left-of"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
+    cmds["right-of"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
+    cmds["above"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
+    cmds["below"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
+    cmds["roate left"] = "xrandr --output {} --auto --{} --output {} --off".format(second_screen, option, primary_screen)
+    cmds["roate right"] = "xrandr --output {} --auto --{} --output {} --off".format(second_screen, option, primary_screen)
+
+    cmd = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
+    cmd = cmds.get(option, cmd)
 
     os.system(cmd)
 
