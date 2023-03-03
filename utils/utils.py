@@ -17,7 +17,7 @@ my_library_path = "/home/dionysus/my-library"
 my_play_path = "/home/dionysus/my-play"
 my_trojan_path = "/home/dionysus/.trojan"
 my_wallpaper_path = "/home/dionysus/Pictures/wallpapers"
-my_default_wallpaper = "Magritte-001.jpg"
+my_default_wallpaper = "Van-Gogh-003.jpg"
 
 win_name_float = "00001011"
 win_name_scratchpad = "scratchpad"
@@ -487,7 +487,7 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
-    cmd = "echo 'only\nprimary only\nleft-of\nright-of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p 'please select screen position'"
+    cmd = "echo 'only\nprimary only\nleft of\nright of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p 'arrange screen>'"
     option = popen(cmd).strip()
     if not option:
         return
@@ -499,12 +499,12 @@ def toggle_screen():
 
     cmds["only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
     cmds["primary only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
-    cmds["left-of"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
-    cmds["right-of"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
-    cmds["above"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
-    cmds["below"] = "xrandr --output {} --auto --{} {} --auto".format(second_screen, option, primary_screen)
-    cmds["roate left"] = "xrandr --output {} --auto --{} --output {} --off".format(second_screen, option, primary_screen)
-    cmds["roate right"] = "xrandr --output {} --auto --{} --output {} --off".format(second_screen, option, primary_screen)
+    cmds["left of"] = "xrandr --output {} --auto --left-of {} --auto".format(second_screen, primary_screen)
+    cmds["right of"] = "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen)
+    cmds["above"] = "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen)
+    cmds["below"] = "xrandr --output {} --auto --below {} --auto".format(second_screen, primary_screen)
+    cmds["roate left"] = "xrandr --output {} --auto --rotate left --output {} --off".format(second_screen, primary_screen)
+    cmds["roate right"] = "xrandr --output {} --auto --rotate right --output {} --off".format(second_screen, primary_screen)
 
     cmd = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
     cmd = cmds.get(option, cmd)
@@ -513,6 +513,30 @@ def toggle_screen():
 
     cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
     os.system(cmd)
+
+    return
+
+
+def toggle_sys_shortcuts():
+    cmd = "echo 'suspend\npoweroff\nreboot\nslock\noff-display'|dmenu -p '>'"
+    option = popen(cmd).strip()
+    if not option:
+        return
+
+    msg = "cmd: {}".format(option)
+    os.system("notify-send '{}'".format(msg))
+
+    cmds = {}
+
+    cmds["suspend"] = "systemctl suspend"
+    cmds["poweroff"] = "systemctl poweroff"
+    cmds["reboot"] = "systemctl reboot"
+    cmds["slock"] = "slock & sleep 0.5 & xset dpms force off"
+    cmds["off-display"] = "sleep .5; xset dpms force off"
+
+    cmd = cmds.get(option, "")
+    if cmd:
+        os.system(cmd)
 
     return
 

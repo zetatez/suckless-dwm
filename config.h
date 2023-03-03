@@ -10,10 +10,10 @@ static const int previewbar         = 1;        /* show the bar in the preview w
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-// static const int vertpad         = 8;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
-// static const int sidepad         = 256;      /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
-static const int vertpad            = 0;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
-static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
+static const int vertpad            = 6;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
+static const int sidepad            = 256;      /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
+/* static const int vertpad            = 0;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
+/* static const int sidepad            = 0;        /1* horizontal padding of bar *1/                                                                             // patch: dmenu-alpha */
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=10";
@@ -121,9 +121,10 @@ static const char *toggle_kb_light[]             =  SH("~/.suckless/suckless-dwm
 
 // sys
 // static const char *cmd_reboot[]               =  SH("systemctl reboot");
-static const char *cmd_shutdown[]                =  SH("systemctl poweroff -i");
-static const char *cmd_suspend[]                 =  SH("systemctl suspend");
-static const char *cmd_screenslock[]             =  SH("slock & sleep .5; xset dpms force off");
+static const char *cmd_shutdown[]                =  SH("systemctl poweroff");
+static const char *cmd_suspend[]                 =  SH("slock & systemctl suspend");
+static const char *cmd_screenslock[]             =  SH("slock & sleep .5 & xset dpms force off");
+static const char *toggle_sys_shortcuts[]        =  SH("~/.suckless/suckless-dwm/utils/toggle-sys-shortcuts.py");
 
 // lazy
 static const char *cmd_lazy_open[]               =  ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
@@ -225,7 +226,7 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_z,          spawn,             {.v =                            } },
 //{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                            } },
   { SUPKEY,                       XK_BackSpace,  spawn,             {.v = open_passmenu              } },
-  { SUPKEY,                       XK_Delete,     spawn,             {.v = cmd_shutdown               } },
+  { SUPKEY,                       XK_Delete,     spawn,             {.v = toggle_sys_shortcuts       } },
   { SUPKEY,                       XK_Escape,     spawn,             {.v = toggle_top                 } },
   { SUPKEY,                       XK_Print,      spawn,             {.v = toggle_flameshot           } },
   { SUPKEY,                       XK_backslash,  spawn,             {.v = toggle_diary               } },
@@ -261,7 +262,7 @@ static const Key keys[] = {
 //{ SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                            } },
 //{ SUPKEY|ShiftMask,             XK_z,          spawn,             {.v =                            } },
 //{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                            } },
-//{ SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v =                            } },
+  { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = cmd_shutdown               } },
 //{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                            } },
 //{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                            } },
 //{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                            } },
