@@ -461,7 +461,7 @@ def toggle_rec_audio():
     time_str = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     cmd = "st  -t {} -c {} -e ffmpeg -y -r 60 -f alsa -i default -c:a flac {}/Videos/rec-a-{}.flac".format(
         win_name_scratchpad, win_name_scratchpad, my_home_path, time_str)
-    toggle_by_cmd(cmd)
+    toggle_by_pname("ffmpeg", cmd)
 
     return
 
@@ -472,7 +472,7 @@ def toggle_rec_video():
     dpy = os.environ.get("DISPLAY")
     cmd = "st  -t {} -c {} -e ffmpeg -y -s '{}x{}' -r 60 -f x11grab -i {} -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac {}/Videos/rec-v-a-{}.mkv".format(
         win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path, time_str)
-    toggle_by_cmd(cmd)
+    toggle_by_pname("ffmpeg", cmd)
 
     return
 

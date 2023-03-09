@@ -10,10 +10,10 @@ static const int previewbar         = 1;        /* show the bar in the preview w
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const int vertpad            = 6;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
-static const int sidepad            = 256;      /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
-/* static const int vertpad            = 0;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
-/* static const int sidepad            = 0;        /1* horizontal padding of bar *1/                                                                             // patch: dmenu-alpha */
+/* static const int vertpad            = 6;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
+/* static const int sidepad            = 256;      /1* horizontal padding of bar *1/                                                                             // patch: dmenu-alpha */
+static const int vertpad            = 0;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
+static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=10";
@@ -344,15 +344,17 @@ static const Key keys[] = {
 // Button5:
 static const Button buttons[] = {
   /* click                event mask      button          function        argument */
-  { ClkLtSymbol,          0,              Button1,        setlayout,      {0                } }, //          left   click : change layout to
-  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2] } }, //          right  click : change layout to x
-  { ClkWinTitle,          0,              Button2,        zoom,           {0                } }, //          middle click : zoom
-  { ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd     } }, //          middle click : open open st
-  { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0                } }, // modkey + left   click : move window with mouse
-  { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0                } }, // modkey + middle click : togglefloating
-  { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0                } }, // modkey + right  click : resize window with mouse
-  { ClkTagBar,            0,              Button1,        view,           {0                } }, //          left   click : view tag
-  { ClkTagBar,            0,              Button3,        toggleview,     {0                } }, // modkey + right  click : toggle view: view multiple tags
-  { ClkTagBar,            MODKEY,         Button1,        tag,            {0                } }, // modkey + left   click : move window to tag clicked
-  { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0                } }, // modkey + right  click : toggle tag
+  { ClkLtSymbol,          0,              Button1,        setlayout,      {0                         } }, //          left   click layout symbol: change layout to previous
+  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]          } }, //          right  click layout symbol: change layout to x
+  { ClkWinTitle,          0,              Button2,        zoom,           {0                         } }, //          middle click win title    : zoom
+  { ClkStatusText,        0,              Button1,        spawn,          {.v = termcmd              } }, //          left   click status text  : open open st
+  { ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd              } }, //          middle click status text  : open open st
+  { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_sys_shortcuts } }, //          right  click status text  : open
+  { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0                         } }, // modkey + left   click client win   : move window with mouse
+  { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0                         } }, // modkey + middle click client win   : togglefloating
+  { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0                         } }, // modkey + right  click client win   : resize window with mouse
+  { ClkTagBar,            0,              Button1,        view,           {0                         } }, //          left   click tag bar      : view tag
+  { ClkTagBar,            0,              Button3,        toggleview,     {0                         } }, //          right  click tag bar      : toggle view, view multiple tags
+  { ClkTagBar,            MODKEY,         Button1,        tag,            {0                         } }, // modkey + left   click tag bar      : move window to tag clicked
+  { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0                         } }, // modkey + right  click tag bar      : toggle tag
 };
