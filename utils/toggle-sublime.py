@@ -3,4 +3,4 @@
 
 import utils
 
-utils.toggle_google()
+utils.toggle_sublime()

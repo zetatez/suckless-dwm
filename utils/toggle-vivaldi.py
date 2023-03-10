@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_sublime()
+utils.toggle_vivaldi()

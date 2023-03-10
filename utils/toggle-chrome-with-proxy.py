@@ -3,4 +3,4 @@
 
 import utils
 
-utils.toggle_google_with_proxy()
+utils.toggle_chrome_with_proxy()

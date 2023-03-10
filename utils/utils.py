@@ -22,15 +22,13 @@ my_default_wallpaper = "Van-Gogh-003.jpg"
 win_name_float = "00001011"
 win_name_scratchpad = "scratchpad"
 
+# def read_file(filename):
+#     with open(filename, "r", encoding="utf-8") as fh:
+#         return fh.read()
 
-def read_file(filename):
-    with open(filename, "r", encoding="utf-8") as fh:
-        return fh.read()
-
-
-def write_file(filename, s):
-    with open(filename, "w", encoding="utf-8") as fh:
-        fh.write(s)
+# def write_file(filename, s):
+#     with open(filename, "w", encoding="utf-8") as fh:
+#         fh.write(s)
 
 
 def get_screen_count():
@@ -56,7 +54,7 @@ def get_geometry_for_st(xr, yr, w, h):
     return "{}x{}+{}+{}".format(w, h, x, y)
 
 
-def get_pids(pname):
+def get_pids_by_pname(pname):
     pids = []
     for p in psutil.process_iter():
         if p.name() == pname:
@@ -64,36 +62,35 @@ def get_pids(pname):
     return pids
 
 
-def in_running(cmd):
-    cmd_ps = "ps -ef|grep '{}'".format(cmd.rstrip(" &")) + "|grep -v grep|awk '{print $2}'"
-    pids = popen(cmd_ps).strip().replace("\n", " ").strip()
-    if pids:
-        return pids, True
-
-    return pids, False
+def get_pids_by_cmd(cmd):
+    cmd = cmd.rstrip(" &").replace("'", "").replace('"', "").strip()
+    print(cmd)
+    cmd_ps = "ps -ef|grep '{}'".format(cmd) + "|grep -v grep|awk '{print $2}'"
+    print(cmd_ps)
+    pids = [int(pid) for pid in popen(cmd_ps).strip().replace("\n", " ").strip().split()]
+    return pids
 
 
 def toggle_by_pname(pname, cmd):
-    pids = get_pids(pname)
+    pids = get_pids_by_pname(pname)
     if pids:
         [os.kill(pid, signal.SIGKILL) for pid in pids]
     else:
         os.system(cmd)
+    return
 
 
 def toggle_by_cmd(cmd):
-    pids, ok = in_running(cmd.replace("'", "").replace('"', ""))
-    if not ok:
-        os.system(cmd)
+    pids = get_pids_by_cmd(cmd)
+    if pids:
+        [os.kill(pid, signal.SIGKILL) for pid in pids]
     else:
-        cmd = "kill -9 {}".format(pids)
         os.system(cmd)
     return
 
 
 def spawn(cmd):
     os.execvp(cmd[0], cmd)
-    return
 
 
 def popen(cmd):
@@ -153,11 +150,11 @@ def open_note_taking():
 
     cmd = "xournalpp {} &".format(file_path)
 
-    _, ok = in_running(cmd)
-    if not ok:
-        os.system(cmd)
-    else:
+    pids = get_pids_by_cmd(cmd)
+    if pids:
         os.system("notify-send '{}'".format("already in running"))
+    else:
+        os.system(cmd)
 
     return
 
@@ -195,17 +192,17 @@ def open_my_play():
     cmd_xoj = "st -g {} -t {} -c {} -e xournalpp {} &".format(get_geometry_for_st(0.52, 0.16, 88, 38), win_name_float,
                                                               win_name_float, my_play_notes_today_note_xoj)
 
-    _, ok = in_running(cmd_tex)
-    if not ok:
+    pids_tex = get_pids_by_cmd(cmd_tex)
+    if pids_tex:
+        os.system("notify-send '{}'".format("already in running"))
+    else:
         os.system(cmd_tex)
-    else:
-        os.system("notify-send '{}'".format("already in running"))
 
-    _, ok = in_running(cmd_xoj)
-    if not ok:
-        os.system(cmd_xoj)
-    else:
+    pids_xoj = get_pids_by_cmd(cmd_xoj)
+    if pids_xoj:
         os.system("notify-send '{}'".format("already in running"))
+    else:
+        os.system(cmd_xoj)
 
     return
 
@@ -218,9 +215,7 @@ def open_passmenu():
 
 
 def open_photoshop():
-    pname = "gimp"
-    cmd = "gimp"
-    toggle_by_pname(pname, cmd)
+    toggle_by_pname(pname="gimp", cmd="gimp")
 
     return
 
@@ -247,18 +242,11 @@ def open_sketchpad():
 
     cmd = "inkscape {}".format(file_path)
 
-    _, ok = in_running(cmd)
-    if not ok:
-        os.system(cmd)
-    else:
+    pids = get_pids_by_cmd(cmd)
+    if pids:
         os.system("notify-send '{}'".format("already in running"))
-
-    return
-
-
-def open_sublime():
-    cmd = "subl"
-    os.system(cmd)
+    else:
+        os.system(cmd)
 
     return
 
@@ -321,23 +309,21 @@ def toggle_flameshot():
     return
 
 
-def toggle_google():
-    cmd = "google"
-    toggle_by_cmd(cmd)
+def toggle_vivaldi():
+    toggle_by_pname(pname="vivaldi-bin", cmd="vivaldi-stable")
 
     return
 
 
-def toggle_google_with_proxy():
-    cmd = "google --proxy-server='socks5://127.0.0.1:8000'"
+def toggle_chrome_with_proxy():
+    cmd = "chrome --proxy-server='socks5://127.0.0.1:8000'"
     toggle_by_cmd(cmd)
 
     return
 
 
 def toggle_gitter():
-    cmd = "gitter"
-    toggle_by_cmd(cmd)
+    toggle_by_pname(pname="gitter", cmd="gitter")
 
     return
 
@@ -429,6 +415,12 @@ def toggle_show():
     return
 
 
+def toggle_sublime():
+    toggle_by_pname(pname="subl", cmd="subl")
+
+    return
+
+
 def toggle_vifm():
     cmd = "st -e vifm"
     toggle_by_cmd(cmd)
@@ -461,7 +453,7 @@ def toggle_rec_audio():
     time_str = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     cmd = "st  -t {} -c {} -e ffmpeg -y -r 60 -f alsa -i default -c:a flac {}/Videos/rec-a-{}.flac".format(
         win_name_scratchpad, win_name_scratchpad, my_home_path, time_str)
-    toggle_by_pname("ffmpeg", cmd)
+    toggle_by_pname(pname="ffmpeg", cmd=cmd)
 
     return
 
@@ -472,7 +464,7 @@ def toggle_rec_video():
     dpy = os.environ.get("DISPLAY")
     cmd = "st  -t {} -c {} -e ffmpeg -y -s '{}x{}' -r 60 -f x11grab -i {} -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac {}/Videos/rec-v-a-{}.mkv".format(
         win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path, time_str)
-    toggle_by_pname("ffmpeg", cmd)
+    toggle_by_pname(pname="ffmpeg", cmd=cmd)
 
     return
 
