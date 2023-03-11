@@ -316,9 +316,11 @@ static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
 static xcb_connection_t *xcon;                                                                  // patch: dwm-swallow
+static int winpad = 0;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
+
 
 struct Pertag {                                                                        // patch: dwm-pertag
   unsigned int curtag, prevtag; /* current and previous tag */                         // patch: dwm-pertag
@@ -733,7 +735,7 @@ configurenotify(XEvent *e)
           if (c->isfullscreen)
             resizeclient(c, m->mx, m->my, m->mw, m->mh);
 //      XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);                                        // patch: dwm-barpadding
-      	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, m->ww -  2 * sp, bh);                    // patch: dwm-barpadding
+      	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, m->ww -  2*sp, bh);                    // patch: dwm-barpadding
       }
       focus(NULL);
       arrange(NULL);
@@ -1368,8 +1370,10 @@ monocle(Monitor *m)
   if (n > 0) /* override layout symbol */
 //  snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);                                     // patch: by myself
     snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n); // patch: by myself
+//for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+//  resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
   for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-    resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
+    resize(c, m->wx, m->wy + (topbar ? 1 : 0)*winpad, m->ww - 2 * c->bw, m->wh - 2*c->bw - winpad, 0);
 }
 
 void
@@ -2034,7 +2038,8 @@ setup(void)
 	sigaction(SIGCHLD, &sa, NULL);
 
 	/* clean up any zombies (inherited from .xinitrc etc) immediately */
-	while (waitpid(-1, NULL, WNOHANG) > 0);
+	while (waitpid(-1, NULL, WNOHANG) > 0)
+    ;
 
   signal(SIGHUP, sighup);                                                                                // patch: dwm-restartsig
   signal(SIGTERM, sigterm);                                                                              // patch: dwm-restartsig
@@ -2051,7 +2056,8 @@ setup(void)
 //bh = drw->fonts->h + 2;                                                                                // patch: dwm-bar-height
   bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2; // patch: dwm-bar-height
  	sp = sidepad;                                                                                          // patch: dwm-barpadding
- 	vp = (topbar == 1) ? vertpad : - vertpad;                                                              // patch: dwm-barpadding
+ 	vp = (topbar ? 1 : -1) * vertpad;                                                              // patch: dwm-barpadding
+  winpad = defaultwinpad;
   updategeom();
   /* init atoms */
   utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -2214,9 +2220,15 @@ togglebar(const Arg *arg)
 
 //selmon->showbar = !selmon->showbar;                                                                // patch: dwm-pertag
   selmon->showbar = selmon->pertag->showbars[selmon->pertag->curtag] = !selmon->showbar;             // patch: dwm-pertag
+  if (selmon->showbar) {
+    winpad = defaultwinpad;
+  } else {
+    winpad = 0;
+  }
+
   updatebarpos(selmon);
 //XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);                    // patch: dwm-barpadding
- 	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp, selmon->ww - 2 * sp, bh); // patch: dwm-barpadding
+  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp, selmon->ww - 2*sp, bh);   // patch: dwm-barpadding
   arrange(selmon);
 }
 

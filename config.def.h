@@ -11,9 +11,11 @@ static const int swallowfloating    = 1;        /* 1 means swallow floating wind
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 6;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
-static const int sidepad            = 256;      /* horizontal padding of bar */                                                                             // patch: dmenu-alpha
+static const int sidepad            = 256;      /* horizontal padding of bar */                                                                             // patch: dwm-barpadding
+static const int defaultwinpad      = 8;        /* window padding of bar */
 /* static const int vertpad            = 0;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
-/* static const int sidepad            = 0;        /1* horizontal padding of bar *1/                                                                             // patch: dmenu-alpha */
+/* static const int sidepad            = 0;        /1* horizontal padding of bar *1/                                                                             // patch: dwm-barpadding */
+/* static const int defaultwinpad      = 0;       /1* window padding of bar *1/ */
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=10";
