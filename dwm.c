@@ -914,6 +914,9 @@ drawbar(Monitor *m)
     // draw nothing;                                                                       // patch: dwm-overview
   } else {                                                                                 // patch: dwm-overview
     for (i = 0; i < LENGTH(tags); i++) {
+      /* Do not draw vacant tags */                                                        // patch: dwm-hide_vacant_tags-6.3.diff
+      if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))                                // patch: dwm-hide_vacant_tags-6.3.diff
+      	continue;                                                                          // patch: dwm-hide_vacant_tags-6.3.diff
       w = TEXTW(tags[i]);
       drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
       drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
