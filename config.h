@@ -29,7 +29,7 @@ static const char *colors[][3]      = {
 };
 
 static const char *const autostart[] = {        // patch: dwm-cool-autostart
-  "dwmstatus", "2>&1 >>/dev/null &", NULL,      // patch: dwm-cool-autostart
+  "dwmblocks", "2>&1 >>/dev/null &", NULL,      // patch: dwm-cool-autostart
   "/home/dionysus/.dwm/autostart.sh", NULL,     // patch: dwm-cool-autostart
   NULL /* terminate */                          // patch: dwm-cool-autostart
 };                                              // patch: dwm-cool-autostart
@@ -122,8 +122,8 @@ static const char *toggle_kb_light[]             =  SH("~/.suckless/suckless-dwm
 // sys
 // static const char *cmd_reboot[]               =  SH("systemctl reboot");
 static const char *cmd_shutdown[]                =  SH("systemctl poweroff");
-static const char *cmd_suspend[]                 =  SH("slock & systemctl suspend");
-static const char *cmd_screenslock[]             =  SH("slock & sleep .5 & xset dpms force off");
+static const char *cmd_suspend[]                 =  SH("systemctl suspend && slock");
+static const char *cmd_screenslock[]             =  SH("sleep .5 && xset dpms force off && slock");
 static const char *toggle_sys_shortcuts[]        =  SH("~/.suckless/suckless-dwm/utils/toggle-sys-shortcuts.py");
 
 // lazy
@@ -348,7 +348,7 @@ static const Button buttons[] = {
   { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]          } }, //          right  click layout symbol: change layout to x
   { ClkWinTitle,          0,              Button2,        zoom,           {0                         } }, //          middle click win title    : zoom
   { ClkStatusText,        0,              Button1,        spawn,          {.v = termcmd              } }, //          left   click status text  : open open st
-  { ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd              } }, //          middle click status text  : open open st
+  { ClkStatusText,        0,              Button2,        spawn,          {.v = toggle_screen        } }, //          middle click status text  : open open st
   { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_sys_shortcuts } }, //          right  click status text  : open
   { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0                         } }, // modkey + left   click client win   : move window with mouse
   { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0                         } }, // modkey + middle click client win   : togglefloating
