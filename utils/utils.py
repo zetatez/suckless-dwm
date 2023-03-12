@@ -64,9 +64,7 @@ def get_pids_by_pname(pname):
 
 def get_pids_by_cmd(cmd):
     cmd = cmd.rstrip(" &").replace("'", "").replace('"', "").strip()
-    print(cmd)
     cmd_ps = "ps -ef|grep '{}'".format(cmd) + "|grep -v grep|awk '{print $2}'"
-    print(cmd_ps)
     pids = [int(pid) for pid in popen(cmd_ps).strip().replace("\n", " ").strip().split()]
     return pids
 
