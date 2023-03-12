@@ -99,6 +99,7 @@ static const Layout overviewlayout = { "舘",  overview }; // patch: dwm-overvie
 //{ MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \  // patch: dwm-tag-preview
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
+#define UTILS      "/home/dionysus/.suckless/suckless-dwm/utils"
 #define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
 #define ST(cmd)    { "st", "-e", "/bin/sh", "-c", cmd, NULL }
 #define STSP(cmd)  { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
@@ -117,17 +118,17 @@ static const char *cmd_volume_dec[]              =  SH("amixer -qM set Master 5%
 static const char *cmd_volume_inc[]              =  SH("amixer -qM set Master 5%+ umute");
 static const char *cmd_screen_light_dec[]        =  SH("sudo light -U 5");
 static const char *cmd_screen_light_inc[]        =  SH("sudo light -A 5");
-static const char *toggle_screen[]               =  SH("~/.suckless/suckless-dwm/utils/toggle-screen.py");
-static const char *toggle_wifi[]                 =  SH("~/.suckless/suckless-dwm/utils/toggle-wifi.py");
-static const char *toggle_bluetooth[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-bluetooth.py");
-static const char *toggle_kb_light[]             =  SH("~/.suckless/suckless-dwm/utils/toggle-kb-light");
+static const char *toggle_screen[]               =  SH(UTILS"/toggle-screen.py");
+static const char *toggle_wifi[]                 =  SH(UTILS"/toggle-wifi.py");
+static const char *toggle_bluetooth[]            =  SH(UTILS"/toggle-bluetooth.py");
+static const char *toggle_kb_light[]             =  SH(UTILS"/toggle-kb-light");
 
 // sys
 // static const char *cmd_reboot[]               =  SH("systemctl reboot");
 static const char *cmd_shutdown[]                =  SH("systemctl poweroff");
 static const char *cmd_suspend[]                 =  SH("systemctl suspend && slock");
 static const char *cmd_screenslock[]             =  SH("sleep .5 && xset dpms force off && slock");
-static const char *toggle_sys_shortcuts[]        =  SH("~/.suckless/suckless-dwm/utils/toggle-sys-shortcuts.py");
+static const char *toggle_sys_shortcuts[]        =  SH(UTILS"/toggle-sys-shortcuts.py");
 
 // lazy
 static const char *cmd_lazy_open[]               =  ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
@@ -140,43 +141,43 @@ static const char *cmd_lazy_open_media[]         =  ST("lazy -o \"$(fd --type f 
 // static const char *cmd_lazy_delete[]          =  ST("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
 
 // apps
-static const char *download_arxiv_to_lib[]       =  SH("~/.suckless/suckless-dwm/utils/download-arxiv-to-lib.py");
-static const char *download_cur_to_download[]    =  SH("~/.suckless/suckless-dwm/utils/download-cur-to-download.py");
-static const char *open_copied[]                 =  SH("~/.suckless/suckless-dwm/utils/open-copied.py");
-static const char *open_find_file_rg[]           =  ST("~/.suckless/suckless-dwm/utils/open-find-file-with-rg");
-static const char *open_my_play[]                =  SH("~/.suckless/suckless-dwm/utils/open-my-play.py");
-static const char *open_note_taking[]            =  SH("~/.suckless/suckless-dwm/utils/open-note-taking.py");
-static const char *open_passmenu[]               =  SH("~/.suckless/suckless-dwm/utils/open-passmenu.py");
-static const char *open_photoshop[]              =  SH("~/.suckless/suckless-dwm/utils/open-photoshop.py");
-static const char *open_sketchpad[]              =  SH("~/.suckless/suckless-dwm/utils/open-sketchpad.py");
-static const char *open_wps[]                    =  SH("~/.suckless/suckless-dwm/utils/open-wps.py");
-static const char *toggle_addressbook[]          =  SH("~/.suckless/suckless-dwm/utils/toggle-addressbook.py");
-static const char *toggle_vivaldi[]              =  SH("~/.suckless/suckless-dwm/utils/toggle-vivaldi.py");
-static const char *toggle_chrome_with_proxy[]    =  SH("~/.suckless/suckless-dwm/utils/toggle-chrome-with-proxy.py");
-static const char *toggle_calendar_scheduling[]  =  SH("~/.suckless/suckless-dwm/utils/toggle-calendar_scheduling.py");
-static const char *toggle_calendar_schedule[]    =  SH("~/.suckless/suckless-dwm/utils/toggle-calendar_schedule.py");
-static const char *toggle_diary[]                =  SH("~/.suckless/suckless-dwm/utils/toggle-diary.py");
-static const char *toggle_email[]                =  SH("~/.suckless/suckless-dwm/utils/toggle-mutt.py");
-static const char *toggle_flameshot[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-flameshot.py");
-static const char *toggle_gitter[]               =  SH("~/.suckless/suckless-dwm/utils/toggle-gitter.py");
-static const char *toggle_irc[]                  =  SH("~/.suckless/suckless-dwm/utils/toggle-irc.py");
-static const char *toggle_julia[]                =  SH("~/.suckless/suckless-dwm/utils/toggle-julia.py");
-static const char *toggle_lazydocker[]           =  SH("~/.suckless/suckless-dwm/utils/toggle-lazydocker.py");
-static const char *toggle_mathpix[]              =  SH("~/.suckless/suckless-dwm/utils/toggle-mathpix.py");
-static const char *toggle_music[]                =  SH("~/.suckless/suckless-dwm/utils/toggle-music.py");
-static const char *toggle_music_net_cloud[]      =  SH("~/.suckless/suckless-dwm/utils/toggle-music-net-cloud.py");
-static const char *toggle_rss[]                  =  SH("~/.suckless/suckless-dwm/utils/toggle-rss.py");
-static const char *toggle_redshift[]             =  SH("~/.suckless/suckless-dwm/utils/toggle-redshift.py");
-static const char *toggle_screenkey[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-screenkey.py");
-static const char *toggle_show[]                 =  SH("~/.suckless/suckless-dwm/utils/toggle-show.py");
-static const char *toggle_sublime[]              =  SH("~/.suckless/suckless-dwm/utils/toggle-sublime.py");
-static const char *toggle_top[]                  =  SH("~/.suckless/suckless-dwm/utils/toggle-top.py");
-static const char *toggle_trojan[]               =  SH("~/.suckless/suckless-dwm/utils/toggle-trojan.py");
-static const char *toggle_vifm[]                 =  SH("~/.suckless/suckless-dwm/utils/toggle-vifm.py");
-static const char *toggle_wallpaper[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-wallpaper.py");
-static const char *toggle_wechat[]               =  SH("~/.suckless/suckless-dwm/utils/toggle-wechat.py");
-static const char *toggle_rec_audio[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-rec-audio.py");
-static const char *toggle_rec_video[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-rec-video.py");
+static const char *download_arxiv_to_lib[]       =  SH(UTILS"/download-arxiv-to-lib.py");
+static const char *download_cur_to_download[]    =  SH(UTILS"/download-cur-to-download.py");
+static const char *open_copied[]                 =  SH(UTILS"/open-copied.py");
+static const char *open_find_file_rg[]           =  ST(UTILS"/open-find-file-with-rg");
+static const char *open_my_play[]                =  SH(UTILS"/open-my-play.py");
+static const char *open_note_taking[]            =  SH(UTILS"/open-note-taking.py");
+static const char *open_passmenu[]               =  SH(UTILS"/open-passmenu.py");
+static const char *open_photoshop[]              =  SH(UTILS"/open-photoshop.py");
+static const char *open_sketchpad[]              =  SH(UTILS"/open-sketchpad.py");
+static const char *open_wps[]                    =  SH(UTILS"/open-wps.py");
+static const char *toggle_addressbook[]          =  SH(UTILS"/toggle-addressbook.py");
+static const char *toggle_vivaldi[]              =  SH(UTILS"/toggle-vivaldi.py");
+static const char *toggle_chrome_with_proxy[]    =  SH(UTILS"/toggle-chrome-with-proxy.py");
+static const char *toggle_calendar_scheduling[]  =  SH(UTILS"/toggle-calendar_scheduling.py");
+static const char *toggle_calendar_schedule[]    =  SH(UTILS"/toggle-calendar_schedule.py");
+static const char *toggle_diary[]                =  SH(UTILS"/toggle-diary.py");
+static const char *toggle_email[]                =  SH(UTILS"/toggle-mutt.py");
+static const char *toggle_flameshot[]            =  SH(UTILS"/toggle-flameshot.py");
+static const char *toggle_gitter[]               =  SH(UTILS"/toggle-gitter.py");
+static const char *toggle_irc[]                  =  SH(UTILS"/toggle-irc.py");
+static const char *toggle_julia[]                =  SH(UTILS"/toggle-julia.py");
+static const char *toggle_lazydocker[]           =  SH(UTILS"/toggle-lazydocker.py");
+static const char *toggle_mathpix[]              =  SH(UTILS"/toggle-mathpix.py");
+static const char *toggle_music[]                =  SH(UTILS"/toggle-music.py");
+static const char *toggle_music_net_cloud[]      =  SH(UTILS"/toggle-music-net-cloud.py");
+static const char *toggle_rss[]                  =  SH(UTILS"/toggle-rss.py");
+static const char *toggle_redshift[]             =  SH(UTILS"/toggle-redshift.py");
+static const char *toggle_screenkey[]            =  SH(UTILS"/toggle-screenkey.py");
+static const char *toggle_show[]                 =  SH(UTILS"/toggle-show.py");
+static const char *toggle_sublime[]              =  SH(UTILS"/toggle-sublime.py");
+static const char *toggle_top[]                  =  SH(UTILS"/toggle-top.py");
+static const char *toggle_trojan[]               =  SH(UTILS"/toggle-trojan.py");
+static const char *toggle_vifm[]                 =  SH(UTILS"/toggle-vifm.py");
+static const char *toggle_wallpaper[]            =  SH(UTILS"/toggle-wallpaper.py");
+static const char *toggle_wechat[]               =  SH(UTILS"/toggle-wechat.py");
+static const char *toggle_rec_audio[]            =  SH(UTILS"/toggle-rec-audio.py");
+static const char *toggle_rec_video[]            =  SH(UTILS"/toggle-rec-video.py");
 
 #include "movestack.c"
 #include "shiftview.c"
