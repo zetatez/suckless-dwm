@@ -2056,7 +2056,7 @@ setup(void)
 //bh = drw->fonts->h + 2;                                                                                // patch: dwm-bar-height
   bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2; // patch: dwm-bar-height
  	sp = sidepad;                                                                                          // patch: dwm-barpadding
- 	vp = (topbar ? 1 : -1) * vertpad;                                                              // patch: dwm-barpadding
+ 	vp = (topbar ? 1 : -1) * vertpad;                                                                      // patch: dwm-barpadding
   winpad = defaultwinpad;
   updategeom();
   /* init atoms */
