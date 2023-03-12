@@ -514,7 +514,7 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
-    cmd = "echo 'only\nprimary only\nleft of\nright of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p 'arrange screen>'"
+    cmd = "echo 'only\nprimary only\nleft of\nright of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p '🔭'"
     option = popen(cmd).strip()
     if not option:
         return
@@ -545,7 +545,7 @@ def toggle_screen():
 
 
 def toggle_sys_shortcuts():
-    cmd = "echo 'suspend\npoweroff\nreboot\nslock\noff-display'|dmenu -p '>'"
+    cmd = "echo '󰒲 suspend\n poweroff\nﰇ reboot\n󰷛 slock\n󰶐 off-display'|dmenu -p ''"
     option = popen(cmd).strip()
     if not option:
         return
@@ -555,11 +555,11 @@ def toggle_sys_shortcuts():
 
     cmds = {}
 
-    cmds["suspend"] = "systemctl suspend"
-    cmds["poweroff"] = "systemctl poweroff"
-    cmds["reboot"] = "systemctl reboot"
-    cmds["slock"] = "slock & sleep 0.5 & xset dpms force off"
-    cmds["off-display"] = "sleep .5; xset dpms force off"
+    cmds["󰒲 suspend"] = "systemctl suspend"
+    cmds[" poweroff"] = "systemctl poweroff"
+    cmds["ﰇ reboot"] = "systemctl reboot"
+    cmds["󰷛 slock"] = "slock & sleep 0.5 & xset dpms force off"
+    cmds["󰶐 off-display"] = "sleep .5; xset dpms force off"
 
     cmd = cmds.get(option, "")
     if cmd:
