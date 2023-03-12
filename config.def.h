@@ -119,6 +119,7 @@ static const char *cmd_screen_light_dec[]        =  SH("sudo light -U 5");
 static const char *cmd_screen_light_inc[]        =  SH("sudo light -A 5");
 static const char *toggle_screen[]               =  SH("~/.suckless/suckless-dwm/utils/toggle-screen.py");
 static const char *toggle_wifi[]                 =  SH("~/.suckless/suckless-dwm/utils/toggle-wifi.py");
+static const char *toggle_bluetooth[]            =  SH("~/.suckless/suckless-dwm/utils/toggle-bluetooth.py");
 static const char *toggle_kb_light[]             =  SH("~/.suckless/suckless-dwm/utils/toggle-kb-light");
 
 // sys
@@ -195,7 +196,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_F7,         spawn,             {.v = toggle_screen              } },
   { SUPKEY,                       XK_F8,         spawn,             {.v = toggle_wifi                } },
 //{ SUPKEY,                       XK_F9,         spawn,             {.v =                            } },
-//{ SUPKEY,                       XK_F10,        spawn,             {.v =                            } },
+  { SUPKEY,                       XK_F10,        spawn,             {.v = toggle_bluetooth           } },
   { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light            } },
 //{ SUPKEY,                       XK_F12,        spawn,             {.v =                            } },
 

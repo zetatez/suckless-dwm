@@ -186,7 +186,7 @@ def open_my_play():
     if not os.path.exists(my_play_notes_today_note_xoj):
         shutil.copyfile(template_note_xoj, my_play_notes_today_note_xoj)
 
-    cmd_tex = "st -g {} -t {} -c {} -e nvim {} &".format(get_geometry_for_st(0.01, 0.03, 88, 54), win_name_float,
+    cmd_tex = "st -g {} -t {} -c {} -e nvim {} &".format(get_geometry_for_st(0.01, 0.05, 94, 56), win_name_float,
                                                          win_name_float, my_play_notes_today_note_tex)
 
     cmd_xoj = "st -g {} -t {} -c {} -e xournalpp {} &".format(get_geometry_for_st(0.52, 0.16, 88, 38), win_name_float,
@@ -265,6 +265,43 @@ def toggle_addressbook():
     return
 
 
+def toggle_bluetooth():
+    cmd = "bluetoothctl devices"
+    devices = popen(cmd).strip()
+
+    if not devices:
+        msg = "bluetoothctl devices returned empty"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    # sort by name
+    devices = dict([(" ".join(y[1:]), y[0]) for y in [x.strip().lstrip("Device ").split(" ") for x in devices.split("\n")]])
+    keys = list(devices.keys())
+    keys.sort()
+    devices = [[devices.get(k), k] for k in keys]
+    devices = "\n".join([" ".join(x) for x in devices])
+
+    cmd = "echo '{}'|dmenu -p 'bluetoosh device>'".format(devices)
+    option = popen(cmd).strip()
+    if not option:
+        return
+
+    id = option.strip().split(" ")[0].strip()
+
+    cmd = "bluetoothctl disconnect"
+    os.system(cmd)
+
+    cmd = "bluetoothctl connect {}".format(id)
+
+    res = popen(cmd).strip()
+    if "successful" not in res:
+        msg = "{} failed: \n{}".format(cmd, res)
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    return
+
+
 def toggle_calendar_scheduling():
     cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format("shceduling", "shceduling")
     toggle_by_cmd(cmd)
@@ -274,7 +311,7 @@ def toggle_calendar_scheduling():
 
 def toggle_calendar_schedule():
     cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
-        get_geometry_for_st(0.80, 0.04, 40, 32), win_name_float, win_name_float)
+        get_geometry_for_st(0.80, 0.05, 40, 32), win_name_float, win_name_float)
     toggle_by_cmd(cmd)
 
     return
