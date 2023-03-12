@@ -153,7 +153,7 @@ def wf_open_copied():
 
     # if a url of: ^(http|https|www|file).+
     if re.match(r'^(http|https|www|file).+', last_copied_str):
-        cmd = "st -e google {} &".format(last_copied_str)
+        cmd = "vivaldi-stable {} &".format(last_copied_str)
         os.system(cmd)
         return
 
