@@ -12,7 +12,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 8;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
 static const int sidepad            = 256;      /* horizontal padding of bar */                                                                             // patch: dwm-barpadding
-static const int defaultwinpad      = 8;        /* window padding of bar */
+static const int defaultwinpad      = 12;       /* window padding of bar */
 /* static const int vertpad            = 0;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
 /* static const int sidepad            = 0;        /1* horizontal padding of bar *1/                                                                             // patch: dwm-barpadding */
 /* static const int defaultwinpad      = 0;       /1* window padding of bar *1/ */
@@ -300,6 +300,7 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                     } },
   { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                     } }, // ffact, by myself
   { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                     } }, // ffact, by myself
+  { MODKEY,                       XK_s,          reset,             {0                               } }, // reset, by myself
   { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                } }, // centeranyshape
   { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                } }, // centerequalratio
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]                } }, // grid

@@ -300,6 +300,7 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                     } },
   { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                     } }, // ffact, by myself
   { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                     } }, // ffact, by myself
+  { MODKEY,                       XK_s,          reset,             {0                               } }, // reset, by myself
   { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                } }, // centeranyshape
   { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                } }, // centerequalratio
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]                } }, // grid

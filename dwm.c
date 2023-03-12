@@ -219,6 +219,7 @@ static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
+static void reset();                                                                           // by myself
 static void run(void);
 static void scan(void);
 static int sendevent(Client *c, Atom proto);
@@ -1770,6 +1771,17 @@ restack(Monitor *m)
   XSync(dpy, False);
   while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
+
+void reset(void) {          //  by myself
+  selmon->mfact = mfact;    //  by myself
+  selmon->ffact = ffact;    //  by myself
+  selmon->nmaster =nmaster; //  by myself
+                            //  by myself
+  if (selmon->sel)          //  by myself
+    arrange(selmon);        //  by myself
+  else                      //  by myself
+    drawbar(selmon);        //  by myself
+}                           //  by myself
 
 void
 run(void)
