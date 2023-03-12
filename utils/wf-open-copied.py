@@ -3,4 +3,4 @@
 
 import utils
 
-utils.download_arxiv_to_lib()
+utils.wf_open_copied()

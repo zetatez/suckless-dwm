@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_passmenu()
+utils.app_passmenu()

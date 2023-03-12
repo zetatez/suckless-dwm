@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_photoshop()
+utils.wf_sketchpad()

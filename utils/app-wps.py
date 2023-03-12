@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_copied()
+utils.app_wps()

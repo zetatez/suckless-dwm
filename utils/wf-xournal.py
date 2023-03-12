@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_sketchpad()
+utils.wf_xournal()

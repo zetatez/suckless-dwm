@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_note_taking()
+utils.wf_download_arxiv_to_lib()

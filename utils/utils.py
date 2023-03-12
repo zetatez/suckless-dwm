@@ -22,13 +22,15 @@ my_default_wallpaper = "Van-Gogh-003.jpg"
 win_name_float = "00001011"
 win_name_scratchpad = "scratchpad"
 
-# def read_file(filename):
-#     with open(filename, "r", encoding="utf-8") as fh:
-#         return fh.read()
 
-# def write_file(filename, s):
-#     with open(filename, "w", encoding="utf-8") as fh:
-#         fh.write(s)
+def read_file(filename):
+    with open(filename, "r", encoding="utf-8") as fh:
+        return fh.read()
+
+
+def write_file(filename, s):
+    with open(filename, "w", encoding="utf-8") as fh:
+        fh.write(s)
 
 
 def get_screen_count():
@@ -118,7 +120,27 @@ def keep_file_or_not(file_path):
 
 # utils
 # ---------------------------------------------------------
-def open_copied():
+# app
+# -----------------------
+def open_app(app):
+    return os.system(app)
+
+
+def app_passmenu():
+    return open_app(app="passmenu")
+
+
+def app_photoshop():
+    return open_app(app="gimp")
+
+
+def app_wps():
+    return open_app(app="wps")
+
+
+# wf: workflow
+# -----------------------
+def wf_open_copied():
     cmd = "xclip -o"
     last_copied_str = popen(cmd)
     last_copied_str = last_copied_str.strip()
@@ -135,10 +157,13 @@ def open_copied():
         os.system(cmd)
         return
 
+    msg = "can not handle copied: {}".format(last_copied_str)
+    os.system("notify-send '{}'".format(msg))
+
     return
 
 
-def open_note_taking():
+def wf_xournal():
     time_str = time.strftime("%Y-%m-%d", time.localtime())
     file_folder = my_library_path + "/xournal"
     file_path = file_folder + "/" + time_str + ".xopp"
@@ -157,7 +182,7 @@ def open_note_taking():
     return
 
 
-def open_my_play():
+def wf_latex():
     tody_str = time.strftime("%Y-%m-%d", time.localtime())
     my_play_notes_today_path = my_play_path + "/notes/" + tody_str
     template_note_tex = my_play_path + "/templates/note.tex"
@@ -205,20 +230,7 @@ def open_my_play():
     return
 
 
-def open_passmenu():
-    cmd = "passmenu"
-    os.system(cmd)
-
-    return
-
-
-def open_photoshop():
-    toggle_by_pname(pname="gimp", cmd="gimp")
-
-    return
-
-
-def open_sketchpad():
+def wf_sketchpad():
     time_str = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
     file_folder = my_library_path + "/inkscape"
     template_folder = file_folder + "/templates"
@@ -249,13 +261,112 @@ def open_sketchpad():
     return
 
 
-def open_wps():
-    cmd = "wps"
+def __get_current_mouse_url():
+    dx, dy = 4, 130
+    text = popen("xdotool getmouselocation")
+    mouse_pos = dict([x.split(":") for x in text.split()])
+    cx, cy = int(mouse_pos.get("x", 0)), int(mouse_pos.get("y", 0))
+
+    cmd = "xdotool mousemove {} {} click 3".format(cx, cy)
     os.system(cmd)
+
+    cmd = "xdotool mousemove {} {} click 1".format(cx + dx, cy + dy)
+    os.system(cmd)
+
+    cmd = "xdotool mousemove {} {}".format(cx, cy)
+    os.system(cmd)
+    url = popen("xclip -o")
+    url = url.strip()
+
+    if re.match(r'^(http|https|www|file).+', url):
+        return url, True
+
+    return '', False
+
+
+def wf_download_arxiv_to_lib():
+    my_library_paper_path = my_library_path + "/papers"
+
+    url, ok = __get_current_mouse_url()
+    if not ok:
+        msg = "Error: get current mouse url failed"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    if "arxiv" not in url:
+        msg = "Error: not a lawful arxiv url"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    file_name = url.split("/")[-1] + ".pdf"
+    file_path = my_library_paper_path + "/" + file_name
+
+    if not os.path.exists(file_path):
+        msg = "downloading {} \nto          {}".format(url, file_path)
+        os.system("notify-send '{}'".format(msg))
+
+        wget.download(url, file_path)
+
+        msg = "job done!"
+        os.system("notify-send '{}'".format(msg))
+
+        open_file_at_foreground(file_path)
+        keep_file_or_not(file_path)
+    else:
+        open_file_at_background(file_path)
 
     return
 
 
+def wf_download_cur_to_download():
+    url, ok = __get_current_mouse_url()
+    if not ok:
+        msg = "Error: get current mouse url failed"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    # github repo url: automatically redirect to raw file url: download always fail, so just open it with the chrome
+    # need:
+    # - turn off vpn
+    # - /etc/hosts
+    #   github raw
+    #   199.232.28.133 raw.githubusercontent.com
+    if re.match(r'^https://github.com.+blob.*', url):
+        url = url.replace("github.com", "raw.githubusercontent.com")
+        url = url.replace("blob/", "")
+        cmd = "google {}".format(url)
+        os.system(cmd)
+        return
+
+    # the file name may not consistent with the real name
+    file_name = url.split("/")[-1]
+    file_path = my_download_path + "/" + file_name
+
+    # - wget is too slow, but it can return the file name
+    # - aria2c is not fast either
+    if not os.path.exists(file_path):
+        msg = "downloading {} \nto          {}".format(url, my_download_path)
+        os.system("notify-send '{}'".format(msg))
+
+        if re.match(r'.*(tar|rar|zip|gzip|xz|7z|bz|bz2|tgz|pkg|exe).*', url):
+            cmd = "google {}".format(url)
+            os.system(cmd)
+        else:
+            file_path = wget.download(url, my_download_path)
+
+            msg = "job done!"
+            os.system("notify-send '{}'".format(msg))
+
+            open_file_at_foreground(file_path)
+            keep_file_or_not(file_path)
+    else:
+        open_file_at_background(file_path)
+
+    return
+
+
+# toggle
+# -----------------------
 def toggle_addressbook():
     cmd = "st -e abook"
     toggle_by_cmd(cmd)
@@ -564,110 +675,6 @@ def toggle_sys_shortcuts():
     cmd = cmds.get(option, "")
     if cmd:
         os.system(cmd)
-
-    return
-
-
-def get_current_mouse_url():
-    dx, dy = 4, 130
-    text = popen("xdotool getmouselocation")
-    mouse_pos = dict([x.split(":") for x in text.split()])
-    cx, cy = int(mouse_pos.get("x", 0)), int(mouse_pos.get("y", 0))
-
-    cmd = "xdotool mousemove {} {} click 3".format(cx, cy)
-    os.system(cmd)
-
-    cmd = "xdotool mousemove {} {} click 1".format(cx + dx, cy + dy)
-    os.system(cmd)
-
-    cmd = "xdotool mousemove {} {}".format(cx, cy)
-    os.system(cmd)
-    url = popen("xclip -o")
-    url = url.strip()
-
-    if re.match(r'^(http|https|www|file).+', url):
-        return url, True
-
-    return '', False
-
-
-def download_arxiv_to_lib():
-    my_library_paper_path = my_library_path + "/papers"
-
-    url, ok = get_current_mouse_url()
-    if not ok:
-        msg = "Error: get current mouse url failed"
-        os.system("notify-send '{}'".format(msg))
-        return
-
-    if "arxiv" not in url:
-        msg = "Error: not a lawful arxiv url"
-        os.system("notify-send '{}'".format(msg))
-        return
-
-    file_name = url.split("/")[-1] + ".pdf"
-    file_path = my_library_paper_path + "/" + file_name
-
-    if not os.path.exists(file_path):
-        msg = "downloading {} \nto          {}".format(url, file_path)
-        os.system("notify-send '{}'".format(msg))
-
-        wget.download(url, file_path)
-
-        msg = "job done!"
-        os.system("notify-send '{}'".format(msg))
-
-        open_file_at_foreground(file_path)
-        keep_file_or_not(file_path)
-    else:
-        open_file_at_background(file_path)
-
-    return
-
-
-def download_cur_to_download():
-    url, ok = get_current_mouse_url()
-    if not ok:
-        msg = "Error: get current mouse url failed"
-        os.system("notify-send '{}'".format(msg))
-        return
-
-    # github repo url: automatically redirect to raw file url: download always fail, so just open it with the chrome
-    # need:
-    # - turn off vpn
-    # - /etc/hosts
-    #   github raw
-    #   199.232.28.133 raw.githubusercontent.com
-    if re.match(r'^https://github.com.+blob.*', url):
-        url = url.replace("github.com", "raw.githubusercontent.com")
-        url = url.replace("blob/", "")
-        cmd = "google {}".format(url)
-        os.system(cmd)
-        return
-
-    # the file name may not consistent with the real name
-    file_name = url.split("/")[-1]
-    file_path = my_download_path + "/" + file_name
-
-    # - wget is too slow, but it can return the file name
-    # - aria2c is not fast either
-    if not os.path.exists(file_path):
-        msg = "downloading {} \nto          {}".format(url, my_download_path)
-        os.system("notify-send '{}'".format(msg))
-
-        if re.match(r'.*(tar|rar|zip|gzip|xz|7z|bz|bz2|tgz|pkg|exe).*', url):
-            cmd = "google {}".format(url)
-            os.system(cmd)
-        else:
-            file_path = wget.download(url, my_download_path)
-
-            msg = "job done!"
-            os.system("notify-send '{}'".format(msg))
-
-            open_file_at_foreground(file_path)
-            keep_file_or_not(file_path)
-    else:
-        open_file_at_background(file_path)
 
     return
 

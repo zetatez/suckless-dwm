@@ -3,4 +3,4 @@
 
 import utils
 
-utils.download_cur_to_download()
+utils.app_photoshop()

@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_my_play()
+utils.wf_download_cur_to_download()

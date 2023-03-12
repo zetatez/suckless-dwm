@@ -3,4 +3,4 @@
 
 import utils
 
-utils.open_wps()
+utils.wf_latex()
