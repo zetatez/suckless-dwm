@@ -94,10 +94,6 @@ def toggle_by_cmd(cmd):
     return
 
 
-def spawn(cmd):
-    os.execvp(cmd[0], cmd)
-
-
 def popen(cmd):
     r = os.popen(cmd)
     text = r.read()
@@ -145,7 +141,48 @@ def app_wps():
 
 # wf: workflow
 # -----------------------
-def wf_open_copied():
+def wf_websites():
+    websites = {
+        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "google scholar": "https://scholar.google.com",
+        "arxiv": "https://arxiv.org",
+        "wolframalpha": "https://www.wolframalpha.com",
+        "bing": "https://cn.bing.com",
+        "github": "https://github.com/zetatez?tab=repositories",
+        "arch wiki": "https://wiki.archlinux.org",
+        "suckless": "https://dwm.suckless.org",
+        "map": "https://ditu.amap.com",
+        "ocr": "http://ocr.space",
+        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+        "bilibili": "https://www.bilibili.com",
+        "cctv5": "https://tv.cctv.com/live/cctv5",
+        "mall jd": "https://www.jd.com",
+        "news of finance": "https://news.futunn.com/en/main/live?lang=zh-CN",
+        "runoob": "https://www.runoob.com",
+        "aliyun mirror": "https://developer.aliyun.com/mirror",
+    }
+
+    cmd = "echo '{}'|dmenu -p 'websites'".format('\n'.join(list(websites.keys())))
+    option = popen(cmd).strip()
+    if option:
+        cmd = "chrome {}".format(websites.get(option, "https://cn.bing.com/search?q={}".format(option)))
+        os.system(cmd)
+
+    return
+
+
+def wf_map():
+    cmd = "dmenu < /dev/null -p 'enter location'"
+    option = popen(cmd).strip()
+    if option:
+        url = "https://ditu.amap.com/search?query={}".format(option)
+        cmd = "chrome {}".format(url)
+        os.system(cmd)
+
+    return
+
+
+def wf_handle_copied():
     last_copied_str = pyperclip.paste().strip()
 
     # if a local file
@@ -160,8 +197,13 @@ def wf_open_copied():
         os.system(cmd)
         return
 
-    msg = "can not handle copied: {}".format(last_copied_str)
-    os.system("notify-send '{}'".format(msg))
+    # search if match none
+    cmd = "echo '{}'|dmenu -p 'Can not handle! search ?'".format('\n'.join(['yes', 'no']))
+    option = popen(cmd)
+    if option:
+        url = "https://cn.bing.com/search?q={}".format(last_copied_str)
+        cmd = "chrome {}".format(url)
+        os.system(cmd)
 
     return
 

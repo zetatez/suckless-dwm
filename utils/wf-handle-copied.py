@@ -3,4 +3,4 @@
 
 import utils
 
-utils.wf_open_copied()
+utils.wf_handle_copied()
