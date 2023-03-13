@@ -363,18 +363,12 @@ def wf_format_sql():
     return
 
 
-def wf_base_trans_string_to_x():
+def wf_trans_base_10_to_base_x():
     last_copied_str = pyperclip.paste()
 
     try:
-        # try translate input str as base 10
-        binary = bin(int(last_copied_str))
-    except Exception as e:
-        # treat as a string if try fail
-        binary = ''.join(format(ord(i), '08b') for i in last_copied_str)
-
-    try:
         s = ""
+        binary = bin(int(last_copied_str))
         cmd = "echo '{}'|dmenu -p 'base trans string to ?'".format('\n'.join(['2', '8', '10', '16']))
         option = popen(cmd).strip()
         if not option:
@@ -392,10 +386,42 @@ def wf_base_trans_string_to_x():
             return
 
         pyperclip.copy(s)
-        msg = "base trans string to x success, please check clipboard:\n{}".format(s)
+        msg = "trans base 10 to base x success, please check clipboard:\n{}".format(s)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "base trans string to x failed: {}\n{}".format(e, last_copied_str)
+        msg = "trans base 10 to base x failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_trans_string_to_base_x():
+    last_copied_str = pyperclip.paste()
+
+    try:
+        s = ""
+        binary = ''.join(format(ord(i), '08b') for i in last_copied_str)
+        cmd = "echo '{}'|dmenu -p 'base trans string to ?'".format('\n'.join(['2', '8', '10', '16']))
+        option = popen(cmd).strip()
+        if not option:
+            return
+
+        if option == "2":
+            s = str(binary)
+        elif option == "8":
+            s = str(oct(int(binary, 2)))
+        elif option == "10":
+            s = str(int(binary, 2))
+        elif option == "16":
+            s = str(hex(int(binary, 2)))
+        else:
+            return
+
+        pyperclip.copy(s)
+        msg = "trans string to base x success, please check clipboard:\n{}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "trans string to base x failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
