@@ -1,5 +1,6 @@
-
+json
 psutil
-shutil
+pyperclip
 pyqt5
+shutil
 wget
