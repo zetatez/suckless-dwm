@@ -9,6 +9,7 @@ import time
 import wget
 import shutil
 import psutil
+import socket
 from PyQt5 import QtWidgets
 
 my_home_path = "/home/dionysus"
@@ -261,6 +262,23 @@ def wf_sketchpad():
     return
 
 
+def wf_get_host_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        cmd = 'echo -n "{}"|xclip'.format(ip)
+        os.system(cmd)
+        msg = "get host ip success, please check clipboard: {}".format(ip)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "get host ip failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+        s.close()
+
+    return
+
+
 def __get_current_mouse_url():
     dx, dy = 4, 130
     text = popen("xdotool getmouselocation")
@@ -428,6 +446,12 @@ def toggle_calendar_schedule():
 
 def toggle_diary():
     time_str = time.strftime("%Y-%m-%d", time.localtime())
+    diary = "{}/diary/{}.md".format(my_home_path, time_str)
+
+    if not os.path.exists(diary):
+        s = "### {}\n".format(time.strftime("%a %b %d %H:%M:%S %p CST %Y", time.localtime()))
+        write_file(diary, s)
+
     cmd = "st -e nvim {}/diary/{}.md".format(my_home_path, time_str)
     toggle_by_cmd(cmd)
 
@@ -680,4 +704,5 @@ def toggle_sys_shortcuts():
 
 
 if __name__ == '__main__':
+    wf_get_host_ip()
     pass
