@@ -10,6 +10,9 @@ import wget
 import shutil
 import psutil
 import socket
+import json
+import pyperclip
+import sqlparse
 from PyQt5 import QtWidgets
 
 my_home_path = "/home/dionysus"
@@ -142,9 +145,7 @@ def app_wps():
 # wf: workflow
 # -----------------------
 def wf_open_copied():
-    cmd = "xclip -o"
-    last_copied_str = popen(cmd)
-    last_copied_str = last_copied_str.strip()
+    last_copied_str = pyperclip.paste().strip()
 
     # if a local file
     if os.path.exists(last_copied_str):
@@ -267,14 +268,41 @@ def wf_get_host_ip():
     try:
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
-        cmd = 'echo -n "{}"|xclip'.format(ip)
-        os.system(cmd)
+        pyperclip.copy(ip)
         msg = "get host ip success, please check clipboard: {}".format(ip)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
         msg = "get host ip failed: {}".format(e)
         os.system("notify-send '{}'".format(msg))
         s.close()
+
+    return
+
+
+def wf_format_json():
+    last_copied_json_str = pyperclip.paste()
+    try:
+        s = json.dumps(json.loads(last_copied_json_str), indent=2)
+        pyperclip.copy(s)
+        msg = "format json success, please check clipboard:\n{}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "format json failed: {}\n{}".format(e, last_copied_json_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_format_sql():
+    last_copied_json_str = pyperclip.paste()
+    try:
+        s = sqlparse.format(last_copied_json_str, reindent=True, indent=2, keyword_case='upper')
+        pyperclip.copy(s)
+        msg = "format sql success, please check clipboard:\n{}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "format sql failed: {}\n{}".format(e, last_copied_json_str)
+        os.system("notify-send '{}'".format(msg))
 
     return
 
@@ -704,5 +732,4 @@ def toggle_sys_shortcuts():
 
 
 if __name__ == '__main__':
-    wf_get_host_ip()
     pass

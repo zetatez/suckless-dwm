@@ -12,6 +12,8 @@ def empty():
 
 options = {
     "[wf] copied": utils.wf_open_copied,
+    "[wf] format json": utils.wf_format_json,
+    "[wf] format sql": utils.wf_format_sql,
     "[wf] get host ip": utils.wf_get_host_ip,
     "[wf] inkspace": utils.wf_sketchpad,
     "[wf] latex": utils.wf_latex,
