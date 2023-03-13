@@ -13,6 +13,7 @@ import socket
 import json
 import pyperclip
 import sqlparse
+import datetime
 from PyQt5 import QtWidgets
 
 my_home_path = "/home/dionysus"
@@ -115,7 +116,7 @@ def open_file_at_background(file_path):
 
 
 def keep_file_or_not(file_path):
-    cmd = "echo 'yes\nno'|dmenu -p 'keep file?'"
+    cmd = "echo '{}'|dmenu -p 'keep file?'".format('\n'.join(['yes', 'no']))
     option = popen(cmd)
     if option.strip() == "no":
         os.remove(file_path)
@@ -279,29 +280,122 @@ def wf_get_host_ip():
     return
 
 
-def wf_format_json():
-    last_copied_json_str = pyperclip.paste()
+def wf_get_now_unix_sec():
     try:
-        s = json.dumps(json.loads(last_copied_json_str), indent=2)
+        unix_sec = int(time.time())
+        pyperclip.copy(unix_sec)
+        msg = "get unix sec success, please check clipboard: {}".format(unix_sec)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "get host ip failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_get_now_unix_nano_sec():
+    try:
+        unix_nano_sec = int(time.time_ns())
+        pyperclip.copy(unix_nano_sec)
+        msg = "get unix nano sec success, please check clipboard: {}".format(unix_nano_sec)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "get unix nano sec failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_trans_unix_sec_to_datetime():
+    last_copied_str = pyperclip.paste().strip()
+    try:
+        s = str(datetime.datetime.fromtimestamp(int(last_copied_str)))
+        pyperclip.copy(s)
+        msg = "trans unix sec to datetime success, please check clipboard: {}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "trans unix sec to datetime failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_trans_datetime_to_unix_sec():
+    last_copied_str = pyperclip.paste().strip()
+    try:
+        dt = datetime.datetime.strptime(last_copied_str, "%Y-%m-%d %H:%M:%S")
+        s = str(int(datetime.datetime.timestamp(dt)))
+        pyperclip.copy(s)
+        msg = "trans datetime to unix sec success, please check clipboard: {}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "trans datetime to unix sec failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_format_json():
+    last_copied_str = pyperclip.paste()
+    try:
+        s = json.dumps(json.loads(last_copied_str), indent=2)
         pyperclip.copy(s)
         msg = "format json success, please check clipboard:\n{}".format(s)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "format json failed: {}\n{}".format(e, last_copied_json_str)
+        msg = "format json failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
 
 
 def wf_format_sql():
-    last_copied_json_str = pyperclip.paste()
+    last_copied_str = pyperclip.paste()
     try:
-        s = sqlparse.format(last_copied_json_str, reindent=True, indent=2, keyword_case='upper')
+        s = sqlparse.format(last_copied_str, reindent=True, indent=2, keyword_case='upper')
         pyperclip.copy(s)
         msg = "format sql success, please check clipboard:\n{}".format(s)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "format sql failed: {}\n{}".format(e, last_copied_json_str)
+        msg = "format sql failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_base_trans_string_to_x():
+    last_copied_str = pyperclip.paste()
+
+    try:
+        # try translate input str as base 10
+        binary = bin(int(last_copied_str))
+    except Exception as e:
+        # treat as a string if try fail
+        binary = ''.join(format(ord(i), '08b') for i in last_copied_str)
+
+    try:
+        s = ""
+        cmd = "echo '{}'|dmenu -p 'base trans string to ?'".format('\n'.join(['2', '8', '10', '16']))
+        option = popen(cmd).strip()
+        if not option:
+            return
+
+        if option == "2":
+            s = str(binary)
+        elif option == "8":
+            s = str(oct(int(binary, 2)))
+        elif option == "10":
+            s = str(int(binary, 2))
+        elif option == "16":
+            s = str(hex(int(binary, 2)))
+        else:
+            return
+
+        pyperclip.copy(s)
+        msg = "base trans string to x success, please check clipboard:\n{}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "base trans string to x failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
@@ -677,7 +771,17 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
-    cmd = "echo 'only\nprimary only\nleft of\nright of\nabove\nbelow\nrotate left\nrotate right'|dmenu -p '🔭'"
+    cmd = "echo '{}'|dmenu -p '🔭'".format('\n'.join([
+        "only",
+        "primary only",
+        "left of",
+        "right of",
+        "above",
+        "below",
+        "rotate left",
+        "rotate righ",
+    ]))
+
     option = popen(cmd).strip()
     if not option:
         return
@@ -708,7 +812,14 @@ def toggle_screen():
 
 
 def toggle_sys_shortcuts():
-    cmd = "echo '󰒲 suspend\n poweroff\nﰇ reboot\n󰷛 slock\n󰶐 off-display'|dmenu -p ''"
+    cmd = "echo '{}'|dmenu -p ''".format('\n'.join([
+        "󰒲 suspend",
+        " poweroff",
+        "ﰇ reboot",
+        "󰷛 slock",
+        "󰶐 off-display",
+    ]))
+
     option = popen(cmd).strip()
     if not option:
         return
