@@ -152,7 +152,7 @@ def wf_clipmenu():
     return
 
 
-def wf_websites():
+def wf_web():
     websites = {
         "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
         "scholar": "https://scholar.google.com",
@@ -220,123 +220,8 @@ def wf_handle_copied():
     return
 
 
-def wf_search():
-    cmd = "dmenu < /dev/null -p 'search'"
-    search = popen(cmd).strip()
-    if not search:
-        return
-
-    # if a local file
-    if os.path.exists(search):
-        cmd = "st -e lazy -o {} &".format(search)
-        os.system(cmd)
-        return
-
-    # if a url of: ^(http|https|www|file).+
-    if re.match(r'^(http|https|www|file).+', search):
-        cmd = "vivaldi-stable {} &".format(search)
-        os.system(cmd)
-        return
-
-    # if websites keyword
-    websites = {
-        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "scholar": "https://scholar.google.com",
-        "arxiv": "https://arxiv.org",
-        "wolframalpha": "https://www.wolframalpha.com",
-        "bing": "https://cn.bing.com",
-        "github": "https://github.com/zetatez?tab=repositories",
-        "arch wiki": "https://wiki.archlinux.org",
-        "suckless": "https://dwm.suckless.org",
-        # "map": "https://ditu.amap.com",
-        "ocr": "http://ocr.space",
-        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "bilibili": "https://www.bilibili.com",
-        "cctv5": "https://tv.cctv.com/live/cctv5",
-        "mall": "https://www.jd.com",
-        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
-        "runoob": "https://www.runoob.com",
-        "mirror": "https://developer.aliyun.com/mirror",
-    }
-
-    # TODO: <00:46:36 2023-03-15- Author: Dion>: fuzzy match ?
-    url = websites.get(search, False)
-    if url:
-        cmd = "chrome {}".format(url)
-        os.system(cmd)
-        return
-
-    # if workflow keyword
-    workflows = {
-        "search": wf_search,
-        "handle copied": wf_handle_copied,
-        "websites": wf_websites,
-        "ssh": wf_ssh,
-        "find local area network server": wf_find_local_area_network_server,
-        "format json": wf_format_json,
-        "format sql": wf_format_sql,
-        "map": wf_map,
-        "download arxiv to lib": wf_download_arxiv_to_lib,
-        "download cur to download": wf_download_cur_to_download,
-        "get host ip": wf_get_host_ip,
-        "get now unix nano sec": wf_get_now_unix_nano_sec,
-        "get now unix sec": wf_get_now_unix_sec,
-        "trans baee 10 to base x": wf_trans_base_10_to_base_x,
-        "trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
-        "trans string to base x": wf_trans_string_to_base_x,
-        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "inkspace": wf_sketchpad,
-        "sketchpad": wf_sketchpad,
-        "latex": wf_latex,
-        "note": wf_xournal,
-        "xournal": wf_xournal,
-        "shot": toggle_flameshot,
-        "flameshot": toggle_flameshot,
-        "screen": toggle_screen,
-        "addressbook": toggle_addressbook,
-        "bluetooth": toggle_bluetooth,
-        "calendar scheduling": toggle_calendar_scheduling,
-        "calendar schedule": toggle_calendar_schedule,
-        "diary": toggle_diary,
-        "top": toggle_top,
-        "trojan": toggle_trojan,
-        "flameshot": toggle_flameshot,
-        "vivaldi": toggle_vivaldi,
-        "chrome with proxy": toggle_chrome_with_proxy,
-        "gitter": toggle_gitter,
-        "irc": toggle_irc,
-        "julia": toggle_julia,
-        "lazydocker": toggle_lazydocker,
-        "mathpix": toggle_mathpix,
-        "music": toggle_music,
-        "music net cloud": toggle_music_net_cloud,
-        "mutt": toggle_mutt,
-        "rss": toggle_rss,
-        "redshift": toggle_redshift,
-        "screenkey": toggle_screenkey,
-        "show": toggle_show,
-        "sublime": toggle_sublime,
-        "vifm": toggle_vifm,
-        "wechat": toggle_wechat,
-        "wifi": toggle_wifi,
-        "wallpaper": toggle_wallpaper,
-        "rec audio": toggle_rec_audio,
-        "rec video": toggle_rec_video,
-        "screen": toggle_screen,
-        "sys shortcuts": toggle_sys_shortcuts,
-        "passmenu": app_passmenu,
-        "photoshop": app_photoshop,
-        "wps": app_wps,
-    }
-    workflow = workflows.get(search, empty)
-    if workflow != empty:
-        workflow()
-        return
-
-    url = "https://cn.bing.com/search?q={}".format(search.replace(" ", "+"))
-    cmd = "chrome {}".format(url)
+def wf_dmenu():
+    cmd = "dmenu_run"
     os.system(cmd)
     return
 
@@ -1101,6 +986,206 @@ def toggle_sys_shortcuts():
     if cmd:
         os.system(cmd)
 
+    return
+
+
+# ultra
+# -----------------------
+def ultra():
+
+    def empty():
+        msg = "action not found"
+        os.system("notify-send '{}'".format(msg))
+
+    options = {
+        "[wf] search": search,
+        "[wf] handle copied": wf_handle_copied,
+        "[wf] web": wf_web,
+        "[wf] ssh": wf_ssh,
+        "[wf] dmenu": wf_dmenu,
+        "[wf] find local area network server": wf_find_local_area_network_server,
+        "[wf] format json": wf_format_json,
+        "[wf] format sql": wf_format_sql,
+        "[wf] map": wf_map,
+        "[wf] download arxiv to lib": wf_download_arxiv_to_lib,
+        "[wf] download cur to download": wf_download_cur_to_download,
+        "[wf] get host ip": wf_get_host_ip,
+        "[wf] get now unix nano sec": wf_get_now_unix_nano_sec,
+        "[wf] get now unix sec": wf_get_now_unix_sec,
+        "[wf] trans baee 10 to base x": wf_trans_base_10_to_base_x,
+        "[wf] trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
+        "[wf] trans string to base x": wf_trans_string_to_base_x,
+        "[wf] trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
+        "[wf] trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
+        "[wf] inkspace": wf_sketchpad,
+        "[wf] sketchpad": wf_sketchpad,
+        "[wf] latex": wf_latex,
+        "[wf] note": wf_xournal,
+        "[wf] xournal": wf_xournal,
+        "[tg] flameshot": toggle_flameshot,
+        "[tg] screen": toggle_screen,
+        "[tg] addressbook": toggle_addressbook,
+        "[tg] bluetooth": toggle_bluetooth,
+        "[tg] calendar scheduling": toggle_calendar_scheduling,
+        "[tg] calendar schedule": toggle_calendar_schedule,
+        "[tg] diary": toggle_diary,
+        "[tg] top": toggle_top,
+        "[tg] trojan": toggle_trojan,
+        "[tg] flameshot": toggle_flameshot,
+        "[tg] vivaldi": toggle_vivaldi,
+        "[tg] chrome with proxy": toggle_chrome_with_proxy,
+        "[tg] gitter": toggle_gitter,
+        "[tg] irc": toggle_irc,
+        "[tg] julia": toggle_julia,
+        "[tg] lazydocker": toggle_lazydocker,
+        "[tg] mathpix": toggle_mathpix,
+        "[tg] music": toggle_music,
+        "[tg] music net cloud": toggle_music_net_cloud,
+        "[tg] mutt": toggle_mutt,
+        "[tg] rss": toggle_rss,
+        "[tg] redshift": toggle_redshift,
+        "[tg] screenkey": toggle_screenkey,
+        "[tg] show": toggle_show,
+        "[tg] sublime": toggle_sublime,
+        "[tg] vifm": toggle_vifm,
+        "[tg] wechat": toggle_wechat,
+        "[tg] wifi": toggle_wifi,
+        "[tg] wallpaper": toggle_wallpaper,
+        "[tg] rec audio": toggle_rec_audio,
+        "[tg] rec video": toggle_rec_video,
+        "[tg] screen": toggle_screen,
+        "[tg] sys shortcuts": toggle_sys_shortcuts,
+        "[app] passmenu": app_passmenu,
+        "[app] photoshop": app_photoshop,
+        "[app] wps": app_wps,
+    }
+
+    cmd = "echo '{}'|dmenu -p ' Ultra'".format("\n".join(options.keys()))
+    option = popen(cmd).strip()
+    if option:
+        options.get(option, empty)()
+
+
+def search():
+    cmd = "dmenu < /dev/null -p 'search'"
+    search = popen(cmd).strip()
+    if not search:
+        return
+
+    # if a local file
+    if os.path.exists(search):
+        cmd = "st -e lazy -o {} &".format(search)
+        os.system(cmd)
+        return
+
+    # if a url of: ^(http|https|www|file).+
+    if re.match(r'^(http|https|www|file).+', search):
+        cmd = "vivaldi-stable {} &".format(search)
+        os.system(cmd)
+        return
+
+    # if websites keyword
+    websites = {
+        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "scholar": "https://scholar.google.com",
+        "arxiv": "https://arxiv.org",
+        "wolframalpha": "https://www.wolframalpha.com",
+        "bing": "https://cn.bing.com",
+        "github": "https://github.com/zetatez?tab=repositories",
+        "arch wiki": "https://wiki.archlinux.org",
+        "suckless": "https://dwm.suckless.org",
+        # "map": "https://ditu.amap.com",
+        "ocr": "http://ocr.space",
+        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+        "bilibili": "https://www.bilibili.com",
+        "cctv5": "https://tv.cctv.com/live/cctv5",
+        "mall": "https://www.jd.com",
+        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
+        "runoob": "https://www.runoob.com",
+        "mirror": "https://developer.aliyun.com/mirror",
+    }
+
+    # TODO: <00:46:36 2023-03-15- Author: Dion>: fuzzy match ?
+    url = websites.get(search, False)
+    if url:
+        cmd = "chrome {}".format(url)
+        os.system(cmd)
+        return
+
+    # if workflow keyword
+    workflows = {
+        "ultra": ultra,
+        "search": search,
+        "handle copied": wf_handle_copied,
+        "web": wf_web,
+        "ssh": wf_ssh,
+        "dmenu": wf_dmenu,
+        "find local area network server": wf_find_local_area_network_server,
+        "format json": wf_format_json,
+        "format sql": wf_format_sql,
+        "map": wf_map,
+        "download arxiv to lib": wf_download_arxiv_to_lib,
+        "download cur to download": wf_download_cur_to_download,
+        "get host ip": wf_get_host_ip,
+        "get now unix nano sec": wf_get_now_unix_nano_sec,
+        "get now unix sec": wf_get_now_unix_sec,
+        "trans baee 10 to base x": wf_trans_base_10_to_base_x,
+        "trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
+        "trans string to base x": wf_trans_string_to_base_x,
+        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
+        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
+        "inkspace": wf_sketchpad,
+        "sketchpad": wf_sketchpad,
+        "latex": wf_latex,
+        "note": wf_xournal,
+        "xournal": wf_xournal,
+        "shot": toggle_flameshot,
+        "flameshot": toggle_flameshot,
+        "screen": toggle_screen,
+        "addressbook": toggle_addressbook,
+        "bluetooth": toggle_bluetooth,
+        "calendar scheduling": toggle_calendar_scheduling,
+        "calendar schedule": toggle_calendar_schedule,
+        "diary": toggle_diary,
+        "top": toggle_top,
+        "trojan": toggle_trojan,
+        "flameshot": toggle_flameshot,
+        "vivaldi": toggle_vivaldi,
+        "chrome with proxy": toggle_chrome_with_proxy,
+        "gitter": toggle_gitter,
+        "irc": toggle_irc,
+        "julia": toggle_julia,
+        "lazydocker": toggle_lazydocker,
+        "mathpix": toggle_mathpix,
+        "music": toggle_music,
+        "music net cloud": toggle_music_net_cloud,
+        "mutt": toggle_mutt,
+        "rss": toggle_rss,
+        "redshift": toggle_redshift,
+        "screenkey": toggle_screenkey,
+        "show": toggle_show,
+        "sublime": toggle_sublime,
+        "vifm": toggle_vifm,
+        "wechat": toggle_wechat,
+        "wifi": toggle_wifi,
+        "wallpaper": toggle_wallpaper,
+        "rec audio": toggle_rec_audio,
+        "rec video": toggle_rec_video,
+        "screen": toggle_screen,
+        "sys shortcuts": toggle_sys_shortcuts,
+        "passmenu": app_passmenu,
+        "photoshop": app_photoshop,
+        "wps": app_wps,
+    }
+    workflow = workflows.get(search, empty)
+    if workflow != empty:
+        workflow()
+        return
+
+    url = "https://cn.bing.com/search?q={}".format(search.replace(" ", "+"))
+    cmd = "chrome {}".format(url)
+    os.system(cmd)
     return
 
 

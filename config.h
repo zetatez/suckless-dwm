@@ -143,7 +143,6 @@ static const char *wf_download_cur_to_download[] =  SH(UTILS"/wf-download-cur-to
 static const char *wf_handle_copied[]            =  SH(UTILS"/wf-handle-copied.py");
 static const char *wf_latex[]                    =  SH(UTILS"/wf-latex.py");
 static const char *wf_rg[]                       =  ST(UTILS"/wf-rg");
-static const char *wf_search[]                   =  SH(UTILS"/wf-search.py");
 static const char *wf_sketchpad[]                =  SH(UTILS"/wf-sketchpad.py");
 static const char *wf_xournal[]                  =  SH(UTILS"/wf-xournal.py");
 static const char *toggle_addressbook[]          =  SH(UTILS"/toggle-addressbook.py");
@@ -178,6 +177,7 @@ static const char *toggle_vivaldi[]              =  SH(UTILS"/toggle-vivaldi.py"
 static const char *toggle_wallpaper[]            =  SH(UTILS"/toggle-wallpaper.py");
 static const char *toggle_wechat[]               =  SH(UTILS"/toggle-wechat.py");
 static const char *toggle_wifi[]                 =  SH(UTILS"/toggle-wifi.py");
+static const char *search[]                      =  SH(UTILS"/search.py");
 
 #include "movestack.c"
 #include "shiftview.c"
@@ -220,7 +220,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_p,          spawn,             {.v = cmd_lazy_open_book          } },
   { SUPKEY,                       XK_q,          spawn,             {.v = cmd_screenslock             } },
   { SUPKEY,                       XK_r,          spawn,             {.v = toggle_vifm                 } },
-  { SUPKEY,                       XK_s,          spawn,             {.v = wf_search                   } },
+  { SUPKEY,                       XK_s,          spawn,             {.v = search                      } },
 //{ SUPKEY,                       XK_t,          spawn,             {.v =                             } },
   { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey            } },
   { SUPKEY,                       XK_v,          spawn,             {.v = cmd_lazy_open_media         } },

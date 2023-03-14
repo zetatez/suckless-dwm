@@ -3,4 +3,4 @@
 
 import utils
 
-utils.wf_search()
+utils.search()
