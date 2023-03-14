@@ -204,13 +204,38 @@ def wf_handle_copied():
         return
 
     # search if match none
-    cmd = "echo '{}'|dmenu -p 'Can not handle! search ?'".format('\n'.join(['yes', 'no']))
-    option = popen(cmd)
-    if option:
-        url = "https://cn.bing.com/search?q={}".format(last_copied_str)
+    prompt = last_copied_str if len(last_copied_str) < 12 else last_copied_str[:12]
+    cmd = "echo '{}'|dmenu -p 'Can not handle: {}. search ?'".format('\n'.join(['yes', 'no']), prompt)
+    option = popen(cmd).strip()
+    if option == "yes":
+        url = "https://cn.bing.com/search?q={}".format(last_copied_str.replace(" ", "+"))
         cmd = "chrome {}".format(url)
         os.system(cmd)
 
+    return
+
+
+def wf_search():
+    cmd = "dmenu < /dev/null -p 'search'"
+    search = popen(cmd).strip()
+    if not search:
+        return
+
+    # if a local file
+    if os.path.exists(search):
+        cmd = "st -e lazy -o {} &".format(search)
+        os.system(cmd)
+        return
+
+    # if a url of: ^(http|https|www|file).+
+    if re.match(r'^(http|https|www|file).+', search):
+        cmd = "vivaldi-stable {} &".format(search)
+        os.system(cmd)
+        return
+
+    url = "https://cn.bing.com/search?q={}".format(search.replace(" ", "+"))
+    cmd = "chrome {}".format(url)
+    os.system(cmd)
     return
 
 
@@ -308,6 +333,67 @@ def wf_sketchpad():
         os.system("notify-send '{}'".format("already in running"))
     else:
         os.system(cmd)
+
+    return
+
+
+def wf_ssh():
+    ssh_list = []
+
+    file_id_rsa_pub = os.path.join(my_home_path, ".ssh/id_rsa.pub")
+    if os.path.exists(file_id_rsa_pub):
+        id_rsa_pub = list(set([line.strip().split()[-1] for line in read_file(file_id_rsa_pub).split("\n") if line.strip()]))
+        ssh_list.extend(id_rsa_pub)
+
+    file_know_hosts = os.path.join(my_home_path, ".ssh/known_hosts")
+    if os.path.exists(file_know_hosts):
+        know_hosts = [
+            "root@" + x
+            for x in list(set([line.strip().split()[0] for line in read_file(file_know_hosts).split("\n") if line.strip()]))
+        ]
+        ssh_list.extend(know_hosts)
+
+    ssh_list = [x for x in ssh_list if not (("127.0.0.1" in x) or ("github" in x) or (x.endswith(".com")))]
+    ssh_list.sort(reverse=True)
+
+    cmd = "echo '{}'|dmenu -p 'ssh'".format('\n'.join(ssh_list))
+    option = popen(cmd).strip()
+    if not option:
+        return
+
+    ssh_cmd = "ssh {}".format(option)
+    cmd = "st -e /bin/bash -c \"echo '{}' && {}\"".format(ssh_cmd, ssh_cmd)
+    os.system(cmd)
+
+    return
+
+
+def wf_find_local_area_network_server():
+    ip = "127.0.0.1"
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception as e:
+        msg = "get host ip failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+        s.close()
+
+    ip = list(ip)
+    ip[-1] = '0'
+    ip = ''.join(ip)
+    cmd = "nmap -sT -p 22 -oG - {}/24".format(ip)
+    s = popen(cmd)
+    server_list = [x.strip().split()[1] for x in s.split('\n') if 'ssh' in x]
+    server_list.sort()
+    cmd = "echo '{}'|dmenu -p 'local'".format('\n'.join(server_list))
+    option = popen(cmd).strip()
+    if not option:
+        return
+
+    pyperclip.copy(option)
+    msg = "find local area network server success, please check clipboard: {}".format(option)
+    os.system("notify-send '{}'".format(msg))
 
     return
 
@@ -917,5 +1003,5 @@ def toggle_sys_shortcuts():
 
 
 if __name__ == '__main__':
-    wf_clipmenu()
+    wf_find_local_area_network_server()
     pass

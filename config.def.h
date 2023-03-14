@@ -18,7 +18,7 @@ static const int defaultwinpad      = 12;       /* window padding of bar */
 /* static const int defaultwinpad      = 0;       /1* window padding of bar *1/ */
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=10";
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=24";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -143,6 +143,7 @@ static const char *wf_download_cur_to_download[] =  SH(UTILS"/wf-download-cur-to
 static const char *wf_handle_copied[]            =  SH(UTILS"/wf-handle-copied.py");
 static const char *wf_latex[]                    =  SH(UTILS"/wf-latex.py");
 static const char *wf_rg[]                       =  ST(UTILS"/wf-rg");
+static const char *wf_search[]                   =  SH(UTILS"/wf-search.py");
 static const char *wf_sketchpad[]                =  SH(UTILS"/wf-sketchpad.py");
 static const char *wf_xournal[]                  =  SH(UTILS"/wf-xournal.py");
 static const char *toggle_addressbook[]          =  SH(UTILS"/toggle-addressbook.py");
@@ -219,13 +220,13 @@ static const Key keys[] = {
   { SUPKEY,                       XK_p,          spawn,             {.v = cmd_lazy_open_book          } },
   { SUPKEY,                       XK_q,          spawn,             {.v = cmd_screenslock             } },
   { SUPKEY,                       XK_r,          spawn,             {.v = toggle_vifm                 } },
-  { SUPKEY,                       XK_s,          spawn,             {.v = toggle_show                 } },
+  { SUPKEY,                       XK_s,          spawn,             {.v = wf_search                   } },
 //{ SUPKEY,                       XK_t,          spawn,             {.v =                             } },
   { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey            } },
   { SUPKEY,                       XK_v,          spawn,             {.v = cmd_lazy_open_media         } },
   { SUPKEY,                       XK_w,          spawn,             {.v = cmd_lazy_open_wiki          } },
   { SUPKEY,                       XK_x,          spawn,             {.v = toggle_wallpaper            } },
-//{ SUPKEY,                       XK_y,          spawn,             {.v =                             } },
+  { SUPKEY,                       XK_y,          spawn,             {.v = toggle_show                 } },
 //{ SUPKEY,                       XK_z,          spawn,             {.v =                             } },
   { SUPKEY,                       XK_apostrophe, spawn,             {.v = ultra                       } },
   { SUPKEY,                       XK_BackSpace,  spawn,             {.v = app_passmenu                } },
