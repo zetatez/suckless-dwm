@@ -28,6 +28,11 @@ win_name_float = "00001011"
 win_name_scratchpad = "scratchpad"
 
 
+def empty():
+    msg = "action not found"
+    os.system("notify-send '{}'".format(msg))
+
+
 def read_file(filename):
     with open(filename, "r", encoding="utf-8") as fh:
         return fh.read()
@@ -150,7 +155,7 @@ def wf_clipmenu():
 def wf_websites():
     websites = {
         "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "google scholar": "https://scholar.google.com",
+        "scholar": "https://scholar.google.com",
         "arxiv": "https://arxiv.org",
         "wolframalpha": "https://www.wolframalpha.com",
         "bing": "https://cn.bing.com",
@@ -162,10 +167,10 @@ def wf_websites():
         "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
         "bilibili": "https://www.bilibili.com",
         "cctv5": "https://tv.cctv.com/live/cctv5",
-        "mall jd": "https://www.jd.com",
+        "mall": "https://www.jd.com",
         "news of finance": "https://news.futunn.com/en/main/live?lang=zh-CN",
         "runoob": "https://www.runoob.com",
-        "aliyun mirror": "https://developer.aliyun.com/mirror",
+        "mirror": "https://developer.aliyun.com/mirror",
     }
 
     cmd = "echo '{}'|dmenu -p 'websites'".format('\n'.join(list(websites.keys())))
@@ -231,6 +236,103 @@ def wf_search():
     if re.match(r'^(http|https|www|file).+', search):
         cmd = "vivaldi-stable {} &".format(search)
         os.system(cmd)
+        return
+
+    # if websites keyword
+    websites = {
+        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "scholar": "https://scholar.google.com",
+        "arxiv": "https://arxiv.org",
+        "wolframalpha": "https://www.wolframalpha.com",
+        "bing": "https://cn.bing.com",
+        "github": "https://github.com/zetatez?tab=repositories",
+        "arch wiki": "https://wiki.archlinux.org",
+        "suckless": "https://dwm.suckless.org",
+        # "map": "https://ditu.amap.com",
+        "ocr": "http://ocr.space",
+        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+        "bilibili": "https://www.bilibili.com",
+        "cctv5": "https://tv.cctv.com/live/cctv5",
+        "mall": "https://www.jd.com",
+        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
+        "runoob": "https://www.runoob.com",
+        "mirror": "https://developer.aliyun.com/mirror",
+    }
+
+    # TODO: <00:46:36 2023-03-15- Author: Dion>: fuzzy match ?
+    url = websites.get(search, False)
+    if url:
+        cmd = "chrome {}".format(url)
+        os.system(cmd)
+        return
+
+    # if workflow keyword
+    workflows = {
+        "search": wf_search,
+        "handle copied": wf_handle_copied,
+        "websites": wf_websites,
+        "ssh": wf_ssh,
+        "find local area network server": wf_find_local_area_network_server,
+        "format json": wf_format_json,
+        "format sql": wf_format_sql,
+        "map": wf_map,
+        "download arxiv to lib": wf_download_arxiv_to_lib,
+        "download cur to download": wf_download_cur_to_download,
+        "get host ip": wf_get_host_ip,
+        "get now unix nano sec": wf_get_now_unix_nano_sec,
+        "get now unix sec": wf_get_now_unix_sec,
+        "trans baee 10 to base x": wf_trans_base_10_to_base_x,
+        "trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
+        "trans string to base x": wf_trans_string_to_base_x,
+        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
+        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
+        "inkspace": wf_sketchpad,
+        "sketchpad": wf_sketchpad,
+        "latex": wf_latex,
+        "note": wf_xournal,
+        "xournal": wf_xournal,
+        "shot": toggle_flameshot,
+        "flameshot": toggle_flameshot,
+        "screen": toggle_screen,
+        "addressbook": toggle_addressbook,
+        "bluetooth": toggle_bluetooth,
+        "calendar scheduling": toggle_calendar_scheduling,
+        "calendar schedule": toggle_calendar_schedule,
+        "diary": toggle_diary,
+        "top": toggle_top,
+        "trojan": toggle_trojan,
+        "flameshot": toggle_flameshot,
+        "vivaldi": toggle_vivaldi,
+        "chrome with proxy": toggle_chrome_with_proxy,
+        "gitter": toggle_gitter,
+        "irc": toggle_irc,
+        "julia": toggle_julia,
+        "lazydocker": toggle_lazydocker,
+        "mathpix": toggle_mathpix,
+        "music": toggle_music,
+        "music net cloud": toggle_music_net_cloud,
+        "mutt": toggle_mutt,
+        "rss": toggle_rss,
+        "redshift": toggle_redshift,
+        "screenkey": toggle_screenkey,
+        "show": toggle_show,
+        "sublime": toggle_sublime,
+        "vifm": toggle_vifm,
+        "wechat": toggle_wechat,
+        "wifi": toggle_wifi,
+        "wallpaper": toggle_wallpaper,
+        "rec audio": toggle_rec_audio,
+        "rec video": toggle_rec_video,
+        "screen": toggle_screen,
+        "sys shortcuts": toggle_sys_shortcuts,
+        "passmenu": app_passmenu,
+        "photoshop": app_photoshop,
+        "wps": app_wps,
+    }
+    workflow = workflows.get(search, empty)
+    if workflow != empty:
+        workflow()
         return
 
     url = "https://cn.bing.com/search?q={}".format(search.replace(" ", "+"))
