@@ -137,9 +137,10 @@ static const char *ultra[]                       =  SH(UTILS"/ultra.py");
 static const char *app_passmenu[]                =  SH(UTILS"/app-passmenu.py");
 static const char *app_photoshop[]               =  SH(UTILS"/app-photoshop.py");
 static const char *app_wps[]                     =  SH(UTILS"/app-wps.py");
-static const char *wf_handle_copied[]            =  SH(UTILS"/wf-handle-copied.py");
+static const char *wf_clipmenu[]                 =  SH(UTILS"/wf-clipmenu.py");
 static const char *wf_download_arxiv_to_lib[]    =  SH(UTILS"/wf_download-arxiv-to-lib.py");
 static const char *wf_download_cur_to_download[] =  SH(UTILS"/wf_download-cur-to-download.py");
+static const char *wf_handle_copied[]            =  SH(UTILS"/wf-handle-copied.py");
 static const char *wf_latex[]                    =  SH(UTILS"/wf-latex.py");
 static const char *wf_rg[]                       =  ST(UTILS"/wf-rg");
 static const char *wf_sketchpad[]                =  SH(UTILS"/wf-sketchpad.py");
@@ -273,6 +274,7 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio            } },
   { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_video            } },
 
+  { MODKEY,                       XK_c,          spawn,             {.v = wf_clipmenu                 } },
   { MODKEY,                       XK_b,          togglebar,         {0                                } },
   { MODKEY,                       XK_Return,     zoom,              {0                                } },
   { MODKEY,                       XK_Tab,        view,              {0                                } }, // switch current tag    with previous tag

@@ -141,6 +141,12 @@ def app_wps():
 
 # wf: workflow
 # -----------------------
+def wf_clipmenu():
+    cmd = "clipmenu"
+    os.system(cmd)
+    return
+
+
 def wf_websites():
     websites = {
         "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
@@ -911,4 +917,5 @@ def toggle_sys_shortcuts():
 
 
 if __name__ == '__main__':
+    wf_clipmenu()
     pass
