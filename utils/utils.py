@@ -362,7 +362,7 @@ def wf_find_local_area_network_server():
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
     except Exception as e:
-        msg = "get host ip failed: {}".format(e)
+        msg = "find loacl area network server failed: {}".format(e)
         os.system("notify-send '{}'".format(msg))
         s.close()
 
@@ -385,7 +385,7 @@ def wf_find_local_area_network_server():
     return
 
 
-def wf_get_host_ip():
+def wf_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(("8.8.8.8", 80))
@@ -401,6 +401,45 @@ def wf_get_host_ip():
     return
 
 
+def wf_mount_to_xyz():
+    cmd = "ls -1 /dev/sd*"
+    s = popen(cmd)
+    if "no matches found" in s:
+        return
+
+    devices = [x.strip() for x in s.split("\n") if x.strip() != "" and len(x.strip()) >= 9]
+    devices.sort()
+
+    print(devices)
+
+    cmd = "echo '{}'|dmenu -p 'mount ?'".format('\n'.join(devices))
+    dev = popen(cmd).strip()
+    if not dev:
+        return
+
+    cmd = "echo '{}'|dmenu -p 'mount {} to ?'".format('\n'.join(["/x", "/y", "/z"]), dev)
+    dst = popen(cmd).strip()
+    if not dst:
+        return
+
+    cmd = "sudo mount {} {}".format(dev, dst)
+    os.system(cmd)
+
+    return
+
+
+def wf_umount_from_xyz():
+    cmd = "echo '{}'|dmenu -p 'umount ?'".format('\n'.join(["/x", "/y", "/z"]))
+    dst = popen(cmd).strip()
+    if not dst:
+        return
+
+    cmd = "sudo umount {}".format(dst)
+    os.system(cmd)
+
+    return
+
+
 def wf_get_now_unix_sec():
     try:
         unix_sec = int(time.time())
@@ -408,7 +447,7 @@ def wf_get_now_unix_sec():
         msg = "get unix sec success, please check clipboard: {}".format(unix_sec)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "get host ip failed: {}".format(e)
+        msg = "get now unix failed: {}".format(e)
         os.system("notify-send '{}'".format(msg))
 
     return
@@ -1009,7 +1048,9 @@ def ultra():
         "[wf] map": wf_map,
         "[wf] download arxiv to lib": wf_download_arxiv_to_lib,
         "[wf] download cur to download": wf_download_cur_to_download,
-        "[wf] get host ip": wf_get_host_ip,
+        "[wf] ip": wf_ip,
+        "[wf] mount": wf_mount_to_xyz,
+        "[wf] umount": wf_umount_from_xyz,
         "[wf] get now unix nano sec": wf_get_now_unix_nano_sec,
         "[wf] get now unix sec": wf_get_now_unix_sec,
         "[wf] trans baee 10 to base x": wf_trans_base_10_to_base_x,
@@ -1086,24 +1127,24 @@ def search():
 
     # if websites keyword
     websites = {
-        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "scholar": "https://scholar.google.com",
-        "arxiv": "https://arxiv.org",
-        "wolframalpha": "https://www.wolframalpha.com",
-        "bing": "https://cn.bing.com",
-        "github": "https://github.com/zetatez?tab=repositories",
         "arch wiki": "https://wiki.archlinux.org",
-        "suckless": "https://dwm.suckless.org",
+        "arxiv": "https://arxiv.org",
+        "bilibili": "https://www.bilibili.com",
+        "bing": "https://cn.bing.com",
+        "cctv5": "https://tv.cctv.com/live/cctv5",
+        "github": "https://github.com/zetatez?tab=repositories",
+        "mall": "https://www.jd.com",
         # "map": "https://ditu.amap.com",
+        "mirror": "https://developer.aliyun.com/mirror",
+        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
         "ocr": "http://ocr.space",
         "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "bilibili": "https://www.bilibili.com",
-        "cctv5": "https://tv.cctv.com/live/cctv5",
-        "mall": "https://www.jd.com",
-        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
         "runoob": "https://www.runoob.com",
-        "mirror": "https://developer.aliyun.com/mirror",
+        "scholar": "https://scholar.google.com",
+        "suckless": "https://dwm.suckless.org",
+        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "wolframalpha": "https://www.wolframalpha.com",
     }
 
     # TODO: <00:46:36 2023-03-15- Author: Dion>: fuzzy match ?
@@ -1115,68 +1156,70 @@ def search():
 
     # if workflow keyword
     workflows = {
-        "ultra": ultra,
-        "search": search,
-        "handle copied": wf_handle_copied,
-        "web": wf_web,
-        "ssh": wf_ssh,
+        "addressbook": toggle_addressbook,
+        "bluetooth": toggle_bluetooth,
+        "calendar schedule": toggle_calendar_schedule,
+        "calendar scheduling": toggle_calendar_scheduling,
+        "chrome with proxy": toggle_chrome_with_proxy,
+        "diary": toggle_diary,
         "dmenu": wf_dmenu,
-        "find local area network server": wf_find_local_area_network_server,
-        "format json": wf_format_json,
-        "format sql": wf_format_sql,
-        "map": wf_map,
         "download arxiv to lib": wf_download_arxiv_to_lib,
         "download cur to download": wf_download_cur_to_download,
-        "get host ip": wf_get_host_ip,
+        "find local area network server": wf_find_local_area_network_server,
+        "flameshot": toggle_flameshot,
+        "flameshot": toggle_flameshot,
+        "format json": wf_format_json,
+        "format sql": wf_format_sql,
         "get now unix nano sec": wf_get_now_unix_nano_sec,
         "get now unix sec": wf_get_now_unix_sec,
+        "gitter": toggle_gitter,
+        "handle copied": wf_handle_copied,
+        "inkspace": wf_sketchpad,
+        "ip": wf_ip,
+        "irc": toggle_irc,
+        "julia": toggle_julia,
+        "latex": wf_latex,
+        "lazydocker": toggle_lazydocker,
+        "map": wf_map,
+        "mathpix": toggle_mathpix,
+        "mount": wf_mount_to_xyz,
+        "music net cloud": toggle_music_net_cloud,
+        "music": toggle_music,
+        "mutt": toggle_mutt,
+        "note": wf_xournal,
+        "passmenu": app_passmenu,
+        "photoshop": app_photoshop,
+        "rec audio": toggle_rec_audio,
+        "rec video": toggle_rec_video,
+        "redshift": toggle_redshift,
+        "rss": toggle_rss,
+        "screen": toggle_screen,
+        "screen": toggle_screen,
+        "screenkey": toggle_screenkey,
+        "search": search,
+        "shot": toggle_flameshot,
+        "show": toggle_show,
+        "sketchpad": wf_sketchpad,
+        "ssh": wf_ssh,
+        "sublime": toggle_sublime,
+        "sys shortcuts": toggle_sys_shortcuts,
+        "top": toggle_top,
         "trans baee 10 to base x": wf_trans_base_10_to_base_x,
         "trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
         "trans string to base x": wf_trans_string_to_base_x,
         "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
         "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "inkspace": wf_sketchpad,
-        "sketchpad": wf_sketchpad,
-        "latex": wf_latex,
-        "note": wf_xournal,
-        "xournal": wf_xournal,
-        "shot": toggle_flameshot,
-        "flameshot": toggle_flameshot,
-        "screen": toggle_screen,
-        "addressbook": toggle_addressbook,
-        "bluetooth": toggle_bluetooth,
-        "calendar scheduling": toggle_calendar_scheduling,
-        "calendar schedule": toggle_calendar_schedule,
-        "diary": toggle_diary,
-        "top": toggle_top,
         "trojan": toggle_trojan,
-        "flameshot": toggle_flameshot,
-        "vivaldi": toggle_vivaldi,
-        "chrome with proxy": toggle_chrome_with_proxy,
-        "gitter": toggle_gitter,
-        "irc": toggle_irc,
-        "julia": toggle_julia,
-        "lazydocker": toggle_lazydocker,
-        "mathpix": toggle_mathpix,
-        "music": toggle_music,
-        "music net cloud": toggle_music_net_cloud,
-        "mutt": toggle_mutt,
-        "rss": toggle_rss,
-        "redshift": toggle_redshift,
-        "screenkey": toggle_screenkey,
-        "show": toggle_show,
-        "sublime": toggle_sublime,
+        "ultra": ultra,
+        "umount": wf_umount_from_xyz,
         "vifm": toggle_vifm,
+        "vivaldi": toggle_vivaldi,
+        "wallpaper": toggle_wallpaper,
+        "web": wf_web,
         "wechat": toggle_wechat,
         "wifi": toggle_wifi,
-        "wallpaper": toggle_wallpaper,
-        "rec audio": toggle_rec_audio,
-        "rec video": toggle_rec_video,
-        "screen": toggle_screen,
-        "sys shortcuts": toggle_sys_shortcuts,
-        "passmenu": app_passmenu,
-        "photoshop": app_photoshop,
         "wps": app_wps,
+        "xournal": wf_xournal,
     }
     workflow = workflows.get(search, empty)
     if workflow != empty:
@@ -1190,5 +1233,4 @@ def search():
 
 
 if __name__ == '__main__':
-    wf_find_local_area_network_server()
     pass
