@@ -29,7 +29,7 @@ win_name_scratchpad = "scratchpad"
 
 
 def empty():
-    msg = "action not found"
+    msg = "empty"
     os.system("notify-send '{}'".format(msg))
 
 
@@ -146,49 +146,214 @@ def app_wps():
 
 # wf: workflow
 # -----------------------
+def wf_cal():
+    cmd = "dmenu < /dev/null -p 'cal with julia>>'"
+    cmd = popen(cmd).strip()
+    if not cmd:
+        return
+    cmd = "julia -E '{}'".format(cmd)
+    msg = popen(cmd).strip()
+    pyperclip.copy(msg)
+    os.system("notify-send '{}'".format(msg))
+    return
+
+
 def wf_clipmenu():
     cmd = "clipmenu"
     os.system(cmd)
     return
 
 
-def wf_web():
-    websites = {
-        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "scholar": "https://scholar.google.com",
-        "arxiv": "https://arxiv.org",
-        "wolframalpha": "https://www.wolframalpha.com",
-        "bing": "https://cn.bing.com",
-        "github": "https://github.com/zetatez?tab=repositories",
-        "arch wiki": "https://wiki.archlinux.org",
-        "suckless": "https://dwm.suckless.org",
-        "map": "https://ditu.amap.com",
-        "ocr": "http://ocr.space",
-        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "bilibili": "https://www.bilibili.com",
-        "cctv5": "https://tv.cctv.com/live/cctv5",
-        "mall": "https://www.jd.com",
-        "news of finance": "https://news.futunn.com/en/main/live?lang=zh-CN",
-        "runoob": "https://www.runoob.com",
-        "mirror": "https://developer.aliyun.com/mirror",
-    }
+def wf_dmenu():
+    cmd = "dmenu_run"
+    os.system(cmd)
+    return
 
-    cmd = "echo '{}'|dmenu -p 'websites'".format('\n'.join(list(websites.keys())))
-    option = popen(cmd).strip()
-    if option:
-        cmd = "chrome {}".format(websites.get(option, "https://cn.bing.com/search?q={}".format(option)))
+
+def __get_current_mouse_url():
+    dx, dy = 4, 130
+    text = popen("xdotool getmouselocation")
+    mouse_pos = dict([x.split(":") for x in text.split()])
+    cx, cy = int(mouse_pos.get("x", 0)), int(mouse_pos.get("y", 0))
+
+    cmd = "xdotool mousemove {} {} click 3".format(cx, cy)
+    os.system(cmd)
+
+    cmd = "xdotool mousemove {} {} click 1".format(cx + dx, cy + dy)
+    os.system(cmd)
+
+    cmd = "xdotool mousemove {} {}".format(cx, cy)
+    os.system(cmd)
+    url = popen("xclip -o")
+    url = url.strip()
+
+    if re.match(r'^(http|https|www|file).+', url):
+        return url, True
+
+    return '', False
+
+
+def wf_download_cur_to_download():
+    url, ok = __get_current_mouse_url()
+    if not ok:
+        msg = "Error: get current mouse url failed"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    # github repo url: automatically redirect to raw file url: download always fail, so just open it with the chrome
+    # need:
+    # - turn off vpn
+    # - /etc/hosts
+    #   github raw
+    #   199.232.28.133 raw.githubusercontent.com
+    if re.match(r'^https://github.com.+blob.*', url):
+        url = url.replace("github.com", "raw.githubusercontent.com")
+        url = url.replace("blob/", "")
+        cmd = "google {}".format(url)
         os.system(cmd)
+        return
+
+    # the file name may not consistent with the real name
+    file_name = url.split("/")[-1]
+    file_path = my_download_path + "/" + file_name
+
+    # - wget is too slow, but it can return the file name
+    # - aria2c is not fast either
+    if not os.path.exists(file_path):
+        msg = "downloading {} \nto          {}".format(url, my_download_path)
+        os.system("notify-send '{}'".format(msg))
+
+        if re.match(r'.*(tar|rar|zip|gzip|xz|7z|bz|bz2|tgz|pkg|exe).*', url):
+            cmd = "google {}".format(url)
+            os.system(cmd)
+        else:
+            file_path = wget.download(url, my_download_path)
+
+            msg = "job done!"
+            os.system("notify-send '{}'".format(msg))
+
+            open_file_at_foreground(file_path)
+            keep_file_or_not(file_path)
+    else:
+        open_file_at_background(file_path)
 
     return
 
 
-def wf_map():
-    cmd = "dmenu < /dev/null -p 'enter location'"
+def wf_download_arxiv_to_lib():
+    my_library_paper_path = my_library_path + "/papers"
+
+    url, ok = __get_current_mouse_url()
+    if not ok:
+        msg = "Error: get current mouse url failed"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    if "arxiv" not in url:
+        msg = "Error: not a lawful arxiv url"
+        os.system("notify-send '{}'".format(msg))
+        return
+
+    file_name = url.split("/")[-1] + ".pdf"
+    file_path = my_library_paper_path + "/" + file_name
+
+    if not os.path.exists(file_path):
+        msg = "downloading {} \nto          {}".format(url, file_path)
+        os.system("notify-send '{}'".format(msg))
+
+        wget.download(url, file_path)
+
+        msg = "job done!"
+        os.system("notify-send '{}'".format(msg))
+
+        open_file_at_foreground(file_path)
+        keep_file_or_not(file_path)
+    else:
+        open_file_at_background(file_path)
+
+    return
+
+
+def wf_find_local_area_network_server():
+    ip = "127.0.0.1"
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception as e:
+        msg = "find loacl area network server failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+        s.close()
+
+    ip = list(ip)
+    ip[-1] = '0'
+    ip = ''.join(ip)
+    cmd = "nmap -sT -p 22 -oG - {}/24".format(ip)
+    s = popen(cmd)
+    server_list = [x.strip().split()[1] for x in s.split('\n') if 'ssh' in x]
+    server_list.sort()
+    cmd = "echo '{}'|dmenu -p 'local'".format('\n'.join(server_list))
     option = popen(cmd).strip()
-    if option:
-        url = "https://ditu.amap.com/search?query={}".format(option)
-        cmd = "chrome {}".format(url)
-        os.system(cmd)
+    if not option:
+        return
+
+    pyperclip.copy(option)
+    msg = "find local area network server success, please check clipboard: {}".format(option)
+    os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_format_json():
+    last_copied_str = pyperclip.paste()
+    try:
+        s = json.dumps(json.loads(last_copied_str), indent=2)
+        pyperclip.copy(s)
+        msg = "format json success, please check clipboard:\n{}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "format json failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_format_sql():
+    last_copied_str = pyperclip.paste()
+    try:
+        s = sqlparse.format(last_copied_str, reindent=True, indent=2, keyword_case='upper')
+        pyperclip.copy(s)
+        msg = "format sql success, please check clipboard:\n{}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "format sql failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_get_now_unix_nano_sec():
+    try:
+        unix_nano_sec = int(time.time_ns())
+        pyperclip.copy(unix_nano_sec)
+        msg = "get unix nano sec success, please check clipboard: {}".format(unix_nano_sec)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "get unix nano sec failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_get_now_unix_sec():
+    try:
+        unix_sec = int(time.time())
+        pyperclip.copy(unix_sec)
+        msg = "get unix sec success, please check clipboard: {}".format(unix_sec)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "get now unix failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
 
     return
 
@@ -220,27 +385,18 @@ def wf_handle_copied():
     return
 
 
-def wf_dmenu():
-    cmd = "dmenu_run"
-    os.system(cmd)
-    return
-
-
-def wf_xournal():
-    time_str = time.strftime("%Y-%m-%d", time.localtime())
-    file_folder = my_library_path + "/xournal"
-    file_path = file_folder + "/" + time_str + ".xopp"
-
-    if not os.path.exists(file_folder):
-        os.mkdir(file_folder)
-
-    cmd = "xournalpp {} &".format(file_path)
-
-    pids = get_pids_by_cmd(cmd)
-    if pids:
-        os.system("notify-send '{}'".format("already in running"))
-    else:
-        os.system(cmd)
+def wf_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        pyperclip.copy(ip)
+        msg = "get host ip success, please check clipboard: {}".format(ip)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "get host ip failed: {}".format(e)
+        os.system("notify-send '{}'".format(msg))
+        s.close()
 
     return
 
@@ -289,6 +445,44 @@ def wf_latex():
         os.system("notify-send '{}'".format("already in running"))
     else:
         os.system(cmd_xoj)
+
+    return
+
+
+def wf_map():
+    cmd = "dmenu < /dev/null -p 'enter location'"
+    option = popen(cmd).strip()
+    if option:
+        url = "https://ditu.amap.com/search?query={}".format(option)
+        cmd = "chrome {}".format(url)
+        os.system(cmd)
+
+    return
+
+
+def wf_mount_to_xyz():
+    cmd = "ls -1 /dev/sd*"
+    s = popen(cmd)
+    if "no matches found" in s:
+        return
+
+    devices = [x.strip() for x in s.split("\n") if x.strip() != "" and len(x.strip()) >= 9]
+    devices.sort()
+
+    print(devices)
+
+    cmd = "echo '{}'|dmenu -p 'mount ?'".format('\n'.join(devices))
+    dev = popen(cmd).strip()
+    if not dev:
+        return
+
+    cmd = "echo '{}'|dmenu -p 'mount {} to ?'".format('\n'.join(["/x", "/y", "/z"]), dev)
+    dst = popen(cmd).strip()
+    if not dst:
+        return
+
+    cmd = "sudo mount {} {}".format(dev, dst)
+    os.system(cmd)
 
     return
 
@@ -355,174 +549,6 @@ def wf_ssh():
     return
 
 
-def wf_find_local_area_network_server():
-    ip = "127.0.0.1"
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-    except Exception as e:
-        msg = "find loacl area network server failed: {}".format(e)
-        os.system("notify-send '{}'".format(msg))
-        s.close()
-
-    ip = list(ip)
-    ip[-1] = '0'
-    ip = ''.join(ip)
-    cmd = "nmap -sT -p 22 -oG - {}/24".format(ip)
-    s = popen(cmd)
-    server_list = [x.strip().split()[1] for x in s.split('\n') if 'ssh' in x]
-    server_list.sort()
-    cmd = "echo '{}'|dmenu -p 'local'".format('\n'.join(server_list))
-    option = popen(cmd).strip()
-    if not option:
-        return
-
-    pyperclip.copy(option)
-    msg = "find local area network server success, please check clipboard: {}".format(option)
-    os.system("notify-send '{}'".format(msg))
-
-    return
-
-
-def wf_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        pyperclip.copy(ip)
-        msg = "get host ip success, please check clipboard: {}".format(ip)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "get host ip failed: {}".format(e)
-        os.system("notify-send '{}'".format(msg))
-        s.close()
-
-    return
-
-
-def wf_mount_to_xyz():
-    cmd = "ls -1 /dev/sd*"
-    s = popen(cmd)
-    if "no matches found" in s:
-        return
-
-    devices = [x.strip() for x in s.split("\n") if x.strip() != "" and len(x.strip()) >= 9]
-    devices.sort()
-
-    print(devices)
-
-    cmd = "echo '{}'|dmenu -p 'mount ?'".format('\n'.join(devices))
-    dev = popen(cmd).strip()
-    if not dev:
-        return
-
-    cmd = "echo '{}'|dmenu -p 'mount {} to ?'".format('\n'.join(["/x", "/y", "/z"]), dev)
-    dst = popen(cmd).strip()
-    if not dst:
-        return
-
-    cmd = "sudo mount {} {}".format(dev, dst)
-    os.system(cmd)
-
-    return
-
-
-def wf_umount_from_xyz():
-    cmd = "echo '{}'|dmenu -p 'umount ?'".format('\n'.join(["/x", "/y", "/z"]))
-    dst = popen(cmd).strip()
-    if not dst:
-        return
-
-    cmd = "sudo umount {}".format(dst)
-    os.system(cmd)
-
-    return
-
-
-def wf_get_now_unix_sec():
-    try:
-        unix_sec = int(time.time())
-        pyperclip.copy(unix_sec)
-        msg = "get unix sec success, please check clipboard: {}".format(unix_sec)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "get now unix failed: {}".format(e)
-        os.system("notify-send '{}'".format(msg))
-
-    return
-
-
-def wf_get_now_unix_nano_sec():
-    try:
-        unix_nano_sec = int(time.time_ns())
-        pyperclip.copy(unix_nano_sec)
-        msg = "get unix nano sec success, please check clipboard: {}".format(unix_nano_sec)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "get unix nano sec failed: {}".format(e)
-        os.system("notify-send '{}'".format(msg))
-
-    return
-
-
-def wf_trans_unix_sec_to_datetime():
-    last_copied_str = pyperclip.paste().strip()
-    try:
-        s = str(datetime.datetime.fromtimestamp(int(last_copied_str)))
-        pyperclip.copy(s)
-        msg = "trans unix sec to datetime success, please check clipboard: {}".format(s)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "trans unix sec to datetime failed: {}\n{}".format(e, last_copied_str)
-        os.system("notify-send '{}'".format(msg))
-
-    return
-
-
-def wf_trans_datetime_to_unix_sec():
-    last_copied_str = pyperclip.paste().strip()
-    try:
-        dt = datetime.datetime.strptime(last_copied_str, "%Y-%m-%d %H:%M:%S")
-        s = str(int(datetime.datetime.timestamp(dt)))
-        pyperclip.copy(s)
-        msg = "trans datetime to unix sec success, please check clipboard: {}".format(s)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "trans datetime to unix sec failed: {}\n{}".format(e, last_copied_str)
-        os.system("notify-send '{}'".format(msg))
-
-    return
-
-
-def wf_format_json():
-    last_copied_str = pyperclip.paste()
-    try:
-        s = json.dumps(json.loads(last_copied_str), indent=2)
-        pyperclip.copy(s)
-        msg = "format json success, please check clipboard:\n{}".format(s)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "format json failed: {}\n{}".format(e, last_copied_str)
-        os.system("notify-send '{}'".format(msg))
-
-    return
-
-
-def wf_format_sql():
-    last_copied_str = pyperclip.paste()
-    try:
-        s = sqlparse.format(last_copied_str, reindent=True, indent=2, keyword_case='upper')
-        pyperclip.copy(s)
-        msg = "format sql success, please check clipboard:\n{}".format(s)
-        os.system("notify-send '{}'".format(msg))
-    except Exception as e:
-        msg = "format sql failed: {}\n{}".format(e, last_copied_str)
-        os.system("notify-send '{}'".format(msg))
-
-    return
-
-
 def wf_trans_base_10_to_base_x():
     last_copied_str = pyperclip.paste()
 
@@ -550,6 +576,21 @@ def wf_trans_base_10_to_base_x():
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
         msg = "trans base 10 to base x failed: {}\n{}".format(e, last_copied_str)
+        os.system("notify-send '{}'".format(msg))
+
+    return
+
+
+def wf_trans_datetime_to_unix_sec():
+    last_copied_str = pyperclip.paste().strip()
+    try:
+        dt = datetime.datetime.strptime(last_copied_str, "%Y-%m-%d %H:%M:%S")
+        s = str(int(datetime.datetime.timestamp(dt)))
+        pyperclip.copy(s)
+        msg = "trans datetime to unix sec success, please check clipboard: {}".format(s)
+        os.system("notify-send '{}'".format(msg))
+    except Exception as e:
+        msg = "trans datetime to unix sec failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
@@ -587,106 +628,77 @@ def wf_trans_string_to_base_x():
     return
 
 
-def __get_current_mouse_url():
-    dx, dy = 4, 130
-    text = popen("xdotool getmouselocation")
-    mouse_pos = dict([x.split(":") for x in text.split()])
-    cx, cy = int(mouse_pos.get("x", 0)), int(mouse_pos.get("y", 0))
-
-    cmd = "xdotool mousemove {} {} click 3".format(cx, cy)
-    os.system(cmd)
-
-    cmd = "xdotool mousemove {} {} click 1".format(cx + dx, cy + dy)
-    os.system(cmd)
-
-    cmd = "xdotool mousemove {} {}".format(cx, cy)
-    os.system(cmd)
-    url = popen("xclip -o")
-    url = url.strip()
-
-    if re.match(r'^(http|https|www|file).+', url):
-        return url, True
-
-    return '', False
-
-
-def wf_download_arxiv_to_lib():
-    my_library_paper_path = my_library_path + "/papers"
-
-    url, ok = __get_current_mouse_url()
-    if not ok:
-        msg = "Error: get current mouse url failed"
+def wf_trans_unix_sec_to_datetime():
+    last_copied_str = pyperclip.paste().strip()
+    try:
+        s = str(datetime.datetime.fromtimestamp(int(last_copied_str)))
+        pyperclip.copy(s)
+        msg = "trans unix sec to datetime success, please check clipboard: {}".format(s)
         os.system("notify-send '{}'".format(msg))
-        return
-
-    if "arxiv" not in url:
-        msg = "Error: not a lawful arxiv url"
+    except Exception as e:
+        msg = "trans unix sec to datetime failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
-        return
-
-    file_name = url.split("/")[-1] + ".pdf"
-    file_path = my_library_paper_path + "/" + file_name
-
-    if not os.path.exists(file_path):
-        msg = "downloading {} \nto          {}".format(url, file_path)
-        os.system("notify-send '{}'".format(msg))
-
-        wget.download(url, file_path)
-
-        msg = "job done!"
-        os.system("notify-send '{}'".format(msg))
-
-        open_file_at_foreground(file_path)
-        keep_file_or_not(file_path)
-    else:
-        open_file_at_background(file_path)
 
     return
 
 
-def wf_download_cur_to_download():
-    url, ok = __get_current_mouse_url()
-    if not ok:
-        msg = "Error: get current mouse url failed"
-        os.system("notify-send '{}'".format(msg))
+def wf_umount_from_xyz():
+    cmd = "echo '{}'|dmenu -p 'umount ?'".format('\n'.join(["/x", "/y", "/z"]))
+    dst = popen(cmd).strip()
+    if not dst:
         return
 
-    # github repo url: automatically redirect to raw file url: download always fail, so just open it with the chrome
-    # need:
-    # - turn off vpn
-    # - /etc/hosts
-    #   github raw
-    #   199.232.28.133 raw.githubusercontent.com
-    if re.match(r'^https://github.com.+blob.*', url):
-        url = url.replace("github.com", "raw.githubusercontent.com")
-        url = url.replace("blob/", "")
-        cmd = "google {}".format(url)
+    cmd = "sudo umount {}".format(dst)
+    os.system(cmd)
+
+    return
+
+
+def wf_web():
+    websites = {
+        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "scholar": "https://scholar.google.com",
+        "arxiv": "https://arxiv.org",
+        "wolframalpha": "https://www.wolframalpha.com",
+        "bing": "https://cn.bing.com",
+        "github": "https://github.com/zetatez?tab=repositories",
+        "arch wiki": "https://wiki.archlinux.org",
+        "suckless": "https://dwm.suckless.org",
+        "map": "https://ditu.amap.com",
+        "ocr": "http://ocr.space",
+        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+        "bilibili": "https://www.bilibili.com",
+        "cctv5": "https://tv.cctv.com/live/cctv5",
+        "mall": "https://www.jd.com",
+        "news of finance": "https://news.futunn.com/en/main/live?lang=zh-CN",
+        "runoob": "https://www.runoob.com",
+        "mirror": "https://developer.aliyun.com/mirror",
+    }
+
+    cmd = "echo '{}'|dmenu -p 'websites'".format('\n'.join(list(websites.keys())))
+    option = popen(cmd).strip()
+    if option:
+        cmd = "chrome {}".format(websites.get(option, "https://cn.bing.com/search?q={}".format(option)))
         os.system(cmd)
-        return
 
-    # the file name may not consistent with the real name
-    file_name = url.split("/")[-1]
-    file_path = my_download_path + "/" + file_name
+    return
 
-    # - wget is too slow, but it can return the file name
-    # - aria2c is not fast either
-    if not os.path.exists(file_path):
-        msg = "downloading {} \nto          {}".format(url, my_download_path)
-        os.system("notify-send '{}'".format(msg))
 
-        if re.match(r'.*(tar|rar|zip|gzip|xz|7z|bz|bz2|tgz|pkg|exe).*', url):
-            cmd = "google {}".format(url)
-            os.system(cmd)
-        else:
-            file_path = wget.download(url, my_download_path)
+def wf_xournal():
+    time_str = time.strftime("%Y-%m-%d", time.localtime())
+    file_folder = my_library_path + "/xournal"
+    file_path = file_folder + "/" + time_str + ".xopp"
 
-            msg = "job done!"
-            os.system("notify-send '{}'".format(msg))
+    if not os.path.exists(file_folder):
+        os.mkdir(file_folder)
 
-            open_file_at_foreground(file_path)
-            keep_file_or_not(file_path)
+    cmd = "xournalpp {} &".format(file_path)
+
+    pids = get_pids_by_cmd(cmd)
+    if pids:
+        os.system("notify-send '{}'".format("already in running"))
     else:
-        open_file_at_background(file_path)
+        os.system(cmd)
 
     return
 
@@ -957,38 +969,23 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
-    cmd = "echo '{}'|dmenu -p '🔭'".format('\n'.join([
-        "only",
-        "primary only",
-        "left of",
-        "right of",
-        "above",
-        "below",
-        "rotate left",
-        "rotate righ",
-    ]))
+    cmds = {
+        "only": "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen),
+        "primary only": "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen),
+        "left of": "xrandr --output {} --auto --left-of {} --auto".format(second_screen, primary_screen),
+        "right of": "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen),
+        "above": "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen),
+        "below": "xrandr --output {} --auto --below {} --auto".format(second_screen, primary_screen),
+        "roate left": "xrandr --output {} --auto --rotate left --output {} --off".format(second_screen, primary_screen),
+        "roate right": "xrandr --output {} --auto --rotate right --output {} --off".format(second_screen, primary_screen),
+    }
 
+    cmd = "echo '{}'|dmenu -p '󱣴'".format('\n'.join(list(cmds.keys())))
     option = popen(cmd).strip()
     if not option:
         return
 
-    msg = "setting monitor: {}".format(option)
-    os.system("notify-send '{}'".format(msg))
-
-    cmds = {}
-
-    cmds["only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
-    cmds["primary only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
-    cmds["left of"] = "xrandr --output {} --auto --left-of {} --auto".format(second_screen, primary_screen)
-    cmds["right of"] = "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen)
-    cmds["above"] = "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen)
-    cmds["below"] = "xrandr --output {} --auto --below {} --auto".format(second_screen, primary_screen)
-    cmds["roate left"] = "xrandr --output {} --auto --rotate left --output {} --off".format(second_screen, primary_screen)
-    cmds["roate right"] = "xrandr --output {} --auto --rotate right --output {} --off".format(second_screen, primary_screen)
-
-    cmd = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
-    cmd = cmds.get(option, cmd)
-
+    cmd = cmds.get(option, cmds.get("primary only", "echo"))
     os.system(cmd)
 
     cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
@@ -998,28 +995,17 @@ def toggle_screen():
 
 
 def toggle_sys_shortcuts():
-    cmd = "echo '{}'|dmenu -p ''".format('\n'.join([
-        "󰒲 suspend",
-        " poweroff",
-        "ﰇ reboot",
-        "󰷛 slock",
-        "󰶐 off-display",
-    ]))
-
+    cmds = {
+        "󰒲 suspend": "systemctl suspend",
+        " poweroff": "systemctl poweroff",
+        "ﰇ reboot": "systemctl reboot",
+        "󰷛 slock": "slock & sleep 0.5 & xset dpms force off",
+        "󰶐 off-display": "sleep .5; xset dpms force off",
+    }
+    cmd = "echo '{}'|dmenu -p ''".format('\n'.join(list(cmds.keys())))
     option = popen(cmd).strip()
     if not option:
         return
-
-    msg = "cmd: {}".format(option)
-    os.system("notify-send '{}'".format(msg))
-
-    cmds = {}
-
-    cmds["󰒲 suspend"] = "systemctl suspend"
-    cmds[" poweroff"] = "systemctl poweroff"
-    cmds["ﰇ reboot"] = "systemctl reboot"
-    cmds["󰷛 slock"] = "slock & sleep 0.5 & xset dpms force off"
-    cmds["󰶐 off-display"] = "sleep .5; xset dpms force off"
 
     cmd = cmds.get(option, "")
     if cmd:
@@ -1030,17 +1016,40 @@ def toggle_sys_shortcuts():
 
 # ultra
 # -----------------------
-def ultra():
+def exec_shell_cmd():
+    cmd = "dmenu < /dev/null -p 'shell>>'"
+    cmd = popen(cmd).strip()
+    if not cmd:
+        return
+    cmd = "/bin/bash -c '{}'".format(cmd)
+    msg = popen(cmd).strip()
+    pyperclip.copy(msg)
+    os.system("notify-send '{}'".format(msg))
+    return
 
-    def empty():
-        msg = "action not found"
-        os.system("notify-send '{}'".format(msg))
+
+def exec_julia_cmd():
+    cmd = "dmenu < /dev/null -p 'julia>>'"
+    cmd = popen(cmd).strip()
+    if not cmd:
+        return
+    cmd = "julia -E '{}'".format(cmd)
+    msg = popen(cmd).strip()
+    pyperclip.copy(msg)
+    os.system("notify-send '{}'".format(msg))
+    return
+
+
+# ultra
+# -----------------------
+def ultra():
 
     options = {
         "[wf] search": search,
         "[wf] handle copied": wf_handle_copied,
         "[wf] web": wf_web,
         "[wf] ssh": wf_ssh,
+        "[wf] cal": wf_cal,
         "[wf] dmenu": wf_dmenu,
         "[wf] find local area network server": wf_find_local_area_network_server,
         "[wf] format json": wf_format_json,
@@ -1056,6 +1065,7 @@ def ultra():
         "[wf] trans baee 10 to base x": wf_trans_base_10_to_base_x,
         "[wf] trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
         "[wf] trans string to base x": wf_trans_string_to_base_x,
+        "[wf] clipmenu": wf_clipmenu,
         "[wf] trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
         "[wf] trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
         "[wf] inkspace": wf_sketchpad,
@@ -1063,39 +1073,41 @@ def ultra():
         "[wf] latex": wf_latex,
         "[wf] note": wf_xournal,
         "[wf] xournal": wf_xournal,
-        "[tg] flameshot": toggle_flameshot,
-        "[tg] screen": toggle_screen,
+        "[exec] shell cmd": exec_shell_cmd,
+        "[exec] julia cmd": exec_julia_cmd,
         "[tg] addressbook": toggle_addressbook,
         "[tg] bluetooth": toggle_bluetooth,
-        "[tg] calendar scheduling": toggle_calendar_scheduling,
         "[tg] calendar schedule": toggle_calendar_schedule,
-        "[tg] diary": toggle_diary,
-        "[tg] top": toggle_top,
-        "[tg] trojan": toggle_trojan,
-        "[tg] flameshot": toggle_flameshot,
-        "[tg] vivaldi": toggle_vivaldi,
+        "[tg] calendar scheduling": toggle_calendar_scheduling,
         "[tg] chrome with proxy": toggle_chrome_with_proxy,
+        "[tg] diary": toggle_diary,
+        "[tg] flameshot": toggle_flameshot,
+        "[tg] flameshot": toggle_flameshot,
         "[tg] gitter": toggle_gitter,
         "[tg] irc": toggle_irc,
         "[tg] julia": toggle_julia,
         "[tg] lazydocker": toggle_lazydocker,
         "[tg] mathpix": toggle_mathpix,
-        "[tg] music": toggle_music,
         "[tg] music net cloud": toggle_music_net_cloud,
+        "[tg] music": toggle_music,
         "[tg] mutt": toggle_mutt,
-        "[tg] rss": toggle_rss,
+        "[tg] rec audio": toggle_rec_audio,
+        "[tg] rec video": toggle_rec_video,
         "[tg] redshift": toggle_redshift,
+        "[tg] rss": toggle_rss,
+        "[tg] screen": toggle_screen,
+        "[tg] screen": toggle_screen,
         "[tg] screenkey": toggle_screenkey,
         "[tg] show": toggle_show,
         "[tg] sublime": toggle_sublime,
+        "[tg] sys shortcuts": toggle_sys_shortcuts,
+        "[tg] top": toggle_top,
+        "[tg] trojan": toggle_trojan,
         "[tg] vifm": toggle_vifm,
+        "[tg] vivaldi": toggle_vivaldi,
+        "[tg] wallpaper": toggle_wallpaper,
         "[tg] wechat": toggle_wechat,
         "[tg] wifi": toggle_wifi,
-        "[tg] wallpaper": toggle_wallpaper,
-        "[tg] rec audio": toggle_rec_audio,
-        "[tg] rec video": toggle_rec_video,
-        "[tg] screen": toggle_screen,
-        "[tg] sys shortcuts": toggle_sys_shortcuts,
         "[app] passmenu": app_passmenu,
         "[app] photoshop": app_photoshop,
         "[app] wps": app_wps,
@@ -1162,6 +1174,10 @@ def search():
         "calendar scheduling": toggle_calendar_scheduling,
         "chrome with proxy": toggle_chrome_with_proxy,
         "diary": toggle_diary,
+        "cal": wf_cal,
+        "clipmenu": wf_clipmenu,
+        "shell": exec_shell_cmd,
+        "julia": exec_julia_cmd,
         "dmenu": wf_dmenu,
         "download arxiv to lib": wf_download_arxiv_to_lib,
         "download cur to download": wf_download_cur_to_download,
@@ -1233,4 +1249,5 @@ def search():
 
 
 if __name__ == '__main__':
+    wf_cal()
     pass
