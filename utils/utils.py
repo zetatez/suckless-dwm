@@ -657,22 +657,38 @@ def wf_umount_from_xyz():
 def wf_web():
     websites = {
         "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "scholar": "https://scholar.google.com",
-        "arxiv": "https://arxiv.org",
-        "wolframalpha": "https://www.wolframalpha.com",
-        "bing": "https://cn.bing.com",
-        "github": "https://github.com/zetatez?tab=repositories",
-        "arch wiki": "https://wiki.archlinux.org",
         "suckless": "https://dwm.suckless.org",
-        "map": "https://ditu.amap.com",
-        "ocr": "http://ocr.space",
-        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "bilibili": "https://www.bilibili.com",
-        "cctv5": "https://tv.cctv.com/live/cctv5",
-        "mall": "https://www.jd.com",
-        "news of finance": "https://news.futunn.com/en/main/live?lang=zh-CN",
-        "runoob": "https://www.runoob.com",
         "mirror": "https://developer.aliyun.com/mirror",
+        "arch wiki": "https://wiki.archlinux.org",
+        "arxiv": "https://arxiv.org",
+        "bili": "https://www.bilibili.com",
+        "bing": "https://cn.bing.com",
+        "cctv5": "https://tv.cctv.com/live/cctv5",
+        "github": "https://github.com/zetatez?tab=repositories",
+        "mall": "https://www.jd.com",
+        "map": "https://ditu.amap.com",
+        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
+        "ocr": "http://ocr.space",
+        "scholar": "https://scholar.google.com",
+        "wolframalpha": "https://www.wolframalpha.com",
+        "youtube": "https://www.youtube.com",
+        # -- runoob --
+        "runoob": "https://www.runoob.com",
+        "ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
+        "angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
+        "css": "https://www.runoob.com/css3/css3-tutorial.html",
+        "design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
+        "docker": "https://www.runoob.com/docker/docker-tutorial.html",
+        "html": "https://www.runoob.com/html/html5-intro.html",
+        "javascript": "https://www.runoob.com/js/js-tutorial.html",
+        "maven": "https://www.runoob.com/maven/maven-tutorial.html",
+        "mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
+        "nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
+        "react": "https://www.runoob.com/react/react-tutorial.html",
+        "redis": "https://www.runoob.com/redis/redis-tutorial.html",
+        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+        "typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
+        "vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
     }
 
     cmd = "echo '{}'|dmenu -p 'websites'".format('\n'.join(list(websites.keys())))
@@ -799,8 +815,8 @@ def toggle_flameshot():
     return
 
 
-def toggle_vivaldi():
-    toggle_by_pname(pname="vivaldi-bin", cmd="vivaldi-stable")
+def toggle_edge():
+    toggle_by_pname(pname="msedge", cmd="microsoft-edge-stable")
 
     return
 
@@ -1043,7 +1059,6 @@ def exec_julia_cmd():
 # ultra
 # -----------------------
 def ultra():
-
     options = {
         "[wf] search": search,
         "[wf] handle copied": wf_handle_copied,
@@ -1104,7 +1119,7 @@ def ultra():
         "[tg] top": toggle_top,
         "[tg] trojan": toggle_trojan,
         "[tg] vifm": toggle_vifm,
-        "[tg] vivaldi": toggle_vivaldi,
+        "[tg] vivaldi": toggle_edge,
         "[tg] wallpaper": toggle_wallpaper,
         "[tg] wechat": toggle_wechat,
         "[tg] wifi": toggle_wifi,
@@ -1139,24 +1154,40 @@ def search():
 
     # if websites keyword
     websites = {
+        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+        "suckless": "https://dwm.suckless.org",
+        "mirror": "https://developer.aliyun.com/mirror",
         "arch wiki": "https://wiki.archlinux.org",
         "arxiv": "https://arxiv.org",
-        "bilibili": "https://www.bilibili.com",
+        "bili": "https://www.bilibili.com",
         "bing": "https://cn.bing.com",
         "cctv5": "https://tv.cctv.com/live/cctv5",
         "github": "https://github.com/zetatez?tab=repositories",
         "mall": "https://www.jd.com",
         # "map": "https://ditu.amap.com",
-        "mirror": "https://developer.aliyun.com/mirror",
         "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
         "ocr": "http://ocr.space",
-        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "runoob": "https://www.runoob.com",
         "scholar": "https://scholar.google.com",
-        "suckless": "https://dwm.suckless.org",
-        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
         "wolframalpha": "https://www.wolframalpha.com",
+        "youtube": "https://www.youtube.com",
+        # -- runoob --
+        "runoob": "https://www.runoob.com",
+        "ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
+        "angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
+        "css": "https://www.runoob.com/css3/css3-tutorial.html",
+        "design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
+        "docker": "https://www.runoob.com/docker/docker-tutorial.html",
+        "html": "https://www.runoob.com/html/html5-intro.html",
+        "javascript": "https://www.runoob.com/js/js-tutorial.html",
+        "maven": "https://www.runoob.com/maven/maven-tutorial.html",
+        "mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
+        "nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
+        "react": "https://www.runoob.com/react/react-tutorial.html",
+        "redis": "https://www.runoob.com/redis/redis-tutorial.html",
+        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+        "typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
+        "vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
     }
 
     # TODO: <00:46:36 2023-03-15- Author: Dion>: fuzzy match ?
@@ -1229,7 +1260,7 @@ def search():
         "ultra": ultra,
         "umount": wf_umount_from_xyz,
         "vifm": toggle_vifm,
-        "vivaldi": toggle_vivaldi,
+        "vivaldi": toggle_edge,
         "wallpaper": toggle_wallpaper,
         "web": wf_web,
         "wechat": toggle_wechat,

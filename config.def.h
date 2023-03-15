@@ -173,7 +173,7 @@ static const char *toggle_sys_shortcuts[]        =  SH(UTILS"/toggle-sys-shortcu
 static const char *toggle_top[]                  =  SH(UTILS"/toggle-top.py");
 static const char *toggle_trojan[]               =  SH(UTILS"/toggle-trojan.py");
 static const char *toggle_vifm[]                 =  SH(UTILS"/toggle-vifm.py");
-static const char *toggle_vivaldi[]              =  SH(UTILS"/toggle-vivaldi.py");
+static const char *toggle_edge[]                 =  SH(UTILS"/toggle-edge.py");
 static const char *toggle_wallpaper[]            =  SH(UTILS"/toggle-wallpaper.py");
 static const char *toggle_wechat[]               =  SH(UTILS"/toggle-wechat.py");
 static const char *toggle_wifi[]                 =  SH(UTILS"/toggle-wifi.py");
@@ -240,7 +240,7 @@ static const Key keys[] = {
 
   // SUPKEY-ShiftMask + a-z, etc
   { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = toggle_addressbook          } },
-  { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v = toggle_vivaldi              } },
+  { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v = toggle_edge                 } },
   { SUPKEY|ShiftMask,             XK_c,          spawn,             {.v = toggle_calendar_scheduling  } },
   { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = toggle_lazydocker           } },
   { SUPKEY|ShiftMask,             XK_e,          spawn,             {.v = toggle_mathpix              } },

@@ -3,4 +3,4 @@
 
 import utils
 
-utils.toggle_vivaldi()
+utils.toggle_edge()
