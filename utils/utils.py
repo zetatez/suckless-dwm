@@ -801,6 +801,37 @@ def toggle_top():
     return
 
 
+def wf_todo():
+    filename = os.path.join(my_home_path, ".todo")
+    if not os.path.exists(filename):
+        write_file(filename, "")
+
+    s = read_file(filename)
+    todo_list = s.split("\n") if s else []
+    todo_hashmap = dict([(x, True) for x in todo_list])
+
+    if todo_list:
+        cmd = "echo '{}'|dmenu -p 'todo'".format('\n'.join(todo_list))
+    else:
+        cmd = "dmenu < /dev/null -p 'todo'"
+
+    option = popen(cmd).strip()
+    if not option:
+        return
+
+    if todo_hashmap.get(option, False):
+        todo_hashmap.pop(option)
+        new_list = [x for x in todo_list if todo_hashmap.get(x, False)]
+        s = "\n".join(new_list)
+        write_file(filename, s)
+    else:
+        todo_list.append(option)
+        s = "\n".join(todo_list)
+        write_file(filename, s)
+
+    return
+
+
 def toggle_trojan():
     cmd = "{}/trojan -c {}/config.json".format(my_trojan_path, my_trojan_path)
     toggle_by_cmd(cmd)
@@ -1030,10 +1061,10 @@ def toggle_sys_shortcuts():
     return
 
 
-# ultra
+# exec
 # -----------------------
 def exec_shell_cmd():
-    cmd = "dmenu < /dev/null -p 'shell>>'"
+    cmd = "dmenu < /dev/null -p '/bin/bash -c '"
     cmd = popen(cmd).strip()
     if not cmd:
         return
@@ -1045,7 +1076,7 @@ def exec_shell_cmd():
 
 
 def exec_julia_cmd():
-    cmd = "dmenu < /dev/null -p 'julia>>'"
+    cmd = "dmenu < /dev/null -p 'julia -E '"
     cmd = popen(cmd).strip()
     if not cmd:
         return
@@ -1064,6 +1095,7 @@ def ultra():
         "[wf] handle copied": wf_handle_copied,
         "[wf] web": wf_web,
         "[wf] ssh": wf_ssh,
+        "[wf] todo": wf_todo,
         "[wf] cal": wf_cal,
         "[wf] dmenu": wf_dmenu,
         "[wf] find local area network server": wf_find_local_area_network_server,
@@ -1251,6 +1283,7 @@ def search():
         "sublime": toggle_sublime,
         "sys shortcuts": toggle_sys_shortcuts,
         "top": toggle_top,
+        "todo": wf_todo,
         "trans baee 10 to base x": wf_trans_base_10_to_base_x,
         "trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
         "trans string to base x": wf_trans_string_to_base_x,
@@ -1280,5 +1313,5 @@ def search():
 
 
 if __name__ == '__main__':
-    wf_cal()
+    wf_todo()
     pass
