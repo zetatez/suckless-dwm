@@ -549,6 +549,38 @@ def wf_ssh():
     return
 
 
+def wf_todo():
+    filename = os.path.join(my_home_path, ".todo")
+    if not os.path.exists(filename):
+        write_file(filename, "")
+
+    while True:
+        s = read_file(filename)
+        todo_list = s.split("\n") if s else []
+        todo_hashmap = dict([(x, True) for x in todo_list])
+
+        if todo_list:
+            cmd = "echo '{}'|dmenu -p 'todo'".format('\n'.join(todo_list))
+        else:
+            cmd = "dmenu < /dev/null -p 'todo'"
+
+        option = popen(cmd).strip()
+
+        if not option:
+            return False
+
+        if todo_hashmap.get(option, False):
+            todo_hashmap.pop(option)
+            todo_list = [x for x in todo_list if todo_hashmap.get(x, False)]
+        else:
+            t = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
+            option = "{}: {}".format(t, option)
+            todo_list.append(option)
+
+        s = "\n".join(todo_list)
+        write_file(filename, s)
+
+
 def wf_trans_base_10_to_base_x():
     last_copied_str = pyperclip.paste()
 
@@ -797,39 +829,6 @@ def toggle_diary():
 def toggle_top():
     cmd = "st -e htop"
     toggle_by_cmd(cmd)
-
-    return
-
-
-def wf_todo():
-    filename = os.path.join(my_home_path, ".todo")
-    if not os.path.exists(filename):
-        write_file(filename, "")
-
-    s = read_file(filename)
-    todo_list = s.split("\n") if s else []
-    todo_hashmap = dict([(x, True) for x in todo_list])
-
-    if todo_list:
-        cmd = "echo '{}'|dmenu -p 'todo'".format('\n'.join(todo_list))
-    else:
-        cmd = "dmenu < /dev/null -p 'todo'"
-
-    option = popen(cmd).strip()
-    if not option:
-        return
-
-    if todo_hashmap.get(option, False):
-        todo_hashmap.pop(option)
-        new_list = [x for x in todo_list if todo_hashmap.get(x, False)]
-        s = "\n".join(new_list)
-        write_file(filename, s)
-    else:
-        t = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-        option = "{}: {}".format(t, option)
-        todo_list.append(option)
-        s = "\n".join(todo_list)
-        write_file(filename, s)
 
     return
 
