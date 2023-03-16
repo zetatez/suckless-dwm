@@ -825,6 +825,8 @@ def wf_todo():
         s = "\n".join(new_list)
         write_file(filename, s)
     else:
+        t = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
+        option = "{}: {}".format(t, option)
         todo_list.append(option)
         s = "\n".join(todo_list)
         write_file(filename, s)
