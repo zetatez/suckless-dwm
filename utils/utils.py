@@ -140,32 +140,10 @@ def app_photoshop():
     return open_app(app="gimp")
 
 
-def app_wps():
-    return open_app(app="wps")
-
-
 # wf: workflow
 # -----------------------
-def wf_cal():
-    cmd = "dmenu < /dev/null -p 'cal with julia>>'"
-    cmd = popen(cmd).strip()
-    if not cmd:
-        return
-    cmd = "julia -E '{}'".format(cmd)
-    msg = popen(cmd).strip()
-    pyperclip.copy(msg)
-    os.system("notify-send '{}'".format(msg))
-    return
-
-
 def wf_clipmenu():
     cmd = "clipmenu"
-    os.system(cmd)
-    return
-
-
-def wf_dmenu():
-    cmd = "dmenu_run"
     os.system(cmd)
     return
 
@@ -581,7 +559,7 @@ def wf_todo():
         write_file(filename, s)
 
 
-def wf_trans_base_10_to_base_x():
+def wf_base_10_to_base_x():
     last_copied_str = pyperclip.paste()
 
     try:
@@ -613,22 +591,22 @@ def wf_trans_base_10_to_base_x():
     return
 
 
-def wf_trans_datetime_to_unix_sec():
+def wf_datetime_to_unix_sec():
     last_copied_str = pyperclip.paste().strip()
     try:
         dt = datetime.datetime.strptime(last_copied_str, "%Y-%m-%d %H:%M:%S")
         s = str(int(datetime.datetime.timestamp(dt)))
         pyperclip.copy(s)
-        msg = "trans datetime to unix sec success, please check clipboard: {}".format(s)
+        msg = "datetime to unix sec success, please check clipboard: {}".format(s)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "trans datetime to unix sec failed: {}\n{}".format(e, last_copied_str)
+        msg = "datetime to unix sec failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
 
 
-def wf_trans_string_to_base_x():
+def wf_string_to_base_x():
     last_copied_str = pyperclip.paste()
 
     try:
@@ -651,24 +629,24 @@ def wf_trans_string_to_base_x():
             return
 
         pyperclip.copy(s)
-        msg = "trans string to base x success, please check clipboard:\n{}".format(s)
+        msg = "string to base x success, please check clipboard:\n{}".format(s)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "trans string to base x failed: {}\n{}".format(e, last_copied_str)
+        msg = "string to base x failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
 
 
-def wf_trans_unix_sec_to_datetime():
+def wf_unix_sec_to_datetime():
     last_copied_str = pyperclip.paste().strip()
     try:
         s = str(datetime.datetime.fromtimestamp(int(last_copied_str)))
         pyperclip.copy(s)
-        msg = "trans unix sec to datetime success, please check clipboard: {}".format(s)
+        msg = "unix sec to datetime success, please check clipboard: {}".format(s)
         os.system("notify-send '{}'".format(msg))
     except Exception as e:
-        msg = "trans unix sec to datetime failed: {}\n{}".format(e, last_copied_str)
+        msg = "unix sec to datetime failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
     return
@@ -682,52 +660,6 @@ def wf_umount_from_xyz():
 
     cmd = "sudo umount {}".format(dst)
     os.system(cmd)
-
-    return
-
-
-def wf_web():
-    websites = {
-        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "suckless": "https://dwm.suckless.org",
-        "mirror": "https://developer.aliyun.com/mirror",
-        "arch wiki": "https://wiki.archlinux.org",
-        "arxiv": "https://arxiv.org",
-        "bili": "https://www.bilibili.com",
-        "bing": "https://cn.bing.com",
-        "cctv5": "https://tv.cctv.com/live/cctv5",
-        "github": "https://github.com/zetatez?tab=repositories",
-        "mall": "https://www.jd.com",
-        "map": "https://ditu.amap.com",
-        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
-        "ocr": "http://ocr.space",
-        "scholar": "https://scholar.google.com",
-        "wolframalpha": "https://www.wolframalpha.com",
-        "youtube": "https://www.youtube.com",
-        # -- runoob --
-        "runoob": "https://www.runoob.com",
-        "ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
-        "angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
-        "css": "https://www.runoob.com/css3/css3-tutorial.html",
-        "design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
-        "docker": "https://www.runoob.com/docker/docker-tutorial.html",
-        "html": "https://www.runoob.com/html/html5-intro.html",
-        "javascript": "https://www.runoob.com/js/js-tutorial.html",
-        "maven": "https://www.runoob.com/maven/maven-tutorial.html",
-        "mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
-        "nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
-        "react": "https://www.runoob.com/react/react-tutorial.html",
-        "redis": "https://www.runoob.com/redis/redis-tutorial.html",
-        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
-        "vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
-    }
-
-    cmd = "echo '{}'|dmenu -p 'websites'".format('\n'.join(list(websites.keys())))
-    option = popen(cmd).strip()
-    if option:
-        cmd = "chrome {}".format(websites.get(option, "https://cn.bing.com/search?q={}".format(option)))
-        os.system(cmd)
 
     return
 
@@ -827,7 +759,7 @@ def toggle_diary():
 
 
 def toggle_top():
-    cmd = "st -e htop"
+    cmd = "st -e top"
     toggle_by_cmd(cmd)
 
     return
@@ -1088,90 +1020,137 @@ def exec_julia_cmd():
     return
 
 
-# ultra
+# search
 # -----------------------
-def ultra():
-    options = {
-        "[wf] search": search,
-        "[wf] handle copied": wf_handle_copied,
-        "[wf] web": wf_web,
-        "[wf] ssh": wf_ssh,
-        "[wf] todo": wf_todo,
-        "[wf] cal": wf_cal,
-        "[wf] dmenu": wf_dmenu,
-        "[wf] find local area network server": wf_find_local_area_network_server,
-        "[wf] format json": wf_format_json,
-        "[wf] format sql": wf_format_sql,
-        "[wf] map": wf_map,
-        "[wf] download arxiv to lib": wf_download_arxiv_to_lib,
-        "[wf] download cur to download": wf_download_cur_to_download,
-        "[wf] ip": wf_ip,
-        "[wf] mount": wf_mount_to_xyz,
-        "[wf] umount": wf_umount_from_xyz,
-        "[wf] get now unix nano sec": wf_get_now_unix_nano_sec,
-        "[wf] get now unix sec": wf_get_now_unix_sec,
-        "[wf] trans baee 10 to base x": wf_trans_base_10_to_base_x,
-        "[wf] trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
-        "[wf] trans string to base x": wf_trans_string_to_base_x,
-        "[wf] clipmenu": wf_clipmenu,
-        "[wf] trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "[wf] trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "[wf] inkspace": wf_sketchpad,
-        "[wf] sketchpad": wf_sketchpad,
-        "[wf] latex": wf_latex,
-        "[wf] note": wf_xournal,
-        "[wf] xournal": wf_xournal,
-        "[exec] shell cmd": exec_shell_cmd,
-        "[exec] julia cmd": exec_julia_cmd,
-        "[tg] addressbook": toggle_addressbook,
-        "[tg] bluetooth": toggle_bluetooth,
-        "[tg] calendar schedule": toggle_calendar_schedule,
-        "[tg] calendar scheduling": toggle_calendar_scheduling,
-        "[tg] chrome with proxy": toggle_chrome_with_proxy,
-        "[tg] diary": toggle_diary,
-        "[tg] flameshot": toggle_flameshot,
-        "[tg] flameshot": toggle_flameshot,
-        "[tg] gitter": toggle_gitter,
-        "[tg] irc": toggle_irc,
-        "[tg] julia": toggle_julia,
-        "[tg] lazydocker": toggle_lazydocker,
-        "[tg] mathpix": toggle_mathpix,
-        "[tg] music net cloud": toggle_music_net_cloud,
-        "[tg] music": toggle_music,
-        "[tg] mutt": toggle_mutt,
-        "[tg] rec audio": toggle_rec_audio,
-        "[tg] rec video": toggle_rec_video,
-        "[tg] redshift": toggle_redshift,
-        "[tg] rss": toggle_rss,
-        "[tg] screen": toggle_screen,
-        "[tg] screen": toggle_screen,
-        "[tg] screenkey": toggle_screenkey,
-        "[tg] show": toggle_show,
-        "[tg] sublime": toggle_sublime,
-        "[tg] sys shortcuts": toggle_sys_shortcuts,
-        "[tg] top": toggle_top,
-        "[tg] trojan": toggle_trojan,
-        "[tg] vifm": toggle_vifm,
-        "[tg] vivaldi": toggle_edge,
-        "[tg] wallpaper": toggle_wallpaper,
-        "[tg] wechat": toggle_wechat,
-        "[tg] wifi": toggle_wifi,
-        "[app] passmenu": app_passmenu,
-        "[app] photoshop": app_photoshop,
-        "[app] wps": app_wps,
+def search():
+    actions = {
+        "workflow": {
+            "workflow: addressbook": toggle_addressbook,
+            "workflow: bluetooth": toggle_bluetooth,
+            "workflow: calendar schedule": toggle_calendar_schedule,
+            "workflow: calendar scheduling": toggle_calendar_scheduling,
+            "workflow: chrome with proxy": toggle_chrome_with_proxy,
+            "workflow: clipmenu": wf_clipmenu,
+            "workflow: diary": toggle_diary,
+            "workflow: download arxiv to lib": wf_download_arxiv_to_lib,
+            "workflow: download cur to download": wf_download_cur_to_download,
+            "workflow: find local area network server": wf_find_local_area_network_server,
+            "workflow: flameshot": toggle_flameshot,
+            "workflow: flameshot": toggle_flameshot,
+            "workflow: format json": wf_format_json,
+            "workflow: format sql": wf_format_sql,
+            "workflow: get now unix nano sec": wf_get_now_unix_nano_sec,
+            "workflow: get now unix sec": wf_get_now_unix_sec,
+            "workflow: gitter": toggle_gitter,
+            "workflow: handle copied": wf_handle_copied,
+            "workflow: inkspace": wf_sketchpad,
+            "workflow: ip": wf_ip,
+            "workflow: irc": toggle_irc,
+            "workflow: julia cmd": exec_julia_cmd,
+            "workflow: julia": toggle_julia,
+            "workflow: latex": wf_latex,
+            "workflow: lazydocker": toggle_lazydocker,
+            "workflow: map": wf_map,
+            "workflow: mathpix": toggle_mathpix,
+            "workflow: mount": wf_mount_to_xyz,
+            "workflow: music net cloud": toggle_music_net_cloud,
+            "workflow: music": toggle_music,
+            "workflow: mutt": toggle_mutt,
+            "workflow: note": wf_xournal,
+            "workflow: passmenu": app_passmenu,
+            "workflow: photoshop": app_photoshop,
+            "workflow: rec audio": toggle_rec_audio,
+            "workflow: rec video": toggle_rec_video,
+            "workflow: redshift": toggle_redshift,
+            "workflow: rss": toggle_rss,
+            "workflow: screen": toggle_screen,
+            "workflow: screen": toggle_screen,
+            "workflow: screenkey": toggle_screenkey,
+            "workflow: shell cmd": exec_shell_cmd,
+            "workflow: show": toggle_show,
+            "workflow: sketchpad": wf_sketchpad,
+            "workflow: ssh": wf_ssh,
+            "workflow: sublime": toggle_sublime,
+            "workflow: sys shortcuts": toggle_sys_shortcuts,
+            "workflow: todo": wf_todo,
+            "workflow: top": toggle_top,
+            "workflow: base 10 to base x": wf_base_10_to_base_x,
+            "workflow: datetime to unix sec": wf_datetime_to_unix_sec,
+            "workflow: string to base x": wf_string_to_base_x,
+            "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
+            "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
+            "workflow: trojan": toggle_trojan,
+            "workflow: umount": wf_umount_from_xyz,
+            "workflow: vifm": toggle_vifm,
+            "workflow: vivaldi": toggle_edge,
+            "workflow: wallpaper": toggle_wallpaper,
+            "workflow: wechat": toggle_wechat,
+            "workflow: wifi": toggle_wifi,
+            "workflow: xournal": wf_xournal,
+        },
+        "website": {
+            "website: trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+            "website: suckless": "https://dwm.suckless.org",
+            "website: mirror": "https://developer.aliyun.com/mirror",
+            "website: arch wiki": "https://wiki.archlinux.org",
+            "website: arxiv": "https://arxiv.org",
+            "website: bili": "https://www.bilibili.com",
+            "website: bing": "https://cn.bing.com",
+            "website: cctv5": "https://tv.cctv.com/live/cctv5",
+            "website: github": "https://github.com/zetatez?tab=repositories",
+            "website: mall": "https://www.jd.com",
+            "website: map": "https://ditu.amap.com",
+            "website: news": "https://news.futunn.com/en/main/live?lang=zh-CN",
+            "website: ocr": "http://ocr.space",
+            "website: scholar": "https://scholar.google.com",
+            "website: wolframalpha": "https://www.wolframalpha.com",
+            "website: youtube": "https://www.youtube.com",
+            "website: runoob": "https://www.runoob.com",
+            "website: ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
+            "website: angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
+            "website: css": "https://www.runoob.com/css3/css3-tutorial.html",
+            "website: design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
+            "website: docker": "https://www.runoob.com/docker/docker-tutorial.html",
+            "website: html": "https://www.runoob.com/html/html5-intro.html",
+            "website: javascript": "https://www.runoob.com/js/js-tutorial.html",
+            "website: maven": "https://www.runoob.com/maven/maven-tutorial.html",
+            "website: mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
+            "website: nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
+            "website: react": "https://www.runoob.com/react/react-tutorial.html",
+            "website: redis": "https://www.runoob.com/redis/redis-tutorial.html",
+            "website: regex":
+            "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+            "website: typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
+            "website: vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
+        }
     }
 
-    cmd = "echo '{}'|dmenu -p ' Ultra'".format("\n".join(options.keys()))
-    option = popen(cmd).strip()
-    if option:
-        options.get(option, empty)()
+    actionskeys = list(actions.keys())
+    prompt_list = [list(actions.get(key, {}).keys()) for key in actionskeys]
 
+    prompt_list_new = []
+    for sublist in prompt_list:
+        prompt_list_new.extend(sublist)
 
-def search():
-    cmd = "dmenu < /dev/null -p 'search'"
+    cmd = "echo '{}'|dmenu -p 'search'".format("\n".join(prompt_list_new))
     search = popen(cmd).strip()
     if not search:
         return
+
+    if ":" in search:
+        key = search.split(": ")[0]
+        if key == "website":
+            url = actions.get("website", {}).get(search, "")
+            if url:
+                cmd = "chrome {}".format(url)
+                os.system(cmd)
+                return
+
+        if key == "workflow":
+            workflow = actions.get("workflow", {}).get(search, empty)
+            if workflow != empty:
+                workflow()
+                return
 
     # if a local file
     if os.path.exists(search):
@@ -1185,134 +1164,12 @@ def search():
         os.system(cmd)
         return
 
-    # if websites keyword
-    websites = {
-        "trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "translate": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
-        "suckless": "https://dwm.suckless.org",
-        "mirror": "https://developer.aliyun.com/mirror",
-        "arch wiki": "https://wiki.archlinux.org",
-        "arxiv": "https://arxiv.org",
-        "bili": "https://www.bilibili.com",
-        "bing": "https://cn.bing.com",
-        "cctv5": "https://tv.cctv.com/live/cctv5",
-        "github": "https://github.com/zetatez?tab=repositories",
-        "mall": "https://www.jd.com",
-        # "map": "https://ditu.amap.com",
-        "news": "https://news.futunn.com/en/main/live?lang=zh-CN",
-        "ocr": "http://ocr.space",
-        "scholar": "https://scholar.google.com",
-        "wolframalpha": "https://www.wolframalpha.com",
-        "youtube": "https://www.youtube.com",
-        # -- runoob --
-        "runoob": "https://www.runoob.com",
-        "ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
-        "angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
-        "css": "https://www.runoob.com/css3/css3-tutorial.html",
-        "design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
-        "docker": "https://www.runoob.com/docker/docker-tutorial.html",
-        "html": "https://www.runoob.com/html/html5-intro.html",
-        "javascript": "https://www.runoob.com/js/js-tutorial.html",
-        "maven": "https://www.runoob.com/maven/maven-tutorial.html",
-        "mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
-        "nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
-        "react": "https://www.runoob.com/react/react-tutorial.html",
-        "redis": "https://www.runoob.com/redis/redis-tutorial.html",
-        "regex": "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-        "typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
-        "vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
-    }
-
-    # TODO: <00:46:36 2023-03-15- Author: Dion>: fuzzy match ?
-    url = websites.get(search, False)
-    if url:
-        cmd = "chrome {}".format(url)
-        os.system(cmd)
-        return
-
-    # if workflow keyword
-    workflows = {
-        "addressbook": toggle_addressbook,
-        "bluetooth": toggle_bluetooth,
-        "calendar schedule": toggle_calendar_schedule,
-        "calendar scheduling": toggle_calendar_scheduling,
-        "chrome with proxy": toggle_chrome_with_proxy,
-        "diary": toggle_diary,
-        "cal": wf_cal,
-        "clipmenu": wf_clipmenu,
-        "shell": exec_shell_cmd,
-        "julia": exec_julia_cmd,
-        "dmenu": wf_dmenu,
-        "download arxiv to lib": wf_download_arxiv_to_lib,
-        "download cur to download": wf_download_cur_to_download,
-        "find local area network server": wf_find_local_area_network_server,
-        "flameshot": toggle_flameshot,
-        "flameshot": toggle_flameshot,
-        "format json": wf_format_json,
-        "format sql": wf_format_sql,
-        "get now unix nano sec": wf_get_now_unix_nano_sec,
-        "get now unix sec": wf_get_now_unix_sec,
-        "gitter": toggle_gitter,
-        "handle copied": wf_handle_copied,
-        "inkspace": wf_sketchpad,
-        "ip": wf_ip,
-        "irc": toggle_irc,
-        "julia": toggle_julia,
-        "latex": wf_latex,
-        "lazydocker": toggle_lazydocker,
-        "map": wf_map,
-        "mathpix": toggle_mathpix,
-        "mount": wf_mount_to_xyz,
-        "music net cloud": toggle_music_net_cloud,
-        "music": toggle_music,
-        "mutt": toggle_mutt,
-        "note": wf_xournal,
-        "passmenu": app_passmenu,
-        "photoshop": app_photoshop,
-        "rec audio": toggle_rec_audio,
-        "rec video": toggle_rec_video,
-        "redshift": toggle_redshift,
-        "rss": toggle_rss,
-        "screen": toggle_screen,
-        "screen": toggle_screen,
-        "screenkey": toggle_screenkey,
-        "search": search,
-        "shot": toggle_flameshot,
-        "show": toggle_show,
-        "sketchpad": wf_sketchpad,
-        "ssh": wf_ssh,
-        "sublime": toggle_sublime,
-        "sys shortcuts": toggle_sys_shortcuts,
-        "top": toggle_top,
-        "todo": wf_todo,
-        "trans baee 10 to base x": wf_trans_base_10_to_base_x,
-        "trans datetime to unix sec": wf_trans_datetime_to_unix_sec,
-        "trans string to base x": wf_trans_string_to_base_x,
-        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "trans unix sec to datetime": wf_trans_unix_sec_to_datetime,
-        "trojan": toggle_trojan,
-        "ultra": ultra,
-        "umount": wf_umount_from_xyz,
-        "vifm": toggle_vifm,
-        "vivaldi": toggle_edge,
-        "wallpaper": toggle_wallpaper,
-        "web": wf_web,
-        "wechat": toggle_wechat,
-        "wifi": toggle_wifi,
-        "wps": app_wps,
-        "xournal": wf_xournal,
-    }
-    workflow = workflows.get(search, empty)
-    if workflow != empty:
-        workflow()
-        return
-
+    # search if not match
     url = "https://cn.bing.com/search?q={}".format(search.replace(" ", "+"))
-    cmd = "chrome {}".format(url)
+    cmd = "microsoft-edge-stable {}".format(url)
     os.system(cmd)
     return
 
 
 if __name__ == '__main__':
-    wf_todo()
     pass
