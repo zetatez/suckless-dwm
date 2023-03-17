@@ -1301,7 +1301,7 @@ manage(Window w, XWindowAttributes *wa)
   c->bw = borderpx;
 
     selmon->tagset[selmon->seltags] &= ~scratchtag;                                                // patch: dwm-scratchpad
-    if (!strcmp(c->name, scratchpadname)) {                                                        // patch: dwm-scratchpad
+    if (!strcmp(c->name, "scratchpad")) {                                                          // patch: dwm-scratchpad
       c->mon->tagset[c->mon->seltags] |= c->tags = scratchtag;                                     // patch: dwm-scratchpad
       c->isfloating = True;                                                                        // patch: dwm-scratchpad
       c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);                                         // patch: dwm-scratchpad
