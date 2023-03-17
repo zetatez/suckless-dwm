@@ -95,9 +95,6 @@ static const Layout overviewlayout = { "舘",  overview }; // patch: dwm-overvie
   { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
   { MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \
 
-//{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} }, \  // patch: dwm-tag-preview
-//{ MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \  // patch: dwm-tag-preview
-
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define UTILS      "/home/dionysus/.suckless/suckless-dwm/utils"
 #define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
@@ -129,13 +126,9 @@ static const char *cmd_volume_dec[]              =  SH("amixer -qM set Master 5%
 static const char *cmd_volume_inc[]              =  SH("amixer -qM set Master 5%+ umute");
 static const char *cmd_volume_toggle[]           =  SH("amixer set Master toggle");
 
-/* ultra */
-static const char *ultra[]                       =  SH(UTILS"/ultra.py");
-
 /* utils */
 static const char *app_passmenu[]                =  SH(UTILS"/app-passmenu.py");
 static const char *app_photoshop[]               =  SH(UTILS"/app-photoshop.py");
-static const char *app_wps[]                     =  SH(UTILS"/app-wps.py");
 static const char *wf_clipmenu[]                 =  SH(UTILS"/wf-clipmenu.py");
 static const char *wf_download_arxiv_to_lib[]    =  SH(UTILS"/wf-download-arxiv-to-lib.py");
 static const char *wf_download_cur_to_download[] =  SH(UTILS"/wf-download-cur-to-download.py");
@@ -153,17 +146,14 @@ static const char *toggle_diary[]                =  SH(UTILS"/toggle-diary.py");
 static const char *toggle_email[]                =  SH(UTILS"/toggle-mutt.py");
 static const char *toggle_flameshot[]            =  SH(UTILS"/toggle-flameshot.py");
 static const char *toggle_gitter[]               =  SH(UTILS"/toggle-gitter.py");
-static const char *toggle_irc[]                  =  SH(UTILS"/toggle-irc.py");
 static const char *toggle_julia[]                =  SH(UTILS"/toggle-julia.py");
 static const char *toggle_kb_light[]             =  SH(UTILS"/toggle-kb-light");
 static const char *toggle_lazydocker[]           =  SH(UTILS"/toggle-lazydocker.py");
-static const char *toggle_mathpix[]              =  SH(UTILS"/toggle-mathpix.py");
 static const char *toggle_music[]                =  SH(UTILS"/toggle-music.py");
 static const char *toggle_music_net_cloud[]      =  SH(UTILS"/toggle-music-net-cloud.py");
 static const char *toggle_rec_audio[]            =  SH(UTILS"/toggle-rec-audio.py");
 static const char *toggle_rec_video[]            =  SH(UTILS"/toggle-rec-video.py");
 static const char *toggle_redshift[]             =  SH(UTILS"/toggle-redshift.py");
-static const char *toggle_rss[]                  =  SH(UTILS"/toggle-rss.py");
 static const char *toggle_screen[]               =  SH(UTILS"/toggle-screen.py");
 static const char *toggle_screenkey[]            =  SH(UTILS"/toggle-screenkey.py");
 static const char *toggle_show[]                 =  SH(UTILS"/toggle-show.py");
@@ -181,11 +171,7 @@ static const char *search[]                      =  SH(UTILS"/search.py");
 #include "movestack.c"
 #include "shiftview.c"
 static const Key keys[] = {
-  /* modifier                     key            function           argument */
-  { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                    } },
-  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                     } },
-  { SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v = tabbedtermcmd               } },
-
+  /* modifier                     key            function           argument                          */
   // SUPKEY + F1-F12
   { SUPKEY,                       XK_F1,         spawn,             {.v = cmd_volume_toggle           } },
   { SUPKEY,                       XK_F2,         spawn,             {.v = cmd_volume_dec              } },
@@ -227,7 +213,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_x,          spawn,             {.v = toggle_wallpaper            } },
   { SUPKEY,                       XK_y,          spawn,             {.v = toggle_show                 } },
 //{ SUPKEY,                       XK_z,          spawn,             {.v =                             } },
-  { SUPKEY,                       XK_apostrophe, spawn,             {.v = ultra                       } },
+//{ SUPKEY,                       XK_apostrophe, spawn,             {.v =                             } },
   { SUPKEY,                       XK_BackSpace,  spawn,             {.v = app_passmenu                } },
   { SUPKEY,                       XK_Delete,     spawn,             {.v = toggle_sys_shortcuts        } },
   { SUPKEY,                       XK_Escape,     spawn,             {.v = toggle_top                  } },
@@ -242,23 +228,23 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_b,          spawn,             {.v = toggle_edge                 } },
   { SUPKEY|ShiftMask,             XK_c,          spawn,             {.v = toggle_calendar_scheduling  } },
   { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = toggle_lazydocker           } },
-  { SUPKEY|ShiftMask,             XK_e,          spawn,             {.v = toggle_mathpix              } },
+//{ SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                             } },
 //{ SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                             } },
   { SUPKEY|ShiftMask,             XK_g,          spawn,             {.v = toggle_gitter               } },
 //{ SUPKEY|ShiftMask,             XK_h,          spawn,             {.v = x                           } },
-  { SUPKEY|ShiftMask,             XK_i,          spawn,             {.v = toggle_irc                  } },
+//{ SUPKEY|ShiftMask,             XK_i,          spawn,             {.v =                             } },
 //{ SUPKEY|ShiftMask,             XK_j,          spawn,             {.v = x                           } },
 //{ SUPKEY|ShiftMask,             XK_k,          spawn,             {.v = x                           } },
 //{ SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = x                           } },
   { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = toggle_music_net_cloud      } },
-  { SUPKEY|ShiftMask,             XK_n,          spawn,             {.v = toggle_rss                  } },
+//{ SUPKEY|ShiftMask,             XK_n,          spawn,             {.v =                             } },
   { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = toggle_julia                } },
   { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = app_photoshop               } },
   { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = cmd_suspend                 } },
   { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = toggle_redshift             } },
   { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = toggle_sublime              } },
   { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = toggle_trojan               } },
-  { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v = app_wps                     } },
+//{ SUPKEY|ShiftMask,             XK_u,          spawn,             {.v =                             } },
 //{ SUPKEY|ShiftMask,             XK_v,          spawn,             {.v =                             } },
   { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = toggle_wechat               } },
 //{ SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                             } },
@@ -274,16 +260,19 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio            } },
   { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_video            } },
 
+  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd               } }, // patch: dwm-scratchpad
   { MODKEY,                       XK_c,          spawn,             {.v = wf_clipmenu                 } },
-  { MODKEY,                       XK_b,          togglebar,         {0                                } },
+  { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                    } },
   { MODKEY,                       XK_Return,     zoom,              {0                                } },
   { MODKEY,                       XK_Tab,        view,              {0                                } }, // switch current tag    with previous tag
-  { MODKEY,                       XK_space,      setlayout,         {0                                } }, // switch current layout with previous layout
-  { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                                } },
-  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                                } }, // patch: dwm-sticky
+  { MODKEY,                       XK_b,          togglebar,         {0                                } },
   { MODKEY,                       XK_f,          togglefullscreen,  {0                                } }, // patch: dwm-actualfullscreen
   { MODKEY,                       XK_o,          toggleoverview,    {0                                } }, // patch: dwm-overview
+  { MODKEY,                       XK_s,          reset,             {0                                } }, // reset, by myself
+  { MODKEY,                       XK_space,      setlayout,         {0                                } }, // switch current layout with previous layout
   { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                                } }, // patch: dwm-focusmaster
+  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                                } }, // patch: dwm-sticky
+  { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                                } },
   { MODKEY,                       XK_k,          focusstack,        {.i = -1                          } },
   { MODKEY,                       XK_j,          focusstack,        {.i = +1                          } },
   { MODKEY,                       XK_d,          incnmaster,        {.i = -1                          } },
@@ -300,7 +289,14 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                      } },
   { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                      } }, // ffact, by myself
   { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                      } }, // ffact, by myself
-  { MODKEY,                       XK_s,          reset,             {0                                } }, // reset, by myself
+  { SUPKEY,                       XK_k,          movewin,           {.ui = UP                         } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                       } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                       } }, // patch: dwm-move-window
+  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                      } }, // patch: dwm-move-window
+  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                     } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                     } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                     } }, // patch: dwm-resize-window
+  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                     } }, // patch: dwm-resize-window
   { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                 } }, // centeranyshape
   { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                 } }, // centerequalratio
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]                 } }, // grid
@@ -315,20 +311,6 @@ static const Key keys[] = {
   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[11]                } }, // monocle
   { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[12]                } }, // logarithmicspiral
   { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]                } }, // no layout means floating
-  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd               } }, // patch: dwm-scratchpad
-  { SUPKEY,                       XK_k,          movewin,           {.ui = UP                         } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                       } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                       } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                      } }, // patch: dwm-move-window
-  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                     } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                     } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                     } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                     } }, // patch: dwm-resize-window
-  { MODKEY,                       XK_0,          view,              {.ui = ~0                         } },
-  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                         } },
-  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                } },
-  { MODKEY|ShiftMask,             XK_q,          quit,              {0                                } },
-  { MODKEY|ShiftMask,             XK_p,          quit,              {1                                } }, // patch: dwm-restartsig
     TAGKEYS(XK_1, 0)
     TAGKEYS(XK_2, 1)
     TAGKEYS(XK_3, 2)
@@ -338,6 +320,13 @@ static const Key keys[] = {
     TAGKEYS(XK_7, 6)
     TAGKEYS(XK_8, 7)
     TAGKEYS(XK_9, 8)
+  { MODKEY,                       XK_0,          view,              {.ui = ~0                         } },
+  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                         } },
+  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                     } },
+  { SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v = tabbedtermcmd               } },
+  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                } },
+  { MODKEY|ShiftMask,             XK_q,          quit,              {0                                } },
+  { MODKEY|ShiftMask,             XK_p,          quit,              {1                                } }, // patch: dwm-restartsig
 };
 
 /* button definitions */
