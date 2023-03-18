@@ -447,8 +447,6 @@ def wf_mount_to_xyz():
     devices = [x.strip() for x in s.split("\n") if x.strip() != "" and len(x.strip()) >= 9]
     devices.sort()
 
-    print(devices)
-
     cmd = "echo '{}'|dmenu -p 'mount'".format('\n'.join(devices))
     dev = popen(cmd).strip()
     if not dev:
