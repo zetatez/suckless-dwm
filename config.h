@@ -168,7 +168,7 @@ static const char *toggle_vifm[]                 =  SH(UTILS"/toggle-vifm.py");
 static const char *toggle_edge[]                 =  SH(UTILS"/toggle-edge.py");
 static const char *toggle_wallpaper[]            =  SH(UTILS"/toggle-wallpaper.py");
 static const char *toggle_wechat[]               =  SH(UTILS"/toggle-wechat.py");
-static const char *toggle_wifi[]                 =  SH(UTILS"/toggle-wifi.py");
+static const char *wf_wifi[]                     =  SH(UTILS"/wf-wifi.py");
 static const char *search[]                      =  SH(UTILS"/search.py");
 
 #include "movestack.c"
@@ -183,7 +183,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_F5,         spawn,             {.v = cmd_screen_light_dec        } },
   { SUPKEY,                       XK_F6,         spawn,             {.v = cmd_screen_light_inc        } },
   { SUPKEY,                       XK_F7,         spawn,             {.v = toggle_screen               } },
-  { SUPKEY,                       XK_F8,         spawn,             {.v = toggle_wifi                 } },
+  { SUPKEY,                       XK_F8,         spawn,             {.v = wf_wifi                     } },
 //{ SUPKEY,                       XK_F9,         spawn,             {.v =                             } },
   { SUPKEY,                       XK_F10,        spawn,             {.v = toggle_bluetooth            } },
   { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light             } },

@@ -428,7 +428,7 @@ def wf_latex():
 
 
 def wf_map():
-    cmd = "dmenu < /dev/null -p 'enter location'"
+    cmd = "dmenu < /dev/null -p 'location location location!'"
     option = popen(cmd).strip()
     if option:
         url = "https://ditu.amap.com/search?query={}".format(option)
@@ -683,6 +683,29 @@ def wf_xournal():
     return
 
 
+def wf_wifi():
+    cmd = "nmcli device disconnect wlan0;"
+    os.system(cmd)
+
+    cmd = "iwlist wlan0 scan|grep ESSID|awk -F: '{print $2}'"
+    essids = [x.strip().strip("\"") for x in popen(cmd).split("\n") if x.strip().strip("\"")]
+
+    cmd = "echo '{}'|dmenu -p 'connect to wifi'".format("\n".join(essids))
+    essid = popen(cmd).strip()
+    if not essid:
+        return
+
+    cmd = "dmenu < /dev/null -p 'password'"
+    password = popen(cmd).strip()
+    if not password:
+        return
+
+    cmd = "nmcli device wifi connect {} password {}".format(essid, password)
+    msg = popen(cmd).strip()
+    os.system("notify-send '{}'".format(msg))
+    return
+
+
 # toggle
 # -----------------------
 def toggle_addressbook():
@@ -905,13 +928,6 @@ def toggle_wechat():
     return
 
 
-def toggle_wifi():
-    cmd = "st -e nmtui"
-    toggle_by_cmd(cmd)
-
-    return
-
-
 def toggle_wallpaper():
     cmd = "feh --bg-fill --recursive --randomize {}".format(my_wallpaper_path)
     os.system(cmd)
@@ -1085,7 +1101,7 @@ def search():
             "workflow: vivaldi": toggle_edge,
             "workflow: wallpaper": toggle_wallpaper,
             "workflow: wechat": toggle_wechat,
-            "workflow: wifi": toggle_wifi,
+            "workflow: wifi": wf_wifi,
             "workflow: xournal": wf_xournal,
         },
         "website": {
@@ -1172,4 +1188,5 @@ def search():
 
 
 if __name__ == '__main__':
+    wf_wifi()
     pass

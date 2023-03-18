@@ -3,4 +3,4 @@
 
 import utils
 
-utils.toggle_wifi()
+utils.wf_wifi()
