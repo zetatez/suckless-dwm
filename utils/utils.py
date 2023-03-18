@@ -449,12 +449,12 @@ def wf_mount_to_xyz():
 
     print(devices)
 
-    cmd = "echo '{}'|dmenu -p 'mount ?'".format('\n'.join(devices))
+    cmd = "echo '{}'|dmenu -p 'mount'".format('\n'.join(devices))
     dev = popen(cmd).strip()
     if not dev:
         return
 
-    cmd = "echo '{}'|dmenu -p 'mount {} to ?'".format('\n'.join(["/x", "/y", "/z"]), dev)
+    cmd = "echo '{}'|dmenu -p 'mount {} to'".format('\n'.join(["/x", "/y", "/z"]), dev)
     dst = popen(cmd).strip()
     if not dst:
         return
@@ -653,7 +653,7 @@ def wf_unix_sec_to_datetime():
 
 
 def wf_umount_from_xyz():
-    cmd = "echo '{}'|dmenu -p 'umount ?'".format('\n'.join(["/x", "/y", "/z"]))
+    cmd = "echo '{}'|dmenu -p 'umount'".format('\n'.join(["/x", "/y", "/z"]))
     dst = popen(cmd).strip()
     if not dst:
         return
@@ -731,7 +731,7 @@ def toggle_bluetooth():
     devices = [[devices.get(k), k] for k in keys]
     devices = "\n".join([" ".join(x) for x in devices])
 
-    cmd = "echo '{}'|dmenu -p 'bluetoosh device>'".format(devices)
+    cmd = "echo '{}'|dmenu -p 'bluetooth device'".format(devices)
     option = popen(cmd).strip()
     if not option:
         return
@@ -830,6 +830,13 @@ def toggle_irc():
 
 def toggle_julia():
     cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad, win_name_scratchpad)
+    toggle_by_cmd(cmd)
+
+    return
+
+
+def toggle_python():
+    cmd = "st -t {} -c {} -e python".format(win_name_scratchpad, win_name_scratchpad)
     toggle_by_cmd(cmd)
 
     return
@@ -1024,12 +1031,17 @@ def exec_shell_cmd():
     return
 
 
-def exec_julia_cmd():
-    cmd = "dmenu < /dev/null -p 'julia -E '"
+def exec_python_cmd():
+    cmd = "dmenu < /dev/null -p 'python -c'"
     cmd = popen(cmd).strip()
     if not cmd:
         return
-    cmd = "julia -E '{}'".format(cmd)
+
+    cmd = """python -c "
+from math import *
+print({})
+"
+""".format(cmd)
     msg = popen(cmd).strip()
     pyperclip.copy(msg)
     os.system("notify-send '{}'".format(msg))
@@ -1042,11 +1054,14 @@ def search():
     actions = {
         "workflow": {
             "workflow: addressbook": toggle_addressbook,
+            "workflow: base 10 to base x": wf_base_10_to_base_x,
             "workflow: bluetooth": toggle_bluetooth,
+            "workflow: cal": exec_python_cmd,
             "workflow: calendar schedule": toggle_calendar_schedule,
             "workflow: calendar scheduling": toggle_calendar_scheduling,
             "workflow: chrome with proxy": toggle_chrome_with_proxy,
             "workflow: clipmenu": wf_clipmenu,
+            "workflow: datetime to unix sec": wf_datetime_to_unix_sec,
             "workflow: diary": toggle_diary,
             "workflow: download arxiv to lib": wf_download_arxiv_to_lib,
             "workflow: download cur to download": wf_download_cur_to_download,
@@ -1062,7 +1077,6 @@ def search():
             "workflow: inkspace": wf_sketchpad,
             "workflow: ip": wf_ip,
             "workflow: irc": toggle_irc,
-            "workflow: julia cmd": exec_julia_cmd,
             "workflow: julia": toggle_julia,
             "workflow: latex": wf_latex,
             "workflow: lazydocker": toggle_lazydocker,
@@ -1075,6 +1089,8 @@ def search():
             "workflow: note": wf_xournal,
             "workflow: passmenu": app_passmenu,
             "workflow: photoshop": app_photoshop,
+            "workflow: python cmd": exec_python_cmd,
+            "workflow: python": toggle_python,
             "workflow: rec audio": toggle_rec_audio,
             "workflow: rec video": toggle_rec_video,
             "workflow: redshift": toggle_redshift,
@@ -1086,17 +1102,15 @@ def search():
             "workflow: show": toggle_show,
             "workflow: sketchpad": wf_sketchpad,
             "workflow: ssh": wf_ssh,
+            "workflow: string to base x": wf_string_to_base_x,
             "workflow: sublime": toggle_sublime,
             "workflow: sys shortcuts": toggle_sys_shortcuts,
             "workflow: todo": wf_todo,
             "workflow: top": toggle_top,
-            "workflow: base 10 to base x": wf_base_10_to_base_x,
-            "workflow: datetime to unix sec": wf_datetime_to_unix_sec,
-            "workflow: string to base x": wf_string_to_base_x,
-            "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
-            "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
             "workflow: trojan": toggle_trojan,
             "workflow: umount": wf_umount_from_xyz,
+            "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
+            "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
             "workflow: vifm": toggle_vifm,
             "workflow: vivaldi": toggle_edge,
             "workflow: wallpaper": toggle_wallpaper,
@@ -1188,5 +1202,5 @@ def search():
 
 
 if __name__ == '__main__':
-    wf_wifi()
+    exec_python_cmd()
     pass
