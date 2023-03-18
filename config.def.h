@@ -122,9 +122,12 @@ static const char *cmd_screen_light_inc[]        =  SH("sudo light -A 5");
 static const char *cmd_screenslock[]             =  SH("sleep .5 && xset dpms force off && slock");
 static const char *cmd_shutdown[]                =  SH("systemctl poweroff");
 static const char *cmd_suspend[]                 =  SH("systemctl suspend && slock");
-static const char *cmd_volume_dec[]              =  SH("amixer -qM set Master 5%- umute");
-static const char *cmd_volume_inc[]              =  SH("amixer -qM set Master 5%+ umute");
+static const char *cmd_volume_dec[]              =  SH("amixer set Master 5%-");
+static const char *cmd_volume_inc[]              =  SH("amixer set Master 5%+");
 static const char *cmd_volume_toggle[]           =  SH("amixer set Master toggle");
+static const char *cmd_microphone_dec[]          =  SH("amixer set Capture 5%-");
+static const char *cmd_microphone_inc[]          =  SH("amixer set Capture 5%+");
+static const char *cmd_microphone_toggle[]       =  SH("amixer set Capture toggle");
 
 /* utils */
 static const char *app_passmenu[]                =  SH(UTILS"/app-passmenu.py");
@@ -176,7 +179,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_F1,         spawn,             {.v = cmd_volume_toggle           } },
   { SUPKEY,                       XK_F2,         spawn,             {.v = cmd_volume_dec              } },
   { SUPKEY,                       XK_F3,         spawn,             {.v = cmd_volume_inc              } },
-//{ SUPKEY,                       XK_F4,         spawn,             {.v =                             } },
+  { SUPKEY,                       XK_F4,         spawn,             {.v = cmd_microphone_toggle       } },
   { SUPKEY,                       XK_F5,         spawn,             {.v = cmd_screen_light_dec        } },
   { SUPKEY,                       XK_F6,         spawn,             {.v = cmd_screen_light_inc        } },
   { SUPKEY,                       XK_F7,         spawn,             {.v = toggle_screen               } },
@@ -184,6 +187,20 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_F9,         spawn,             {.v =                             } },
   { SUPKEY,                       XK_F10,        spawn,             {.v = toggle_bluetooth            } },
   { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light             } },
+//{ SUPKEY,                       XK_F12,        spawn,             {.v =                             } },
+
+  // SUPKEY-ShiftMask + F1-F12
+//{ SUPKEY,                       XK_F1,         spawn,             {.v =                             } },
+  { SUPKEY|ShiftMask,             XK_F2,         spawn,             {.v = cmd_microphone_dec          } },
+  { SUPKEY|ShiftMask,             XK_F3,         spawn,             {.v = cmd_microphone_inc          } },
+//{ SUPKEY,                       XK_F4,         spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F5,         spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F6,         spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F7,         spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F8,         spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F9,         spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F10,        spawn,             {.v =                             } },
+//{ SUPKEY,                       XK_F11,        spawn,             {.v =                             } },
 //{ SUPKEY,                       XK_F12,        spawn,             {.v =                             } },
 
   // SUPKEY + a-z, etc
