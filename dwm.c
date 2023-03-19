@@ -1772,16 +1772,16 @@ restack(Monitor *m)
   while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
 
-void reset(void) {          //  by myself
-  selmon->mfact = mfact;    //  by myself
-  selmon->ffact = ffact;    //  by myself
-  selmon->nmaster =nmaster; //  by myself
-                            //  by myself
-  if (selmon->sel)          //  by myself
-    arrange(selmon);        //  by myself
-  else                      //  by myself
-    drawbar(selmon);        //  by myself
-}                           //  by myself
+void reset(void) {           // by myself
+  selmon->mfact = mfact;     // by myself
+  selmon->ffact = ffact;     // by myself
+  selmon->nmaster = nmaster; // by myself
+                             // by myself
+  if (selmon->sel)           // by myself
+    arrange(selmon);         // by myself
+  else                       // by myself
+    drawbar(selmon);         // by myself
+}                            // by myself
 
 void
 run(void)
