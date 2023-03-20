@@ -277,6 +277,7 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio            } },
   { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_video            } },
 
+  // MODKEY-ShiftMask/ControlMask + a-z, etc
   { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd               } }, // patch: dwm-scratchpad
   { MODKEY,                       XK_c,          spawn,             {.v = wf_clipmenu                 } },
   { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                    } },
