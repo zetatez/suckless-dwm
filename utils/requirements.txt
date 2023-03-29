@@ -1,6 +1,5 @@
-json
 psutil
 pyperclip
 pyqt5
-shutil
 wget
+sqlparse
