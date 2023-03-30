@@ -685,7 +685,7 @@ def wf_wifi():
     cmd = "nmcli device disconnect wlan0;"
     os.system(cmd)
 
-    cmd = "iwlist wlan0 scan|grep ESSID|awk -F: '{print $2}'"
+    cmd = "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq"
     essids = [x.strip().strip("\"") for x in popen(cmd).split("\n") if x.strip().strip("\"")]
 
     cmd = "echo '{}'|dmenu -p 'connect to wifi'".format("\n".join(essids))
