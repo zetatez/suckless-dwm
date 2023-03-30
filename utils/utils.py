@@ -682,11 +682,11 @@ def wf_xournal():
 
 
 def wf_wifi():
-    cmd = "nmcli device disconnect wlan0;"
-    os.system(cmd)
-
     cmd = "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq"
     essids = [x.strip().strip("\"") for x in popen(cmd).split("\n") if x.strip().strip("\"")]
+
+    cmd = "nmcli device disconnect wlan0;"
+    os.system(cmd)
 
     cmd = "echo '{}'|dmenu -p 'connect to wifi'".format("\n".join(essids))
     essid = popen(cmd).strip()
