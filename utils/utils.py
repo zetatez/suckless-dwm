@@ -843,7 +843,7 @@ def toggle_python():
 
 
 def toggle_photoshop():
-    cmd = "gimp"
+    cmd = "krita"
     toggle_by_cmd(cmd)
 
     return
