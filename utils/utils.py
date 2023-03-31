@@ -136,10 +136,6 @@ def app_passmenu():
     return open_app(app="passmenu")
 
 
-def app_photoshop():
-    return open_app(app="gimp")
-
-
 # wf: workflow
 # -----------------------
 def wf_clipmenu():
@@ -826,6 +822,12 @@ def toggle_irc():
     return
 
 
+def toggle_inkscape():
+    toggle_by_pname(pname="inkscape", cmd="inkscape")
+
+    return
+
+
 def toggle_julia():
     cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad, win_name_scratchpad)
     toggle_by_cmd(cmd)
@@ -835,6 +837,13 @@ def toggle_julia():
 
 def toggle_python():
     cmd = "st -t {} -c {} -e python".format(win_name_scratchpad, win_name_scratchpad)
+    toggle_by_cmd(cmd)
+
+    return
+
+
+def toggle_photoshop():
+    cmd = "gimp"
     toggle_by_cmd(cmd)
 
     return
@@ -914,7 +923,7 @@ def toggle_show():
 
 
 def toggle_sublime():
-    toggle_by_pname(pname="subl", cmd="subl")
+    toggle_by_pname(pname="sublime_text", cmd="subl")
 
     return
 
@@ -1117,7 +1126,7 @@ def search():
             "workflow: xournal": wf_xournal,
         },
         "website": {
-            "website: trans": "https://cn.bing.com/translator?ref=TThis&text=&from=zh-Hans&to=en",
+            "website: trans": "https://translate.google.com/?hl=zh-CN",
             "website: suckless": "https://dwm.suckless.org",
             "website: mirror": "https://developer.aliyun.com/mirror",
             "website: arch wiki": "https://wiki.archlinux.org",

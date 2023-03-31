@@ -3,4 +3,4 @@
 
 import utils
 
-utils.app_photoshop()
+utils.toggle_inkscape()
