@@ -483,7 +483,7 @@ void hacker(Monitor *m) {
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     cx = m->wx + gapow + (n-i-1)*(m->ww/34);
-    cy = m->wy + gapoh + (n-i-1)*(m->wh/24);
+    cy = m->wy + gapoh + (n-i-1)*(m->wh/34);
 
     if (cy + ch - 2*c->bw > m->wh) {
       cx = (m->ww - 2*gapow)/2 - cw/2;
