@@ -59,10 +59,10 @@ static const float ffact            = 0.50; /* factor of ffact [0.00..1.00] */  
 static const int nmaster            = 1;    /* number of clients in master area */
 static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen     = 0;    /* 1 will force focus on the fullscreen window */
-static const unsigned int gappoh    = 24;   /* horiz outer gap between windows and screen edge */ // patch: dwm-overview
-static const unsigned int gappow    = 32;   /* vert  outer gap between windows and screen edge */ // patch: dwm-overview
-static const unsigned int gappih    = 12;   /* horiz inner gap between windows */                 // patch: dwm-overview
-static const unsigned int gappiw    = 16;   /* vert  inner gap between windows */                 // patch: dwm-overview
+static const unsigned int gapoh     = 24;   /* horiz outer gap between windows and screen edge */ // patch: dwm-overview
+static const unsigned int gapow     = 32;   /* vert  outer gap between windows and screen edge */ // patch: dwm-overview
+static const unsigned int gapih     = 12;   /* horiz inner gap between windows */                 // patch: dwm-overview
+static const unsigned int gapiw     = 16;   /* vert  inner gap between windows */                 // patch: dwm-overview
 
 #include "layouts.c"                          // layouts
 static const Layout layouts[] = {

@@ -447,23 +447,23 @@ void overview(Monitor *m) {
   rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
 
   /* window geoms (cell height/width) */
-  ch = (m->wh - 2 * gappoh) / (rows ? rows : 1);
-  cw = (m->ww - 2 * gappow) / (cols ? cols : 1);
+  ch = (m->wh - 2 * gapoh) / (rows ? rows : 1);
+  cw = (m->ww - 2 * gapow) / (cols ? cols : 1);
 
   /* round err adjust */
-  ah = rows ? (m->wh - 2 * gappoh - rows * ch) / 2 : 0;
-  aw = cols ? (m->ww - 2 * gappow - cols * cw) / 2 : 0;
+  ah = rows ? (m->wh - 2 * gapoh - rows * ch) / 2 : 0;
+  aw = cols ? (m->ww - 2 * gapow - cols * cw) / 2 : 0;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-    cx = m->wx + gappow + aw + (i % cols) * cw;
-    cy = m->wy + gappoh + ah + (i / cols) * ch;
+    cx = m->wx + gapow + aw + (i % cols) * cw;
+    cy = m->wy + gapoh + ah + (i / cols) * ch;
 
     if (i > cols * (rows - 1) - 1 && n != cols * rows) {
-      cx = m->wx + gappow + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
-      cy = m->wy + gappoh + ah + (i / cols) * ch;
+      cx = m->wx + gapow + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
+      cy = m->wy + gapoh + ah + (i / cols) * ch;
     }
 
-    resize(c, cx, cy, cw - gappiw / 2 - 2 * c->bw, ch - gappih / 2 - 2 * c->bw, False);
+    resize(c, cx, cy, cw - gapiw / 2 - 2 * c->bw, ch - gapih / 2 - 2 * c->bw, False);
     i++;
   }
 }
