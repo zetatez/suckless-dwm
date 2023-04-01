@@ -67,10 +67,11 @@ static const unsigned int gapiw     = 16;   /* vert  inner gap between windows *
 #include "layouts.c"                          // layouts
 static const Layout layouts[] = {
   /* symbol    arrange function */
-  { "⧈",         centeranyshape }, // patch: dwm-center
-  { "⧈",       centerequalratio }, // patch: dwm-center
-  { "﩯",                   grid }, // patch: dwm-grid
-  /* { "﩯",                 stack }, // patch: dwm-grid */
+  { "﩯",              overview }, // patch: dwm-overview
+  { "﩯",                  grid }, // patch: dwm-grid
+  { "ﴣ",                 hacker }, // patch: dwm-hacker
+  { "⧈",         centeranyshape }, // patch: dwm-centeranyshape
+  { "⧈",       centerequalratio }, // patch: dwm-centerequalratio
   { "ﮇ",               deckvert }, // patch: dwm-deckvert
   { "ﮆ",               deckhori }, // patch: dwm-deckhori
   { "⧉",        fibonaccispiral }, // patch: dwm-fibonacci: spiral
@@ -80,7 +81,6 @@ static const Layout layouts[] = {
   { "◨",              tileright }, // tile -> tileright
   { "◧",               tileleft }, // patch: dwm-leftstack
   { "",                monocle },
-  { "ﴣ",                 hacker }, // patch: dwm-hacker
   /* { "ℒ",      logarithmicspiral }, // patch: dwm-logarithmicspiral */
   { "∅",                   NULL }, // no layout function means floating behavior
   { NULL,                  NULL }, // patch: dwm-cyclelayouts
@@ -318,20 +318,21 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                     } }, // patch: dwm-resize-window
   { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                     } }, // patch: dwm-resize-window
   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                     } }, // patch: dwm-resize-window
-  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                 } }, // centeranyshape
-  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                 } }, // centerequalratio
-  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[2]                 } }, // grid
-  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[3]                 } }, // deckvert
-  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[4]                 } }, // deckhori
-  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[5]                 } }, // sprial
-  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[6]                 } }, // dwindle
-  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[7]                 } }, // bstack
-  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[8]                 } }, // bstack
-  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[9]                 } }, // tileright
-  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[10]                } }, // tileleft
-  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[11]                } }, // monocle
-  { MODKEY|ShiftMask,             XK_m,          setlayout,         {.v = &layouts[12]                } }, // logarithmicspiral
-  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]                } }, // no layout means floating
+  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                 } }, // overview
+  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                 } }, // grid
+  { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[2]                 } }, // hacker
+  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]                 } }, // centeranyshape
+  { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[4]                 } }, // centerequalratio
+  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[5]                 } }, // deckvert
+  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[6]                 } }, // deckhori
+  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[7]                 } }, // sprial
+  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[8]                 } }, // dwindle
+  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[9]                 } }, // bottomstack
+  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[10]                } }, // bottomstack
+  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[11]                } }, // tileright
+  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[12]                } }, // tileleft
+  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[13]                } }, // monocle
+  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[15]                } }, // no layout means floating
     TAGKEYS(XK_1, 0)
     TAGKEYS(XK_2, 1)
     TAGKEYS(XK_3, 2)
