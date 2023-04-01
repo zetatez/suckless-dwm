@@ -1095,7 +1095,7 @@ def search():
             "workflow: mutt": toggle_mutt,
             "workflow: note": wf_xournal,
             "workflow: passmenu": app_passmenu,
-            "workflow: photoshop": app_photoshop,
+            "workflow: photoshop": toggle_photoshop,
             "workflow: python cmd": exec_python_cmd,
             "workflow: python": toggle_python,
             "workflow: rec audio": toggle_rec_audio,
