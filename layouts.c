@@ -467,3 +467,29 @@ void overview(Monitor *m) {
     i++;
   }
 }
+
+/* dwm-hacker--------------------------------------------------------------- */
+void hacker(Monitor *m) {
+  unsigned int i, n, cx, cy, cw, ch;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+
+  if (n == 0)
+    return;
+
+  cw = (m->ww - 2*gapow)*3/5;
+  ch = (m->wh - 2*gapoh)*3/5;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    cx = m->wx + gapow + (n-i-1)*(m->ww/34);
+    cy = m->wy + gapoh + (n-i-1)*(m->wh/24);
+
+    if (cy + ch - 2*c->bw > m->wh) {
+      cx = (m->ww - 2*gapow)/2 - cw/2;
+      cy = (m->wh - 2*gapoh)/2 - ch/2;
+    }
+
+    resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
+  }
+}

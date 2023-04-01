@@ -3,20 +3,20 @@
 #define SESSION_FILE "/tmp/dwm-session"         // dwm-restoreafterrestart-20220709-d3f93c7.diff
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 0;        /* snap pixel */                                                                                            // patch: dwm-tag-preview
-static const int scalepreview       = 4;        /* preview scaling (display w and h / scalepreview) */                                                      // patch: dwm-tag-preview
+static const int scalepreview       = 3;        /* preview scaling (display w and h / scalepreview) */                                                      // patch: dwm-tag-preview
 static const int previewbar         = 1;        /* show the bar in the preview window */
-static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
+static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
 static const int vertpad            = 6;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
 static const int sidepad            = 256;      /* horizontal padding of bar */                                                                             // patch: dwm-barpadding
 static const int defaultwinpad      = 8;       /* window padding of bar */
 /* static const int vertpad            = 0;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
 /* static const int sidepad            = 0;        /1* horizontal padding of bar *1/                                                                             // patch: dwm-barpadding */
 /* static const int defaultwinpad      = 0;       /1* window padding of bar *1/ */
-static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
+static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
 static const char col_gray1[]       = "#222222";
@@ -70,6 +70,7 @@ static const Layout layouts[] = {
   { "⧈",         centeranyshape }, // patch: dwm-center
   { "⧈",       centerequalratio }, // patch: dwm-center
   { "﩯",                   grid }, // patch: dwm-grid
+  /* { "﩯",                 stack }, // patch: dwm-grid */
   { "ﮇ",               deckvert }, // patch: dwm-deckvert
   { "ﮆ",               deckhori }, // patch: dwm-deckhori
   { "⧉",        fibonaccispiral }, // patch: dwm-fibonacci: spiral
@@ -79,7 +80,8 @@ static const Layout layouts[] = {
   { "◨",              tileright }, // tile -> tileright
   { "◧",               tileleft }, // patch: dwm-leftstack
   { "",                monocle },
-  { "ℒ",      logarithmicspiral }, // patch: dwm-logarithmicspiral
+  { "ﴣ",                 hacker }, // patch: dwm-hacker
+  /* { "ℒ",      logarithmicspiral }, // patch: dwm-logarithmicspiral */
   { "∅",                   NULL }, // no layout function means floating behavior
   { NULL,                  NULL }, // patch: dwm-cyclelayouts
 };
