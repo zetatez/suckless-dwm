@@ -856,13 +856,6 @@ def toggle_lazydocker():
     return
 
 
-def toggle_mathpix():
-    cmd = "mathpix"
-    toggle_by_cmd(cmd)
-
-    return
-
-
 def toggle_music():
     cmd_cava = "st -g {} -t cava -c cava -e cava &".format(get_geometry_for_st(0.74, 0.08, 40, 12))
     cmd_ncmpcpp = "st -g {} -t music -c music -e ncmpcpp &".format(get_geometry_for_st(0.52, 0.08, 40, 12))
@@ -1088,7 +1081,6 @@ def search():
             "workflow: latex": wf_latex,
             "workflow: lazydocker": toggle_lazydocker,
             "workflow: map": wf_map,
-            "workflow: mathpix": toggle_mathpix,
             "workflow: mount": wf_mount_to_xyz,
             "workflow: music net cloud": toggle_music_net_cloud,
             "workflow: music": toggle_music,
