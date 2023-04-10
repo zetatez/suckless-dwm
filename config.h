@@ -37,7 +37,8 @@ static const char *const autostart[] = {        // patch: dwm-cool-autostart
 };                                              // patch: dwm-cool-autostart
 
 /* tagging */
-static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
+// static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* xprop(1):
@@ -67,8 +68,8 @@ static const unsigned int gapiw     = 16;   /* vert  inner gap between windows *
 #include "layouts.c"                          // layouts
 static const Layout layouts[] = {
   /* symbol    arrange function */
-  { "﩯",              overview }, // patch: dwm-overview
   { "﩯",                  grid }, // patch: dwm-grid
+  { "﩯",              overview }, // patch: dwm-overview
   { "ﴣ",                 hacker }, // patch: dwm-hacker
   { "⧈",         centeranyshape }, // patch: dwm-centeranyshape
   { "⧈",       centerequalratio }, // patch: dwm-centerequalratio
@@ -317,8 +318,8 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                     } }, // patch: dwm-resize-window
   { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                     } }, // patch: dwm-resize-window
   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                     } }, // patch: dwm-resize-window
-  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                 } }, // overview
-  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                 } }, // grid
+  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[0]                 } }, // grid
+  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[1]                 } }, // overview
   { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[2]                 } }, // hacker
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[3]                 } }, // centeranyshape
   { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[4]                 } }, // centerequalratio
