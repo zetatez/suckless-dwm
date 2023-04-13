@@ -277,8 +277,8 @@ static pid_t winpid(Window w);                                                  
 static void showtagpreview(unsigned int i);                                                     // patch: dwm-tag-preview
 static void takepreview(void);                                                                  // patch: dwm-tag-preview
 static void previewtag(const Arg *arg);                                                         // patch: dwm-tag-preview
-static void savesession();                                                         // patch: dwm-tag-preview
-static void restoresession();                                                         // patch: dwm-tag-preview
+static void savesession();                                                                      // patch: dwm-tag-preview
+static void restoresession();                                                                   // patch: dwm-tag-preview
 
 /* variables */
 static const char broken[] = "broken";
@@ -735,7 +735,7 @@ configurenotify(XEvent *e)
         for (c = m->clients; c; c = c->next)
           if (c->isfullscreen)
             resizeclient(c, m->mx, m->my, m->mw, m->mh);
-//      XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);                                        // patch: dwm-barpadding
+//      XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);                                      // patch: dwm-barpadding
       	XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, m->ww -  2*sp, bh);                    // patch: dwm-barpadding
       }
       focus(NULL);
@@ -1289,7 +1289,7 @@ manage(Window w, XWindowAttributes *wa)
   } else {
     c->mon = selmon;
     applyrules(c);
-    term = termforwin(c);                                                                          //dwm-swallow
+    term = termforwin(c);                                                                          // dwm-swallow
   }
 
   if (c->x + WIDTH(c) > c->mon->wx + c->mon->ww)
