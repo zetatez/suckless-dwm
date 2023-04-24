@@ -32,10 +32,10 @@ the DISPLAY environment variable is set correctly, e.g.:
 
 (This will start dwm on display :1 of the host foo.bar.)
 
-In order to display status info in the bar, you can use dwmstats
+In order to display status info in the bar, you can use dwmblocks
 
-    git clone https://github.com/zetatez/arch-dwmstatus.git
-    cd arch-dwmstatus && sh build.sh
+    git clone https://github.com/zetatez/suckless-dwmblocks.git
+    cd suckless-dwmblocks && sh build.sh
 
 ## Configuration
 The configuration of dwm is done by creating a custom config.h
