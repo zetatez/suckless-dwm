@@ -72,20 +72,20 @@ static const Layout layouts[] = {
   { "⧉",       fibonaccidwindle },
   { "⧈",         centeranyshape },
   { "⧈",       centerequalratio },
-  { "ﮇ",               deckvert },
-  { "ﮆ",               deckhori },
+  { "󰘸",               deckvert },
+  { "󰘸",               deckhori },
   { "⬓" ,       bottomstackvert },
   { "⬓",        bottomstackhori },
   { "◨",              tileright },
   { "◧",               tileleft },
-  { "󰕰",                   grid },
-  { "ﴣ",                 hacker },
-  { "",                monocle },
+  { "󰾍",                   grid },
+  { "󰓌",                 hacker },
+  { "⬚",                monocle },
   { "∅",                   NULL }, // no layout function means floating behavior
   { NULL,                  NULL }, // patch: dwm-cyclelayouts
 };
 
-static const Layout overviewlayout = { "舘",  overview }; // patch: dwm-overview: can be any layout
+static const Layout overviewlayout = { "󰕰",  overview }; // patch: dwm-overview: can be any layout
 
 /* key definitions */
 #define SUPKEY Mod4Mask
