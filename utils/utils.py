@@ -755,7 +755,7 @@ def toggle_calendar_scheduling():
 
 def toggle_calendar_schedule():
     cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
-        get_geometry_for_st(0.80, 0.05, 40, 32), win_name_float, win_name_float)
+        get_geometry_for_st(0.80, 0.05, 36, 32), win_name_float, win_name_float)
     toggle_by_cmd(cmd)
 
     return

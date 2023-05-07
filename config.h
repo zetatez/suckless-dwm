@@ -17,8 +17,8 @@ static const int vertpad            = 0;        /* vertical padding of bar */   
 static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dwm-barpadding
 static const int defaultwinpad      = 0;       /* window padding of bar */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
-static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=14"};
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
+static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=18"};
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
