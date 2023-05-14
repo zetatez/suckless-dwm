@@ -803,7 +803,7 @@ def toggle_edge():
 
 
 def toggle_chrome_with_proxy():
-    cmd = "chrome --proxy-server='socks5://127.0.0.1:8000'"
+    cmd = "chrome --proxy-server='socks5://127.0.0.1:7891'"
     toggle_by_cmd(cmd)
 
     return
