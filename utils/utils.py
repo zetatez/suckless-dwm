@@ -427,7 +427,7 @@ def wf_map():
     cmd = "dmenu < /dev/null -p 'location location location!'"
     option = popen(cmd).strip()
     if option:
-        url = "https://ditu.amap.com/search?query={}".format(option)
+        url = "https://www.google.com/maps/place/{}".format(option)
         cmd = "chrome {}".format(url)
         os.system(cmd)
 
@@ -1128,7 +1128,7 @@ def search():
             "website: cctv5": "https://tv.cctv.com/live/cctv5",
             "website: github": "https://github.com/zetatez?tab=repositories",
             "website: mall": "https://www.jd.com",
-            "website: map": "https://ditu.amap.com",
+            "website: map": "https://www.google.com/maps/place/shanghai",
             "website: news": "https://news.futunn.com/en/main/live?lang=zh-CN",
             "website: ocr": "http://ocr.space",
             "website: scholar": "https://scholar.google.com",
