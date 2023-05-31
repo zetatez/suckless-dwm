@@ -22,7 +22,7 @@ my_library_path = "/home/dionysus/my-library"
 my_play_path = "/home/dionysus/my-play"
 my_trojan_path = "/home/dionysus/.trojan"
 my_wallpaper_path = "/home/dionysus/Pictures/wallpapers"
-my_default_wallpaper = "Van-Gogh-003.jpg"
+my_default_wallpaper = "0101.jpg"
 
 win_name_float = "00001011"
 win_name_scratchpad = "scratchpad"
