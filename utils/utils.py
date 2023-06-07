@@ -972,16 +972,21 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
-    cmds = {
-        "only": "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen),
-        "primary only": "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen),
-        "left of": "xrandr --output {} --auto --left-of {} --auto".format(second_screen, primary_screen),
-        "right of": "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen),
-        "above": "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen),
-        "below": "xrandr --output {} --auto --below {} --auto".format(second_screen, primary_screen),
-        "roate left": "xrandr --output {} --auto --rotate left --output {} --off".format(second_screen, primary_screen),
-        "roate right": "xrandr --output {} --auto --rotate right --output {} --off".format(second_screen, primary_screen),
-    }
+    cmds = {}
+    cmds["only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
+    cmds["primary only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
+    cmds["left of"] = "xrandr --output {} --auto --left-of {} --auto".format(second_screen, primary_screen)
+    cmds["right of"] = "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen)
+    cmds["above"] = "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen)
+    cmds["below"] = "xrandr --output {} --auto --below {} --auto".format(second_screen, primary_screen)
+    cmds["roate left left-of"] = "xrandr --output {} --auto --rotate left --left-of {} --auto".format(
+        second_screen, primary_screen)
+    cmds["roate right left-of"] = "xrandr --output {} --auto --rotate right --left-of {} --auto".format(
+        second_screen, primary_screen)
+    cmds["roate left right-of"] = "xrandr --output {} --auto --rotate left --right-of {} --auto".format(
+        second_screen, primary_screen)
+    cmds["roate right right-of"] = "xrandr --output {} --auto --rotate right --right-of {} --auto".format(
+        second_screen, primary_screen)
 
     cmd = "echo '{}'|dmenu -p '󱣴'".format('\n'.join(list(cmds.keys())))
     option = popen(cmd).strip()
