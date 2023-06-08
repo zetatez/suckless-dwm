@@ -10,7 +10,7 @@ void centerequalratio(Monitor *m) {
   if (n == 0)
     return;
 
-  if (n > 0) /* override layout symbol */
+  if (n > 0)
     snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n);
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
@@ -27,8 +27,9 @@ void centeranyshape(Monitor *m) {
   if (n == 0)
     return;
 
-  if (n > 0) /* override layout symbol */
+  if (n > 0) {
     snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n);
+  }
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     resize(c, m->ww / 2 - (m->ww * m->mfact) / 2, m->wy + m->wh / 2 - (m->wh * m->ffact) / 2, m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
@@ -62,6 +63,7 @@ void fibonacci(Monitor *m, int s) {
         else if ((i % 4) == 3 && !s)
           ny += nh;
       }
+
       if ((i % 4) == 0) {
         if (s)
           ny += nh;
@@ -77,14 +79,17 @@ void fibonacci(Monitor *m, int s) {
         else
           nx -= nw;
       }
+
       if (i == 0) {
         if (n != 1)
           nw = m->ww * m->mfact;
         ny = m->wy;
       } else if (i == 1)
         nw = m->ww - nw;
+
       i++;
     }
+
     resize(c, nx, ny + (topbar ? 1 : 0)*winpad, nw - 2 * c->bw, nh - 2 * c->bw, False);
   }
 }
@@ -101,18 +106,16 @@ void grid(Monitor *m) {
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next))
     n++;
 
-  /* grid dimensions */
-  for (cols = 0; cols <= n / 2; cols++)
+  for (cols = 0; cols <= n / 2; cols++) {
     if (cols * cols >= n)
       break;
+  }
 
   rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
 
-  /* window geoms (cell height/width) */
   ch = (m->wh - winpad) / (rows ? rows : 1);
   cw = m->ww / (cols ? cols : 1);
 
-  /* round err adjust */
   ah = rows ? (m->wh - winpad - rows * ch) / 2 : 0;
   aw = cols ? (m->ww - cols * cw) / 2 : 0;
 
@@ -138,6 +141,7 @@ tileright(Monitor *m)
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+
   if (n == 0)
     return;
 
@@ -145,7 +149,7 @@ tileright(Monitor *m)
     mw = m->nmaster ? m->ww * m->mfact : 0;
   else
     mw = m->ww;
-  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       h = (m->wh - my - winpad) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx, m->wy + my + (topbar ? 1 : 0)*winpad, mw - (2*c->bw), h - (2*c->bw), 0);
@@ -157,6 +161,7 @@ tileright(Monitor *m)
       if (ty + HEIGHT(c) < m->wh)
         ty += HEIGHT(c);
     }
+  }
 }
 
 void tileleft(Monitor *m) {
@@ -172,8 +177,8 @@ void tileleft(Monitor *m) {
     mw = m->nmaster ? m->ww * (1 - m->mfact) : 0;
   else
     mw = m->ww;
-  for (i = my = ty = 0, c = nexttiled(m->clients); c;
-      c = nexttiled(c->next), i++)
+
+  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       h = (m->wh - my - winpad) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + m->ww - mw, m->wy + my + (topbar ? 1 : 0)*winpad, mw - (2 * c->bw), h - (2 * c->bw), 0);
@@ -185,6 +190,7 @@ void tileleft(Monitor *m) {
       if (ty + HEIGHT(c) < m->wh)
         ty += HEIGHT(c);
     }
+  }
 }
 
 /* dwm-deck ------------------------------------------------------------ */
@@ -202,11 +208,12 @@ void deckvert(Monitor *m) {
   else
     mw = m->ww;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster)
       resize(c, m->wx, m->wy + (topbar ? 1 : 0)*winpad, mw - 2 * c->bw, m->wh - 2*c->bw - winpad, c->bw);
     else
       resize(c, m->wx + mw + (i - m->nmaster)*(m->ww - mw)/(n - m->nmaster), m->wy + (topbar ? 1 : 0)*winpad, m->ww - (mw + (i - m->nmaster) * (m->ww - mw)/(n - m->nmaster)) - 2*c->bw, m->wh - 2*c->bw - winpad, c->bw);
+  }
 }
 
 void deckhori(Monitor *m) {
@@ -223,15 +230,15 @@ void deckhori(Monitor *m) {
   else
     mh = m->wh;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster)
       resize(c, m->wx, m->wy + (topbar ? 1 : 0)*winpad, m->ww - 2 * c->bw, mh - 2*c->bw - (topbar ? 1 : 0)*winpad, c->bw);
     else
       resize(c, m->wx, m->wy + mh + (i - m->nmaster)*(m->wh - mh)/(n - m->nmaster), m->ww - 2*c->bw, m->wh - (mh + (i - m->nmaster)*(m->wh - winpad - mh)/(n - m->nmaster)) - 2*c->bw - winpad, c->bw);
+  }
 }
 
-/* dwm-bottomstack ------------------------------------------------------------
-*/
+/* dwm-bottomstack ------------------------------------------------------------ */
 static void bottomstackhori(Monitor *m) {
   int w, mh, mx, tx, ty, th;
   unsigned int i, n;
@@ -250,8 +257,8 @@ static void bottomstackhori(Monitor *m) {
     th = mh = m->wh - winpad;
     ty = m->wy;
   }
-  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c;
-      c = nexttiled(c->next), i++) {
+
+  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + mx, m->wy + (topbar ? 1 : 0)*winpad, w - (2*c->bw), mh - (2*c->bw), 0);
@@ -283,8 +290,8 @@ static void bottomstackvert(Monitor *m) {
     tw = m->ww;
     ty = m->wy;
   }
-  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c;
-      c = nexttiled(c->next), i++) {
+
+  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + mx, m->wy + (topbar ? 1 : 0)*winpad, w - (2*c->bw), mh - (2*c->bw), 0);
@@ -302,7 +309,6 @@ static void bottomstackvert(Monitor *m) {
  * ------------------------------------------------------------ */
 #include <math.h>
 void logarithmicspiral(Monitor *m) {
-  // control the shape of logarithmic spiral
   float logarithmicspiralstart = -50;
   float logarithmicspiralstop = 50;
   float logarithmicspiralstep = 0.1; // control the interval of each window
@@ -330,6 +336,7 @@ void logarithmicspiral(Monitor *m) {
     return;
 
   for (idx = 0, i = logarithmicspiralstart; i < logarithmicspiralstop && idx < sizeof(phi) / sizeof(phi[0]); i += logarithmicspiralstep, phi[idx] = i, idx++);
+
   for (idx = 0; idx < sizeof(phi) / sizeof(phi[0]); idx++) {
     v = logarithmicspiralalpha * exp(logarithmicspiralkapa * phi[idx]);
     x[idx] = v * cos(phi[idx]);
@@ -416,8 +423,7 @@ void logarithmicspiral(Monitor *m) {
   wx[idx] = wx[idx] - ww[idx] / 2;
   wy[idx] = wy[idx];
 
-  for (i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen;
-      c = nexttiled(c->next), i++) {
+  for (i = 0, c = nexttiled(m->clients); c && i < logarithmicspirallen; c = nexttiled(c->next), i++) {
     if (i < 1) {
       resize(c, m->ww / 2 - (m->ww * m->mfact) / 2, m->wy + m->wh / 2 - (m->wh * m->ffact) / 2, m->ww * m->mfact - 2 * c->bw, m->wh * m->ffact - 2 * c->bw, False);
     } else {
@@ -439,22 +445,20 @@ void overview(Monitor *m) {
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next))
     n++;
 
-  /* grid dimensions */
-  for (cols = 0; cols <= n / 2; cols++)
+  for (cols = 0; cols <= n / 2; cols++) {
     if (cols * cols >= n)
       break;
+  }
 
   rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
 
-  /* window geoms (cell height/width) */
   ch = (m->wh - 2 * gapoh) / (rows ? rows : 1);
   cw = (m->ww - 2 * gapow) / (cols ? cols : 1);
 
-  /* round err adjust */
   ah = rows ? (m->wh - 2 * gapoh - rows * ch) / 2 : 0;
   aw = cols ? (m->ww - 2 * gapow - cols * cw) / 2 : 0;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     cx = m->wx + gapow + aw + (i % cols) * cw;
     cy = m->wy + gapoh + ah + (i / cols) * ch;
 
@@ -464,7 +468,6 @@ void overview(Monitor *m) {
     }
 
     resize(c, cx, cy, cw - gapiw / 2 - 2 * c->bw, ch - gapih / 2 - 2 * c->bw, False);
-    i++;
   }
 }
 
