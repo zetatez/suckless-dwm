@@ -17,8 +17,8 @@ static const int vertpad            = 0;        /* vertical padding of bar */   
 static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dwm-barpadding
 static const int defaultwinpad      = 0;       /* window padding of bar */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
-static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=18"};
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=18";
+static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -26,7 +26,7 @@ static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
   /*               fg         bg         border   */
-  [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+  [SchemeNorm] = { col_gray3, col_cyan,  col_gray2 },
   [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
@@ -38,7 +38,7 @@ static const char *const autostart[] = {        // patch: dwm-cool-autostart
 
 /* tagging */
 // static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
-static const char *tags[] = { ".", "..", "...", "....", ".....", "-", "--", "---", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* xprop(1):
@@ -104,7 +104,7 @@ static const Layout overviewlayout = { "󰕰",  overview }; // patch: dwm-overvi
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
 static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
