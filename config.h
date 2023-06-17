@@ -10,13 +10,10 @@ static const int previewbar         = 1;        /* show the bar in the preview w
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int barheight          = 24;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
-/* static const int vertpad            = 6;        /1* vertical padding of bar *1/                                                                               // patch: dwm-barpadding */
-/* static const int sidepad            = 256;      /1* horizontal padding of bar *1/                                                                             // patch: dwm-barpadding */
-/* static const int defaultwinpad      = 8;       /1* window padding of bar *1/ */
-static const int vertpad            = 0;        /* vertical padding of bar */                                                                               // patch: dwm-barpadding
-static const int sidepad            = 0;        /* horizontal padding of bar */                                                                             // patch: dwm-barpadding
-static const int defaultwinpad      = 0;       /* window padding of bar */
-static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */                                                           // patch: dwm-swallow
+static const int vertpad            = 0;        /* default 6  : vertical padding of bar */                                                                               // patch: dwm-barpadding
+static const int sidepad            = 0;        /* default 256: horizontal padding of bar */                                                                             // patch: dwm-barpadding
+static const int defaultwinpad      = 0;        /* default 8  : window padding of bar */
+static const int swallowfloating    = 1;        /* default 1  : 1 means swallow floating windows */                                                           // patch: dwm-swallow
 static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
 static const char col_gray1[]       = "#222222";
