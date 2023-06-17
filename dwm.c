@@ -918,14 +918,12 @@ drawbar(Monitor *m)
     for (i = 0; i < LENGTH(tags); i++) {
       /* Do not draw vacant tags */                                                        // patch: dwm-hide_vacant_tags-6.3.diff
       if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))                                // patch: dwm-hide_vacant_tags-6.3.diff
-      	continue;                                                                          // patch: dwm-hide_vacant_tags-6.3.diff
+        continue;                                                                          // patch: dwm-hide_vacant_tags-6.3.diff
       w = TEXTW(tags[i]);
       drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
       drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-//    if (occ & 1 << i)                                                                    // patch: do not draw rect
-//      drw_rect(drw, x + boxs, boxs, boxw, boxw,                                          // patch: do not draw rect
-//        m == selmon && selmon->sel && selmon->sel->tags & 1 << i,                        // patch: do not draw rect
-//        urg & 1 << i);                                                                   // patch: do not draw rect
+      // if (occ & 1 << i)                                                                                                    // patch: do not draw rect
+      //   drw_rect(drw, x + boxs, boxs, boxw, boxw, m == selmon && selmon->sel && selmon->sel->tags & 1 << i, urg & 1 << i); // patch: do not draw rect
       x += w;
     }
   }                                                                                        // patch: dwm-overview
