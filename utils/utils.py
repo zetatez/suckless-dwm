@@ -776,7 +776,7 @@ def toggle_diary():
 
 
 def toggle_top():
-    cmd = "st -e top"
+    cmd = "st -e btop"
     toggle_by_cmd(cmd)
 
     return
