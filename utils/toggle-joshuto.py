@@ -3,4 +3,4 @@
 
 import utils
 
-utils.toggle_vifm()
+utils.toggle_joshuto()

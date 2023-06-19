@@ -14,8 +14,8 @@ static const int vertpad            = 0;        /* default 6  : vertical padding
 static const int sidepad            = 0;        /* default 256: horizontal padding of bar */                                                                             // patch: dwm-barpadding
 static const int defaultwinpad      = 0;        /* default 8  : window padding of bar */
 static const int swallowfloating    = 1;        /* default 1  : 1 means swallow floating windows */                                                           // patch: dwm-swallow
-static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
+static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=18"};
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -94,10 +94,10 @@ static const Layout overviewlayout = { "󰕰",  overview }; // patch: dwm-overvi
   { MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define UTILS      "/home/dionysus/.suckless/suckless-dwm/utils"
-#define SH(cmd)    { "/bin/sh", "-c", cmd, NULL }
-#define ST(cmd)    { "st", "-e", "/bin/sh", "-c", cmd, NULL }
-#define STSP(cmd)  { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
+#define PREFIX    "/home/dionysus/.suckless/suckless-dwm/utils"
+#define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
+#define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
+#define STSP(cmd) { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -128,46 +128,46 @@ static const char *cmd_microphone_inc[]          =  SH("amixer set Capture 5%+")
 static const char *cmd_microphone_toggle[]       =  SH("amixer set Capture toggle");
 
 /* utils */
-static const char *app_passmenu[]                =  SH(UTILS"/app-passmenu.py");
-static const char *toggle_photoshop[]            =  SH(UTILS"/toggle-photoshop.py");
-static const char *toggle_addressbook[]          =  SH(UTILS"/toggle-addressbook.py");
-static const char *toggle_bluetooth[]            =  SH(UTILS"/toggle-bluetooth.py");
-static const char *toggle_calendar_schedule[]    =  SH(UTILS"/toggle-calendar_schedule.py");
-static const char *toggle_calendar_scheduling[]  =  SH(UTILS"/toggle-calendar_scheduling.py");
-static const char *toggle_chrome_with_proxy[]    =  SH(UTILS"/toggle-chrome-with-proxy.py");
-static const char *toggle_diary[]                =  SH(UTILS"/toggle-diary.py");
-static const char *toggle_edge[]                 =  SH(UTILS"/toggle-edge.py");
-static const char *toggle_email[]                =  SH(UTILS"/toggle-mutt.py");
-static const char *toggle_flameshot[]            =  SH(UTILS"/toggle-flameshot.py");
-static const char *toggle_inkscape[]             =  SH(UTILS"/toggle-inkscape.py");
-static const char *toggle_julia[]                =  SH(UTILS"/toggle-julia.py");
-static const char *toggle_kb_light[]             =  SH(UTILS"/toggle-kb-light");
-static const char *toggle_lazydocker[]           =  SH(UTILS"/toggle-lazydocker.py");
-static const char *toggle_music[]                =  SH(UTILS"/toggle-music.py");
-static const char *toggle_music_net_cloud[]      =  SH(UTILS"/toggle-music-net-cloud.py");
-static const char *toggle_rec_audio[]            =  SH(UTILS"/toggle-rec-audio.py");
-static const char *toggle_rec_video[]            =  SH(UTILS"/toggle-rec-video.py");
-static const char *toggle_redshift[]             =  SH(UTILS"/toggle-redshift.py");
-static const char *toggle_screen[]               =  SH(UTILS"/toggle-screen.py");
-static const char *toggle_screenkey[]            =  SH(UTILS"/toggle-screenkey.py");
-static const char *toggle_show[]                 =  SH(UTILS"/toggle-show.py");
-static const char *toggle_sublime[]              =  SH(UTILS"/toggle-sublime.py");
-static const char *toggle_sys_shortcuts[]        =  SH(UTILS"/toggle-sys-shortcuts.py");
-static const char *toggle_top[]                  =  SH(UTILS"/toggle-top.py");
-static const char *toggle_trojan[]               =  SH(UTILS"/toggle-trojan.py");
-static const char *toggle_vifm[]                 =  SH(UTILS"/toggle-vifm.py");
-static const char *toggle_wallpaper[]            =  SH(UTILS"/toggle-wallpaper.py");
-static const char *toggle_wechat[]               =  SH(UTILS"/toggle-wechat.py");
-static const char *wf_clipmenu[]                 =  SH(UTILS"/wf-clipmenu.py");
-static const char *wf_download_arxiv_to_lib[]    =  SH(UTILS"/wf-download-arxiv-to-lib.py");
-static const char *wf_download_cur_to_download[] =  SH(UTILS"/wf-download-cur-to-download.py");
-static const char *wf_handle_copied[]            =  SH(UTILS"/wf-handle-copied.py");
-static const char *wf_latex[]                    =  SH(UTILS"/wf-latex.py");
-static const char *wf_rg[]                       =  ST(UTILS"/wf-rg");
-static const char *wf_sketchpad[]                =  SH(UTILS"/wf-sketchpad.py");
-static const char *wf_wifi[]                     =  SH(UTILS"/wf-wifi.py");
-static const char *wf_xournal[]                  =  SH(UTILS"/wf-xournal.py");
-static const char *search[]                      =  SH(UTILS"/search.py");
+static const char *app_passmenu[]                =  SH(PREFIX"/app-passmenu.py");
+static const char *toggle_photoshop[]            =  SH(PREFIX"/toggle-photoshop.py");
+static const char *toggle_addressbook[]          =  SH(PREFIX"/toggle-addressbook.py");
+static const char *toggle_bluetooth[]            =  SH(PREFIX"/toggle-bluetooth.py");
+static const char *toggle_calendar_schedule[]    =  SH(PREFIX"/toggle-calendar_schedule.py");
+static const char *toggle_calendar_scheduling[]  =  SH(PREFIX"/toggle-calendar_scheduling.py");
+static const char *toggle_chrome_with_proxy[]    =  SH(PREFIX"/toggle-chrome-with-proxy.py");
+static const char *toggle_diary[]                =  SH(PREFIX"/toggle-diary.py");
+static const char *toggle_edge[]                 =  SH(PREFIX"/toggle-edge.py");
+static const char *toggle_email[]                =  SH(PREFIX"/toggle-mutt.py");
+static const char *toggle_flameshot[]            =  SH(PREFIX"/toggle-flameshot.py");
+static const char *toggle_inkscape[]             =  SH(PREFIX"/toggle-inkscape.py");
+static const char *toggle_julia[]                =  SH(PREFIX"/toggle-julia.py");
+static const char *toggle_kb_light[]             =  SH(PREFIX"/toggle-kb-light");
+static const char *toggle_lazydocker[]           =  SH(PREFIX"/toggle-lazydocker.py");
+static const char *toggle_music[]                =  SH(PREFIX"/toggle-music.py");
+static const char *toggle_music_net_cloud[]      =  SH(PREFIX"/toggle-music-net-cloud.py");
+static const char *toggle_rec_audio[]            =  SH(PREFIX"/toggle-rec-audio.py");
+static const char *toggle_rec_video[]            =  SH(PREFIX"/toggle-rec-video.py");
+static const char *toggle_redshift[]             =  SH(PREFIX"/toggle-redshift.py");
+static const char *toggle_screen[]               =  SH(PREFIX"/toggle-screen.py");
+static const char *toggle_screenkey[]            =  SH(PREFIX"/toggle-screenkey.py");
+static const char *toggle_show[]                 =  SH(PREFIX"/toggle-show.py");
+static const char *toggle_sublime[]              =  SH(PREFIX"/toggle-sublime.py");
+static const char *toggle_sys_shortcuts[]        =  SH(PREFIX"/toggle-sys-shortcuts.py");
+static const char *toggle_top[]                  =  SH(PREFIX"/toggle-top.py");
+static const char *toggle_trojan[]               =  SH(PREFIX"/toggle-trojan.py");
+static const char *toggle_joshuto[]              =  SH(PREFIX"/toggle-joshuto.py");
+static const char *toggle_wallpaper[]            =  SH(PREFIX"/toggle-wallpaper.py");
+static const char *toggle_wechat[]               =  SH(PREFIX"/toggle-wechat.py");
+static const char *wf_clipmenu[]                 =  SH(PREFIX"/wf-clipmenu.py");
+static const char *wf_download_arxiv_to_lib[]    =  SH(PREFIX"/wf-download-arxiv-to-lib.py");
+static const char *wf_download_cur_to_download[] =  SH(PREFIX"/wf-download-cur-to-download.py");
+static const char *wf_handle_copied[]            =  SH(PREFIX"/wf-handle-copied.py");
+static const char *wf_latex[]                    =  SH(PREFIX"/wf-latex.py");
+static const char *wf_rg[]                       =  ST(PREFIX"/wf-rg");
+static const char *wf_sketchpad[]                =  SH(PREFIX"/wf-sketchpad.py");
+static const char *wf_wifi[]                     =  SH(PREFIX"/wf-wifi.py");
+static const char *wf_xournal[]                  =  SH(PREFIX"/wf-xournal.py");
+static const char *search[]                      =  SH(PREFIX"/search.py");
 
 #include "movestack.c"
 #include "shiftview.c"
@@ -219,7 +219,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_o,          spawn,             {.v = wf_handle_copied            } },
   { SUPKEY,                       XK_p,          spawn,             {.v = cmd_lazy_open_book          } },
   { SUPKEY,                       XK_q,          spawn,             {.v = cmd_screenslock             } },
-  { SUPKEY,                       XK_r,          spawn,             {.v = toggle_vifm                 } },
+  { SUPKEY,                       XK_r,          spawn,             {.v = toggle_joshuto              } },
   { SUPKEY,                       XK_s,          spawn,             {.v = search                      } },
 //{ SUPKEY,                       XK_t,          spawn,             {.v =                             } },
   { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey            } },

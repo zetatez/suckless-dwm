@@ -921,8 +921,8 @@ def toggle_sublime():
     return
 
 
-def toggle_vifm():
-    cmd = "st -e vifm"
+def toggle_joshuto():
+    cmd = "st -e joshuto"
     toggle_by_cmd(cmd)
 
     return
