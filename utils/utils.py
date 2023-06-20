@@ -762,11 +762,11 @@ def toggle_calendar_schedule():
 
 
 def toggle_diary():
-    time_str = time.strftime("%Y-%m-%d", time.localtime())
+    time_str = time.strftime("%Y-%m", time.localtime())
     diary = "{}/diary/{}.md".format(my_home_path, time_str)
 
     if not os.path.exists(diary):
-        s = "### {}\n".format(time.strftime("%a %b %d %H:%M:%S %p CST %Y", time.localtime()))
+        s = "### {}\n".format(time.strftime("%Y-%m", time.localtime()))
         write_file(diary, s)
 
     cmd = "st -e nvim {}/diary/{}.md".format(my_home_path, time_str)
