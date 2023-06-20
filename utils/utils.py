@@ -1115,7 +1115,7 @@ def search():
             "workflow: umount": wf_umount_from_xyz,
             "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
             "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
-            "workflow: vifm": toggle_vifm,
+            "workflow: joshuto": toggle_joshuto,
             "workflow: vivaldi": toggle_edge,
             "workflow: wallpaper": toggle_wallpaper,
             "workflow: wechat": toggle_wechat,
