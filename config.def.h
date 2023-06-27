@@ -107,14 +107,15 @@ static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''"
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
 
 /* commands */
-// static const char *cmd_lazy_exec[]            =  ST("lazy -e \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
-// static const char *cmd_lazy_copy[]            =  ST("lazy -c \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *cmd_lazy_rename[]          =  ST("lazy -r \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='rename>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-// static const char *cmd_lazy_delete[]          =  ST("lazy -d \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-static const char *cmd_lazy_open[]               =  ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_book[]          =  ST("lazy -o \"$(fd --type f -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_media[]         =  ST("lazy -o \"$(fd --type f -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_wiki[]          =  ST("lazy -o \"$(fd --type f --hidden --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *cmd_lazy_exec[]            =  ST("lazy -o exec -f \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -p {}' --select-1 --exit-0|xargs lazy -e {}");
+// static const char *cmd_lazy_copy[]            =  ST("lazy -o copy -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *cmd_lazy_rename[]          =  ST("lazy -o rename -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='rename>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+// static const char *cmd_lazy_delete[]          =  ST("lazy -o delete -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+static const char *cmd_lazy_open[]               =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_book[]          =  ST("lazy -o open -f \"$(fd --type f -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_media[]         =  ST("lazy -o open -f \"$(fd --type f -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -p {}' --reverse --select-1 --exit-0)\"");
+static const char *cmd_lazy_open_wiki[]          =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -p {}' --select-1 --exit-0)\"");
+
 static const char *cmd_screen_light_dec[]        =  SH("sudo light -U 5");
 static const char *cmd_screen_light_inc[]        =  SH("sudo light -A 5");
 static const char *cmd_screenslock[]             =  SH("sleep .5 && xset dpms force off && slock");
