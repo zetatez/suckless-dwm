@@ -3,7 +3,7 @@
 #define SESSION_FILE "/tmp/dwm-session"         // dwm-restoreafterrestart-20220709-d3f93c7.diff
 
 /* appearance */
-static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 0;        /* snap pixel */                                                                                            // patch: dwm-tag-preview
 static const int scalepreview       = 3;        /* preview scaling (display w and h / scalepreview) */                                                      // patch: dwm-tag-preview
 static const int previewbar         = 1;        /* show the bar in the preview window */
