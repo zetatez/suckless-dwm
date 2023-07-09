@@ -14,7 +14,7 @@ void centerequalratio(Monitor *m) {
     snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n);
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    resize(c, m->ww/2 - (m->ww*m->ffact)/2, m->wy + m->wh/2 - (m->wh*m->ffact)/2 + (topbar ? 1 : 0)*winpad, m->ww*m->ffact - 2*c->bw, (m->wh - winpad) * m->ffact - 2*c->bw, False);
+    resize(c, m->ww/2 - (m->ww*m->ffact)/2, m->wy + m->wh/2 - (m->wh*m->ffact)/2 + (topbar ? 1 : 0)*winpad, m->ww*m->ffact - 2*c->bw, (m->wh - (topbar ? 1 : 0)*winpad) * m->ffact - 2*c->bw, False);
   }
 }
 
@@ -49,7 +49,7 @@ void fibonacci(Monitor *m, int s) {
   nx = m->wx;
   ny = 0;
   nw = m->ww;
-  nh = m->wh - winpad;
+  nh = m->wh - (topbar ? 1 : 0)*winpad;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
     if ((i % 2 && nh / 2 > 2 * c->bw) || (!(i % 2) && nw / 2 > 2 * c->bw)) {
@@ -113,10 +113,10 @@ void grid(Monitor *m) {
 
   rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
 
-  ch = (m->wh - winpad) / (rows ? rows : 1);
+  ch = (m->wh - (topbar ? 1 : 0)*winpad) / (rows ? rows : 1);
   cw = m->ww / (cols ? cols : 1);
 
-  ah = rows ? (m->wh - winpad - rows * ch) / 2 : 0;
+  ah = rows ? (m->wh - (topbar ? 1 : 0)*winpad - rows * ch) / 2 : 0;
   aw = cols ? (m->ww - cols * cw) / 2 : 0;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
@@ -151,12 +151,12 @@ tileright(Monitor *m)
     mw = m->ww;
   for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
-      h = (m->wh - my - winpad) / (MIN(n, m->nmaster) - i);
+      h = (m->wh - my - (topbar ? 1 : 0)*winpad) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx, m->wy + my + (topbar ? 1 : 0)*winpad, mw - (2*c->bw), h - (2*c->bw), 0);
       if (my + HEIGHT(c) < m->wh)
         my += HEIGHT(c);
     } else {
-      h = (m->wh - ty - winpad) / (n - i);
+      h = (m->wh - ty - (topbar ? 1 : 0)*winpad) / (n - i);
       resize(c, m->wx + mw, m->wy + ty + (topbar ? 1 : 0)*winpad, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
       if (ty + HEIGHT(c) < m->wh)
         ty += HEIGHT(c);
@@ -180,12 +180,12 @@ void tileleft(Monitor *m) {
 
   for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
-      h = (m->wh - my - winpad) / (MIN(n, m->nmaster) - i);
+      h = (m->wh - my - (topbar ? 1 : 0)*winpad) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx + m->ww - mw, m->wy + my + (topbar ? 1 : 0)*winpad, mw - (2 * c->bw), h - (2 * c->bw), 0);
       if (my + HEIGHT(c) < m->wh)
         my += HEIGHT(c);
     } else {
-      h = (m->wh - ty - winpad) / (n - i);
+      h = (m->wh - ty - (topbar ? 1 : 0)*winpad) / (n - i);
       resize(c, m->wx, m->wy + ty + (topbar ? 1 : 0)*winpad, m->ww - mw - (2 * c->bw), h - (2 * c->bw), 0);
       if (ty + HEIGHT(c) < m->wh)
         ty += HEIGHT(c);
@@ -210,9 +210,9 @@ void deckvert(Monitor *m) {
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster)
-      resize(c, m->wx, m->wy + (topbar ? 1 : 0)*winpad, mw - 2 * c->bw, m->wh - 2*c->bw - winpad, c->bw);
+      resize(c, m->wx, m->wy + (topbar ? 1 : 0)*winpad, mw - 2 * c->bw, m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad, c->bw);
     else
-      resize(c, m->wx + mw + (i - m->nmaster)*(m->ww - mw)/(n - m->nmaster), m->wy + (topbar ? 1 : 0)*winpad, m->ww - (mw + (i - m->nmaster) * (m->ww - mw)/(n - m->nmaster)) - 2*c->bw, m->wh - 2*c->bw - winpad, c->bw);
+      resize(c, m->wx + mw + (i - m->nmaster)*(m->ww - mw)/(n - m->nmaster), m->wy + (topbar ? 1 : 0)*winpad, m->ww - (mw + (i - m->nmaster) * (m->ww - mw)/(n - m->nmaster)) - 2*c->bw, m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad, c->bw);
   }
 }
 
@@ -234,7 +234,7 @@ void deckhori(Monitor *m) {
     if (i < m->nmaster)
       resize(c, m->wx, m->wy + (topbar ? 1 : 0)*winpad, m->ww - 2 * c->bw, mh - 2*c->bw - (topbar ? 1 : 0)*winpad, c->bw);
     else
-      resize(c, m->wx, m->wy + mh + (i - m->nmaster)*(m->wh - mh)/(n - m->nmaster), m->ww - 2*c->bw, m->wh - (mh + (i - m->nmaster)*(m->wh - winpad - mh)/(n - m->nmaster)) - 2*c->bw - winpad, c->bw);
+      resize(c, m->wx, m->wy + mh + (i - m->nmaster)*(m->wh - mh)/(n - m->nmaster), m->ww - 2*c->bw, m->wh - (mh + (i - m->nmaster)*(m->wh - (topbar ? 1 : 0)*winpad - mh)/(n - m->nmaster)) - 2*c->bw - (topbar ? 1 : 0)*winpad, c->bw);
   }
 }
 
@@ -251,10 +251,10 @@ static void bottomstackhori(Monitor *m) {
 
   if (n > m->nmaster) {
     mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
-    th = (m->wh - mh - winpad) / (n - m->nmaster);
+    th = (m->wh - mh - (topbar ? 1 : 0)*winpad) / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
-    th = mh = m->wh - winpad;
+    th = mh = m->wh - (topbar ? 1 : 0)*winpad;
     ty = m->wy;
   }
 
@@ -265,7 +265,7 @@ static void bottomstackhori(Monitor *m) {
       mx += WIDTH(c);
     } else {
       resize(c, tx, ty + (topbar ? 1 : 0)*winpad, m->ww - (2*c->bw), th - (2*c->bw), 0);
-      if (th != m->wh - winpad)
+      if (th != m->wh - (topbar ? 1 : 0)*winpad)
         ty += HEIGHT(c);
     }
   }
@@ -282,11 +282,11 @@ static void bottomstackvert(Monitor *m) {
     return;
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->ffact) * (m->wh - winpad) : 0;
+    mh = m->nmaster ? (1 - m->ffact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
     tw = m->ww / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
-    mh = m->wh - winpad;
+    mh = m->wh - (topbar ? 1 : 0)*winpad;
     tw = m->ww;
     ty = m->wy;
   }
@@ -297,7 +297,7 @@ static void bottomstackvert(Monitor *m) {
       resize(c, m->wx + mx, m->wy + (topbar ? 1 : 0)*winpad, w - (2*c->bw), mh - (2*c->bw), 0);
       mx += WIDTH(c);
     } else {
-      h = m->wh - winpad - mh;
+      h = m->wh - (topbar ? 1 : 0)*winpad - mh;
       resize(c, tx, ty + (topbar ? 1 : 0)*winpad, tw - (2*c->bw), h - (2*c->bw), 0);
       if (tw != m->ww)
         tx += WIDTH(c);
