@@ -964,6 +964,7 @@ def toggle_rec_video():
 
 def toggle_screen():
     primary_screen = "eDP-1"
+
     cmd = "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
     second_screen = popen(cmd).strip()
 
@@ -972,9 +973,18 @@ def toggle_screen():
         os.system("notify-send '{}'".format(msg))
         return
 
+    # restore default
+    cmd = "xrandr --output {} --auto --output {} --auto".format(primary_screen, second_screen)
+    os.system(cmd)
+
+    cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
+    os.system(cmd)
+
     cmds = {}
-    cmds["only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
-    cmds["primary only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
+    screen_geometry = get_cur_screen_geometry()
+    cmds["clone"] = "xrandr --output {} --mode 1920x1080".format(second_screen)
+    cmds["monitor only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
+    cmds["laptop only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
     cmds["left of"] = "xrandr --output {} --auto --left-of {} --auto".format(second_screen, primary_screen)
     cmds["right of"] = "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen)
     cmds["above"] = "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen)
@@ -993,7 +1003,7 @@ def toggle_screen():
     if not option:
         return
 
-    cmd = cmds.get(option, cmds.get("primary only", "echo"))
+    cmd = cmds.get(option, cmds.get("laptop only", "echo"))
     os.system(cmd)
 
     cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
@@ -1206,5 +1216,5 @@ def search():
 
 
 if __name__ == '__main__':
-    exec_python_cmd()
+    # exec_python_cmd()
     pass
