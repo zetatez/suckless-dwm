@@ -981,7 +981,6 @@ def toggle_screen():
     os.system(cmd)
 
     cmds = {}
-    screen_geometry = get_cur_screen_geometry()
     cmds["clone"] = "xrandr --output {} --mode 1920x1080".format(second_screen)
     cmds["monitor only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
     cmds["laptop only"] = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
@@ -989,14 +988,10 @@ def toggle_screen():
     cmds["right of"] = "xrandr --output {} --auto --right-of {} --auto".format(second_screen, primary_screen)
     cmds["above"] = "xrandr --output {} --auto --above {} --auto".format(second_screen, primary_screen)
     cmds["below"] = "xrandr --output {} --auto --below {} --auto".format(second_screen, primary_screen)
-    cmds["roate left left-of"] = "xrandr --output {} --auto --rotate left --left-of {} --auto".format(
-        second_screen, primary_screen)
-    cmds["roate right left-of"] = "xrandr --output {} --auto --rotate right --left-of {} --auto".format(
-        second_screen, primary_screen)
-    cmds["roate left right-of"] = "xrandr --output {} --auto --rotate left --right-of {} --auto".format(
-        second_screen, primary_screen)
-    cmds["roate right right-of"] = "xrandr --output {} --auto --rotate right --right-of {} --auto".format(
-        second_screen, primary_screen)
+    cmds["roate left left-of"] = "xrandr --output {} --auto --rotate left --left-of {} --auto".format(second_screen, primary_screen)
+    cmds["roate right left-of"] = "xrandr --output {} --auto --rotate right --left-of {} --auto".format(second_screen, primary_screen)
+    cmds["roate left right-of"] = "xrandr --output {} --auto --rotate left --right-of {} --auto".format(second_screen, primary_screen)
+    cmds["roate right right-of"] = "xrandr --output {} --auto --rotate right --right-of {} --auto".format(second_screen, primary_screen)
 
     cmd = "echo '{}'|dmenu -p '󱣴'".format('\n'.join(list(cmds.keys())))
     option = popen(cmd).strip()
