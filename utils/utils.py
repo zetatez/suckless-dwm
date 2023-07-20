@@ -974,7 +974,7 @@ def toggle_screen():
         return
 
     # restore default
-    cmd = "xrandr --output {} --auto --output {} --auto".format(primary_screen, second_screen)
+    cmd = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
     os.system(cmd)
 
     cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
