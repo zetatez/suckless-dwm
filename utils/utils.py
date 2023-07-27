@@ -977,9 +977,6 @@ def toggle_screen():
     cmd = "xrandr --output {} --auto --output {} --off".format(primary_screen, second_screen)
     os.system(cmd)
 
-    cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
-    os.system(cmd)
-
     cmds = {}
     cmds["clone"] = "xrandr --output {} --mode 1920x1080".format(second_screen)
     cmds["monitor only"] = "xrandr --output {} --auto --output {} --off".format(second_screen, primary_screen)
@@ -995,10 +992,7 @@ def toggle_screen():
 
     cmd = "echo '{}'|dmenu -p '󱣴'".format('\n'.join(list(cmds.keys())))
     option = popen(cmd).strip()
-    if not option:
-        return
-
-    cmd = cmds.get(option, cmds.get("laptop only", "echo"))
+    cmd = cmds.get(option, "echo")
     os.system(cmd)
 
     cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
