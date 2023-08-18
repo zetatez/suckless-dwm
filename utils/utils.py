@@ -87,7 +87,6 @@ def toggle_by_pname(pname, cmd):
         [os.kill(pid, signal.SIGKILL) for pid in pids]
     else:
         os.system(cmd)
-    return
 
 
 def toggle_by_cmd(cmd):
@@ -96,7 +95,6 @@ def toggle_by_cmd(cmd):
         [os.kill(pid, signal.SIGKILL) for pid in pids]
     else:
         os.system(cmd)
-    return
 
 
 def popen(cmd):
@@ -108,12 +106,10 @@ def popen(cmd):
 
 def open_file_at_foreground(file_path):
     os.system("st -e lazy -o " + file_path)
-    return
 
 
 def open_file_at_background(file_path):
     os.system("st -e lazy -o " + file_path + " &")
-    return
 
 
 def keep_file_or_not(file_path):
@@ -121,8 +117,6 @@ def keep_file_or_not(file_path):
     option = popen(cmd)
     if option.strip() == "no":
         os.remove(file_path)
-    return
-
 
 # utils
 # ---------------------------------------------------------
@@ -141,7 +135,6 @@ def app_passmenu():
 def wf_clipmenu():
     cmd = "clipmenu"
     os.system(cmd)
-    return
 
 
 def __get_current_mouse_url():
@@ -211,8 +204,6 @@ def wf_download_cur_to_download():
     else:
         open_file_at_background(file_path)
 
-    return
-
 
 def wf_download_arxiv_to_lib():
     my_library_paper_path = my_library_path + "/papers"
@@ -245,8 +236,6 @@ def wf_download_arxiv_to_lib():
     else:
         open_file_at_background(file_path)
 
-    return
-
 
 def wf_find_local_area_network_server():
     ip = "127.0.0.1"
@@ -275,8 +264,6 @@ def wf_find_local_area_network_server():
     msg = "find local area network server success, please check clipboard: {}".format(option)
     os.system("notify-send '{}'".format(msg))
 
-    return
-
 
 def wf_format_json():
     last_copied_str = pyperclip.paste()
@@ -288,8 +275,6 @@ def wf_format_json():
     except Exception as e:
         msg = "format json failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
-
-    return
 
 
 def wf_format_sql():
@@ -303,8 +288,6 @@ def wf_format_sql():
         msg = "format sql failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
-    return
-
 
 def wf_get_now_unix_nano_sec():
     try:
@@ -316,8 +299,6 @@ def wf_get_now_unix_nano_sec():
         msg = "get unix nano sec failed: {}".format(e)
         os.system("notify-send '{}'".format(msg))
 
-    return
-
 
 def wf_get_now_unix_sec():
     try:
@@ -328,8 +309,6 @@ def wf_get_now_unix_sec():
     except Exception as e:
         msg = "get now unix failed: {}".format(e)
         os.system("notify-send '{}'".format(msg))
-
-    return
 
 
 def wf_handle_copied():
@@ -356,8 +335,6 @@ def wf_handle_copied():
         cmd = "chrome {}".format(url)
         os.system(cmd)
 
-    return
-
 
 def wf_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -371,8 +348,6 @@ def wf_ip():
         msg = "get host ip failed: {}".format(e)
         os.system("notify-send '{}'".format(msg))
         s.close()
-
-    return
 
 
 def wf_latex():
@@ -420,8 +395,6 @@ def wf_latex():
     else:
         os.system(cmd_xoj)
 
-    return
-
 
 def wf_map():
     cmd = "dmenu < /dev/null -p 'location location location!'"
@@ -430,8 +403,6 @@ def wf_map():
         url = "https://www.google.com/maps/place/{}".format(option)
         cmd = "chrome {}".format(url)
         os.system(cmd)
-
-    return
 
 
 def wf_mount_to_xyz():
@@ -455,8 +426,6 @@ def wf_mount_to_xyz():
 
     cmd = "sudo mount {} {}".format(dev, dst)
     os.system(cmd)
-
-    return
 
 
 def wf_sketchpad():
@@ -487,8 +456,6 @@ def wf_sketchpad():
     else:
         os.system(cmd)
 
-    return
-
 
 def wf_ssh():
     ssh_list = []
@@ -517,8 +484,6 @@ def wf_ssh():
     ssh_cmd = "ssh {}".format(option)
     cmd = "st -e /bin/bash -c \"echo '{}' && {}\"".format(ssh_cmd, ssh_cmd)
     os.system(cmd)
-
-    return
 
 
 def wf_todo():
@@ -582,8 +547,6 @@ def wf_base_10_to_base_x():
         msg = "trans base 10 to base x failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
-    return
-
 
 def wf_datetime_to_unix_sec():
     last_copied_str = pyperclip.paste().strip()
@@ -596,8 +559,6 @@ def wf_datetime_to_unix_sec():
     except Exception as e:
         msg = "datetime to unix sec failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
-
-    return
 
 
 def wf_string_to_base_x():
@@ -629,8 +590,6 @@ def wf_string_to_base_x():
         msg = "string to base x failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
-    return
-
 
 def wf_unix_sec_to_datetime():
     last_copied_str = pyperclip.paste().strip()
@@ -643,8 +602,6 @@ def wf_unix_sec_to_datetime():
         msg = "unix sec to datetime failed: {}\n{}".format(e, last_copied_str)
         os.system("notify-send '{}'".format(msg))
 
-    return
-
 
 def wf_umount_from_xyz():
     cmd = "echo '{}'|dmenu -p 'umount'".format('\n'.join(["/x", "/y", "/z"]))
@@ -654,8 +611,6 @@ def wf_umount_from_xyz():
 
     cmd = "sudo umount {}".format(dst)
     os.system(cmd)
-
-    return
 
 
 def wf_xournal():
@@ -673,8 +628,6 @@ def wf_xournal():
         os.system("notify-send '{}'".format("already in running"))
     else:
         os.system(cmd)
-
-    return
 
 
 def wf_wifi():
@@ -697,7 +650,6 @@ def wf_wifi():
     cmd = "nmcli device wifi connect {} password {}".format(essid, password)
     msg = popen(cmd).strip()
     os.system("notify-send '{}'".format(msg))
-    return
 
 
 # toggle
@@ -705,8 +657,6 @@ def wf_wifi():
 def toggle_addressbook():
     cmd = "st -e abook"
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_bluetooth():
@@ -743,22 +693,16 @@ def toggle_bluetooth():
         os.system("notify-send '{}'".format(msg))
         return
 
-    return
-
 
 def toggle_calendar_scheduling():
     cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format("shceduling", "shceduling")
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_calendar_schedule():
     cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
         get_geometry_for_st(0.80, 0.05, 36, 32), win_name_float, win_name_float)
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_diary():
@@ -772,88 +716,62 @@ def toggle_diary():
     cmd = "st -e nvim {}/diary/{}.md".format(my_home_path, time_str)
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_top():
     cmd = "st -e btop"
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_trojan():
     cmd = "{}/trojan -c {}/config.json".format(my_trojan_path, my_trojan_path)
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_flameshot():
     cmd = "flameshot gui"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_edge():
     toggle_by_pname(pname="msedge", cmd="microsoft-edge-stable")
-
-    return
 
 
 def toggle_chrome_with_proxy():
     cmd = "chrome --proxy-server='socks5://127.0.0.1:7891'"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_gitter():
     toggle_by_pname(pname="gitter", cmd="gitter")
-
-    return
 
 
 def toggle_irc():
     cmd = "st -e irssi"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_inkscape():
     toggle_by_pname(pname="inkscape", cmd="inkscape")
-
-    return
 
 
 def toggle_julia():
     cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad, win_name_scratchpad)
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_python():
     cmd = "st -t {} -c {} -e python".format(win_name_scratchpad, win_name_scratchpad)
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_photoshop():
     cmd = "krita"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_lazydocker():
     cmd = "st -e lazydocker"
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_music():
@@ -863,28 +781,20 @@ def toggle_music():
     toggle_by_cmd(cmd_cava)
     toggle_by_cmd(cmd_ncmpcpp)
 
-    return
-
 
 def toggle_music_net_cloud():
     cmd = "netease-cloud-music"
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_mutt():
     cmd = "st -e mutt"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_rss():
     cmd = "st -e newsboat"
     toggle_by_cmd(cmd)
-
-    return
 
 
 # systemctl --user enable redshift.service now
@@ -897,14 +807,10 @@ def toggle_redshift():
         cmd = "systemctl --user start redshift.service"
     os.system(cmd)
 
-    return
-
 
 def toggle_screenkey():
     cmd = "screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow"
     toggle_by_cmd(cmd)
-
-    return
 
 
 def toggle_show():
@@ -912,34 +818,24 @@ def toggle_show():
         get_geometry_for_st(0.74, 0.08, 40, 12), win_name_float, win_name_float)
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_sublime():
     toggle_by_pname(pname="sublime_text", cmd="subl")
-
-    return
 
 
 def toggle_joshuto():
     cmd = "st -e joshuto"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_wechat():
     cmd = "st -e wechat-uos"
     toggle_by_cmd(cmd)
 
-    return
-
 
 def toggle_wallpaper():
     cmd = "feh --bg-fill --recursive --randomize {}".format(my_wallpaper_path)
     os.system(cmd)
-
-    return
 
 
 def toggle_rec_audio():
@@ -959,15 +855,12 @@ def toggle_rec_video():
         win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path, time_str)
     toggle_by_pname(pname="ffmpeg", cmd=cmd)
 
-    return
-
 
 def toggle_screen():
     primary_screen = "eDP-1"
 
     cmd = "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
     second_screen = popen(cmd).strip()
-
     if not second_screen:
         msg = "have no second screen"
         os.system("notify-send '{}'".format(msg))
@@ -995,10 +888,9 @@ def toggle_screen():
     cmd = cmds.get(option, "echo")
     os.system(cmd)
 
+    time.sleep(0.01)
     cmd = "feh --bg-fill {}/{}".format(my_wallpaper_path, my_default_wallpaper)
     os.system(cmd)
-
-    return
 
 
 def toggle_sys_shortcuts():
@@ -1017,8 +909,6 @@ def toggle_sys_shortcuts():
     cmd = cmds.get(option, "")
     if cmd:
         os.system(cmd)
-
-    return
 
 
 # exec
@@ -1201,7 +1091,6 @@ def search():
     url = "https://cn.bing.com/search?q={}".format(search.replace(" ", "+"))
     cmd = "microsoft-edge-stable {}".format(url)
     os.system(cmd)
-    return
 
 
 if __name__ == '__main__':
