@@ -103,8 +103,8 @@ static const Layout overviewlayout = { "󰕰",  overview }; // patch: dwm-overvi
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
-static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
+static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
 
 /* commands */
 // static const char *cmd_lazy_exec[]            =  ST("lazy -o exec -f \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -o view -f {}' --select-1 --exit-0|xargs lazy -e {}\"");
