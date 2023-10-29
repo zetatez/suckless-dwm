@@ -51,6 +51,8 @@
 #include "drw.h"
 #include "util.h"
 
+#define SESSION_FILE "/tmp/dwm-session"         // dwm-restoreafterrestart-20220709-d3f93c7.diff
+
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))

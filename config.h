@@ -1,7 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#define SESSION_FILE "/tmp/dwm-session"         // dwm-restoreafterrestart-20220709-d3f93c7.diff
-
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 0;        /* snap pixel */                                                                                            // patch: dwm-tag-preview
