@@ -26,7 +26,7 @@ static const char *colors[][3]      = {
 };
 
 static const char *const autostart[] = {        // patch: dwm-cool-autostart
-  "dwmblocks", "2>&1 >>/dev/null &", NULL,      // patch: dwm-cool-autostart
+  "dwmblocks", NULL,                            // patch: dwm-cool-autostart
   "/home/dionysus/.dwm/autostart.sh", NULL,     // patch: dwm-cool-autostart
   NULL /* terminate */                          // patch: dwm-cool-autostart
 };                                              // patch: dwm-cool-autostart
