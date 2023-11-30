@@ -23,20 +23,12 @@ FREETYPEINC = /usr/include/freetype2
 # Imlib2 (tag previews)
 IMLIB2LIBS = -lImlib2
 
-#KVMLIB = -lkvm                              # dwm-swallow
-#MANPREFIX = ${PREFIX}/man
-
 # includes and libs
 INCS = -I${X11INC} -I${FREETYPEINC}
-# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}                                                       # dwm-swallow
-# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res ${KVMLIB}                   # dwm-swallow
-# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB}               # dwm-swallow + dwm-logarithmicspiral
-# LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} ${IMLIB2LIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB} # dwm-swallow + dwm-logarithmicspiral + dwm-tag-preview                                     # dwm -swallow + dwm-logarithmicspiral + dwm-tag-preview
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} ${IMLIB2LIBS} -lX11-xcb -lxcb -lxcb-res -lm ${KVMLIB}
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} ${IMLIB2LIBS} -lX11-xcb -lxcb -lxcb-res -lm
 
 # flags
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
-#CFLAGS   = -g -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
 CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os ${INCS} ${CPPFLAGS}
 LDFLAGS  = ${LIBS}
 

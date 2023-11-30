@@ -14,8 +14,8 @@ int main(void) {
   d = XOpenDisplay(NULL);
   if (!d)
     exit(1);
-  r = DefaultRootWindow(d);
 
+  r = DefaultRootWindow(d);
   f = XCreateSimpleWindow(d, r, 100, 100, 400, 400, 0, 0, 0);
   h.min_width = h.max_width = h.min_height = h.max_height = 400;
   h.flags = PMinSize | PMaxSize;
@@ -26,7 +26,6 @@ int main(void) {
   XSelectInput(d, f, ExposureMask);
   while (1) {
     XNextEvent(d, &e);
-
     if (t == None) {
       sleep(5);
       t = XCreateSimpleWindow(d, r, 50, 50, 100, 100, 0, 0, 0);

@@ -1,86 +1,3 @@
-/* See LICENSE file for copyright and license details. */
-
-/* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 0;        /* snap pixel */                                                                                            // patch: dwm-tag-preview
-static const int scalepreview       = 3;        /* preview scaling (display w and h / scalepreview) */                                                      // patch: dwm-tag-preview
-static const int previewbar         = 1;        /* show the bar in the preview window */
-static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 1;        /* 0 means bottom bar */
-static const int barheight          = 12;       /* bh = (barheight > drw->fonts->h ) && (barheight < 3 * drw->fonts->h ) ? barheight : drw->fonts->h + 2 */ // patch: dwm-bar-height
-static const int vertpad            = 0;        /* default 6  : vertical padding of bar */                                                                               // patch: dwm-barpadding
-static const int sidepad            = 0;        /* default 256: horizontal padding of bar */                                                                             // patch: dwm-barpadding
-static const int defaultwinpad      = 0;        /* default 8  : window padding of bar */
-static const int swallowfloating    = 1;        /* default 1  : 1 means swallow floating windows */                                                           // patch: dwm-swallow
-static const char *fonts[]          = {"DejaVuSansMono Nerd Font:style=Book:size=12"};
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
-static const char *colors[][3]      = {
-  /*               fg         bg         border   */
-  [SchemeNorm] = { col_gray3, col_cyan,  col_gray2 },
-  [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
-};
-
-static const char *const autostart[] = {        // patch: dwm-cool-autostart
-  "dwmblocks", NULL,                            // patch: dwm-cool-autostart
-  "/home/dionysus/.dwm/autostart.sh", NULL,     // patch: dwm-cool-autostart
-  NULL /* terminate */                          // patch: dwm-cool-autostart
-};                                              // patch: dwm-cool-autostart
-
-/* tagging */
-// static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
-static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ζ(s)=∑1/n^s" };
-
-static const Rule rules[] = {
-  /* xprop(1):
-   *    WM_CLASS(STRING) = instance, class
-   *    WM_NAME(STRING) = title
-   */
-  /* class                   instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
-  {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
-  {"music",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 },
-};
-
-static const char *skipswallow[] = { "vimb", "surf" };   // patch: dwm-swallow: fix dwm-swallow annoying "swallow all problem". by myself. you can specify process name to skip swallow
-
-/* layout(s) */
-static const float mfact            = 0.50; /* factor of master area size [0.00..1.00] */                 // limit [0.05..0.95] had been extended to [0.00..1.00].
-static const float ffact            = 0.50; /* factor of ffact [0.00..1.00] */                            // ffact, by myself
-static const int nmaster            = 1;    /* number of clients in master area */
-static const int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
-static const int lockfullscreen     = 0;    /* 1 will force focus on the fullscreen window */
-static const unsigned int gapoh     = 24;   /* horiz outer gap between windows and screen edge */ // patch: dwm-overview
-static const unsigned int gapow     = 32;   /* vert  outer gap between windows and screen edge */ // patch: dwm-overview
-static const unsigned int gapih     = 12;   /* horiz inner gap between windows */                 // patch: dwm-overview
-static const unsigned int gapiw     = 16;   /* vert  inner gap between windows */                 // patch: dwm-overview
-
-#include "layouts.c"                          // layouts
-static const Layout layouts[] = {
-  /* symbol    arrange function */
-  { "⧉",        fibonaccispiral },
-  { "⧉",       fibonaccidwindle },
-  { "⧈",         centeranyshape },
-  { "⧈",       centerequalratio },
-  { "󰘸",               deckvert },
-  { "󰘸",               deckhori },
-  { "⬓" ,       bottomstackvert },
-  { "⬓",        bottomstackhori },
-  { "◨",              tileright },
-  { "◧",               tileleft },
-  { "󰾍",                   grid },
-  { "󰓌",                 hacker },
-  { "⬚",                monocle },
-  { "∅",                   NULL }, // no layout function means floating behavior
-  { NULL,                  NULL }, // patch: dwm-cyclelayouts
-};
-
-static const Layout overviewlayout = { "󰕰",  overview }; // patch: dwm-overview: can be any layout
 
 /* key definitions */
 #define SUPKEY Mod4Mask
@@ -96,6 +13,83 @@ static const Layout overviewlayout = { "󰕰",  overview }; // patch: dwm-overvi
 #define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
 #define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
 #define STSP(cmd) { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
+
+/* appearance */
+static const unsigned int borderpx  = 1;
+static const unsigned int snap      = 0;
+static const int scalepreview       = 3;
+static const int previewbar         = 1;
+static const int showbar            = 1;
+static const int topbar             = 1;
+static const int barheight          = 12;
+static const int vertpad            = 0;
+static const int sidepad            = 0;
+static const int defaultwinpad      = 0;
+static const int swallowfloating    = 1;
+static const char *fonts[]          = { "DejaVuSansMono Nerd Font:style=Book:size=12" };
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=12";
+static const char col_gray1[]       = "#222222";
+static const char col_gray2[]       = "#444444";
+static const char col_gray3[]       = "#bbbbbb";
+static const char col_gray4[]       = "#eeeeee";
+static const char col_cyan[]        = "#005577";
+static const char *colors[][3]      = {
+  /*               fg         bg         border   */
+  [SchemeNorm] = { col_gray3, col_cyan,  col_gray2 },
+  [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+};
+
+static const char *const autostart[] = {
+  "dwmblocks", NULL,
+  "/home/dionysus/.dwm/autostart.sh", NULL,
+  NULL
+};
+
+/* tagging */
+// static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ζ(s)=∑1/n^s" };
+
+static const Rule rules[] = {
+  /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
+  {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
+  {"music",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
+  {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
+  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 },
+};
+
+static const char *skipswallow[] = { "vimb", "surf" };
+
+/* layout(s) */
+static const float mfact            = 0.50;
+static const float ffact            = 0.50;
+static const int nmaster            = 1;
+static const int resizehints        = 0;
+static const int lockfullscreen     = 0;
+static const unsigned int gapoh     = 24;
+static const unsigned int gapow     = 32;
+static const unsigned int gapih     = 12;
+static const unsigned int gapiw     = 16;
+
+#include "layouts.c"
+static const Layout layouts[] = {
+  { "⧉",        fibonaccispiral },
+  { "⧉",       fibonaccidwindle },
+  { "⧈",         centeranyshape },
+  { "⧈",       centerequalratio },
+  { "󰘸",               deckvert },
+  { "󰘸",               deckhori },
+  { "⬓" ,       bottomstackvert },
+  { "⬓",        bottomstackhori },
+  { "◨",              tileright },
+  { "◧",               tileleft },
+  { "󰾍",                   grid },
+  { "󰓌",                 hacker },
+  { "⬚",                monocle },
+  { "∅",                   NULL },
+  { NULL,                  NULL },
+};
+
+static const Layout overviewlayout = { "󰕰",  overview };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -168,8 +162,6 @@ static const char *wf_wifi[]                     =  SH(PREFIX"/wf-wifi.py");
 static const char *wf_xournal[]                  =  SH(PREFIX"/wf-xournal.py");
 static const char *search[]                      =  SH(PREFIX"/search.py");
 
-#include "movestack.c"
-#include "shiftview.c"
 static const Key keys[] = {
   /* modifier                     key            function           argument                          */
   // SUPKEY + F1-F12
@@ -275,18 +267,18 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_video            } },
 
   // MODKEY-ShiftMask/ControlMask + a-z, etc
-  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd               } }, // patch: dwm-scratchpad
+  { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd               } },
   { MODKEY,                       XK_c,          spawn,             {.v = wf_clipmenu                 } },
   { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                    } },
   { MODKEY,                       XK_Return,     zoom,              {0                                } },
-  { MODKEY,                       XK_Tab,        view,              {0                                } }, // switch current tag    with previous tag
+  { MODKEY,                       XK_Tab,        view,              {0                                } },
   { MODKEY,                       XK_b,          togglebar,         {0                                } },
-  { MODKEY,                       XK_f,          togglefullscreen,  {0                                } }, // patch: dwm-actualfullscreen
-  { MODKEY,                       XK_o,          toggleoverview,    {0                                } }, // patch: dwm-overview
-  { MODKEY,                       XK_s,          reset,             {0                                } }, // reset, by myself
-  { MODKEY,                       XK_space,      setlayout,         {0                                } }, // switch current layout with previous layout
-  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                                } }, // patch: dwm-focusmaster
-  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                                } }, // patch: dwm-sticky
+  { MODKEY,                       XK_f,          togglefullscreen,  {0                                } },
+  { MODKEY,                       XK_o,          toggleoverview,    {0                                } },
+  { MODKEY,                       XK_s,          reset,             {0                                } },
+  { MODKEY,                       XK_space,      setlayout,         {0                                } },
+  { MODKEY|ControlMask,           XK_space,      focusmaster,       {0                                } },
+  { MODKEY|ShiftMask,             XK_s,          togglesticky,      {0                                } },
   { MODKEY|ShiftMask,             XK_space,      togglefloating,    {0                                } },
   { MODKEY,                       XK_k,          focusstack,        {.i = -1                          } },
   { MODKEY,                       XK_j,          focusstack,        {.i = +1                          } },
@@ -296,36 +288,43 @@ static const Key keys[] = {
   { MODKEY,                       XK_period,     cyclelayout,       {.i = +1                          } },
   { MODKEY|ShiftMask,             XK_comma,      movestack,         {.i = -1                          } },
   { MODKEY|ShiftMask,             XK_period,     movestack,         {.i = +1                          } },
-  { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                          } }, // shiftview
-  { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                          } }, // shiftview
-  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                          } }, // move focus to another monitor
-  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                          } }, // move tag   to another monitor
+  { MODKEY|ControlMask,           XK_comma,      shiftview,         {.i = -1                          } },
+  { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                          } },
+  { MODKEY,                       XK_slash,      focusmon,          {.i = +1                          } },
+  { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                          } },
   { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025                      } },
   { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                      } },
-  { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                      } }, // ffact, by myself
-  { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                      } }, // ffact, by myself
-  { SUPKEY,                       XK_k,          movewin,           {.ui = UP                         } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                       } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                       } }, // patch: dwm-move-window
-  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                      } }, // patch: dwm-move-window
-  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                     } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                     } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                     } }, // patch: dwm-resize-window
-  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                     } }, // patch: dwm-resize-window
-  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[0]                 } }, // fibonaccispiral
-  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[1]                 } }, // fibonaccidwindle
-  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[2]                 } }, // centeranyshape
-  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[3]                 } }, // centerequalratio
-  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[4]                 } }, // deckvert
-  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[5]                 } }, // deckhori
-  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[6]                 } }, // bottomstackvert
-  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[7]                 } }, // bottomstackhori
-  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[8]                 } }, // tileright
-  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[9]                 } }, // tileleft
-  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[10]                } }, // grid
-  { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                } }, // hacker
-  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                } }, // monocle
-  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]                } }, // no layout means floating
+  { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                      } },
+  { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                      } },
+  { SUPKEY,                       XK_k,          movewin,           {.ui = UP                         } },
+  { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                       } },
+  { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                       } },
+  { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                      } },
+  { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                     } },
+  { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                     } },
+  { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                     } },
+  { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                     } },
+  { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[0]                 } },
+  { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[1]                 } },
+  { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[2]                 } },
+  { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[3]                 } },
+  { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[4]                 } },
+  { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[5]                 } },
+  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[6]                 } },
+  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[7]                 } },
+  { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[8]                 } },
+  { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[9]                 } },
+  { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[10]                } },
+  { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                } },
+  { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                } },
+  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]                } },
+  { MODKEY,                       XK_0,          view,              {.ui = ~0                         } },
+  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                         } },
+  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                     } },
+  { SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v = tabbedtermcmd               } },
+  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                } },
+  { MODKEY|ShiftMask,             XK_q,          quit,              {0                                } },
+  { MODKEY|ShiftMask,             XK_p,          quit,              {1                                } },
     TAGKEYS(XK_1, 0)
     TAGKEYS(XK_2, 1)
     TAGKEYS(XK_3, 2)
@@ -335,13 +334,6 @@ static const Key keys[] = {
     TAGKEYS(XK_7, 6)
     TAGKEYS(XK_8, 7)
     TAGKEYS(XK_9, 8)
-  { MODKEY,                       XK_0,          view,              {.ui = ~0                         } },
-  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                         } },
-  { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                     } },
-  { SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v = tabbedtermcmd               } },
-  { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                } },
-  { MODKEY|ShiftMask,             XK_q,          quit,              {0                                } },
-  { MODKEY|ShiftMask,             XK_p,          quit,              {1                                } }, // patch: dwm-restartsig
 };
 
 /* button definitions */
@@ -353,17 +345,17 @@ static const Key keys[] = {
 // Button5:
 static const Button buttons[] = {
   /* click                event mask      button          function        argument */
-  { ClkLtSymbol,          0,              Button1,        setlayout,      {0                         } }, //          left   click layout symbol: change layout to previous
-  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]          } }, //          right  click layout symbol: change layout to x
-  { ClkWinTitle,          0,              Button2,        zoom,           {0                         } }, //          middle click win title    : zoom
-  { ClkStatusText,        0,              Button1,        spawn,          {.v = termcmd              } }, //          left   click status text  : open open st
-  { ClkStatusText,        0,              Button2,        spawn,          {.v = toggle_screen        } }, //          middle click status text  : open open st
-  { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_sys_shortcuts } }, //          right  click status text  : open
-  { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0                         } }, // modkey + left   click client win   : move window with mouse
-  { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0                         } }, // modkey + middle click client win   : togglefloating
-  { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0                         } }, // modkey + right  click client win   : resize window with mouse
-  { ClkTagBar,            0,              Button1,        view,           {0                         } }, //          left   click tag bar      : view tag
-  { ClkTagBar,            0,              Button3,        toggleview,     {0                         } }, //          right  click tag bar      : toggle view, view multiple tags
-  { ClkTagBar,            MODKEY,         Button1,        tag,            {0                         } }, // modkey + left   click tag bar      : move window to tag clicked
-  { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0                         } }, // modkey + right  click tag bar      : toggle tag
+  { ClkLtSymbol,          0,              Button1,        setlayout,      {0                         } },
+  { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]          } },
+  { ClkWinTitle,          0,              Button2,        zoom,           {0                         } },
+  { ClkStatusText,        0,              Button1,        spawn,          {.v = termcmd              } },
+  { ClkStatusText,        0,              Button2,        spawn,          {.v = toggle_screen        } },
+  { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_sys_shortcuts } },
+  { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0                         } },
+  { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0                         } },
+  { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0                         } },
+  { ClkTagBar,            0,              Button1,        view,           {0                         } },
+  { ClkTagBar,            0,              Button3,        toggleview,     {0                         } },
+  { ClkTagBar,            MODKEY,         Button1,        tag,            {0                         } },
+  { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0                         } },
 };

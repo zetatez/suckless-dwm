@@ -19,7 +19,6 @@ necessary as root):
 
     sh build.sh
 
-
 ## Running dwm
 Add the following line to your .xinitrc to start dwm using startx:
 
