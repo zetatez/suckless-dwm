@@ -920,7 +920,6 @@ def search():
             "workflow: sys shortcuts": toggle_sys_shortcuts,
             "workflow: todo": wf_todo,
             "workflow: top": toggle_top,
-            "workflow: trojan": toggle_trojan,
             "workflow: umount": wf_umount_from_xyz,
             "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
             "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
