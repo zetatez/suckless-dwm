@@ -70,26 +70,25 @@ static const unsigned int gapow     = 32;
 static const unsigned int gapih     = 12;
 static const unsigned int gapiw     = 16;
 
-#include "layouts.c"
 static const Layout layouts[] = {
-  { "⧉",        fibonaccispiral },
-  { "⧉",       fibonaccidwindle },
-  { "⧈",         centeranyshape },
-  { "⧈",       centerequalratio },
-  { "󰘸",               deckvert },
-  { "󰘸",               deckhori },
-  { "⬓" ,       bottomstackvert },
-  { "⬓",        bottomstackhori },
-  { "◨",              tileright },
-  { "◧",               tileleft },
-  { "󰾍",                   grid },
-  { "󰓌",                 hacker },
-  { "⬚",                monocle },
-  { "∅",                   NULL },
-  { NULL,                  NULL },
+  { "⧉",  layout_fibonaccispiral  },
+  { "⧉",  layout_fibonaccidwindle },
+  { "⧈",  layout_centeranyshape   },
+  { "⧈",  layout_centerequalratio },
+  { "󰘸",  layout_deckvert         },
+  { "󰘸",  layout_deckhori         },
+  { "⬓" , layout_bottomstackvert  },
+  { "⬓",  layout_bottomstackhori  },
+  { "◨",  layout_tileright        },
+  { "◧",  layout_tileleft         },
+  { "󰾍",  layout_grid             },
+  { "󰓌",  layout_hacker           },
+  { "⬚",  layout_monocle          },
+  { "∅",  NULL                    },
+  { NULL, NULL                    },
 };
 
-static const Layout overviewlayout = { "󰕰",  overview };
+static const Layout overviewlayout = { "󰕰",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -147,7 +146,6 @@ static const char *toggle_show[]                 =  SH(PREFIX"/toggle-show");
 static const char *toggle_sublime[]              =  SH(PREFIX"/toggle-sublime");
 static const char *toggle_sys_shortcuts[]        =  SH(PREFIX"/toggle-sys-shortcuts");
 static const char *toggle_top[]                  =  SH(PREFIX"/toggle-top");
-static const char *toggle_trojan[]               =  SH(PREFIX"/toggle-trojan");
 static const char *toggle_joshuto[]              =  SH(PREFIX"/toggle-joshuto");
 static const char *toggle_wallpaper[]            =  SH(PREFIX"/toggle-wallpaper");
 static const char *toggle_wechat[]               =  SH(PREFIX"/toggle-wechat");
@@ -249,7 +247,7 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = cmd_suspend                 } },
   { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = toggle_redshift             } },
   { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = toggle_sublime              } },
-  { SUPKEY|ShiftMask,             XK_t,          spawn,             {.v = toggle_trojan               } },
+//{ SUPKEY|ShiftMask,             XK_t,          spawn,             {.v =                             } },
 //{ SUPKEY|ShiftMask,             XK_u,          spawn,             {.v =                             } },
 //{ SUPKEY|ShiftMask,             XK_v,          spawn,             {.v =                             } },
   { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v = toggle_wechat               } },
