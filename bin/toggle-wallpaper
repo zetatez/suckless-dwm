@@ -1,0 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from utils import toggle_wallpaper
+
+toggle_wallpaper()

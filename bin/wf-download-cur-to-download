@@ -1,0 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from utils import wf_download_cur_to_download
+
+wf_download_cur_to_download
