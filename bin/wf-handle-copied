@@ -1,6 +1,0 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from utils import wf_handle_copied
-
-wf_handle_copied()

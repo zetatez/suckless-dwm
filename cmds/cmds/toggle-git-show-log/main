@@ -1,0 +1,3 @@
+#!/bin/bash
+
+git show $(git log --pretty=oneline|fzf --prompt='open>' --preview 'git show {1}' --select-1 --exit-0|awk '{print $1}')
