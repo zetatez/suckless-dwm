@@ -122,12 +122,12 @@ def keep_file_or_not(file_path):
 # ---------------------------------------------------------
 # app
 # -----------------------
-def open_app(app):
-    return os.system(app)
-
-
-def app_passmenu():
-    return open_app(app="passmenu")
+# def open_app(app):
+#     return os.system(app)
+#
+#
+# def app_passmenu():
+#     return open_app(app="passmenu")
 
 
 # wf: workflow
@@ -595,9 +595,9 @@ def wf_wifi():
 
 # toggle
 # -----------------------
-def toggle_addressbook():
-    cmd = "st -e abook"
-    toggle_by_cmd(cmd)
+# def toggle_addressbook():
+#     cmd = "st -e abook"
+#     toggle_by_cmd(cmd)
 
 
 def toggle_bluetooth():
@@ -628,15 +628,15 @@ def toggle_bluetooth():
         return
 
 
-def toggle_calendar_scheduling():
-    cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format("shceduling", "shceduling")
-    toggle_by_cmd(cmd)
+# def toggle_calendar_scheduling():
+#     cmd = "st -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=week'".format("shceduling", "shceduling")
+#     toggle_by_cmd(cmd)
 
 
-def toggle_calendar_schedule():
-    cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
-        get_geometry_for_st(0.80, 0.05, 36, 32), win_name_float, win_name_float)
-    toggle_by_cmd(cmd)
+# def toggle_calendar_schedule():
+#     cmd = "st -g {} -t {} -c {} -e nvim +':set laststatus=0' +'Calendar -view=day'".format(
+#         get_geometry_for_st(0.80, 0.05, 36, 32), win_name_float, win_name_float)
+#     toggle_by_cmd(cmd)
 
 
 def toggle_diary():
@@ -649,79 +649,75 @@ def toggle_diary():
     toggle_by_cmd(cmd)
 
 
-def toggle_top():
-    cmd = "st -e btop"
-    toggle_by_cmd(cmd)
+# def toggle_top():
+#     cmd = "st -e btop"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_flameshot():
-    cmd = "flameshot gui"
-    toggle_by_cmd(cmd)
+# def toggle_flameshot():
+#     cmd = "flameshot gui"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_edge():
-    toggle_by_pname(pname="msedge", cmd="microsoft-edge-stable")
+# def toggle_edge():
+#     toggle_by_pname(pname="msedge", cmd="microsoft-edge-stable")
 
 
-def toggle_chrome_with_proxy():
-    cmd = "chrome --proxy-server='socks5://127.0.0.1:7891'"
-    toggle_by_cmd(cmd)
+# def toggle_chrome_with_proxy():
+#     cmd = "chrome --proxy-server='socks5://127.0.0.1:7891'"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_gitter():
-    toggle_by_pname(pname="gitter", cmd="gitter")
+# def toggle_irc():
+#     cmd = "st -e irssi"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_irc():
-    cmd = "st -e irssi"
-    toggle_by_cmd(cmd)
+# def toggle_inkscape():
+#     toggle_by_pname(pname="inkscape", cmd="inkscape")
 
 
-def toggle_inkscape():
-    toggle_by_pname(pname="inkscape", cmd="inkscape")
+# def toggle_julia():
+#     cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad, win_name_scratchpad)
+#     toggle_by_cmd(cmd)
 
 
-def toggle_julia():
-    cmd = "st -t {} -c {} -e julia".format(win_name_scratchpad, win_name_scratchpad)
-    toggle_by_cmd(cmd)
+# def toggle_python():
+#     cmd = "st -t {} -c {} -e python".format(win_name_scratchpad, win_name_scratchpad)
+#     toggle_by_cmd(cmd)
 
 
-def toggle_python():
-    cmd = "st -t {} -c {} -e python".format(win_name_scratchpad, win_name_scratchpad)
-    toggle_by_cmd(cmd)
+# def toggle_photoshop():
+#     cmd = "krita"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_photoshop():
-    cmd = "krita"
-    toggle_by_cmd(cmd)
+# def toggle_lazydocker():
+#     cmd = "st -e lazydocker"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_lazydocker():
-    cmd = "st -e lazydocker"
-    toggle_by_cmd(cmd)
+# def toggle_music():
+#     cmd_cava = "st -g {} -t cava -c cava -e cava &".format(get_geometry_for_st(0.74, 0.08, 40, 12))
+#     cmd_ncmpcpp = "st -g {} -t music -c music -e ncmpcpp &".format(get_geometry_for_st(0.52, 0.08, 40, 12))
+#
+#     toggle_by_cmd(cmd_cava)
+#     toggle_by_cmd(cmd_ncmpcpp)
 
 
-def toggle_music():
-    cmd_cava = "st -g {} -t cava -c cava -e cava &".format(get_geometry_for_st(0.74, 0.08, 40, 12))
-    cmd_ncmpcpp = "st -g {} -t music -c music -e ncmpcpp &".format(get_geometry_for_st(0.52, 0.08, 40, 12))
-
-    toggle_by_cmd(cmd_cava)
-    toggle_by_cmd(cmd_ncmpcpp)
+# def toggle_music_net_cloud():
+#     cmd = "netease-cloud-music"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_music_net_cloud():
-    cmd = "netease-cloud-music"
-    toggle_by_cmd(cmd)
+# def toggle_mutt():
+#     cmd = "st -e mutt"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_mutt():
-    cmd = "st -e mutt"
-    toggle_by_cmd(cmd)
-
-
-def toggle_rss():
-    cmd = "st -e newsboat"
-    toggle_by_cmd(cmd)
+# def toggle_rss():
+#     cmd = "st -e newsboat"
+#     toggle_by_cmd(cmd)
 
 
 # systemctl --user enable redshift.service now
@@ -735,50 +731,50 @@ def toggle_redshift():
     os.system(cmd)
 
 
-def toggle_screenkey():
-    cmd = "screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow"
-    toggle_by_cmd(cmd)
+# def toggle_screenkey():
+#     cmd = "screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow"
+#     toggle_by_cmd(cmd)
 
 
-def toggle_show():
-    cmd = "st -g {} -t {} -c {} -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0".format(
-        get_geometry_for_st(0.74, 0.08, 40, 12), win_name_float, win_name_float)
-    toggle_by_cmd(cmd)
+# def toggle_show():
+#     cmd = "st -g {} -t {} -c {} -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0".format(
+#         get_geometry_for_st(0.74, 0.08, 40, 12), win_name_float, win_name_float)
+#     toggle_by_cmd(cmd)
 
 
-def toggle_sublime():
-    toggle_by_pname(pname="sublime_text", cmd="subl")
+# def toggle_sublime():
+#     toggle_by_pname(pname="sublime_text", cmd="subl")
 
 
-def toggle_joshuto():
-    cmd = "st -e joshuto"
-    toggle_by_cmd(cmd)
+# def toggle_joshuto():
+#     cmd = "st -e joshuto"
+#     toggle_by_cmd(cmd)
+#
+
+# def toggle_wechat():
+#     cmd = "st -e wechat-uos"
+#     toggle_by_cmd(cmd)
+#
+
+# def toggle_wallpaper():
+#     cmd = "feh --bg-fill --recursive --randomize {}".format(my_wallpaper_path)
+#     os.system(cmd)
 
 
-def toggle_wechat():
-    cmd = "st -e wechat-uos"
-    toggle_by_cmd(cmd)
+# def toggle_rec_audio():
+#     time_str = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
+#     cmd = "st  -t {} -c {} -e ffmpeg -y -r 60 -f alsa -i default -c:a flac {}/Videos/rec-a-{}.flac".format(
+#         win_name_scratchpad, win_name_scratchpad, my_home_path, time_str)
+#     toggle_by_pname(pname="ffmpeg", cmd=cmd)
 
 
-def toggle_wallpaper():
-    cmd = "feh --bg-fill --recursive --randomize {}".format(my_wallpaper_path)
-    os.system(cmd)
-
-
-def toggle_rec_audio():
-    time_str = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-    cmd = "st  -t {} -c {} -e ffmpeg -y -r 60 -f alsa -i default -c:a flac {}/Videos/rec-a-{}.flac".format(
-        win_name_scratchpad, win_name_scratchpad, my_home_path, time_str)
-    toggle_by_pname(pname="ffmpeg", cmd=cmd)
-
-
-def toggle_rec_video():
-    time_str = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-    w, h = get_cur_screen_geometry()
-    dpy = os.environ.get("DISPLAY")
-    cmd = "st  -t {} -c {} -e ffmpeg -y -s '{}x{}' -r 60 -f x11grab -i {} -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac {}/Videos/rec-v-a-{}.mkv".format(
-        win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path, time_str)
-    toggle_by_pname(pname="ffmpeg", cmd=cmd)
+# def toggle_rec_video():
+#     time_str = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
+#     w, h = get_cur_screen_geometry()
+#     dpy = os.environ.get("DISPLAY")
+#     cmd = "st  -t {} -c {} -e ffmpeg -y -s '{}x{}' -r 60 -f x11grab -i {} -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac {}/Videos/rec-v-a-{}.mkv".format(
+#         win_name_scratchpad, win_name_scratchpad, w, h, dpy, my_home_path, time_str)
+#     toggle_by_pname(pname="ffmpeg", cmd=cmd)
 
 
 def toggle_screen():
@@ -814,21 +810,21 @@ def toggle_screen():
     os.system(cmd)
 
 
-def toggle_sys_shortcuts():
-    cmds = {
-        "󰒲 suspend": "systemctl suspend",
-        " poweroff": "systemctl poweroff",
-        "ﰇ reboot": "systemctl reboot",
-        "󰷛 slock": "slock & sleep 0.5 & xset dpms force off",
-        "󰶐 off-display": "sleep .5; xset dpms force off",
-    }
-    cmd = "echo '{}'|dmenu -p ''".format('\n'.join(list(cmds.keys())))
-    option = popen(cmd).strip()
-    if not option:
-        return
-    cmd = cmds.get(option, "")
-    if cmd:
-        os.system(cmd)
+# def toggle_sys_shortcuts():
+#     cmds = {
+#         "󰒲 suspend": "systemctl suspend",
+#         " poweroff": "systemctl poweroff",
+#         "ﰇ reboot": "systemctl reboot",
+#         "󰷛 slock": "slock & sleep 0.5 & xset dpms force off",
+#         "󰶐 off-display": "sleep .5; xset dpms force off",
+#     }
+#     cmd = "echo '{}'|dmenu -p ''".format('\n'.join(list(cmds.keys())))
+#     option = popen(cmd).strip()
+#     if not option:
+#         return
+#     cmd = cmds.get(option, "")
+#     if cmd:
+#         os.system(cmd)
 
 
 # exec
@@ -867,103 +863,102 @@ print({})
 def search():
     actions = {
         "workflow": {
-            "workflow: addressbook": toggle_addressbook,
+            # "workflow: addressbook": toggle_addressbook,
             "workflow: base 10 to base x": wf_base_10_to_base_x,
             "workflow: bluetooth": toggle_bluetooth,
             "workflow: cal": exec_python_cmd,
-            "workflow: calendar schedule": toggle_calendar_schedule,
-            "workflow: calendar scheduling": toggle_calendar_scheduling,
-            "workflow: chrome with proxy": toggle_chrome_with_proxy,
+            # "workflow: calendar schedule": toggle_calendar_schedule,
+            # "workflow: calendar scheduling": toggle_calendar_scheduling,
+            # "workflow: chrome with proxy": toggle_chrome_with_proxy,
             "workflow: clipmenu": wf_clipmenu,
             "workflow: datetime to unix sec": wf_datetime_to_unix_sec,
             "workflow: diary": toggle_diary,
             "workflow: download arxiv to lib": wf_download_arxiv_to_lib,
             "workflow: download cur to download": wf_download_cur_to_download,
             "workflow: find local area network server": wf_find_local_area_network_server,
-            "workflow: flameshot": toggle_flameshot,
-            "workflow: flameshot": toggle_flameshot,
+            # "workflow: flameshot": toggle_flameshot,
+            # "workflow: flameshot": toggle_flameshot,
             "workflow: format json": wf_format_json,
             "workflow: format sql": wf_format_sql,
             "workflow: get now unix nano sec": wf_get_now_unix_nano_sec,
             "workflow: get now unix sec": wf_get_now_unix_sec,
-            "workflow: gitter": toggle_gitter,
+            # "workflow: gitter": toggle_gitter,
             "workflow: handle copied": wf_handle_copied,
             "workflow: inkspace": wf_sketchpad,
             "workflow: ip": wf_ip,
-            "workflow: irc": toggle_irc,
-            "workflow: julia": toggle_julia,
+            # "workflow: irc": toggle_irc,
+            # "workflow: julia": toggle_julia,
             "workflow: latex": wf_latex,
-            "workflow: lazydocker": toggle_lazydocker,
+            # "workflow: lazydocker": toggle_lazydocker,
             "workflow: map": wf_map,
             "workflow: mount": wf_mount_to_xyz,
-            "workflow: music net cloud": toggle_music_net_cloud,
-            "workflow: music": toggle_music,
-            "workflow: mutt": toggle_mutt,
+            # "workflow: music net cloud": toggle_music_net_cloud,
+            # "workflow: music": toggle_music,
+            # "workflow: mutt": toggle_mutt,
             "workflow: note": wf_xournal,
-            "workflow: passmenu": app_passmenu,
-            "workflow: photoshop": toggle_photoshop,
+            # "workflow: passmenu": app_passmenu,
+            # "workflow: photoshop": toggle_photoshop,
             "workflow: python cmd": exec_python_cmd,
-            "workflow: python": toggle_python,
-            "workflow: rec audio": toggle_rec_audio,
-            "workflow: rec video": toggle_rec_video,
+            # "workflow: python": toggle_python,
+            # "workflow: rec audio": toggle_rec_audio,
+            # "workflow: rec video": toggle_rec_video,
             "workflow: redshift": toggle_redshift,
-            "workflow: rss": toggle_rss,
+            # "workflow: rss": toggle_rss,
             "workflow: screen": toggle_screen,
-            "workflow: screen": toggle_screen,
-            "workflow: screenkey": toggle_screenkey,
+            # "workflow: screenkey": toggle_screenkey,
             "workflow: shell cmd": exec_shell_cmd,
-            "workflow: show": toggle_show,
+            # "workflow: show": toggle_show,
             "workflow: sketchpad": wf_sketchpad,
             "workflow: ssh": wf_ssh,
             "workflow: string to base x": wf_string_to_base_x,
-            "workflow: sublime": toggle_sublime,
-            "workflow: sys shortcuts": toggle_sys_shortcuts,
+            # "workflow: sublime": toggle_sublime,
+            # "workflow: sys shortcuts": toggle_sys_shortcuts,
             "workflow: todo": wf_todo,
-            "workflow: top": toggle_top,
+            # "workflow: top": toggle_top,
             "workflow: umount": wf_umount_from_xyz,
             "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
             "workflow: unix sec to datetime": wf_unix_sec_to_datetime,
-            "workflow: joshuto": toggle_joshuto,
-            "workflow: vivaldi": toggle_edge,
-            "workflow: wallpaper": toggle_wallpaper,
-            "workflow: wechat": toggle_wechat,
+            # "workflow: joshuto": toggle_joshuto,
+            # "workflow: vivaldi": toggle_edge,
+            # "workflow: wallpaper": toggle_wallpaper,
+            # "workflow: wechat": toggle_wechat,
             "workflow: wifi": wf_wifi,
             "workflow: xournal": wf_xournal,
         },
         "website": {
-            "website: trans": "https://translate.google.com/?hl=zh-CN",
-            "website: suckless": "https://dwm.suckless.org",
-            "website: mirror": "https://developer.aliyun.com/mirror",
-            "website: arch wiki": "https://wiki.archlinux.org",
-            "website: arxiv": "https://arxiv.org",
-            "website: bili": "https://www.bilibili.com",
-            "website: bing": "https://cn.bing.com",
-            "website: cctv5": "https://tv.cctv.com/live/cctv5",
-            "website: github": "https://github.com/zetatez?tab=repositories",
-            "website: mall": "https://www.jd.com",
-            "website: map": "https://www.google.com/maps/place/shanghai",
-            "website: news": "https://news.futunn.com/en/main/live?lang=zh-CN",
-            "website: ocr": "http://ocr.space",
-            "website: scholar": "https://scholar.google.com",
-            "website: wolframalpha": "https://www.wolframalpha.com",
-            "website: youtube": "https://www.youtube.com",
-            "website: runoob": "https://www.runoob.com",
-            "website: ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
-            "website: angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
-            "website: css": "https://www.runoob.com/css3/css3-tutorial.html",
-            "website: design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
-            "website: docker": "https://www.runoob.com/docker/docker-tutorial.html",
-            "website: html": "https://www.runoob.com/html/html5-intro.html",
-            "website: javascript": "https://www.runoob.com/js/js-tutorial.html",
-            "website: maven": "https://www.runoob.com/maven/maven-tutorial.html",
-            "website: mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
-            "website: nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
-            "website: react": "https://www.runoob.com/react/react-tutorial.html",
-            "website: redis": "https://www.runoob.com/redis/redis-tutorial.html",
-            "website: regex":
-            "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
-            "website: typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
-            "website: vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
+            # "website: trans": "https://translate.google.com/?hl=zh-CN",
+            # "website: suckless": "https://dwm.suckless.org",
+            # "website: mirror": "https://developer.aliyun.com/mirror",
+            # "website: arch wiki": "https://wiki.archlinux.org",
+            # "website: arxiv": "https://arxiv.org",
+            # "website: bili": "https://www.bilibili.com",
+            # "website: bing": "https://cn.bing.com",
+            # "website: cctv5": "https://tv.cctv.com/live/cctv5",
+            # "website: github": "https://github.com/zetatez?tab=repositories",
+            # "website: mall": "https://www.jd.com",
+            # "website: map": "https://www.google.com/maps/place/shanghai",
+            # "website: news": "https://news.futunn.com/en/main/live?lang=zh-CN",
+            # "website: ocr": "http://ocr.space",
+            # "website: scholar": "https://scholar.google.com",
+            # "website: wolframalpha": "https://www.wolframalpha.com",
+            # "website: youtube": "https://www.youtube.com",
+            # "website: runoob": "https://www.runoob.com",
+            # "website: ajax": "https://www.runoob.com/ajax/ajax-tutorial.html",
+            # "website: angular": "https://www.runoob.com/angularjs2/angularjs2-tutorial.html",
+            # "website: css": "https://www.runoob.com/css3/css3-tutorial.html",
+            # "website: design pattern": "https://www.runoob.com/design-pattern/design-pattern-tutorial.html",
+            # "website: docker": "https://www.runoob.com/docker/docker-tutorial.html",
+            # "website: html": "https://www.runoob.com/html/html5-intro.html",
+            # "website: javascript": "https://www.runoob.com/js/js-tutorial.html",
+            # "website: maven": "https://www.runoob.com/maven/maven-tutorial.html",
+            # "website: mongo": "https://www.runoob.com/mongodb/mongodb-tutorial.html",
+            # "website: nodejs": "https://www.runoob.com/nodejs/nodejs-tutorial.html",
+            # "website: react": "https://www.runoob.com/react/react-tutorial.html",
+            # "website: redis": "https://www.runoob.com/redis/redis-tutorial.html",
+            # "website: regex":
+            # "https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference",
+            # "website: typescript": "https://www.runoob.com/typescript/ts-tutorial.html",
+            # "website: vue": "https://www.runoob.com/vue3/vue3-tutorial.html",
         }
     }
     actionskeys = list(actions.keys())
