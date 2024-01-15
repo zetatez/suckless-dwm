@@ -225,7 +225,7 @@ func ToggleScreen() {
 	for k := range cmds {
 		list = append(list, k)
 	}
-	choice, err := sugar.Choose(list)
+	choice, err := sugar.Choose("screen strategy: ", list)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -279,7 +279,7 @@ func ToggleSysShortcuts() {
 	for k := range SysShortCuts {
 		list = append(list, k)
 	}
-	content, err := sugar.Choose(list)
+	content, err := sugar.Choose(": ", list)
 	if err != nil {
 		return
 	}

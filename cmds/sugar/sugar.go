@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -132,14 +134,24 @@ func IsFile(path string) (isFile bool) {
 	return !IsDir(path)
 }
 
-func Choose(list []string) (item string, err error) {
-	script := fmt.Sprintf("echo '%s'|dmenu -p 'search'", strings.Join(list, "\n"))
+func Choose(prompt string, list []string) (item string, err error) {
+	script := fmt.Sprintf("echo '%s'|dmenu -p '%s'", strings.Join(list, "\n"), prompt)
 	stdout, _, err := NewExecService().RunScriptShell(script)
 	if err != nil {
 		return "", err
 	}
 	item = strings.TrimSpace(stdout)
 	return item, nil
+}
+
+func GetInput(prompt string) (input string, err error) {
+	script := fmt.Sprintf("dmenu < /dev/null -p '%s'", prompt)
+	stdout, _, err := NewExecService().RunScriptShell(script)
+	if err != nil {
+		return "", err
+	}
+	input = strings.TrimSpace(stdout)
+	return input, nil
 }
 
 func Lazy(option string, filepath string) {
@@ -246,4 +258,31 @@ func GetPosition(xr float64, yr float64) (x, y int) {
 func GetGeoForSt(xr float64, yr float64, w int, h int) (geo string) {
 	x, y := GetPosition(xr, yr)
 	return fmt.Sprintf("%dx%d+%d+%d", w, h, x, y)
+}
+
+func GetKnownHosts() (knownHosts []string, err error) {
+	knownHosts = []string{}
+	set := map[string]bool{}
+	b, err := os.ReadFile(path.Join(os.Getenv("HOME"), ".ssh/known_hosts"))
+	if err != nil {
+		return knownHosts, err
+	}
+	str := string(b)
+	slice1 := strings.Split(str, "\n")
+	for _, x := range slice1 {
+		slice2 := strings.Split(x, " ")
+		if len(slice2) != 3 {
+			continue
+		}
+		host := strings.TrimSpace(slice2[0])
+		if len(host) == 0 {
+			continue
+		}
+		set[host] = true
+	}
+	for k := range set {
+		knownHosts = append(knownHosts, k)
+	}
+	sort.Strings(knownHosts)
+	return knownHosts, nil
 }

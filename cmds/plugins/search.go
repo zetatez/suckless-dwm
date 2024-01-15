@@ -103,7 +103,7 @@ func (s *Search) Search() {
 	for k := range ActionMap {
 		list = append(list, k)
 	}
-	content, err := sugar.Choose(list)
+	content, err := sugar.Choose("search: ", list)
 	if err != nil {
 		return
 	}

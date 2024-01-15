@@ -39,6 +39,7 @@ build:
 	go build -o ./bins/toggle-wechat                 ./cmds/toggle-wechat/main.go &
 	go build -o ./bins/toggle-xournal                ./cmds/toggle-xournal/main.go &
 	go build -o ./bins/wifi-connect                  ./cmds/wifi-connect/main.go &
+	go build -o ./bins/ssh                           ./cmds/ssh/main.go &
 	cp ./cmds/toggle-search-file-content/main        ./bins/toggle-search-file-content &
 	cp ./cmds/toggle-git-show-log/main               ./bins/git-show-log &
 
