@@ -80,13 +80,7 @@ func SSH() {
 		host := strings.TrimSpace(slice[0])
 		user := strings.TrimSpace(slice[1])
 		password := strings.TrimSpace(slice[2])
-		shell := os.Getenv("SHELL")
-		if shell == "" {
-			shell = "/bin/bash"
-		}
-		sshcmd := "sshpass -p \"" + password + "\" ssh -o \"StrictHostKeyChecking no\" " + user + "@" + host
-		cmd := fmt.Sprintf("st -e %s -c '%s'", shell, sshcmd)
-		_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+		err = sugar.SSH(host, 22, user, password)
 		if err != nil {
 			sugar.Notify(err)
 			return
@@ -109,13 +103,8 @@ func SSH() {
 			sugar.Notify(err)
 			return
 		}
-		shell := os.Getenv("SHELL")
-		if shell == "" {
-			shell = "/bin/bash"
-		}
-		sshcmd := "sshpass -p \"" + password + "\" ssh -o \"StrictHostKeyChecking no\" " + user + "@" + host
-		cmd := fmt.Sprintf("st -e %s -c '%s'", shell, sshcmd)
-		_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+
+		err = sugar.SSH(host, 22, user, password)
 		if err != nil {
 			sugar.Notify(err)
 			return

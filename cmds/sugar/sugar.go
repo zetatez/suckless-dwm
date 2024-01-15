@@ -135,7 +135,11 @@ func IsFile(path string) (isFile bool) {
 }
 
 func Choose(prompt string, list []string) (item string, err error) {
-	script := fmt.Sprintf("echo '%s'|dmenu -p '%s'", strings.Join(list, "\n"), prompt)
+	script := fmt.Sprintf(
+		"echo '%s'|dmenu -p '%s'",
+		strings.Join(list, "\n"),
+		prompt,
+	)
 	stdout, _, err := NewExecService().RunScriptShell(script)
 	if err != nil {
 		return "", err
@@ -285,4 +289,24 @@ func GetKnownHosts() (knownHosts []string, err error) {
 	}
 	sort.Strings(knownHosts)
 	return knownHosts, nil
+}
+
+func SSH(host string, port int, user string, password string) (err error) {
+	shell := os.Getenv("SHELL")
+	if shell == "" {
+		shell = "/bin/bash"
+	}
+	sshcmd := fmt.Sprintf(
+		`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`,
+		password,
+		port,
+		user,
+		host,
+	)
+	cmd := fmt.Sprintf("st -e %s -c '%s'", shell, sshcmd)
+	_, _, err = NewExecService().RunScriptShell(cmd)
+	if err != nil {
+		return err
+	}
+	return nil
 }
