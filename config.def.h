@@ -12,7 +12,6 @@
 #define PREFIX    "/home/dionysus/.suckless/suckless-dwm/cmds/bins/"
 #define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
 #define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
-#define STSP(cmd) { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
 
 /* appearance */
 static const unsigned int borderpx  = 1;
@@ -54,7 +53,7 @@ static const Rule rules[] = {
   {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
   {"music",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
   {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 },
+  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 }, // float window
 };
 
 static const char *skipswallow[] = { "vimb", "surf" };
@@ -97,16 +96,6 @@ static const char *termcmd[]           = { "st", NULL };
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
 static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
 
-/* commands */
-// static const char *cmd_lazy_exec[]              =  ST("lazy -o exec -f \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -o view -f {}' --select-1 --exit-0|xargs lazy -e {}\"");
-// static const char *cmd_lazy_copy[]              =  ST("lazy -o copy -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-// static const char *cmd_lazy_rename[]            =  ST("lazy -o rename -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='rename>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-// static const char *cmd_lazy_delete[]            =  ST("lazy -o delete -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-static const char *cmd_lazy_open[]                 =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_book[]            =  ST("lazy -o open -f \"$(fd --type f -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -o view -f {}' --reverse --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_media[]           =  ST("lazy -o open -f \"$(fd --type f -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -o view -f {}' --reverse --select-1 --exit-0)\"");
-static const char *cmd_lazy_open_wiki[]            =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-
 static const char *cmd_screen_light_dec[]          =  SH("sudo light -U 5");
 static const char *cmd_screen_light_inc[]          =  SH("sudo light -A 5");
 static const char *cmd_screenslock[]               =  SH("sleep .5 && xset dpms force off && slock");
@@ -118,8 +107,6 @@ static const char *cmd_volume_toggle[]             =  SH("amixer set Master togg
 static const char *cmd_microphone_dec[]            =  SH("amixer set Capture 5%-");
 static const char *cmd_microphone_inc[]            =  SH("amixer set Capture 5%+");
 static const char *cmd_microphone_toggle[]         =  SH("amixer set Capture toggle");
-
-/* utils */
 static const char *toggle_passmenu[]               =  SH(PREFIX"/toggle-passmenu");
 static const char *toggle_photoshop[]              =  SH(PREFIX"/toggle-photoshop");
 static const char *toggle_addressbook[]            =  SH(PREFIX"/toggle-addressbook");
@@ -152,6 +139,14 @@ static const char *handle_copied[]                 =  SH(PREFIX"/handle-copied")
 static const char *toggle_serarch_file_content[]   =  ST(PREFIX"/toggle-search-file-content");
 static const char *wifi_connect[]                  =  SH(PREFIX"/wifi-connect");
 static const char *search[]                        =  SH(PREFIX"/search");
+static const char *lazy_open[]                     =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
+static const char *lazy_open_book[]                =  ST("lazy -o open -f \"$(fd --type f -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -o view -f {}' --reverse --select-1 --exit-0)\"");
+static const char *lazy_open_media[]               =  ST("lazy -o open -f \"$(fd --type f -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -o view -f {}' --reverse --select-1 --exit-0)\"");
+static const char *lazy_open_wiki[]                =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
+// static const char *lazy_exec[]                  =  ST("lazy -o exec -f \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -o view -f {}' --select-1 --exit-0|xargs lazy -e {}\"");
+// static const char *lazy_copy[]                  =  ST("lazy -o copy -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
+// static const char *lazy_rename[]                =  ST("lazy -o rename -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='rename>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
+// static const char *lazy_delete[]                =  ST("lazy -o delete -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
 
 static const Key keys[] = {
   /* modifier                     key            function           argument                             */
@@ -189,24 +184,24 @@ static const Key keys[] = {
   { SUPKEY,                       XK_c,          spawn,             {.v = toggle_calendar_schedule_day   } },
 //{ SUPKEY,                       XK_d,          spawn,             {.v =                                } },
   { SUPKEY,                       XK_e,          spawn,             {.v = toggle_mutt                    } },
-  { SUPKEY,                       XK_f,          spawn,             {.v = cmd_lazy_open                  } },
+  { SUPKEY,                       XK_f,          spawn,             {.v = lazy_open                      } },
   { SUPKEY,                       XK_g,          spawn,             {.v = toggle_serarch_file_content    } },
 //{ SUPKEY,                       XK_h,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_i,          spawn,             {.v =                                } },
 //{ SUPKEY,                       XK_j,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_k,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_l,          spawn,             {.v = x                              } },
-  { SUPKEY,                       XK_m,          spawn,             {.v = toggle_music                   } }, // todo opt
+  { SUPKEY,                       XK_m,          spawn,             {.v = toggle_music                   } },
 //{ SUPKEY,                       XK_n,          spawn,             {.v =                                } },
   { SUPKEY,                       XK_o,          spawn,             {.v = handle_copied                  } },
-  { SUPKEY,                       XK_p,          spawn,             {.v = cmd_lazy_open_book             } },
+  { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_book                 } },
   { SUPKEY,                       XK_q,          spawn,             {.v = cmd_screenslock                } },
   { SUPKEY,                       XK_r,          spawn,             {.v = toggle_joshuto                 } },
   { SUPKEY,                       XK_s,          spawn,             {.v = search                         } },
 //{ SUPKEY,                       XK_t,          spawn,             {.v =                                } },
   { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey               } },
-  { SUPKEY,                       XK_v,          spawn,             {.v = cmd_lazy_open_media            } },
-  { SUPKEY,                       XK_w,          spawn,             {.v = cmd_lazy_open_wiki             } },
+  { SUPKEY,                       XK_v,          spawn,             {.v = lazy_open_media                } },
+  { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_wiki                 } },
   { SUPKEY,                       XK_x,          spawn,             {.v = toggle_wallpaper               } },
   { SUPKEY,                       XK_y,          spawn,             {.v = toggle_show                    } },
 //{ SUPKEY,                       XK_z,          spawn,             {.v =                                } },

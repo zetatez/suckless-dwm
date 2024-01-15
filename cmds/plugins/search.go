@@ -36,7 +36,6 @@ var ActionMap = map[string]func(){
 	"toggle: inkscape":               ToggleInkscape,
 	"toggle: irssi":                  ToggleIrssi,
 	"toggle: joshuto":                ToggleJoshuto,
-	"toggle: julia":                  ToggleJulia,
 	"toggle: keyboard-light":         ToggleKeyboardLight,
 	"toggle: krita":                  ToggleKrita,
 	"toggle: lazydocker":             ToggleLazyDocker,

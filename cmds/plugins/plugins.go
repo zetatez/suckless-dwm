@@ -84,7 +84,7 @@ func ToggleFlameshot() {
 }
 
 func ToggleInkscape() {
-	LaunchApp("inkscape")
+	sugar.Toggle("inkscape")
 }
 
 func ToggleJoshuto() {
