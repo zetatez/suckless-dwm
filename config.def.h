@@ -14,38 +14,6 @@
 #define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
 #define STSP(cmd) { "st", "-g", "180x48", "-t", scratchpadname, "-e", "sh", "-c", cmd, NULL }
 
- // search
- // toggle-addressbook
- // toggle-bluetooth
- //
- // toggle-calendar-schedule-day
- // toggle-calendar-schedule-week
- // toggle-chrome
- // toggle-chrome-with-proxy
- // toggle-diary
- // toggle-flameshot
- // toggle-inkscape
- // toggle-joshuto
- // toggle-julia
- // toggle-kb-light
- // toggle-lazydocker
- // toggle-music
- // toggle-music-net-cloud
- // toggle-mutt
- // toggle-photoshop
- // toggle-rec-audio
- // toggle-rec-video
- // toggle-redshift
- // toggle-rss
- // toggle-screen
- // toggle-screenkey
- // toggle-show
- // toggle-sublime
- // toggle-sys-shortcuts
- // toggle-top
- // toggle-wallpaper
- // toggle-wechat
-
 /* appearance */
 static const unsigned int borderpx  = 1;
 static const unsigned int snap      = 0;

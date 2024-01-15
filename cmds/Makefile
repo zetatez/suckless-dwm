@@ -1,6 +1,7 @@
 default: clean build
 
 build:
+	mkdir -p ./bins/
 	go build -o ./bins/format-json                   ./cmds/format-json/main.go &
 	go build -o ./bins/format-sql                    ./cmds/format-sql/main.go &
 	go build -o ./bins/handle-copied                 ./cmds/handle-copied/main.go &
