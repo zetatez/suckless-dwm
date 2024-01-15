@@ -4,7 +4,6 @@ build:
 	mkdir -p ./bins/
 	go build -o ./bins/format-json                   ./cmds/format-json/main.go &
 	go build -o ./bins/format-sql                    ./cmds/format-sql/main.go &
-	go build -o ./bins/handle-copied                 ./cmds/handle-copied/main.go &
 	go build -o ./bins/search                        ./cmds/search/main.go &
 	go build -o ./bins/toggle-addressbook            ./cmds/toggle-addressbook/main.go &
 	go build -o ./bins/toggle-bluetooth              ./cmds/toggle-bluetooth/main.go &
@@ -38,8 +37,9 @@ build:
 	go build -o ./bins/toggle-wallpaper              ./cmds/toggle-wallpaper/main.go &
 	go build -o ./bins/toggle-wechat                 ./cmds/toggle-wechat/main.go &
 	go build -o ./bins/toggle-xournal                ./cmds/toggle-xournal/main.go &
-	go build -o ./bins/wifi-connect                  ./cmds/wifi-connect/main.go &
-	go build -o ./bins/ssh                           ./cmds/ssh/main.go &
+	go build -o ./bins/toggle-ssh                    ./cmds/toggle-ssh/main.go &
+	go build -o ./bins/workflow-handle-copied        ./cmds/workflow-handle-copied/main.go &
+	go build -o ./bins/workflow-wifi-connect         ./cmds/workflow-wifi-connect/main.go &
 	cp ./cmds/toggle-search-file-content/main        ./bins/toggle-search-file-content &
 	cp ./cmds/toggle-git-show-log/main               ./bins/git-show-log &
 

@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.WifiConnect()
+	plugins.WorkflowWifiConnect()
 }

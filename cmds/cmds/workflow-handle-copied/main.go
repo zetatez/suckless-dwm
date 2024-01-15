@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.SSH()
+	plugins.WorkflowHandleCopied()
 }

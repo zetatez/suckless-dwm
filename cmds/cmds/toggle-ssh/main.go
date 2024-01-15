@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.HandleCopied()
+	plugins.ToggleSSH()
 }
