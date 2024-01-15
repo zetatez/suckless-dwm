@@ -21,12 +21,12 @@ static const int scalepreview       = 3;
 static const int previewbar         = 1;
 static const int showbar            = 1;
 static const int topbar             = 1;
-static const int barheight          = 24;
+static const int barheight          = 20;
 static const int vertpad            = 0;
 static const int sidepad            = 0;
 static const int defaultwinpad      = 0;
 static const int swallowfloating    = 1;
-static const char *fonts[]          = { "DejaVuSansMono Nerd Font:style=Book:size=18" };
+static const char *fonts[]          = { "DejaVuSansMono Nerd Font:style=Book:size=16" };
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -126,7 +126,7 @@ static const char *toggle_addressbook[]            =  SH(PREFIX"/toggle-addressb
 static const char *toggle_bluetooth[]              =  SH(PREFIX"/toggle-bluetooth");
 static const char *toggle_calendar_schedule_day[]  =  SH(PREFIX"/toggle-calendar-schedule-day");
 static const char *toggle_calendar_schedule_week[] =  SH(PREFIX"/toggle-calendar-schedule-week");
-static const char *toggle_chrome_with_proxy[]      =  SH(PREFIX"/toggle-chrome-with-proxy");
+static const char *toggle_chrome[]                 =  SH(PREFIX"/toggle-chrome");
 static const char *toggle_mutt[]                   =  SH(PREFIX"/toggle-mutt");
 static const char *toggle_flameshot[]              =  SH(PREFIX"/toggle-flameshot");
 static const char *toggle_inkscape[]               =  SH(PREFIX"/toggle-inkscape");
@@ -185,7 +185,7 @@ static const Key keys[] = {
 
   // SUPKEY + a-z, etc
 //{ SUPKEY,                       XK_a,          spawn,             {.v =                                } },
-  { SUPKEY,                       XK_b,          spawn,             {.v = toggle_chrome_with_proxy       } },
+  { SUPKEY,                       XK_b,          spawn,             {.v = toggle_chrome                  } },
   { SUPKEY,                       XK_c,          spawn,             {.v = toggle_calendar_schedule_day   } },
 //{ SUPKEY,                       XK_d,          spawn,             {.v =                                } },
   { SUPKEY,                       XK_e,          spawn,             {.v = toggle_mutt                    } },
