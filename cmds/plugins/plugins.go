@@ -150,6 +150,14 @@ func TogglePython() {
 	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e python", ScratchPad, ScratchPad))
 }
 
+func ToggleScala() {
+	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e scala", ScratchPad, ScratchPad))
+}
+
+func ToggleLua() {
+	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e lua", ScratchPad, ScratchPad))
+}
+
 func ToggleRecAudio() {
 	cmd := fmt.Sprintf(
 		"st  -t %s -c %s -e ffmpeg -y -r 60 -f alsa -i default -c:a flac %s",

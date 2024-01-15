@@ -175,6 +175,7 @@ func IsUrl(content string) (isUrl bool) {
 }
 
 func IsRunning(proc string) (isrunning bool) {
+	curpid := os.Getpid()
 	proc = strings.ReplaceAll(strings.ReplaceAll(proc, "'", ""), `"`, "")
 	procs, err := process.Processes()
 	if err != nil {
@@ -185,6 +186,9 @@ func IsRunning(proc string) (isrunning bool) {
 		if err != nil {
 			continue
 		}
+		if p.Pid == int32(curpid) {
+			continue
+		}
 		if name == proc {
 			return true
 		}
@@ -192,6 +196,9 @@ func IsRunning(proc string) (isrunning bool) {
 	for _, p := range procs {
 		cmdline, err := p.Cmdline()
 		if err != nil {
+			continue
+		}
+		if p.Pid == int32(curpid) {
 			continue
 		}
 		if strings.Contains(cmdline, proc) {
@@ -202,6 +209,8 @@ func IsRunning(proc string) (isrunning bool) {
 }
 
 func Kill(proc string) {
+	curpid := os.Getpid()
+	proc = strings.ReplaceAll(strings.ReplaceAll(proc, "'", ""), `"`, "")
 	procs, err := process.Processes()
 	if err != nil {
 		return
@@ -211,6 +220,9 @@ func Kill(proc string) {
 		if err != nil {
 			continue
 		}
+		if p.Pid == int32(curpid) {
+			continue
+		}
 		if name == proc {
 			p.Kill()
 		}
@@ -218,6 +230,9 @@ func Kill(proc string) {
 	for _, p := range procs {
 		cmdline, err := p.Cmdline()
 		if err != nil {
+			continue
+		}
+		if p.Pid == int32(curpid) {
 			continue
 		}
 		if strings.Contains(cmdline, proc) {
