@@ -18,10 +18,10 @@ import (
 )
 
 const (
-	WallPaperPath    = "Pictures/wallpapers"
-	DefaultWallpaper = "0101.jpg"
-	ScratchPad       = "scratchpad"
-	FloatWindow      = "00001011"
+	WallPaperPath     = "Pictures/wallpapers"
+	DefaultWallpaper  = "default-wallpaper.jpg"
+	WinNameScratchPad = "scratchpad"
+	WinNameFloat      = "00001011"
 )
 
 func ToggleAddressbook() {
@@ -94,7 +94,7 @@ func ToggleJoshuto() {
 }
 
 func ToggleJulia() {
-	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e julia", ScratchPad, ScratchPad))
+	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e julia", WinNameScratchPad, WinNameScratchPad))
 }
 
 func ToggleKeyboardLight() {
@@ -149,22 +149,22 @@ func ToggleKrita() {
 }
 
 func TogglePython() {
-	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e python", ScratchPad, ScratchPad))
+	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e python", WinNameScratchPad, WinNameScratchPad))
 }
 
 func ToggleScala() {
-	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e scala", ScratchPad, ScratchPad))
+	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e scala", WinNameScratchPad, WinNameScratchPad))
 }
 
 func ToggleLua() {
-	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e lua", ScratchPad, ScratchPad))
+	sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e lua", WinNameScratchPad, WinNameScratchPad))
 }
 
 func ToggleRecAudio() {
 	cmd := fmt.Sprintf(
 		"st  -t %s -c %s -e ffmpeg -y -r 60 -f alsa -i default -c:a flac %s",
-		ScratchPad,
-		ScratchPad,
+		WinNameScratchPad,
+		WinNameScratchPad,
 		path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-a-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))),
 	)
 	switch {
@@ -179,8 +179,8 @@ func ToggleRecVideo() {
 	w, h := sugar.GetScreenSize()
 	cmd := fmt.Sprintf(
 		"st  -t %s -c %s -e ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s",
-		ScratchPad,
-		ScratchPad,
+		WinNameScratchPad,
+		WinNameScratchPad,
 		w,
 		h,
 		os.Getenv("DISPLAY"),
@@ -251,6 +251,7 @@ func ToggleScreen() {
 		sugar.Notify(err)
 		return
 	}
+	time.Sleep(10 * time.Millisecond)
 	cmd = fmt.Sprintf("feh --bg-file %s", path.Join(os.Getenv("HOME"), WallPaperPath, DefaultWallpaper))
 	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
 	if err != nil {
@@ -268,8 +269,8 @@ func ToggleShow() {
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0",
 			sugar.GetGeoForSt(0.74, 0.08, 40, 12),
-			FloatWindow,
-			FloatWindow,
+			WinNameFloat,
+			WinNameFloat,
 		),
 	)
 }
