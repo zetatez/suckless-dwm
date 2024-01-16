@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "wrong param, expected exact 1 param"
+  exit 1
+fi
+
+curdir=$1
+
+fd \
+  --type f \
+  --extension jpg \
+  --extension jpeg \
+  --extension png \
+  --extension gif \
+  --extension bmp \
+  --extension tiff \
+  --exclude repos \
+  . "$curdir" \
+|sxiv -ftio

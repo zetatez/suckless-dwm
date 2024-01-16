@@ -1,0 +1,17 @@
+#!/bin/bash
+
+fd \
+  --type f \
+  --extension md \
+  --hidden \
+  --exclude .git \
+  --exclude .cache \
+  --exclude .local \
+  . "$HOME" \
+|fzf \
+  --prompt="search wiki>" \
+  --preview "lazy -o view -f {}" \
+  --select-1 \
+  --exit-0 \
+  --print0 \
+|xargs -0 -o lazy -o open -f

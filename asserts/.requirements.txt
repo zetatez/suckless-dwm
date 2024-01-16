@@ -1,5 +1,0 @@
-psutil
-pyperclip
-pyqt5
-wget
-sqlparse

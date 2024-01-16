@@ -9,7 +9,6 @@
   { MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define PREFIX    "/home/dionysus/.suckless/suckless-dwm/cmds/bins/"
 #define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
 #define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
 
@@ -20,12 +19,17 @@ static const int scalepreview       = 3;
 static const int previewbar         = 1;
 static const int showbar            = 1;
 static const int topbar             = 1;
-static const int barheight          = 20;
+static const int barheight          = 24;
 static const int vertpad            = 0;
 static const int sidepad            = 0;
 static const int defaultwinpad      = 0;
 static const int swallowfloating    = 1;
-static const char *fonts[]          = { "DejaVuSansMono Nerd Font:style=Book:size=16" };
+static const char *fonts[]          = {
+  "Hack:style=Regular:size=16:antialias=true:autohint=true",
+  "NotoColorEmoji:pixelsize=10:antialias=true:autohint=true",
+  // "DejaVuSansMono Nerd Font:style=Book:size=16",
+  // "Hack:style=Italic:size=16:antialias=true:autohint=true",
+};
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -40,20 +44,22 @@ static const char *colors[][3]      = {
 
 static const char *const autostart[] = {
   "dwmblocks", NULL,
-  "/home/dionysus/.dwm/autostart.sh", NULL,
+  "picom", "-b", NULL,
+  "hhkb", NULL,
+  "dunst", "&", NULL,
   NULL
 };
 
 /* tagging */
 // static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
-static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
   {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
   {"music",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
   {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 }, // float window
+  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 }, // win name of float window
 };
 
 static const char *skipswallow[] = { "vimb", "surf" };
@@ -83,11 +89,13 @@ static const Layout layouts[] = {
   { "󰾍",  layout_grid             },
   { "󰓌",  layout_hacker           },
   { "⬚",  layout_monocle          },
-  { "∅",  NULL                    },
+  { "󰕰",  layout_overview         },
+//{ "∅",  NULL                    }, // no layout, abandon
   { NULL, NULL                    },
 };
 
-static const Layout overviewlayout = { "󰕰",  layout_overview };
+// static const Layout overviewlayout = { "󰕰",  layout_overview };
+static const Layout overviewlayout = { "",  layout_overview_right_side };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -96,112 +104,114 @@ static const char *termcmd[]           = { "st", NULL };
 static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
 static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
 
-static const char *cmd_screen_light_dec[]          =  SH("sudo light -U 5");
-static const char *cmd_screen_light_inc[]          =  SH("sudo light -A 5");
-static const char *cmd_screenslock[]               =  SH("sleep .5 && xset dpms force off && slock");
-static const char *cmd_shutdown[]                  =  SH("sleep .5 && systemctl poweroff");
-static const char *cmd_suspend[]                   =  SH("sleep .5 && systemctl suspend");
-static const char *cmd_volume_dec[]                =  SH("amixer set Master 5%-");
-static const char *cmd_volume_inc[]                =  SH("amixer set Master 5%+");
-static const char *cmd_volume_toggle[]             =  SH("amixer set Master toggle");
-static const char *cmd_microphone_dec[]            =  SH("amixer set Capture 5%-");
-static const char *cmd_microphone_inc[]            =  SH("amixer set Capture 5%+");
-static const char *cmd_microphone_toggle[]         =  SH("amixer set Capture toggle");
-static const char *toggle_passmenu[]               =  SH(PREFIX"/toggle-passmenu");
-static const char *toggle_photoshop[]              =  SH(PREFIX"/toggle-photoshop");
-static const char *toggle_addressbook[]            =  SH(PREFIX"/toggle-addressbook");
-static const char *toggle_bluetooth[]              =  SH(PREFIX"/toggle-bluetooth");
-static const char *toggle_calendar_schedule_day[]  =  SH(PREFIX"/toggle-calendar-schedule-day");
-static const char *toggle_calendar_schedule_week[] =  SH(PREFIX"/toggle-calendar-schedule-week");
-static const char *toggle_chrome[]                 =  SH(PREFIX"/toggle-chrome");
-static const char *toggle_mutt[]                   =  SH(PREFIX"/toggle-mutt");
-static const char *toggle_flameshot[]              =  SH(PREFIX"/toggle-flameshot");
-static const char *toggle_inkscape[]               =  SH(PREFIX"/toggle-inkscape");
-static const char *toggle_julia[]                  =  SH(PREFIX"/toggle-julia");
-static const char *toggle_kb_light[]               =  SH(PREFIX"/toggle-kb-light");
-static const char *toggle_lazydocker[]             =  SH(PREFIX"/toggle-lazydocker");
-static const char *toggle_music[]                  =  SH(PREFIX"/toggle-music");
-static const char *toggle_music_net_cloud[]        =  SH(PREFIX"/toggle-music-net-cloud");
-static const char *toggle_rec_audio[]              =  SH(PREFIX"/toggle-rec-audio");
-static const char *toggle_rec_video[]              =  SH(PREFIX"/toggle-rec-video");
-static const char *toggle_redshift[]               =  SH(PREFIX"/toggle-redshift");
-static const char *toggle_screen[]                 =  SH(PREFIX"/toggle-screen");
-static const char *toggle_screenkey[]              =  SH(PREFIX"/toggle-screenkey");
-static const char *toggle_show[]                   =  SH(PREFIX"/toggle-show");
-static const char *toggle_sublime[]                =  SH(PREFIX"/toggle-sublime");
-static const char *toggle_sys_shortcuts[]          =  SH(PREFIX"/toggle-sys-shortcuts");
-static const char *toggle_top[]                    =  SH(PREFIX"/toggle-top");
-static const char *toggle_joshuto[]                =  SH(PREFIX"/toggle-joshuto");
-static const char *toggle_wallpaper[]              =  SH(PREFIX"/toggle-wallpaper");
-static const char *toggle_wechat[]                 =  SH(PREFIX"/toggle-wechat");
-static const char *toggle_clipmenu[]               =  SH(PREFIX"/toggle-clipmenu");
-static const char *toggle_serarch_file_content[]   =  ST(PREFIX"/toggle-search-file-content");
-static const char *workflow_handle_copied[]        =  SH(PREFIX"/workflow-handle-copied");
-static const char *workflow_wifi_connect[]         =  SH(PREFIX"/worflow-wifi-connect");
-static const char *search[]                        =  SH(PREFIX"/search");
-static const char *lazy_open[]                     =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/'|fzf --prompt='open>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-static const char *lazy_open_book[]                =  ST("lazy -o open -f \"$(fd --type f -e pdf -e epub -e djvu -e mobi --exclude .git . '/home/dionysus/my-library'|fzf --prompt='books>' --preview 'lazy -o view -f {}' --reverse --select-1 --exit-0)\"");
-static const char *lazy_open_media[]               =  ST("lazy -o open -f \"$(fd --type f -e jpg -e jpeg -e png -e gif -e bmp -e tiff -e mp3 -e flac -e mkv -e avi -e mp4 --exclude .git . '/home/dionysus/'|fzf --prompt='medias>' --preview 'lazy -o view -f {}' --reverse --select-1 --exit-0)\"");
-static const char *lazy_open_wiki[]                =  ST("lazy -o open -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus/my-wiki'|fzf --prompt='wikis>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-// static const char *lazy_exec[]                  =  ST("lazy -o exec -f \"$(fd --type f -e sh -e jl -e py -e tex -e c -e cpp -e go -e scala -e java -e rs -e sql --exclude .git . '${HOME}'|fzf --prompt='exec>' --preview 'lazy -o view -f {}' --select-1 --exit-0|xargs lazy -e {}\"");
-// static const char *lazy_copy[]                  =  ST("lazy -o copy -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='copy>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-// static const char *lazy_rename[]                =  ST("lazy -o rename -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='rename>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
-// static const char *lazy_delete[]                =  ST("lazy -o delete -f \"$(fd --type f --hidden --exclude .git . '/home/dionysus'|fzf --prompt='delete>' --preview 'lazy -o view -f {}' --select-1 --exit-0)\"");
+static const char *screen_light_dec[]               = SH("sudo light -U 5");
+static const char *screen_light_inc[]               = SH("sudo light -A 5");
+static const char *screenslock[]                    = SH("xset dpms force off && slock");
+static const char *sys_shutdown[]                   = SH("systemctl poweroff");
+static const char *sys_suspend[]                    = SH("systemctl suspend");
+static const char *volume_dec[]                     = SH("amixer set Master 5%-");
+static const char *volume_inc[]                     = SH("amixer set Master 5%+");
+static const char *volume_toggle[]                  = SH("amixer set Master toggle");
+static const char *microphone_dec[]                 = SH("amixer set Capture 5%-");
+static const char *microphone_inc[]                 = SH("amixer set Capture 5%+");
+static const char *microphone_toggle[]              = SH("amixer set Capture toggle");
+static const char *toggle_passmenu[]                = SH("toggle-passmenu");
+static const char *toggle_krita[]                   = SH("toggle-krita");
+static const char *toggle_addressbook[]             = SH("toggle-addressbook");
+static const char *toggle_bluetooth[]               = SH("toggle-bluetooth");
+static const char *toggle_calendar_today_schedule[] = SH("toggle-calendar-today-schedule");
+static const char *toggle_calendar_scheduling[]     = SH("toggle-calendar-scheduling");
+static const char *toggle_chrome[]                  = SH("toggle-chrome");
+static const char *toggle_mutt[]                    = SH("toggle-mutt");
+static const char *toggle_flameshot[]               = SH("toggle-flameshot");
+static const char *toggle_inkscape[]                = SH("toggle-inkscape");
+static const char *toggle_julia[]                   = SH("toggle-julia");
+static const char *toggle_keyboard_light[]          = SH("toggle-keyboard-light");
+static const char *toggle_lazydocker[]              = SH("toggle-lazydocker");
+static const char *toggle_music[]                   = SH("toggle-music");
+static const char *toggle_music_net_cloud[]         = SH("toggle-music-net-cloud");
+static const char *toggle_rec_audio[]               = SH("toggle-rec-audio");
+static const char *toggle_rec_screen[]              = SH("toggle-rec-screen");
+static const char *toggle_rec_webcam[]              = SH("toggle-rec-webcam");
+static const char *toggle_redshift[]                = SH("toggle-redshift");
+static const char *toggle_screen[]                  = SH("toggle-screen");
+static const char *toggle_screenkey[]               = SH("toggle-screenkey");
+static const char *toggle_show[]                    = SH("toggle-show");
+static const char *toggle_sublime[]                 = SH("toggle-sublime");
+static const char *toggle_sys_shortcuts[]           = SH("toggle-sys-shortcuts");
+static const char *toggle_top[]                     = SH("toggle-top");
+static const char *toggle_joshuto[]                 = SH("toggle-joshuto");
+static const char *toggle_wallpaper[]               = SH("toggle-wallpaper");
+static const char *toggle_wechat[]                  = SH("toggle-wechat");
+static const char *toggle_clipmenu[]                = SH("toggle-clipmenu");
+static const char *handle_copied[]                  = SH("handle-copied");
+static const char *wifi_connect[]                   = SH("wifi-connect");
+static const char *hhkb_hint_mode[]                 = SH("hhkb-hint-mode");
+static const char *jump_to_code_from_log[]          = SH("jump-to-code-from-log");
+static const char *search[]                         = SH("search");
+static const char *note_diary[]                     = SH("note-diary");
+static const char *note_timeline[]                  = SH("note-timeline");
+static const char *note_flash_card[]                = SH("note-flash-card");
+static const char *lazy_open_file[]                 = ST("lazy-open-search-file");
+static const char *lazy_open_search_book[]          = ST("lazy-open-search-book");
+static const char *lazy_open_search_media[]         = ST("lazy-open-search-media");
+static const char *lazy_open_search_wiki[]          = ST("lazy-open-search-wiki");
+static const char *lazy_open_search_file_content[]  = ST("lazy-open-search-file-content");
 
 static const Key keys[] = {
-  /* modifier                     key            function           argument                             */
-  // SUPKEY + F1-F12
-  { SUPKEY,                       XK_F1,         spawn,             {.v = cmd_volume_toggle              } },
-  { SUPKEY,                       XK_F2,         spawn,             {.v = cmd_volume_dec                 } },
-  { SUPKEY,                       XK_F3,         spawn,             {.v = cmd_volume_inc                 } },
-  { SUPKEY,                       XK_F4,         spawn,             {.v = cmd_microphone_toggle          } },
-  { SUPKEY,                       XK_F5,         spawn,             {.v = cmd_screen_light_dec           } },
-  { SUPKEY,                       XK_F6,         spawn,             {.v = cmd_screen_light_inc           } },
-  { SUPKEY,                       XK_F7,         spawn,             {.v = workflow_wifi_connect          } },
+/*   modifier                     key            function           argument                             */
+// SUPKEY + F1-F12
+  { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle                  } },
+  { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec                     } },
+  { SUPKEY,                       XK_F3,         spawn,             {.v = volume_inc                     } },
+  { SUPKEY,                       XK_F4,         spawn,             {.v = microphone_toggle              } },
+  { SUPKEY,                       XK_F5,         spawn,             {.v = microphone_dec                 } },
+  { SUPKEY,                       XK_F6,         spawn,             {.v = microphone_inc                 } },
+  { SUPKEY,                       XK_F7,         spawn,             {.v = wifi_connect                   } },
   { SUPKEY,                       XK_F8,         spawn,             {.v = toggle_screen                  } },
   { SUPKEY,                       XK_F9,         spawn,             {.v = toggle_bluetooth               } },
-//{ SUPKEY,                       XK_F10,        spawn,             {.v =                                } },
-  { SUPKEY,                       XK_F11,        spawn,             {.v = toggle_kb_light                } },
-//{ SUPKEY,                       XK_F12,        spawn,             {.v =                                } },
+  { SUPKEY,                       XK_F10,        spawn,             {.v = screen_light_dec               } },
+  { SUPKEY,                       XK_F11,        spawn,             {.v = screen_light_inc               } },
+  { SUPKEY,                       XK_F12,        spawn,             {.v = toggle_keyboard_light          } },
 
-  // SUPKEY-ShiftMask + F1-F12
-//{ SUPKEY,                       XK_F1,         spawn,             {.v =                                } },
-  { SUPKEY|ShiftMask,             XK_F2,         spawn,             {.v = cmd_microphone_dec             } },
-  { SUPKEY|ShiftMask,             XK_F3,         spawn,             {.v = cmd_microphone_inc             } },
-//{ SUPKEY,                       XK_F4,         spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F5,         spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F6,         spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F7,         spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F8,         spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F9,         spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F10,        spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F11,        spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_F12,        spawn,             {.v =                                } },
+// SUPKEY-ShiftMask + F1-F12
+//{ SUPKEY|ShiftMask,             XK_F1,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F2,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F3,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F4,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F5,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F6,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F7,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F8,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F9,         spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F10,        spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F11,        spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_F12,        spawn,             {.v =                                } },
 
-  // SUPKEY + a-z, etc
+// SUPKEY + a-z, etc
 //{ SUPKEY,                       XK_a,          spawn,             {.v =                                } },
   { SUPKEY,                       XK_b,          spawn,             {.v = toggle_chrome                  } },
-  { SUPKEY,                       XK_c,          spawn,             {.v = toggle_calendar_schedule_day   } },
-//{ SUPKEY,                       XK_d,          spawn,             {.v =                                } },
+  { SUPKEY,                       XK_c,          spawn,             {.v = toggle_calendar_today_schedule } },
+  { SUPKEY,                       XK_d,          spawn,             {.v = note_diary                     } },
   { SUPKEY,                       XK_e,          spawn,             {.v = toggle_mutt                    } },
-  { SUPKEY,                       XK_f,          spawn,             {.v = lazy_open                      } },
-  { SUPKEY,                       XK_g,          spawn,             {.v = toggle_serarch_file_content    } },
+  { SUPKEY,                       XK_f,          spawn,             {.v = lazy_open_file                 } },
+  { SUPKEY,                       XK_g,          spawn,             {.v = lazy_open_search_file_content  } },
 //{ SUPKEY,                       XK_h,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_i,          spawn,             {.v =                                } },
 //{ SUPKEY,                       XK_j,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_k,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_l,          spawn,             {.v = x                              } },
   { SUPKEY,                       XK_m,          spawn,             {.v = toggle_music                   } },
-//{ SUPKEY,                       XK_n,          spawn,             {.v =                                } },
-  { SUPKEY,                       XK_o,          spawn,             {.v = workflow_handle_copied         } },
-  { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_book                 } },
-  { SUPKEY,                       XK_q,          spawn,             {.v = cmd_screenslock                } },
+  { SUPKEY,                       XK_n,          spawn,             {.v = hhkb_hint_mode                 } },
+  { SUPKEY,                       XK_o,          spawn,             {.v = handle_copied                  } },
+  { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_search_book          } },
+  { SUPKEY,                       XK_q,          spawn,             {.v = screenslock                    } },
   { SUPKEY,                       XK_r,          spawn,             {.v = toggle_joshuto                 } },
   { SUPKEY,                       XK_s,          spawn,             {.v = search                         } },
-//{ SUPKEY,                       XK_t,          spawn,             {.v =                                } },
+  { SUPKEY,                       XK_t,          spawn,             {.v = note_timeline                  } },
   { SUPKEY,                       XK_u,          spawn,             {.v = toggle_screenkey               } },
-  { SUPKEY,                       XK_v,          spawn,             {.v = lazy_open_media                } },
-  { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_wiki                 } },
+  { SUPKEY,                       XK_v,          spawn,             {.v = lazy_open_search_media         } },
+  { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_search_wiki          } },
   { SUPKEY,                       XK_x,          spawn,             {.v = toggle_wallpaper               } },
   { SUPKEY,                       XK_y,          spawn,             {.v = toggle_show                    } },
 //{ SUPKEY,                       XK_z,          spawn,             {.v =                                } },
@@ -211,14 +221,14 @@ static const Key keys[] = {
   { SUPKEY,                       XK_Escape,     spawn,             {.v = toggle_top                     } },
   { SUPKEY,                       XK_Print,      spawn,             {.v = toggle_flameshot               } },
 //{ SUPKEY,                       XK_backslash,  spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_slash,      spawn,             {.v =                                } },
-//{ SUPKEY,                       XK_comma,      spawn,             {.v =                                } },
+  { SUPKEY,                       XK_slash,      spawn,             {.v = note_flash_card                } },
+  { SUPKEY,                       XK_comma,      spawn,             {.v = jump_to_code_from_log          } },
 //{ SUPKEY,                       XK_period,     spawn,             {.v =                                } },
 
-  // SUPKEY-ShiftMask + a-z, etc
+// SUPKEY-ShiftMask + a-z, etc
   { SUPKEY|ShiftMask,             XK_a,          spawn,             {.v = toggle_addressbook             } },
 //{ SUPKEY|ShiftMask,             XK_b,          spawn,             {.v =                                } },
-  { SUPKEY|ShiftMask,             XK_c,          spawn,             {.v = toggle_calendar_schedule_week  } },
+  { SUPKEY|ShiftMask,             XK_c,          spawn,             {.v = toggle_calendar_scheduling     } },
   { SUPKEY|ShiftMask,             XK_d,          spawn,             {.v = toggle_lazydocker              } },
 //{ SUPKEY|ShiftMask,             XK_e,          spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_f,          spawn,             {.v =                                } },
@@ -231,8 +241,8 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = toggle_music_net_cloud         } },
 //{ SUPKEY|ShiftMask,             XK_n,          spawn,             {.v =                                } },
   { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = toggle_julia                   } },
-  { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = toggle_photoshop               } },
-  { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = cmd_suspend                    } },
+  { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = toggle_krita                   } },
+  { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = sys_suspend                    } },
   { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = toggle_redshift                } },
   { SUPKEY|ShiftMask,             XK_s,          spawn,             {.v = toggle_sublime                 } },
 //{ SUPKEY|ShiftMask,             XK_t,          spawn,             {.v =                                } },
@@ -243,16 +253,16 @@ static const Key keys[] = {
 //{ SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_z,          spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                                } },
-  { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = cmd_shutdown                   } },
+  { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = sys_shutdown                   } },
 //{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                                } },
-//{ SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v =                                } },
+  { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = toggle_rec_webcam              } },
   { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio               } },
-  { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_video               } },
+  { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_screen              } },
 
-  // MODKEY-ShiftMask/ControlMask + a-z, etc
+// MODKEY-ShiftMask/ControlMask + a-z, etc
   { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd                  } },
   { MODKEY,                       XK_c,          spawn,             {.v = toggle_clipmenu                } },
   { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                       } },
@@ -303,7 +313,7 @@ static const Key keys[] = {
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[10]                   } },
   { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                   } },
   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                   } },
-  { MODKEY|ShiftMask,             XK_f,          setlayout,         {.v = &layouts[13]                   } },
+  { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]                   } },
   { MODKEY,                       XK_0,          view,              {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                        } },
@@ -333,10 +343,10 @@ static const Button buttons[] = {
   /* click                event mask      button          function        argument */
   { ClkLtSymbol,          0,              Button1,        setlayout,      {0                         } },
   { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]          } },
-  { ClkWinTitle,          0,              Button2,        zoom,           {0                         } },
-  { ClkStatusText,        0,              Button1,        spawn,          {.v = termcmd              } },
-  { ClkStatusText,        0,              Button2,        spawn,          {.v = toggle_screen        } },
-  { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_sys_shortcuts } },
+  { ClkWinTitle,          0,              Button2,        setlayout,      {.v = &layouts[12]         } },
+  { ClkStatusText,        0,              Button1,        spawn,          {.v = search               } },
+  { ClkStatusText,        0,              Button2,        spawn,          {.v = toggle_sys_shortcuts } },
+  { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_screen        } },
   { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0                         } },
   { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0                         } },
   { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0                         } },

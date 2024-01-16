@@ -1,0 +1,29 @@
+#!/bin/bash
+
+fd \
+  --type f \
+  --hidden \
+  --exclude /boot \
+  --exclude /bin \
+  --exclude /sbin \
+  --exclude /dev \
+  --exclude /lib \
+  --exclude /lib64 \
+  --exclude /lost+found \
+  --exclude /mnt \
+  --exclude /run \
+  --exclude /srv \
+  --exclude /sys \
+  --exclude /usr \
+  --exclude /var \
+  --exclude .git \
+  --exclude .cache \
+  --exclude .local \
+  . "/" \
+|fzf \
+  --prompt="search file>" \
+  --preview "lazy -o view -f {}" \
+  --select-1 \
+  --exit-0 \
+  --print0 \
+|xargs -0 -o lazy -o open -f

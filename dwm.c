@@ -133,8 +133,9 @@ static void layout_deckvert(Monitor *m);
 static void layout_deckhori(Monitor *m);
 static void layout_bottomstackhori(Monitor *m);
 static void layout_bottomstackvert(Monitor *m);
-static void layout_overview(Monitor *m);
 static void layout_hacker(Monitor *m);
+static void layout_overview(Monitor *m);
+static void layout_overview_right_side(Monitor *m);
 
 /* variables */
 static const char broken[] = "broken";
@@ -3431,6 +3432,31 @@ layout_bottomstackvert(Monitor *m)
 }
 
 void
+layout_hacker(Monitor *m)
+{
+  unsigned int i, n, cx, cy, cw, ch;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+
+  if (n == 0) { return; }
+
+  cw = (m->ww - 2*gapow)*3/5;
+  ch = (m->wh - 2*gapoh)*3/5;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    cx = m->wx + gapow + (n-i-1)*(m->ww/34);
+    cy = m->wy + gapoh + (n-i-1)*(m->wh/34);
+    if (cy + ch - 2*c->bw > m->wh) {
+      cx = (m->ww - 2*gapow)/2 - cw/2;
+      cy = (m->wh - 2*gapoh)/2 - ch/2;
+    }
+    resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
+  }
+}
+
+void
 layout_overview(Monitor *m)
 {
   unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
@@ -3462,10 +3488,11 @@ layout_overview(Monitor *m)
   }
 }
 
+
 void
-layout_hacker(Monitor *m)
+layout_overview_right_side(Monitor *m)
 {
-  unsigned int i, n, cx, cy, cw, ch;
+  unsigned int i, n, cx, cy, cw, ch, rows;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3473,21 +3500,18 @@ layout_hacker(Monitor *m)
 
   if (n == 0) { return; }
 
-  cw = (m->ww - 2*gapow)*3/5;
-  ch = (m->wh - 2*gapoh)*3/5;
+  rows = n;
+
+  cw = (m->ww - 2 * gapow) / 8;
+  ch = (rows < 8) ? (m->wh - 2 * gapoh) / 8 : (m->wh - 2 * gapoh) / rows;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    cx = m->wx + gapow + (n-i-1)*(m->ww/34);
-    cy = m->wy + gapoh + (n-i-1)*(m->wh/34);
-    if (cy + ch - 2*c->bw > m->wh) {
-      cx = (m->ww - 2*gapow)/2 - cw/2;
-      cy = (m->wh - 2*gapoh)/2 - ch/2;
-    }
-    resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
+    cx = m->wx + gapow + 7 * cw;
+    cy = (rows < 8) ? (m->wh - 2 * gapoh) / 2 - ch * rows / 2 + ch * i : m->wy + gapoh + i * ch;
+    resize(c, cx, cy, cw - gapiw / 2 - 2 * c->bw, ch - gapih / 2 - 2 * c->bw, False);
   }
 }
 /* layout end */
-
 
 int
 main(int argc, char *argv[])

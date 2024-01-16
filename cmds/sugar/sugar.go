@@ -15,7 +15,7 @@ import (
 	"github.com/shirou/gopsutil/process"
 )
 
-func IsPathExists(path string) (exist bool) {
+func IsDirExists(path string) (exist bool) {
 	if Exists(path) && IsDir(path) {
 		return true
 	}
@@ -50,11 +50,11 @@ func CopyDir(src string, dst string) (err error) {
 		return fmt.Errorf("src path %s is equal to dst path %s", src, dst)
 	}
 
-	if !IsPathExists(src) {
+	if !IsDirExists(src) {
 		return fmt.Errorf("src path %s is not exist", src)
 	}
 
-	if !IsPathExists(dst) {
+	if !IsDirExists(dst) {
 		err = os.MkdirAll(dst, os.ModePerm)
 		if err != nil {
 			return err
@@ -82,7 +82,7 @@ func CopyDir(src string, dst string) (err error) {
 			}
 			d := strings.ReplaceAll(s, absSrc, absDst)
 			if info.IsDir() {
-				if !IsPathExists(d) {
+				if !IsDirExists(d) {
 					if err = os.MkdirAll(d, os.ModePerm); err != nil {
 						return err
 					}
@@ -136,6 +136,7 @@ func IsFile(path string) (isFile bool) {
 
 func Choose(prompt string, list []string) (item string, err error) {
 	script := fmt.Sprintf(
+		// "echo '%s'|rofi -show -dmenu -p '%s'",
 		"echo '%s'|dmenu -p '%s'",
 		strings.Join(list, "\n"),
 		prompt,
@@ -149,7 +150,11 @@ func Choose(prompt string, list []string) (item string, err error) {
 }
 
 func GetInput(prompt string) (input string, err error) {
-	script := fmt.Sprintf("dmenu < /dev/null -p '%s'", prompt)
+	script := fmt.Sprintf(
+		// "dmenu < /dev/null -p '%s'",           // cause: dmenu can not input ch
+		"rofi -show -dmenu < /dev/null -p '%s'",
+		prompt,
+	)
 	stdout, _, err := NewExecService().RunScriptShell(script)
 	if err != nil {
 		return "", err
@@ -249,7 +254,7 @@ func Toggle(proc string) {
 	}
 }
 
-func Notify(msg interface{}) {
+func Notify(msg ...interface{}) {
 	NewExecService().RunScriptShell(fmt.Sprintf("notify-send '%v'", msg))
 }
 
@@ -276,6 +281,16 @@ func GetPosition(xr float64, yr float64) (x, y int) {
 
 func GetGeoForSt(xr float64, yr float64, w int, h int) (geo string) {
 	x, y := GetPosition(xr, yr)
+	return fmt.Sprintf("%dx%d+%d+%d", w, h, x, y)
+}
+
+func GetGeoCenterForSt(wr float64, hr float64) (geo string) {
+	width, height := GetScreenSize()
+	Notify(width, height)
+	w := int(float64(width) * wr)
+	h := int(float64(height) * hr)
+	x := (width - w) / 2
+	y := (height - h) / 2
 	return fmt.Sprintf("%dx%d+%d+%d", w, h, x, y)
 }
 

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+fd \
+  --type f \
+  --extension jpg \
+  --extension jpeg \
+  --extension png \
+  --extension gif \
+  --extension bmp \
+  --extension tiff \
+  --extension avi \
+  --extension flac \
+  --extension mkv \
+  --extension mp3 \
+  --extension mp4 \
+  --hidden \
+  --exclude .git \
+  --exclude .cache \
+  --exclude .local \
+  . "$HOME" \
+|fzf \
+  --prompt="search media>" \
+  --preview "lazy -o view -f {}" \
+  --select-1 \
+  --exit-0 \
+  --print0 \
+|xargs -0 -o lazy -o open -f

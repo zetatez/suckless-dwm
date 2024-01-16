@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "wrong param, expected exact 1 param"
+  exit 1
+fi
+
+curdir=$1
+
+fd \
+  --type f \
+  --hidden \
+  --exclude .git \
+  --exclude .cache \
+  --exclude .local \
+  . "$curdir" \
+|fzf \
+  --prompt="lazy delete search file of dir $curdir>" \
+  --preview "lazy -o view -f {}" \
+  --select-1 \
+  --exit-0 \
+  --print0 \
+|xargs -0 -o lazy -o delete -f
