@@ -20,4 +20,4 @@ fd \
   --select-1 \
   --exit-0 \
   --print0 \
-|xargs -0 -o lazy -o copy -f
+|xargs -0 -o lazy -o cp -f

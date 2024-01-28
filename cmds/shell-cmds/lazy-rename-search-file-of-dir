@@ -22,4 +22,4 @@ fd \
   --select-1 \
   --exit-0 \
   --print0 \
-|xargs -0 -o lazy -o rename -f
+|xargs -0 -o lazy -o mv -f

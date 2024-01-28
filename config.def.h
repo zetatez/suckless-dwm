@@ -25,10 +25,9 @@ static const int sidepad            = 0;
 static const int defaultwinpad      = 0;
 static const int swallowfloating    = 1;
 static const char *fonts[]          = {
-  "Hack:style=Regular:size=16:antialias=true:autohint=true",
-  "NotoColorEmoji:pixelsize=10:antialias=true:autohint=true",
+  "Source Han Serif CN,思源宋体 CN,Source Han Serif CN ExtraLight,思源宋体 CN ExtraLight:style=ExtraLight,Regular:size=16",
+  // "Hack:style=Regular:size=16:antialias=true:autohint=true",
   // "DejaVuSansMono Nerd Font:style=Book:size=16",
-  // "Hack:style=Italic:size=16:antialias=true:autohint=true",
 };
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
@@ -76,26 +75,27 @@ static const unsigned int gapih     = 12;
 static const unsigned int gapiw     = 16;
 
 static const Layout layouts[] = {
-  { "⧉",  layout_fibonaccispiral  },
-  { "⧉",  layout_fibonaccidwindle },
-  { "⧈",  layout_centeranyshape   },
-  { "⧈",  layout_centerequalratio },
-  { "󰘸",  layout_deckvert         },
-  { "󰘸",  layout_deckhori         },
-  { "⬓" , layout_bottomstackvert  },
-  { "⬓",  layout_bottomstackhori  },
-  { "◨",  layout_tileright        },
-  { "◧",  layout_tileleft         },
-  { "󰾍",  layout_grid             },
-  { "󰓌",  layout_hacker           },
-  { "⬚",  layout_monocle          },
-  { "󰕰",  layout_overview         },
-//{ "∅",  NULL                    }, // no layout, abandon
-  { NULL, NULL                    },
+  { "⧉",  layout_fibonaccispiral     },
+  { "⧉",  layout_fibonaccidwindle    },
+  { "⧈",  layout_centeranyshape      },
+  { "⧈",  layout_centerequalratio    },
+  { "󰘸",  layout_deckvert            },
+  { "󰘸",  layout_deckhori            },
+  { "⬓" , layout_bottomstackvert     },
+  { "⬓",  layout_bottomstackhori     },
+  { "◨",  layout_tileright           },
+  { "◧",  layout_tileleft            },
+  { "󰾍",  layout_grid                },
+  { "󰓌",  layout_hacker              },
+  { "⬚",  layout_monocle             },
+  { "󰕰",  layout_overview            },
+  { "",  layout_overview_right_side },
+//{ "∅",  NULL                       }, // no layout, abandon
+  { NULL, NULL                       },
 };
 
-// static const Layout overviewlayout = { "󰕰",  layout_overview };
-static const Layout overviewlayout = { "",  layout_overview_right_side };
+static const Layout overviewlayout = { "",  layout_overview };
+// static const Layout overviewlayout = { "",  layout_overview_right_side };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
