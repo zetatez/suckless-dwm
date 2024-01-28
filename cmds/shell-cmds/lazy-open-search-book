@@ -6,10 +6,10 @@ fd \
   --extension epub \
   --extension djvu \
   --extension mobi \
-  --hidden \
   --exclude .git \
   --exclude .cache \
   --exclude .local \
+  --hidden \
   . "$HOME" \
 |fzf \
   --prompt='search book>' \
