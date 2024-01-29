@@ -25,6 +25,7 @@ var ActionMap = map[string]func(){
 	"get current-unix-sec":            GetCurrentUnixSec,
 	"get host name":                   GetHostName,
 	"get ip":                          GetIP,
+	"excalidraw":                      OpenWeb("http://127.0.0.1:3000"), // cd ~/github/excalidraw && docker-compose up -d
 	"map: google ap":                  OpenWeb("https://www.google.com/maps/place/shanghai"),
 	"email: 163":                      OpenWeb("https://mail.163.com"),
 	"email: gmail":                    OpenWeb("https://accounts.google.com/b/0/AddMailService"),
