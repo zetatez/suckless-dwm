@@ -2,6 +2,7 @@
 
 go build -o ./bins/search                         ./cmds/search/main.go &
 go build -o ./bins/handle-copied                  ./cmds/handle-copied/main.go &
+go build -o ./bins/format-yaml                    ./cmds/format-yaml/main.go &
 go build -o ./bins/format-json                    ./cmds/format-json/main.go &
 go build -o ./bins/format-sql                     ./cmds/format-sql/main.go &
 go build -o ./bins/ssh-to                         ./cmds/ssh-to/main.go &
@@ -11,7 +12,6 @@ go build -o ./bins/note-timeline                  ./cmds/note-timeline/main.go &
 go build -o ./bins/note-diary                     ./cmds/note-diary/main.go &
 go build -o ./bins/note-flash-card                ./cmds/note-flash-card/main.go &
 wait
-
 go build -o ./bins/toggle-addressbook             ./cmds/toggle-addressbook/main.go &
 go build -o ./bins/toggle-bluetooth               ./cmds/toggle-bluetooth/main.go &
 go build -o ./bins/toggle-calendar-scheduling     ./cmds/toggle-calendar-scheduling/main.go &
@@ -29,6 +29,7 @@ go build -o ./bins/toggle-music-net-cloud         ./cmds/toggle-music-net-cloud/
 go build -o ./bins/toggle-mutt                    ./cmds/toggle-mutt/main.go &
 go build -o ./bins/toggle-krita                   ./cmds/toggle-krita/main.go &
 go build -o ./bins/toggle-python                  ./cmds/toggle-python/main.go &
+wait
 go build -o ./bins/toggle-scala                   ./cmds/toggle-scala/main.go &
 go build -o ./bins/toggle-lua                     ./cmds/toggle-lua/main.go &
 go build -o ./bins/toggle-screen                  ./cmds/toggle-screen/main.go &

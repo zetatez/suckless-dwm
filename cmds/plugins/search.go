@@ -19,6 +19,7 @@ var ActionMap = map[string]func(){
 	"wifi-connect":                    WifiConnect,
 	"format sql":                      FormatSql,
 	"format json":                     FormatJson,
+	"format yaml":                     FormatYaml,
 	"search books online":             SearchBooksOnline,
 	"search videos online":            SearchVideosOnline,
 	"get current-datetime":            GetCurrentDatetime,
