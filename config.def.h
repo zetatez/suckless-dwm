@@ -25,10 +25,9 @@ static const int sidepad            = 0;
 static const int defaultwinpad      = 0;
 static const int swallowfloating    = 1;
 static const char *fonts[]          = {
-  "Hack:style=Regular:size=16:antialias=true:autohint=true",
-  "NotoColorEmoji:pixelsize=10:antialias=true:autohint=true",
+  "Source Han Serif CN,思源宋体 CN,Source Han Serif CN ExtraLight,思源宋体 CN ExtraLight:style=ExtraLight,Regular:size=16",
+  // "Hack:style=Regular:size=16:antialias=true:autohint=true",
   // "DejaVuSansMono Nerd Font:style=Book:size=16",
-  // "Hack:style=Italic:size=16:antialias=true:autohint=true",
 };
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
