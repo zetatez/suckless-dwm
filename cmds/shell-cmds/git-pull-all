@@ -1,3 +1,18 @@
 #!/bin/sh
 
-git branch -r|grep -v "\->"|sed 's/\// /'|awk '{print "git branch --track "$2" "$1"/"$2}'|sh
+mkdir -p ~/github/
+cd ~/github
+
+repos=$(fd --type d --hidden -d 1)
+
+for repo in $repos; do
+  {
+    echo "cd $repo && git pull; cd .."
+    cd $repo
+    git pull
+    git-pull-all
+    cd ..
+  } &
+done
+
+wait
