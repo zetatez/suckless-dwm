@@ -17,6 +17,7 @@ go build -o ./bins/toggle-bluetooth               ./cmds/toggle-bluetooth/main.g
 go build -o ./bins/toggle-calendar-scheduling     ./cmds/toggle-calendar-scheduling/main.go &
 go build -o ./bins/toggle-calendar-today-schedule ./cmds/toggle-calendar-today-schedule/main.go &
 go build -o ./bins/toggle-chrome                  ./cmds/toggle-chrome/main.go &
+go build -o ./bins/toggle-edge                    ./cmds/toggle-edge/main.go &
 go build -o ./bins/toggle-flameshot               ./cmds/toggle-flameshot/main.go &
 go build -o ./bins/toggle-inkscape                ./cmds/toggle-inkscape/main.go &
 go build -o ./bins/toggle-irssi                   ./cmds/toggle-irssi/main.go &
