@@ -8,15 +8,16 @@ go build -o ./bins/format-sql                     ./cmds/format-sql/main.go &
 go build -o ./bins/ssh-to                         ./cmds/ssh-to/main.go &
 go build -o ./bins/wifi-connect                   ./cmds/wifi-connect/main.go &
 go build -o ./bins/jump-to-code-from-log          ./cmds/jump-to-code-from-log/main.go &
+wait
 go build -o ./bins/note-timeline                  ./cmds/note-timeline/main.go &
 go build -o ./bins/note-diary                     ./cmds/note-diary/main.go &
 go build -o ./bins/note-flash-card                ./cmds/note-flash-card/main.go &
-wait
 go build -o ./bins/toggle-addressbook             ./cmds/toggle-addressbook/main.go &
 go build -o ./bins/toggle-bluetooth               ./cmds/toggle-bluetooth/main.go &
 go build -o ./bins/toggle-calendar-scheduling     ./cmds/toggle-calendar-scheduling/main.go &
 go build -o ./bins/toggle-calendar-today-schedule ./cmds/toggle-calendar-today-schedule/main.go &
 go build -o ./bins/toggle-chrome                  ./cmds/toggle-chrome/main.go &
+wait
 go build -o ./bins/toggle-edge                    ./cmds/toggle-edge/main.go &
 go build -o ./bins/toggle-flameshot               ./cmds/toggle-flameshot/main.go &
 go build -o ./bins/toggle-inkscape                ./cmds/toggle-inkscape/main.go &
@@ -26,14 +27,15 @@ go build -o ./bins/toggle-julia                   ./cmds/toggle-julia/main.go &
 go build -o ./bins/toggle-keyboard-light          ./cmds/toggle-keyboard-light/main.go &
 go build -o ./bins/toggle-lazydocker              ./cmds/toggle-lazydocker/main.go &
 go build -o ./bins/toggle-music                   ./cmds/toggle-music/main.go &
+wait
 go build -o ./bins/toggle-music-net-cloud         ./cmds/toggle-music-net-cloud/main.go &
 go build -o ./bins/toggle-mutt                    ./cmds/toggle-mutt/main.go &
 go build -o ./bins/toggle-krita                   ./cmds/toggle-krita/main.go &
 go build -o ./bins/toggle-python                  ./cmds/toggle-python/main.go &
-wait
 go build -o ./bins/toggle-scala                   ./cmds/toggle-scala/main.go &
 go build -o ./bins/toggle-lua                     ./cmds/toggle-lua/main.go &
 go build -o ./bins/toggle-screen                  ./cmds/toggle-screen/main.go &
+wait
 go build -o ./bins/toggle-screenkey               ./cmds/toggle-screenkey/main.go &
 go build -o ./bins/toggle-sublime                 ./cmds/toggle-sublime/main.go &
 go build -o ./bins/toggle-show                    ./cmds/toggle-show/main.go &
@@ -42,6 +44,7 @@ go build -o ./bins/toggle-top                     ./cmds/toggle-top/main.go &
 go build -o ./bins/toggle-wallpaper               ./cmds/toggle-wallpaper/main.go &
 go build -o ./bins/toggle-wechat                  ./cmds/toggle-wechat/main.go &
 go build -o ./bins/toggle-clipmenu                ./cmds/toggle-clipmenu/main.go &
+wait
 go build -o ./bins/toggle-passmenu                ./cmds/toggle-passmenu/main.go &
 go build -o ./bins/toggle-redshift                ./cmds/toggle-redshift/main.go &
 go build -o ./bins/toggle-xournal                 ./cmds/toggle-xournal/main.go &
