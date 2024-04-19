@@ -56,7 +56,6 @@ static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", 
 static const Rule rules[] = {
   /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
   {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
-  {"music",                  NULL,       NULL,    0,            1,            0,             0,           -1 },
   {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
   {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 }, // win name of float window
 };
