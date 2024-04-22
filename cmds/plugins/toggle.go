@@ -115,12 +115,12 @@ func ToggleMusic() {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(fmt.Sprintf("st -g %s -t cava -c cava -e cava", sugar.GetGeoForSt(0.74, 0.08, 40, 12)))
+		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e cava", sugar.GetGeoForSt(0.74, 0.08, 40, 12), WinNameFloat, WinNameFloat))
 	}()
 	time.Sleep(10 * time.Millisecond)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(fmt.Sprintf("st -g %s -t music -c music -e ncmpcpp", sugar.GetGeoForSt(0.52, 0.08, 40, 12)))
+		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e ncmpcpp", sugar.GetGeoForSt(0.52, 0.08, 40, 12), WinNameFloat, WinNameFloat))
 	}()
 	wg.Wait()
 }
