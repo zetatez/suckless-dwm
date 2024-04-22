@@ -60,7 +60,7 @@ static const Rule rules[] = {
   {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 }, // win name of float window
 };
 
-static const char *skipswallow[] = { "vimb", "surf" };
+static const char *skipswallow[] = { "vimb" };
 
 /* layout(s) */
 static const float mfact            = 0.50;
@@ -158,7 +158,7 @@ static const char *lazy_open_search_wiki[]          = ST("lazy-open-search-wiki"
 static const char *lazy_open_search_file_content[]  = ST("lazy-open-search-file-content");
 
 static const Key keys[] = {
-/*   modifier                     key            function           argument                             */
+/*  modifier                      key            function           argument                             */
 // SUPKEY + F1-F12
   { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle                  } },
   { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec                     } },
