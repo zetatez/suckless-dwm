@@ -19,14 +19,14 @@ static const int scalepreview       = 3;
 static const int previewbar         = 1;
 static const int showbar            = 1;
 static const int topbar             = 1;
-static const int barheight          = 24;
+static const int barheight          = 28;
 static const int vertpad            = 0;
 static const int sidepad            = 0;
 static const int defaultwinpad      = 0;
 static const int swallowfloating    = 1;
 static const char *fonts[]          = {
-  "Source Han Serif CN,思源宋体 CN,Source Han Serif CN ExtraLight,思源宋体 CN ExtraLight:style=ExtraLight,Regular:size=16",
-  // "Hack:style=Regular:size=16:antialias=true:autohint=true",
+  "Source Han Serif CN,思源宋体 CN,Source Han Serif CN ExtraLight,思源宋体 CN ExtraLight:style=ExtraLight,Regular:size=18",
+  // "Hack:style=Regular:size=18:antialias=true:autohint=true",
   // "DejaVuSansMono Nerd Font:style=Book:size=16",
 };
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
