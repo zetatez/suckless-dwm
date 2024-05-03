@@ -51,4 +51,5 @@ go build -o ./bins/toggle-xournal                 ./cmds/toggle-xournal/main.go 
 go build -o ./bins/toggle-rec-audio               ./cmds/toggle-rec-audio/main.go &
 go build -o ./bins/toggle-rec-screen              ./cmds/toggle-rec-screen/main.go &
 go build -o ./bins/toggle-rec-webcam              ./cmds/toggle-rec-webcam/main.go &
+go build -o ./bins/toggle-obsidian                ./cmds/toggle-obsidian/main.go &
 wait

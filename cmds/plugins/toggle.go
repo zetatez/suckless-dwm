@@ -219,6 +219,10 @@ func ToggleSublime() {
 	sugar.Toggle("subl")
 }
 
+func ToggleObsidian() {
+	sugar.Toggle("obsidian")
+}
+
 func ToggleSysShortcuts() {
 	SysShortCuts := map[string]string{
 		"󰒲  suspend":     "systemctl suspend",
