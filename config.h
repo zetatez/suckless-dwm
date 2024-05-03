@@ -57,7 +57,7 @@ static const Rule rules[] = {
   /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
   {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
   {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"00001011",               NULL,       NULL,    0,            1,            1,             0,           -1 }, // win name of float window
+  {"win-name-float",         NULL,       NULL,    0,            1,            1,             0,           -1 },
 };
 
 static const char *skipswallow[] = { "vimb" };
@@ -120,7 +120,7 @@ static const char *toggle_addressbook[]             = SH("toggle-addressbook");
 static const char *toggle_bluetooth[]               = SH("toggle-bluetooth");
 static const char *toggle_calendar_today_schedule[] = SH("toggle-calendar-today-schedule");
 static const char *toggle_calendar_scheduling[]     = SH("toggle-calendar-scheduling");
-static const char *toggle_chrome[]                  = SH("toggle-chrome");
+static const char *launch_chrome[]                  = SH("launch-chrome");
 static const char *toggle_mutt[]                    = SH("toggle-mutt");
 static const char *toggle_flameshot[]               = SH("toggle-flameshot");
 static const char *toggle_inkscape[]                = SH("toggle-inkscape");
@@ -189,7 +189,7 @@ static const Key keys[] = {
 
 // SUPKEY + a-z, etc
 //{ SUPKEY,                       XK_a,          spawn,             {.v =                                } },
-  { SUPKEY,                       XK_b,          spawn,             {.v = toggle_chrome                  } },
+  { SUPKEY,                       XK_b,          spawn,             {.v = launch_chrome                  } },
   { SUPKEY,                       XK_c,          spawn,             {.v = toggle_calendar_today_schedule } },
   { SUPKEY,                       XK_d,          spawn,             {.v = note_diary                     } },
   { SUPKEY,                       XK_e,          spawn,             {.v = toggle_mutt                    } },

@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleEdge()
+	plugins.LaunchChrome()
 }

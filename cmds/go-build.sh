@@ -8,6 +8,8 @@ go build -o ./bins/format-sql                     ./cmds/format-sql/main.go &
 go build -o ./bins/ssh-to                         ./cmds/ssh-to/main.go &
 go build -o ./bins/wifi-connect                   ./cmds/wifi-connect/main.go &
 go build -o ./bins/jump-to-code-from-log          ./cmds/jump-to-code-from-log/main.go &
+go build -o ./bins/launch-chrome                  ./cmds/launch-chrome/main.go &
+go build -o ./bins/launch-edge                    ./cmds/launch-edge/main.go &
 wait
 go build -o ./bins/note-timeline                  ./cmds/note-timeline/main.go &
 go build -o ./bins/note-diary                     ./cmds/note-diary/main.go &
@@ -16,9 +18,7 @@ go build -o ./bins/toggle-addressbook             ./cmds/toggle-addressbook/main
 go build -o ./bins/toggle-bluetooth               ./cmds/toggle-bluetooth/main.go &
 go build -o ./bins/toggle-calendar-scheduling     ./cmds/toggle-calendar-scheduling/main.go &
 go build -o ./bins/toggle-calendar-today-schedule ./cmds/toggle-calendar-today-schedule/main.go &
-go build -o ./bins/toggle-chrome                  ./cmds/toggle-chrome/main.go &
 wait
-go build -o ./bins/toggle-edge                    ./cmds/toggle-edge/main.go &
 go build -o ./bins/toggle-flameshot               ./cmds/toggle-flameshot/main.go &
 go build -o ./bins/toggle-inkscape                ./cmds/toggle-inkscape/main.go &
 go build -o ./bins/toggle-irssi                   ./cmds/toggle-irssi/main.go &

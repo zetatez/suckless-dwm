@@ -62,14 +62,6 @@ func ToggleCalendarScheduling() {
 	sugar.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
 }
 
-func ToggleChrome() {
-	sugar.Toggle("chrome --proxy-server=socks5://127.0.0.1:7891")
-}
-
-func ToggleEdge() {
-	sugar.Toggle("edge --proxy-server=socks5://127.0.0.1:7891")
-}
-
 func ToggleFlameshot() {
 	sugar.Toggle("flameshot gui")
 }
