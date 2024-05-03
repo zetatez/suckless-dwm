@@ -9,9 +9,9 @@ func LaunchApp(cmd string) func() {
 }
 
 func LaunchChrome() {
-	LaunchApp("chrome --proxy-server=socks5://127.0.0.1:7891")
+	LaunchApp("chrome --proxy-server=socks5://127.0.0.1:7891 --new-window")()
 }
 
 func LaunchEdge() {
-	LaunchApp("edge --proxy-server=socks5://127.0.0.1:7891")
+	LaunchApp("edge --proxy-server=socks5://127.0.0.1:7891 --new-window")()
 }
