@@ -60,8 +60,6 @@ var ActionMap = map[string]func(){
 	"toggle: bluetooth":               ToggleBlueTooth,
 	"toggle: calendar today schedule": ToggleCalendarTodaySchedule,
 	"toggle: calendar scheduling":     ToggleCalendarScheduling,
-	"toggle: chrome":                  ToggleChrome,
-	"toggle: edge":                    ToggleEdge,
 	"toggle: clipmenu":                ToggleClipmenu,
 	"toggle: flameshot":               ToggleFlameshot,
 	"toggle: inkscape":                ToggleInkscape,
