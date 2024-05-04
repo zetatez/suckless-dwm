@@ -256,7 +256,7 @@ func ToggleWallpaper() {
 }
 
 func ToggleWechat() {
-	sugar.Toggle("st -e wechat-uos")
+	sugar.Toggle("st -e wechat")
 }
 
 func ToggleClipmenu() {

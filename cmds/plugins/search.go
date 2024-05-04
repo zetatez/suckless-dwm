@@ -51,7 +51,7 @@ var ActionMap = map[string]func(){
 	"launch app: scribus":             LaunchApp("scribus"),
 	"launch app: slack":               LaunchApp("slack"),
 	"launch app: subl":                LaunchApp("subl"),
-	"launch app: wechat-uos":          LaunchApp("wechat-uos"),
+	"launch app: wechat":              LaunchApp("wechat"),
 	"launch app: wemeet":              LaunchApp("wemeet"),
 	"launch app: wps":                 LaunchApp("wps"),
 	"launch app: xournalpp":           LaunchApp("xournalpp"),
