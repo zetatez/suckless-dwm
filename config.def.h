@@ -50,8 +50,7 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-// static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "ζ(s)=∑1/n^s" };
-static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "ζ(s)=∑1/n^s" };
+static const char *tags[] = { "", "II", "III", "IV", "V", "VI", "VII", "VIII", "ζ(s)=∑1/n^s" };
 
 static const Rule rules[] = {
   /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
@@ -63,7 +62,8 @@ static const Rule rules[] = {
 static const char *skipswallow[] = { "vimb" };
 
 /* layout(s) */
-static const float mfact            = 0.50;
+// static const float mfact            = 0.50;
+static const float mfact            = 0.82;
 static const float ffact            = 0.50;
 static const int nmaster            = 1;
 static const int resizehints        = 0;
@@ -87,6 +87,7 @@ static const Layout layouts[] = {
   { "󰾍",  layout_grid                },
   { "󰓌",  layout_hacker              },
   { "⬚",  layout_monocle             },
+  { "◧",  layout_tileright_vertical  },
   { "󰕰",  layout_overview            },
   { "",  layout_overview_right_side },
 //{ "∅",  NULL                       }, // no layout, abandon
@@ -94,7 +95,6 @@ static const Layout layouts[] = {
 };
 
 static const Layout overviewlayout = { "",  layout_overview };
-// static const Layout overviewlayout = { "",  layout_overview_right_side };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -146,7 +146,6 @@ static const char *toggle_wechat[]                  = SH("toggle-wechat");
 static const char *toggle_clipmenu[]                = SH("toggle-clipmenu");
 static const char *handle_copied[]                  = SH("handle-copied");
 static const char *wifi_connect[]                   = SH("wifi-connect");
-static const char *hhkb_hint_mode[]                 = SH("hhkb-hint-mode");
 static const char *jump_to_code_from_log[]          = SH("jump-to-code-from-log");
 static const char *search[]                         = SH("search");
 static const char *note_diary[]                     = SH("note-diary");
@@ -202,7 +201,7 @@ static const Key keys[] = {
 //{ SUPKEY,                       XK_k,          spawn,             {.v = x                              } },
 //{ SUPKEY,                       XK_l,          spawn,             {.v = x                              } },
   { SUPKEY,                       XK_m,          spawn,             {.v = toggle_music                   } },
-  { SUPKEY,                       XK_n,          spawn,             {.v = hhkb_hint_mode                 } },
+  { SUPKEY,                       XK_n,          spawn,             {.v = toggle_obsidian                } },
   { SUPKEY,                       XK_o,          spawn,             {.v = handle_copied                  } },
   { SUPKEY,                       XK_p,          spawn,             {.v = lazy_open_search_book          } },
   { SUPKEY,                       XK_q,          spawn,             {.v = screenslock                    } },
@@ -219,7 +218,8 @@ static const Key keys[] = {
   { SUPKEY,                       XK_BackSpace,  spawn,             {.v = toggle_passmenu                } },
   { SUPKEY,                       XK_Delete,     spawn,             {.v = toggle_sys_shortcuts           } },
   { SUPKEY,                       XK_Escape,     spawn,             {.v = toggle_top                     } },
-  { SUPKEY,                       XK_Print,      spawn,             {.v = toggle_flameshot               } },
+//{ SUPKEY,                       XK_Print,      spawn,             {.v =                                } },
+  { SUPKEY,                       XK_Home,       spawn,             {.v = toggle_flameshot               } },
 //{ SUPKEY,                       XK_backslash,  spawn,             {.v =                                } },
   { SUPKEY,                       XK_slash,      spawn,             {.v = note_flash_card                } },
   { SUPKEY,                       XK_comma,      spawn,             {.v = jump_to_code_from_log          } },
@@ -240,7 +240,7 @@ static const Key keys[] = {
 //{ SUPKEY|ShiftMask,             XK_l,          spawn,             {.v = x                              } },
   { SUPKEY|ShiftMask,             XK_m,          spawn,             {.v = toggle_music_net_cloud         } },
 //{ SUPKEY|ShiftMask,             XK_n,          spawn,             {.v =                                } },
-  { SUPKEY|ShiftMask,             XK_o,          spawn,             {.v = toggle_obsidian                } },
+//{ SUPKEY|ShiftMask,             XK_o,          spawn,             {.v =                                } },
   { SUPKEY|ShiftMask,             XK_p,          spawn,             {.v = toggle_krita                   } },
   { SUPKEY|ShiftMask,             XK_q,          spawn,             {.v = sys_suspend                    } },
   { SUPKEY|ShiftMask,             XK_r,          spawn,             {.v = toggle_redshift                } },
@@ -256,6 +256,8 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = sys_shutdown                   } },
 //{ SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_Print,      spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_Home,       spawn,             {.v =                                } },
+//{ SUPKEY|ShiftMask,             XK_End,        spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_backslash,  spawn,             {.v =                                } },
 //{ SUPKEY|ShiftMask,             XK_BackSpace,  spawn,             {.v =                                } },
   { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = toggle_rec_webcam              } },
@@ -313,7 +315,8 @@ static const Key keys[] = {
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[10]                   } },
   { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                   } },
   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                   } },
-  { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[13]                   } },
+  { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[13]                   } },
+  { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]                   } },
   { MODKEY,                       XK_0,          view,              {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                        } },

@@ -136,6 +136,7 @@ static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
 static void layout_overview(Monitor *m);
 static void layout_overview_right_side(Monitor *m);
+static void layout_tileright_vertical(Monitor *m);
 
 /* variables */
 static const char broken[] = "broken";
@@ -3328,7 +3329,14 @@ layout_deckvert(Monitor *m) {
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster)
-      resize(c, m->wx, m->wy + (topbar ? 1 : 0) * winpad, mw - 2 * c->bw, m->wh - 2*c->bw - (topbar ? 1 : 0) * winpad, c->bw);
+      resize(
+        c,
+        m->wx,
+        m->wy + (topbar ? 1 : 0) * winpad,
+        mw - 2 * c->bw,
+        m->wh - 2*c->bw - (topbar ? 1 : 0) * winpad,
+        c->bw
+      );
     else
       resize(c, m->wx + mw + (i - m->nmaster)*(m->ww - mw)/(n - m->nmaster), m->wy + (topbar ? 1 : 0)*winpad, m->ww - (mw + (i - m->nmaster) * (m->ww - mw)/(n - m->nmaster)) - 2*c->bw, m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad, c->bw);
   }
@@ -3509,6 +3517,40 @@ layout_overview_right_side(Monitor *m)
     cx = m->wx + gapow + 7 * cw;
     cy = (rows < 8) ? (m->wh - 2 * gapoh) / 2 - ch * rows / 2 + ch * i : m->wy + gapoh + i * ch;
     resize(c, cx, cy, cw - gapiw / 2 - 2 * c->bw, ch - gapih / 2 - 2 * c->bw, False);
+  }
+}
+
+void
+layout_tileright_vertical(Monitor *m)
+{
+  unsigned int i, n, h, mw, mx, ty;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+
+  if (n == 0) { return; }
+
+  if (n > m->nmaster) {
+    mw = m->nmaster ? m->ww * m->mfact : 0;
+  } else {
+    mw = m->ww;
+  }
+
+  for (i = ty = mx = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    if (i < m->nmaster) {
+      h = m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad;
+      resize(c, mx, m->wy + (topbar ? 1 : 0)*winpad, (mw - MIN(m->nmaster, n)*2*c->bw) / MIN(m->nmaster, n), h, 0);
+      if (mx + WIDTH(c) < mw) {
+        mx += WIDTH(c);
+      }
+    } else {
+      h = (m->wh - ty - (topbar ? 1 : 0)*winpad) / (n - i);
+      resize(c, m->wx + mw, m->wy + ty + (topbar ? 1 : 0)*winpad, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+      if (ty + HEIGHT(c) < m->wh) {
+        ty += HEIGHT(c);
+      }
+    }
   }
 }
 /* layout end */
