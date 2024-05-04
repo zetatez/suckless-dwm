@@ -62,8 +62,8 @@ func ToggleShow() {
 	cmd := fmt.Sprintf(
 		"st -g %s -t %s -c %s -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0",
 		sugar.GetGeoForSt(0.74, 0.08, 40, 12),
-		WinNameFloat,
-		WinNameFloat,
+		WinNameFloatWindow,
+		WinNameFloatWindow,
 	)
 	switch {
 	case sugar.IsRunning("ffplay"):

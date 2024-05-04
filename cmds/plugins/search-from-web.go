@@ -7,7 +7,10 @@ import (
 )
 
 func SearchFromWeb(content string) {
-	sugar.NewExecService().RunScriptShell(
-		fmt.Sprintf("chrome --proxy-server=socks5://127.0.0.1:7891 https://cn.bing.com/search?q='%s'", content),
-	)
+	// sugar.NewExecService().RunScriptShell(fmt.Sprintf("chrome --proxy-server=%s https://cn.bing.com/search?q='%s'", ProxyServer, content))
+	sugar.NewExecService().RunScriptShell(fmt.Sprintf(
+		"chrome --proxy-server=%s https://www.google.com/search?q='%s'",
+		ProxyServer,
+		content,
+	))
 }

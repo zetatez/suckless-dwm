@@ -52,8 +52,8 @@ func ToggleCalendarTodaySchedule() {
 	sugar.Toggle(
 		fmt.Sprintf("st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'",
 			sugar.GetGeoForSt(0.80, 0.05, 36, 32),
-			WinNameFloat,
-			WinNameFloat,
+			WinNameFloatWindow,
+			WinNameFloatWindow,
 		),
 	)
 }
@@ -107,18 +107,22 @@ func ToggleMusic() {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e cava", sugar.GetGeoForSt(0.74, 0.08, 40, 12), WinNameFloat, WinNameFloat))
+		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e cava", sugar.GetGeoForSt(0.74, 0.08, 40, 12), WinNameFloatWindow, WinNameFloatWindow))
 	}()
 	time.Sleep(10 * time.Millisecond)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e ncmpcpp", sugar.GetGeoForSt(0.52, 0.08, 40, 12), WinNameFloat, WinNameFloat))
+		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e ncmpcpp", sugar.GetGeoForSt(0.52, 0.08, 40, 12), WinNameFloatWindow, WinNameFloatWindow))
 	}()
 	wg.Wait()
 }
 
 func ToggleMusicNetCloud() {
 	sugar.Toggle("netease-cloud-music")
+}
+
+func ToggleMusicYesPlayMusic() {
+	sugar.Toggle("yesplaymusic")
 }
 
 func ToggleMutt() {
@@ -256,7 +260,7 @@ func ToggleWallpaper() {
 }
 
 func ToggleWechat() {
-	sugar.Toggle("st -e wechat-uos")
+	sugar.Toggle("st -e wechat")
 }
 
 func ToggleClipmenu() {

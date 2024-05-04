@@ -1,6 +1,10 @@
 package plugins
 
-import "cmds/sugar"
+import (
+	"fmt"
+
+	"cmds/sugar"
+)
 
 func LaunchApp(cmd string) func() {
 	return func() {
@@ -9,9 +13,19 @@ func LaunchApp(cmd string) func() {
 }
 
 func LaunchChrome() {
-	LaunchApp("chrome --proxy-server=socks5://127.0.0.1:7891 --new-window")()
+	LaunchApp(
+		fmt.Sprintf(
+			"chrome --proxy-server=%s --new-window",
+			ProxyServer,
+		),
+	)()
 }
 
 func LaunchEdge() {
-	LaunchApp("edge --proxy-server=socks5://127.0.0.1:7891 --new-window")()
+	LaunchApp(
+		fmt.Sprintf(
+			"edge --proxy-server=%s --new-window",
+			ProxyServer,
+		),
+	)()
 }

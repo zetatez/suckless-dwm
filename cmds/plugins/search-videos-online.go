@@ -24,7 +24,8 @@ func SearchVideosOnline() {
 			defer wg.Done()
 			sugar.NewExecService().RunScriptShell(
 				fmt.Sprintf(
-					"chrome --proxy-server=socks5://127.0.0.1:7891 %s",
+					"chrome --proxy-server=%s %s",
+					ProxyServer,
 					fmt.Sprintf(url, content),
 				),
 			)
