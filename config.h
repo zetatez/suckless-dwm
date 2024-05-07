@@ -88,8 +88,6 @@ static const Layout layouts[] = {
   { "󰓌",  layout_hacker              },
   { "⬚",  layout_monocle             },
   { "◧",  layout_tileright_vertical  },
-  { "󰕰",  layout_overview            },
-  { "",  layout_overview_right_side },
 //{ "∅",  NULL                       }, // no layout, abandon
   { NULL, NULL                       },
 };
@@ -316,7 +314,6 @@ static const Key keys[] = {
   { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                   } },
   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                   } },
   { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[13]                   } },
-  { MODKEY|ShiftMask,             XK_g,          setlayout,         {.v = &layouts[14]                   } },
   { MODKEY,                       XK_0,          view,              {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                        } },

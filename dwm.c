@@ -135,7 +135,6 @@ static void layout_bottomstackhori(Monitor *m);
 static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
 static void layout_overview(Monitor *m);
-static void layout_overview_right_side(Monitor *m);
 static void layout_tileright_vertical(Monitor *m);
 
 /* variables */
@@ -3104,7 +3103,7 @@ layout_monocle(Monitor *m)
       m->wy,
       m->ww - 2*c->bw,
       m->wh - 2*c->bw,
-      0
+      False
     );
   }
 }
@@ -3617,37 +3616,6 @@ layout_overview(Monitor *m)
       cy,
       cw - gapiw / 2 - 2 * c->bw,
       ch - gapih / 2 - 2 * c->bw,
-      False
-    );
-  }
-}
-
-
-void
-layout_overview_right_side(Monitor *m)
-{
-  unsigned int i, n, cx, cy, cw, ch, rows;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  rows = n;
-
-  cw = (m->ww - 2 * gapow) / 8;
-  ch = (rows < 8) ? (m->wh - 2 * gapoh) / 8 : (m->wh - 2 * gapoh) / rows;
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    cx = m->wx + gapow + 7 * cw;
-    cy = (rows < 8) ? (m->wh - 2 * gapoh) / 2 - ch * rows / 2 + ch * i : m->wy + gapoh + i * ch;
-    resize(
-      c,
-      cx,
-      cy,
-      cw - gapiw/2 - 2*c->bw,
-      ch - gapih/2 - 2*c->bw,
       False
     );
   }
