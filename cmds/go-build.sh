@@ -29,6 +29,7 @@ go build -o ./bins/toggle-lazydocker              ./cmds/toggle-lazydocker/main.
 go build -o ./bins/toggle-music                   ./cmds/toggle-music/main.go &
 wait
 go build -o ./bins/toggle-music-net-cloud         ./cmds/toggle-music-net-cloud/main.go &
+go build -o ./bins/toggle-music-yes-play-music    ./cmds/toggle-music-yes-play-music/main.go &
 go build -o ./bins/toggle-mutt                    ./cmds/toggle-mutt/main.go &
 go build -o ./bins/toggle-krita                   ./cmds/toggle-krita/main.go &
 go build -o ./bins/toggle-python                  ./cmds/toggle-python/main.go &
