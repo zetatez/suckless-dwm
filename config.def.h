@@ -42,10 +42,10 @@ static const char *colors[][3]      = {
 };
 
 static const char *const autostart[] = {
-  "dwmblocks", NULL,
   "picom", "-b", NULL,
-  "hhkb", NULL,
+  "dwmblocks", NULL,
   "dunst", "&", NULL,
+  "hhkb", NULL,
   NULL
 };
 
