@@ -56,7 +56,7 @@ static const Rule rules[] = {
   /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
   {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
   {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"win-name-float",         NULL,       NULL,    0,            1,            1,             0,           -1 },
+  {"float-window",           NULL,       NULL,    0,            1,            1,             0,           -1 },
 };
 
 static const char *skipswallow[] = { "vimb" };

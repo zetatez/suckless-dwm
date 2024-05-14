@@ -4,6 +4,6 @@ const (
 	WallPaperPath       = "Pictures/wallpapers"
 	DefaultWallpaper    = "default-wallpaper.jpg"
 	WinNameScratchPad   = "scratchpad"
-	WinNameFloat        = "win-name-float"
+	WinNameFloatWindow  = "float-window"
 	TencentApiSecretKey = "privacy/tencent-api-secret.key"
 )
