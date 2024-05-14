@@ -49,8 +49,8 @@ static const char *const autostart[] = {
   NULL
 };
 
-/* tagging */
-static const char *tags[] = { "", "II", "III", "IV", "V", "VI", "VII", "VIII", "ζ(s)=∑1/n^s" };
+/* tagging  ζ(s)=∑1/n^s */
+static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
 
 static const Rule rules[] = {
   /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
