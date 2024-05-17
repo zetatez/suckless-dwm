@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"fmt"
 	"sort"
 
 	"cmds/sugar"
@@ -26,7 +27,6 @@ var ActionMap = map[string]func(){
 	"get current-unix-sec":            GetCurrentUnixSec,
 	"get host name":                   GetHostName,
 	"get ip":                          GetIP,
-	"excalidraw":                      OpenWeb("http://127.0.0.1:3000"), // cd ~/github/excalidraw && docker-compose up -d
 	"map: google ap":                  OpenWeb("https://www.google.com/maps/place/shanghai"),
 	"email: 163":                      OpenWeb("https://mail.163.com"),
 	"email: gmail":                    OpenWeb("https://accounts.google.com/b/0/AddMailService"),
@@ -39,8 +39,8 @@ var ActionMap = map[string]func(){
 	"note: timeline":                  NoteTimeline,
 	"note: flash card":                NoteFlashCard,
 	"launch app: baidudisknet":        LaunchApp("baidudisknet"),
-	"launch app: chrome":              LaunchApp("chrome --proxy-server=socks5://127.0.0.1:7891"),
-	"launch app: edge":                LaunchApp("edge --proxy-server=socks5://127.0.0.1:7891"),
+	"launch app: chrome":              LaunchApp(fmt.Sprintf("chrome --proxy-server=%s", ProxyServer)),
+	"launch app: edge":                LaunchApp(fmt.Sprintf("edge --proxy-server=%s", ProxyServer)),
 	"launch app: dingtalk":            LaunchApp("dingtalk"),
 	"launch app: inkscape":            LaunchApp("inkscape"),
 	"launch app: krita":               LaunchApp("krita"),
@@ -90,7 +90,9 @@ var ActionMap = map[string]func(){
 	"toggle: wechat":                  ToggleWechat,
 	"toggle: xournal":                 ToggleXournal,
 	"jump to code from log":           JumpToCodeFromLog,
-	"www: wechat file helper":         OpenWeb("https://filehelper.weixin.qq.com/"),
+	"www: chatgpt":                    OpenWeb("https://chatgpt.com/"),
+	"www: wechat":                     OpenWeb("https://web.wechat.com/"),
+	"www: wechat file help":           OpenWeb("https://filehelper.weixin.qq.com/"),
 	"www: archlinux":                  OpenWeb("https://wiki.archlinux.org"),
 	"www: arxiv":                      OpenWeb("https://arxiv.org"),
 	"www: bilibili":                   OpenWeb("https://www.bilibili.com"),
@@ -109,22 +111,22 @@ var ActionMap = map[string]func(){
 	"www: twitter":                    OpenWeb("https://twitter.com/home"),
 	"www: wolframalpha":               OpenWeb("https://www.wolframalpha.com"),
 	"www: youtube":                    OpenWeb("https://www.youtube.com"),
-	"dev: regex":                      OpenWeb("https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference"),
-	"dev: runoob":                     OpenWeb("https://www.runoob.com"),
-	"dev: css":                        OpenWeb("https://www.runoob.com/css3/css3-tutorial.html"),
-	"dev: design pattern":             OpenWeb("https://www.runoob.com/design-pattern/design-pattern-tutorial.html"),
-	"dev: docker":                     OpenWeb("https://www.runoob.com/docker/docker-tutorial.html"),
-	"dev: html":                       OpenWeb("https://www.runoob.com/html/html5-intro.html"),
-	"dev: javascript":                 OpenWeb("https://www.runoob.com/js/js-tutorial.html"),
-	"dev: maven":                      OpenWeb("https://www.runoob.com/maven/maven-tutorial.html"),
-	"dev: mongo":                      OpenWeb("https://www.runoob.com/mongodb/mongodb-tutorial.html"),
-	"dev: nodejs":                     OpenWeb("https://www.runoob.com/nodejs/nodejs-tutorial.html"),
-	"dev: react":                      OpenWeb("https://www.runoob.com/react/react-tutorial.html"),
-	"dev: redis":                      OpenWeb("https://www.runoob.com/redis/redis-tutorial.html"),
-	"dev: typescript":                 OpenWeb("https://www.runoob.com/typescript/ts-tutorial.html"),
-	"dev: vue":                        OpenWeb("https://www.runoob.com/vue3/vue3-tutorial.html"),
-	"wiki: consul":                    OpenWeb("https://developer.hashicorp.com/consul/docs?product_intent=consul"),
-	"wiki: scala sbt":                 OpenWeb("https://www.scala-sbt.org"),
+	"www: regex":                      OpenWeb("https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference"),
+	"www: runoob":                     OpenWeb("https://www.runoob.com"),
+	"www: css":                        OpenWeb("https://www.runoob.com/css3/css3-tutorial.html"),
+	"www: design pattern":             OpenWeb("https://www.runoob.com/design-pattern/design-pattern-tutorial.html"),
+	"www: docker":                     OpenWeb("https://www.runoob.com/docker/docker-tutorial.html"),
+	"www: html":                       OpenWeb("https://www.runoob.com/html/html5-intro.html"),
+	"www: javascript":                 OpenWeb("https://www.runoob.com/js/js-tutorial.html"),
+	"www: maven":                      OpenWeb("https://www.runoob.com/maven/maven-tutorial.html"),
+	"www: mongo":                      OpenWeb("https://www.runoob.com/mongodb/mongodb-tutorial.html"),
+	"www: nodejs":                     OpenWeb("https://www.runoob.com/nodejs/nodejs-tutorial.html"),
+	"www: react":                      OpenWeb("https://www.runoob.com/react/react-tutorial.html"),
+	"www: redis":                      OpenWeb("https://www.runoob.com/redis/redis-tutorial.html"),
+	"www: typescript":                 OpenWeb("https://www.runoob.com/typescript/ts-tutorial.html"),
+	"www: vue":                        OpenWeb("https://www.runoob.com/vue3/vue3-tutorial.html"),
+	"www: consul":                     OpenWeb("https://developer.hashicorp.com/consul/docs?product_intent=consul"),
+	"www: scala sbt":                  OpenWeb("https://www.scala-sbt.org"),
 }
 
 type Search struct{}
