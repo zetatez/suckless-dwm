@@ -97,8 +97,7 @@ static const Layout overviewlayout = { "",  layout_overview };
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
-static const char *scratchpadcmd[]     = { "st", "-g", "180x48", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
-static const char *tabbedtermcmd[]     = { "tabbed", "-r", "2", "st", "-w", "''", NULL };
+static const char *scratchpadcmd[]     = { "st", "-g", "120x32", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
 
 static const char *screen_light_dec[]               = SH("sudo light -U 5");
 static const char *screen_light_inc[]               = SH("sudo light -A 5");
@@ -305,8 +304,8 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[3]                    } },
   { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[4]                    } },
   { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[5]                    } },
-  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[6]                    } },
-  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[7]                    } },
+  { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[6]                    } },
+  { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[7]                    } },
   { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[8]                    } },
   { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[9]                    } },
   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[10]                   } },
@@ -316,7 +315,7 @@ static const Key keys[] = {
   { MODKEY,                       XK_0,          view,              {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                            } },
   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                        } },
-  { SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v = tabbedtermcmd                  } },
+//{ SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v =                                } },
   { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                   } },
   { MODKEY|ShiftMask,             XK_q,          quit,              {0                                   } },
   { MODKEY|ShiftMask,             XK_p,          quit,              {1                                   } },

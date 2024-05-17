@@ -60,7 +60,7 @@ func NoteTimeline() {
 	fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
 	f.Close()
 	sugar.Toggle(
-		fmt.Sprintf("st -e nvim +':norm G' '%s'", filePath),
+		fmt.Sprintf("st -e nvim +$ '%s'", filePath),
 	)
 }
 
@@ -86,7 +86,7 @@ func NoteFlashCard() {
 		fmt.Fprintf(f, "### %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	_, _, err := sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -e nvim +':norm G' '%s'", filePath))
+	_, _, err := sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -e nvim +$ '%s'", filePath))
 	if err != nil {
 		sugar.Notify(err)
 	}
