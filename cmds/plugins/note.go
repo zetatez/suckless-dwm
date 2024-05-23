@@ -28,7 +28,7 @@ func NoteDiary() {
 		fmt.Fprintf(f, "\n### %s\n\n", dateStr)
 		f.Close()
 	}
-	sugar.Toggle(fmt.Sprintf("st -e nvim +':norm G' '%s'", filePath))
+	sugar.Toggle(fmt.Sprintf("st -e nvim +$ '%s'", filePath))
 }
 
 func NoteTimeline() {
