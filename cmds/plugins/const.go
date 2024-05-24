@@ -6,5 +6,5 @@ const (
 	DefaultWallpaper    = "default-wallpaper.jpg"
 	WinNameScratchPad   = "scratchpad"
 	WinNameFloatWindow  = "float-window"
-	TencentApiSecretKey = "privacy/tencent-api-secret.key"
+	TencentApiSecretKey = "git/privacy/tencent-api-secret.key"
 )
