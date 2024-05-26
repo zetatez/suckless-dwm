@@ -60,4 +60,5 @@ go build -o ./bins/openweb-google-translate       ./cmds/openweb-google-translat
 go build -o ./bins/openweb-instagram              ./cmds/openweb-instagram/main.go &
 go build -o ./bins/openweb-leetcode               ./cmds/openweb-leetcode/main.go &
 go build -o ./bins/openweb-youtube                ./cmds/openweb-youtube/main.go &
+go build -o ./bins/openweb-wechat                 ./cmds/openweb-wechat/main.go &
 wait

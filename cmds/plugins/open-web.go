@@ -45,3 +45,7 @@ func OpenWebInstagram() {
 func OpenWebGithubGistShareCode() {
 	OpenWeb("https://gist.github.com/")()
 }
+
+func OpenWebWeChat() {
+	OpenWeb("https://web.wechat.com/")()
+}
