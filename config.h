@@ -53,13 +53,13 @@ static const char *const autostart[] = {
 static const char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
 
 static const Rule rules[] = {
-  /* cls                     instance    title    tags mask     isfloating    isterminal     noswallow    monitor */
-  {"st",                     NULL,       NULL,    0,            0,            1,             1,           -1 },
-  {"cava",                   NULL,       NULL,    0,            1,            0,             0,           -1 },
-  {"float-window",           NULL,       NULL,    0,            1,            1,             0,           -1 },
+  /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
+  {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
+  {"float-window",           NULL,       NULL,      0,            1,            0,             0,           -1 },
+  {"Vimb",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // for markdown. Vimb V must be capital
+  {"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
+  {"yesplaymusic",           NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
-
-static const char *skipswallow[] = { "vimb" };
 
 /* layout(s) */
 static const float mfact            = 0.50;

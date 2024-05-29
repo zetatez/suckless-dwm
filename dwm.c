@@ -403,12 +403,6 @@ swallow(Client *p, Client *c)
     return;
   }
 
-  for (int i = 0; i < LENGTH(skipswallow); i++) {
-    if (!strcmp(c->name, skipswallow[i])) {
-      return;
-    }
-  }
-
   detach(c);
   detachstack(c);
 
