@@ -46,7 +46,7 @@ func FormatSql() {
 	text := clipboard.Read(clipboard.FmtText)
 	cmd := `
 import sqlparse
-print(sqlparse.format("""%s""", reindent=True, indent=2, keyword_case='upper'))
+print(sqlparse.format("""%s""", reindent=True, indent=2, keyword_case='lower'))
 `
 	cmd = fmt.Sprintf(cmd, string(text))
 	stdout, _, err := sugar.NewExecService().RunScriptPython(cmd)

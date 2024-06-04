@@ -54,11 +54,12 @@ go build -o ./bins/toggle-rec-screen              ./cmds/toggle-rec-screen/main.
 go build -o ./bins/toggle-rec-webcam              ./cmds/toggle-rec-webcam/main.go &
 go build -o ./bins/toggle-obsidian                ./cmds/toggle-obsidian/main.go &
 go build -o ./bins/openweb-chatgpt                ./cmds/openweb-chatgpt/main.go &
-go build -o ./bins/openweb-github-gist-share-code ./cmds/openweb-github-gist-share-code/main.go &
+go build -o ./bins/openweb-github                 ./cmds/openweb-github/main.go &
 go build -o ./bins/openweb-google-mail            ./cmds/openweb-google-mail/main.go &
 go build -o ./bins/openweb-google-translate       ./cmds/openweb-google-translate/main.go &
 go build -o ./bins/openweb-instagram              ./cmds/openweb-instagram/main.go &
 go build -o ./bins/openweb-leetcode               ./cmds/openweb-leetcode/main.go &
 go build -o ./bins/openweb-youtube                ./cmds/openweb-youtube/main.go &
 go build -o ./bins/openweb-wechat                 ./cmds/openweb-wechat/main.go &
+go build -o ./bins/openweb-gemini                 ./cmds/openweb-gemini/main.go &
 wait

@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.OpenWebGithubGistShareCode()
+	plugins.OpenWebGithub()
 }
