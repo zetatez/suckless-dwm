@@ -294,3 +294,7 @@ func ToggleRedShift() {
 func ToggleXournal() {
 	sugar.Toggle("xournalpp")
 }
+
+func ToggleTermius() {
+	sugar.Toggle("termius")
+}
