@@ -9,36 +9,6 @@ import (
 	"golang.design/x/clipboard"
 )
 
-func GetCurrentDatetime() {
-	err := clipboard.Init()
-	if err != nil {
-		sugar.Notify(err)
-		return
-	}
-	content := time.Now().Format(time.DateTime)
-	sugar.Notify(fmt.Sprintf("get success: %s", content))
-	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
-}
-
-func GetCurrentUnixSec() {
-	err := clipboard.Init()
-	if err != nil {
-		sugar.Notify(err)
-		return
-	}
-	content := fmt.Sprintf("%d", time.Now().Unix())
-	sugar.Notify(fmt.Sprintf("get success: %s", content))
-	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
-}
-
 func GetHostName() {
 	err := clipboard.Init()
 	if err != nil {
@@ -73,6 +43,36 @@ func GetIP() {
 		return
 	}
 	content := stdout
+	sugar.Notify(fmt.Sprintf("get success: %s", content))
+	changed := clipboard.Write(clipboard.FmtText, []byte(content))
+	select {
+	case <-changed:
+		sugar.Notify("previous clipboard expired")
+	}
+}
+
+func GetCurrentDatetime() {
+	err := clipboard.Init()
+	if err != nil {
+		sugar.Notify(err)
+		return
+	}
+	content := time.Now().Format(time.DateTime)
+	sugar.Notify(fmt.Sprintf("get success: %s", content))
+	changed := clipboard.Write(clipboard.FmtText, []byte(content))
+	select {
+	case <-changed:
+		sugar.Notify("previous clipboard expired")
+	}
+}
+
+func GetCurrentUnixSec() {
+	err := clipboard.Init()
+	if err != nil {
+		sugar.Notify(err)
+		return
+	}
+	content := fmt.Sprintf("%d", time.Now().Unix())
 	sugar.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
 	select {

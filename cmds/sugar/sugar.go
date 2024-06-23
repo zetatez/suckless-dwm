@@ -326,14 +326,17 @@ func SSH(host string, port int, user string, password string) (err error) {
 	if shell == "" {
 		shell = "/bin/bash"
 	}
-	sshcmd := fmt.Sprintf(
-		`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`,
-		password,
-		port,
-		user,
-		host,
+	cmd := fmt.Sprintf(
+		"st -e %s -c '%s'",
+		shell,
+		fmt.Sprintf(
+			`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`,
+			password,
+			port,
+			user,
+			host,
+		),
 	)
-	cmd := fmt.Sprintf("st -e %s -c '%s'", shell, sshcmd)
 	_, _, err = NewExecService().RunScriptShell(cmd)
 	if err != nil {
 		return err

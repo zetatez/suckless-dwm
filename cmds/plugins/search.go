@@ -1,18 +1,12 @@
 package plugins
 
 import (
-	"fmt"
 	"sort"
 
 	"cmds/sugar"
 )
 
 var ActionMap = map[string]func(){
-	"lazy open search file content":   LazyOpenSearchFileContent,
-	"lazy open search file":           LazyOpenSearchFile,
-	"lazy open search book":           LazyOpenSearchBook,
-	"lazy open search wiki":           LazyOpenSearchWiki,
-	"lazy open search media":          LazyOpenSearchMedia,
 	"ocr":                             OCR,
 	"ssh-to":                          SshTo,
 	"umount xyz":                      UmountXYZ,
@@ -30,32 +24,14 @@ var ActionMap = map[string]func(){
 	"google map":                      OpenWeb("https://www.google.com/maps/place/shanghai"),
 	"google translate auto to en":     OpenWeb("https://translate.google.com/?sl=auto&tl=en"),
 	"google translate auto to zh":     OpenWeb("https://translate.google.com/?sl=auto&tl=zh-CN"),
-	"email 163":                       OpenWeb("https://mail.163.com"),
 	"email gmail":                     OpenWeb("https://accounts.google.com/b/0/AddMailService"),
 	"email outlook":                   OpenWeb("https://outlook.live.com/mail"),
+	"email 163":                       OpenWeb("https://mail.163.com"),
 	"transform date time to unix sec": TransformDatetime2UnixSec,
 	"transform unix sec to date time": TransformUnixSec2DateTime,
 	"note diary":                      NoteDiary,
 	"note timeline":                   NoteTimeline,
 	"note flash card":                 NoteFlashCard,
-	"launch baidudisknet":             LaunchApp("baidudisknet"),
-	"launch chrome":                   LaunchApp(fmt.Sprintf("chrome --proxy-server=%s", ProxyServer)),
-	"launch edge":                     LaunchApp(fmt.Sprintf("edge --proxy-server=%s", ProxyServer)),
-	"launch dingtalk":                 LaunchApp("dingtalk"),
-	"launch inkscape":                 LaunchApp("inkscape"),
-	"launch krita":                    LaunchApp("krita"),
-	"launch netease-cloud-music":      LaunchApp("netease-cloud-music"),
-	"launch obsidian":                 LaunchApp("obsidian"),
-	"launch passmenu":                 LaunchApp("passmenu"),
-	"launch passmmenu":                LaunchApp("passmmenu"),
-	"launch scribus":                  LaunchApp("scribus"),
-	"launch slack":                    LaunchApp("slack"),
-	"launch subl":                     LaunchApp("subl"),
-	"launch wechat":                   LaunchApp("wechat"),
-	"launch wemeet":                   LaunchApp("wemeet"),
-	"launch wps":                      LaunchApp("wps"),
-	"launch xournalpp":                LaunchApp("xournalpp"),
-	"launch zoom":                     LaunchApp("zoom"),
 	"toggle address-book":             ToggleAddressbook,
 	"toggle bluetooth":                ToggleBlueTooth,
 	"toggle calendar today schedule":  ToggleCalendarTodaySchedule,
