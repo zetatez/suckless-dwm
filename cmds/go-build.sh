@@ -43,7 +43,6 @@ go build -o ./bins/toggle-show                    ./cmds/toggle-show/main.go &
 go build -o ./bins/toggle-sys-shortcuts           ./cmds/toggle-sys-shortcuts/main.go &
 go build -o ./bins/toggle-top                     ./cmds/toggle-top/main.go &
 go build -o ./bins/toggle-wallpaper               ./cmds/toggle-wallpaper/main.go &
-go build -o ./bins/toggle-wechat                  ./cmds/toggle-wechat/main.go &
 go build -o ./bins/toggle-clipmenu                ./cmds/toggle-clipmenu/main.go &
 wait
 go build -o ./bins/toggle-passmenu                ./cmds/toggle-passmenu/main.go &

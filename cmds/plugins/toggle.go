@@ -293,10 +293,6 @@ func ToggleWallpaper() {
 	)
 }
 
-func ToggleWechat() {
-	sugar.Toggle("st -e wechat")
-}
-
 func ToggleClipmenu() {
 	sugar.Toggle("sh -c clipmenu")
 }
