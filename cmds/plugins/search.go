@@ -63,7 +63,6 @@ var ActionMap = map[string]func(){
 	"toggle sys-short-cuts":           ToggleSysShortcuts,
 	"toggle top":                      ToggleTop,
 	"toggle wallpaper":                ToggleWallpaper,
-	"toggle wechat":                   ToggleWechat,
 	"toggle xournal":                  ToggleXournal,
 	"jump to code from log":           JumpToCodeFromLog,
 	"web gitee repos":                 OpenWeb("https://gitee.com/zetatez/projects"),
