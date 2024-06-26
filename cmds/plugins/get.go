@@ -24,10 +24,8 @@ func GetHostName() {
 	content := stdout
 	sugar.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
 
 func GetIP() {
@@ -45,10 +43,8 @@ func GetIP() {
 	content := stdout
 	sugar.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
 
 func GetCurrentDatetime() {
@@ -60,10 +56,8 @@ func GetCurrentDatetime() {
 	content := time.Now().Format(time.DateTime)
 	sugar.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
 
 func GetCurrentUnixSec() {
@@ -75,8 +69,6 @@ func GetCurrentUnixSec() {
 	content := fmt.Sprintf("%d", time.Now().Unix())
 	sugar.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }

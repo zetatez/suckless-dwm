@@ -27,10 +27,8 @@ func TransformDatetime2UnixSec() {
 	formatedText := fmt.Sprintf("%d", t.Unix())
 	sugar.Notify(fmt.Sprintf("tranfer success: \n%s", formatedText))
 	changed := clipboard.Write(clipboard.FmtText, []byte(formatedText))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
 
 func TransformUnixSec2DateTime() {
@@ -48,8 +46,6 @@ func TransformUnixSec2DateTime() {
 	datetime := time.Unix(unix, 0).Format(time.DateTime)
 	sugar.Notify(fmt.Sprintf("tranfer success: \n%s", datetime))
 	changed := clipboard.Write(clipboard.FmtText, []byte(datetime))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
