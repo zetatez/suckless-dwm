@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleWechat()
+	plugins.ToggleXournal()
 }

@@ -21,7 +21,7 @@ func JumpToCodeFromLog() {
 	r := regexp.MustCompile(regex)
 	match := r.FindStringSubmatch(text)
 	if len(match) < 3 {
-		sugar.Notify("no match")
+		sugar.Notify("not match")
 		return
 	}
 	filepath := match[1]

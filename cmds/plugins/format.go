@@ -17,7 +17,6 @@ func FormatJson() {
 		return
 	}
 	text := clipboard.Read(clipboard.FmtText)
-
 	doc := map[string]interface{}{}
 	err = json.Unmarshal(text, &doc)
 	if err != nil {
@@ -31,10 +30,8 @@ func FormatJson() {
 	}
 	sugar.Notify(fmt.Sprintf("format success: \n%s", formatedText))
 	changed := clipboard.Write(clipboard.FmtText, formatedText)
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
 
 func FormatSql() {
@@ -57,10 +54,8 @@ print(sqlparse.format("""%s""", reindent=True, indent=2, keyword_case='lower'))
 	formatedText := stdout
 	sugar.Notify(fmt.Sprintf("format success: \n%s", formatedText))
 	changed := clipboard.Write(clipboard.FmtText, []byte(formatedText))
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
 
 func FormatYaml() {
@@ -84,8 +79,6 @@ func FormatYaml() {
 	}
 	sugar.Notify(fmt.Sprintf("format success: \n%s", formatedText))
 	changed := clipboard.Write(clipboard.FmtText, formatedText)
-	select {
-	case <-changed:
-		sugar.Notify("previous clipboard expired")
-	}
+	<-changed
+	sugar.Notify("previous clipboard expired")
 }
