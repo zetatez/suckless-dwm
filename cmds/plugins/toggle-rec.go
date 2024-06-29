@@ -70,7 +70,7 @@ func ToggleRecWebcam() {
 	default:
 		sugar.NewExecService().RunScriptShell(
 			fmt.Sprintf(
-				"st  -t %s -c %s -e %s",
+				"st -t %s -c %s -e %s",
 				WinNameScratchPad,
 				WinNameScratchPad,
 				fmt.Sprintf(
@@ -95,10 +95,7 @@ func ToggleShow() {
 	default:
 		sugar.NewExecService().RunScriptShell(
 			fmt.Sprintf(
-				"st -g %s -t %s -c %s -e %s",
-				sugar.GetGeoForSt(0.74, 0.08, 40, 12),
-				WinNameFloatWindow,
-				WinNameFloatWindow,
+				"st -e %s",
 				"ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0",
 			),
 		)
