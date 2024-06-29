@@ -76,7 +76,11 @@ func ToggleJoshuto() {
 
 func ToggleJulia() {
 	sugar.Toggle(
-		fmt.Sprintf("st -t %s -c %s -e julia", WinNameScratchPad, WinNameScratchPad),
+		fmt.Sprintf(
+			"st -t %s -c %s -e julia",
+			WinNameScratchPad,
+			WinNameScratchPad,
+		),
 	)
 }
 
