@@ -47,7 +47,18 @@ func ToggleBlueTooth() {
 	sugar.Notify("connect to bluetooth success")
 }
 
-func ToggleCalendarTodaySchedule() {
+func ToggleCalendar() {
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=month'",
+			sugar.GetGeoForSt(0.84, 0.04, 24, 12),
+			WinNameFloatWindow,
+			WinNameFloatWindow,
+		),
+	)
+}
+
+func ToggleCalendarSchedulingToday() {
 	sugar.Toggle(
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'",
@@ -76,7 +87,11 @@ func ToggleJoshuto() {
 
 func ToggleJulia() {
 	sugar.Toggle(
-		fmt.Sprintf("st -t %s -c %s -e julia", WinNameScratchPad, WinNameScratchPad),
+		fmt.Sprintf(
+			"st -t %s -c %s -e julia",
+			WinNameScratchPad,
+			WinNameScratchPad,
+		),
 	)
 }
 
@@ -138,7 +153,7 @@ func ToggleKrita() {
 func TogglePython() {
 	sugar.Toggle(
 		fmt.Sprintf(
-			"st -t %s -c %s -e python",
+			"st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt'",
 			WinNameScratchPad,
 			WinNameScratchPad,
 		),
@@ -252,8 +267,8 @@ func ToggleSysShortcuts() {
 		"󰒲  suspend":     "systemctl suspend",
 		"  poweroff":    "systemctl poweroff",
 		"ﰇ  reboot":      "systemctl reboot",
-		"󰷛  slock":       "slock & sleep 0.5 & xset dpms force off",
 		"󰶐  off-display": "sleep .5; xset dpms force off",
+		"󰷛  slock":       "slock",
 	}
 	list := []string{}
 	for k := range SysShortCuts {

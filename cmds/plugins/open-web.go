@@ -6,54 +6,54 @@ import (
 	"cmds/sugar"
 )
 
-func OpenWeb(url string) func() {
+func OpenWeb(params, url string) func() {
 	return func() {
 		sugar.NewExecService().RunScriptShell(
-			fmt.Sprintf(
-				"chrome --proxy-server=%s %s",
-				ProxyServer,
-				url,
-			),
+			fmt.Sprintf("chrome %s %s", params, url),
 		)
 	}
 }
 
 func OpenWebChatGPT() {
-	OpenWeb("https://chatgpt.com/")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://chatgpt.com/")()
 }
 
-func OpenWebGemini() {
-	OpenWeb("https://gemini.google.com/app")()
+func OpenWebDouBao() {
+	OpenWeb("", "https://www.doubao.com/chat/")()
+}
+
+func OpenWebCodeium() {
+	OpenWeb("--proxy-server="+ProxyServer, "https://codeium.com/live/general")()
 }
 
 func OpenWebGoogleMail() {
-	OpenWeb("https://mail.google.com/mail")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://mail.google.com/mail")()
 }
 
 func OpenWebGoogleTranslate() {
-	OpenWeb("https://translate.google.com/?sl=auto&tl=zh-CN")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://translate.google.com/?sl=auto&tl=zh-CN")()
 }
 
 func OpenWebGithub() {
-	OpenWeb("https://github.com/zetatez")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://github.com/zetatez")()
 }
 
 func OpenWebGithubGistShareCode() {
-	OpenWeb("https://gist.github.com/")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://gist.github.com/")()
 }
 
 func OpenWebLeetCode() {
-	OpenWeb("https://leetcode.cn/search/?q=%E6%9C%80")()
+	OpenWeb("", "https://leetcode.cn/search/?q=%E6%9C%80")()
 }
 
 func OpenWebWeChat() {
-	OpenWeb("https://web.wechat.com/")()
+	OpenWeb("", "https://web.wechat.com/")()
 }
 
 func OpenWebYouTube() {
-	OpenWeb("https://www.youtube.com")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://www.youtube.com")()
 }
 
 func OpenWebInstagram() {
-	OpenWeb("https://www.instagram.com")()
+	OpenWeb("--proxy-server="+ProxyServer, "https://www.instagram.com")()
 }

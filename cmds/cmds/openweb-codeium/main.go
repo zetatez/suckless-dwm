@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.OpenWebGemini()
+	plugins.OpenWebCodeium()
 }

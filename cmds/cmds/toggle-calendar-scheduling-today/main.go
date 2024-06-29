@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleCalendarTodaySchedule()
+	plugins.ToggleCalendarSchedulingToday()
 }
