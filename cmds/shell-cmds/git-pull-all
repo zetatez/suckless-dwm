@@ -1,7 +1,7 @@
 #!/bin/sh
 
-mkdir -p ~/github/
-cd ~/github
+mkdir -p ~/git/
+cd ~/git
 
 repos=$(fd --type d --hidden -d 1)
 
@@ -10,9 +10,7 @@ for repo in $repos; do
     echo "cd $repo && git pull; cd .."
     cd $repo
     git pull
-    git-pull-all
+    git-pull-all-branches
     cd ..
-  } &
+  }
 done
-
-wait

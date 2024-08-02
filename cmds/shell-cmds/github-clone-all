@@ -3,41 +3,29 @@
 mkdir -p ~/git/
 cd ~/git/
 
-git clone git@github.com:zetatez/.config.git &
-git clone git@github.com:zetatez/.password-store.git &
-git clone git@github.com:zetatez/HappyHacking.git &
-git clone git@github.com:zetatez/L0-minimization.git &
-git clone git@github.com:zetatez/awesome-c.git &
-git clone git@github.com:zetatez/awesome-cpp.git &
-git clone git@github.com:zetatez/awesome-go.git &
-git clone git@github.com:zetatez/cli.git &
-git clone git@github.com:zetatez/cs_research.git &
-git clone git@github.com:zetatez/debate.git &
-git clone git@github.com:zetatez/dft.git &
-git clone git@github.com:zetatez/dissertation.git &
-git clone git@github.com:zetatez/dist-sys-reliability.git &
-git clone git@github.com:zetatez/dotfiles.git &
-git clone git@github.com:zetatez/evolving.git &
-git clone git@github.com:zetatez/exam.git &
-git clone git@github.com:zetatez/fancy.git &
-git clone git@github.com:zetatez/hhkb.git &
-git clone git@github.com:zetatez/latex-templates.git &
-git clone git@github.com:zetatez/lazy.git &
-git clone git@github.com:zetatez/lut.git &
-git clone git@github.com:zetatez/ob-ce-drm.git &
-git clone git@github.com:zetatez/obsidian.git &
-git clone git@github.com:zetatez/privacy.git &
-git clone git@github.com:zetatez/self-healing-frontend.git &
-git clone git@github.com:zetatez/self-healing.git &
-git clone git@github.com:zetatez/sfagent-mgr.git &
-git clone git@github.com:zetatez/sfagent.git &
-git clone git@github.com:zetatez/slide-system-reliability.git &
-git clone git@github.com:zetatez/slides.git &
-git clone git@github.com:zetatez/sony-crsdk.git &
-git clone git@github.com:zetatez/suckless-dmenu.git &
-git clone git@github.com:zetatez/suckless-dwm.git &
-git clone git@github.com:zetatez/suckless-dwmblocks.git &
-git clone git@github.com:zetatez/suckless-sent.git &
-git clone git@github.com:zetatez/suckless-st.git &
-git clone git@github.com:zetatez/vip.git &
-git clone git@github.com:zetatez/zsh-vi-mode.git &
+git clone git@github.com:zetatez/.config.git
+git clone git@github.com:zetatez/.password-store.git
+git clone git@github.com:zetatez/ECNU-L0-minimization.git
+git clone git@github.com:zetatez/ECNU-compressed-sensing-research.git
+git clone git@github.com:zetatez/ECNU-master-dissertation-debate.git
+git clone git@github.com:zetatez/ECNU-master-dissertation.git
+git clone git@github.com:zetatez/HappyHacking.git
+git clone git@github.com:zetatez/USST-dissertation.git
+git clone git@github.com:zetatez/dist-sys-reliability.git
+git clone git@github.com:zetatez/dotfiles.git
+git clone git@github.com:zetatez/evolving.git
+git clone git@github.com:zetatez/fancy.git
+git clone git@github.com:zetatez/hhkb.git
+git clone git@github.com:zetatez/latex-templates.git
+git clone git@github.com:zetatez/lazy.git
+git clone git@github.com:zetatez/lut.git
+git clone git@github.com:zetatez/obsidian.git
+git clone git@github.com:zetatez/privacy.git
+git clone git@github.com:zetatez/sharpe-ratio.git
+git clone git@github.com:zetatez/slide-system-reliability.git
+git clone git@github.com:zetatez/suckless-dmenu.git
+git clone git@github.com:zetatez/suckless-dwm.git
+git clone git@github.com:zetatez/suckless-dwmblocks.git
+git clone git@github.com:zetatez/suckless-sent.git
+git clone git@github.com:zetatez/suckless-st.git
+git clone git@github.com:zetatez/vip.git
