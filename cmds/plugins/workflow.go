@@ -22,7 +22,7 @@ func HandleCopied() {
 		sugar.Lazy("open", content)
 		return
 	case sugar.IsUrl(content):
-		OpenWeb(content)()
+		OpenWeb("--proxy-server="+ProxyServer, content)()
 		return
 	default:
 		SearchFromWeb(content)

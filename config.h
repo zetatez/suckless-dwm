@@ -201,9 +201,9 @@ static const Key keys[] = {
   { SUPKEY,                       XK_5,          spawn,             {.v = openweb_youtube                } },
   { SUPKEY,                       XK_6,          spawn,             {.v = openweb_instagram              } },
 //{ SUPKEY,                       XK_7,          spawn,             {.v =                                } },
-  { SUPKEY,                       XK_8,          spawn,             {.v = openweb_github                 } },
-  { SUPKEY,                       XK_9,          spawn,             {.v = openweb_doubao                 } },
-  { SUPKEY,                       XK_0,          spawn,             {.v = openweb_leetcode               } },
+  { SUPKEY,                       XK_8,          spawn,             {.v = openweb_leetcode               } },
+  { SUPKEY,                       XK_9,          spawn,             {.v = openweb_github                 } },
+  { SUPKEY,                       XK_0,          spawn,             {.v = openweb_doubao                 } },
 
 // SUPKEY|ShiftMask + 1-9-0
 // { SUPKEY|ShiftMask,             XK_1,          spawn,             {.v =                                } },
