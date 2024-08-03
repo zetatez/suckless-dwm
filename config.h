@@ -2,11 +2,6 @@
 /* key definitions */
 #define SUPKEY Mod4Mask
 #define MODKEY Mod1Mask
-#define TAGKEYS(KEY,TAG) \
-  { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-  { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-  { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-  { MODKEY|ControlMask|ShiftMask, KEY,      previewtag,     {.ui = TAG     } }, \
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
@@ -143,6 +138,7 @@ static const char *toggle_wallpaper[]               = SH("toggle-wallpaper");
 static const char *launch_chrome[]                  = SH("launch-chrome");
 static const char *launch_edge[]                    = SH("launch-edge");
 static const char *openweb_chatgpt[]                = SH("openweb-chatgpt");
+static const char *openweb_codeium[]                = SH("openweb-codeium");
 static const char *openweb_doubao[]                 = SH("openweb-doubao");
 static const char *openweb_github[]                 = SH("openweb-github");
 static const char *openweb_google_mail[]            = SH("openweb-google-mail");
@@ -195,14 +191,14 @@ static const Key keys[] = {
 
 // SUPKEY + 1-9-0
   { SUPKEY,                       XK_1,          spawn,             {.v = openweb_chatgpt                } },
-  { SUPKEY,                       XK_2,          spawn,             {.v = openweb_google_mail            } },
-  { SUPKEY,                       XK_3,          spawn,             {.v = openweb_google_translate       } },
-  { SUPKEY,                       XK_4,          spawn,             {.v = openweb_wechat                 } },
-  { SUPKEY,                       XK_5,          spawn,             {.v = openweb_youtube                } },
-  { SUPKEY,                       XK_6,          spawn,             {.v = openweb_instagram              } },
-//{ SUPKEY,                       XK_7,          spawn,             {.v =                                } },
-  { SUPKEY,                       XK_8,          spawn,             {.v = openweb_leetcode               } },
-  { SUPKEY,                       XK_9,          spawn,             {.v = openweb_github                 } },
+  { SUPKEY,                       XK_2,          spawn,             {.v = openweb_codeium                } },
+  { SUPKEY,                       XK_3,          spawn,             {.v = openweb_google_mail            } },
+  { SUPKEY,                       XK_4,          spawn,             {.v = openweb_google_translate       } },
+  { SUPKEY,                       XK_5,          spawn,             {.v = openweb_wechat                 } },
+  { SUPKEY,                       XK_6,          spawn,             {.v = openweb_youtube                } },
+  { SUPKEY,                       XK_7,          spawn,             {.v = openweb_instagram              } },
+  { SUPKEY,                       XK_8,          spawn,             {.v = openweb_github                 } },
+  { SUPKEY,                       XK_9,          spawn,             {.v = openweb_leetcode               } },
   { SUPKEY,                       XK_0,          spawn,             {.v = openweb_doubao                 } },
 
 // SUPKEY|ShiftMask + 1-9-0
@@ -294,7 +290,6 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio               } },
   { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_screen              } },
 
-// MODKEY-ShiftMask/ControlMask + a-z, etc
   { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd                  } },
   { MODKEY,                       XK_c,          spawn,             {.v = toggle_clipmenu                } },
   { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                       } },
@@ -320,18 +315,22 @@ static const Key keys[] = {
   { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                             } },
   { MODKEY,                       XK_slash,      focusmon,          {.i = +1                             } },
   { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                             } },
+
   { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025                         } },
   { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                         } },
   { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                         } },
   { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                         } },
+
   { SUPKEY,                       XK_k,          movewin,           {.ui = UP                            } },
   { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                          } },
   { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                          } },
   { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                         } },
+
   { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                        } },
   { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                        } },
   { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                        } },
   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                        } },
+
   { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[0]                    } },
   { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[1]                    } },
   { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[2]                    } },
@@ -346,22 +345,53 @@ static const Key keys[] = {
   { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                   } },
   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                   } },
   { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[13]                   } },
-  { MODKEY,                       XK_0,          view,              {.ui = ~0                            } },
-  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                            } },
+
   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                        } },
-//{ SUPKEY|ShiftMask,             XK_Return,     spawn,             {.v =                                } },
   { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                   } },
   { MODKEY|ShiftMask,             XK_q,          quit,              {0                                   } },
   { MODKEY|ShiftMask,             XK_p,          quit,              {1                                   } },
-    TAGKEYS(XK_1, 0)
-    TAGKEYS(XK_2, 1)
-    TAGKEYS(XK_3, 2)
-    TAGKEYS(XK_4, 3)
-    TAGKEYS(XK_5, 4)
-    TAGKEYS(XK_6, 5)
-    TAGKEYS(XK_7, 6)
-    TAGKEYS(XK_8, 7)
-    TAGKEYS(XK_9, 8)
+
+  { MODKEY,                       XK_0,          view,              {.ui = ~0                            } },
+  { MODKEY,                       XK_1,          view,              {.ui = 1 << 0                        } },
+  { MODKEY,                       XK_2,          view,              {.ui = 1 << 1                        } },
+  { MODKEY,                       XK_3,          view,              {.ui = 1 << 2                        } },
+  { MODKEY,                       XK_4,          view,              {.ui = 1 << 3                        } },
+  { MODKEY,                       XK_5,          view,              {.ui = 1 << 4                        } },
+  { MODKEY,                       XK_6,          view,              {.ui = 1 << 5                        } },
+  { MODKEY,                       XK_7,          view,              {.ui = 1 << 6                        } },
+  { MODKEY,                       XK_8,          view,              {.ui = 1 << 7                        } },
+  { MODKEY,                       XK_9,          view,              {.ui = 1 << 8                        } },
+
+  { MODKEY|ControlMask,           XK_1,          toggleview,        {.ui = 1 << 0                        } },
+  { MODKEY|ControlMask,           XK_2,          toggleview,        {.ui = 1 << 1                        } },
+  { MODKEY|ControlMask,           XK_3,          toggleview,        {.ui = 1 << 2                        } },
+  { MODKEY|ControlMask,           XK_4,          toggleview,        {.ui = 1 << 3                        } },
+  { MODKEY|ControlMask,           XK_5,          toggleview,        {.ui = 1 << 4                        } },
+  { MODKEY|ControlMask,           XK_6,          toggleview,        {.ui = 1 << 5                        } },
+  { MODKEY|ControlMask,           XK_7,          toggleview,        {.ui = 1 << 6                        } },
+  { MODKEY|ControlMask,           XK_8,          toggleview,        {.ui = 1 << 7                        } },
+  { MODKEY|ControlMask,           XK_9,          toggleview,        {.ui = 1 << 8                        } },
+
+  { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                            } },
+  { MODKEY|ShiftMask,             XK_1,          tag,               {.ui = 1 << 0                        } },
+  { MODKEY|ShiftMask,             XK_2,          tag,               {.ui = 1 << 1                        } },
+  { MODKEY|ShiftMask,             XK_3,          tag,               {.ui = 1 << 2                        } },
+  { MODKEY|ShiftMask,             XK_4,          tag,               {.ui = 1 << 3                        } },
+  { MODKEY|ShiftMask,             XK_5,          tag,               {.ui = 1 << 4                        } },
+  { MODKEY|ShiftMask,             XK_6,          tag,               {.ui = 1 << 5                        } },
+  { MODKEY|ShiftMask,             XK_7,          tag,               {.ui = 1 << 6                        } },
+  { MODKEY|ShiftMask,             XK_8,          tag,               {.ui = 1 << 7                        } },
+  { MODKEY|ShiftMask,             XK_9,          tag,               {.ui = 1 << 8                        } },
+
+  { MODKEY|ControlMask|ShiftMask, XK_1,          previewtag,        {.ui = 0                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_2,          previewtag,        {.ui = 1                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_3,          previewtag,        {.ui = 2                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_4,          previewtag,        {.ui = 3                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_5,          previewtag,        {.ui = 4                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_6,          previewtag,        {.ui = 5                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_7,          previewtag,        {.ui = 6                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_8,          previewtag,        {.ui = 7                             } },
+  { MODKEY|ControlMask|ShiftMask, XK_9,          previewtag,        {.ui = 8                             } },
 };
 
 /* button definitions */

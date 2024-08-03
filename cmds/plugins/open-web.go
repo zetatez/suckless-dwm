@@ -22,8 +22,8 @@ func OpenWebDouBao() {
 	OpenWeb("", "https://www.doubao.com/chat/")()
 }
 
-func OpenWebGemini() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://gemini.google.com/app")()
+func OpenWebCodeium() {
+	OpenWeb("--proxy-server="+ProxyServer, "https://codeium.com/live/general")()
 }
 
 func OpenWebGoogleMail() {
