@@ -25,6 +25,7 @@ build: prepare build-shell-cmds
 	go build -o ./bins/note-flash-card                ./cmds/note-flash-card/main.go
 	go build -o ./bins/note-timeline                  ./cmds/note-timeline/main.go
 	go build -o ./bins/openweb-chatgpt                ./cmds/openweb-chatgpt/main.go
+	go build -o ./bins/openweb-doubao                 ./cmds/openweb-doubao/main.go
 	go build -o ./bins/openweb-gemini                 ./cmds/openweb-gemini/main.go
 	go build -o ./bins/openweb-github                 ./cmds/openweb-github/main.go
 	go build -o ./bins/openweb-google-mail            ./cmds/openweb-google-mail/main.go

@@ -143,7 +143,7 @@ static const char *toggle_wallpaper[]               = SH("toggle-wallpaper");
 static const char *launch_chrome[]                  = SH("launch-chrome");
 static const char *launch_edge[]                    = SH("launch-edge");
 static const char *openweb_chatgpt[]                = SH("openweb-chatgpt");
-static const char *openweb_gemini[]                 = SH("openweb-gemini");
+static const char *openweb_doubao[]                 = SH("openweb-doubao");
 static const char *openweb_github[]                 = SH("openweb-github");
 static const char *openweb_google_mail[]            = SH("openweb-google-mail");
 static const char *openweb_google_translate[]       = SH("openweb-google-translate");
@@ -202,7 +202,7 @@ static const Key keys[] = {
   { SUPKEY,                       XK_6,          spawn,             {.v = openweb_instagram              } },
 //{ SUPKEY,                       XK_7,          spawn,             {.v =                                } },
   { SUPKEY,                       XK_8,          spawn,             {.v = openweb_github                 } },
-  { SUPKEY,                       XK_9,          spawn,             {.v = openweb_gemini                 } },
+  { SUPKEY,                       XK_9,          spawn,             {.v = openweb_doubao                 } },
   { SUPKEY,                       XK_0,          spawn,             {.v = openweb_leetcode               } },
 
 // SUPKEY|ShiftMask + 1-9-0

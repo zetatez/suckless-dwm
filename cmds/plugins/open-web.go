@@ -22,6 +22,10 @@ func OpenWebChatGPT() {
 	OpenWeb("https://chatgpt.com/")()
 }
 
+func OpenWebDouBao() {
+	OpenWeb("https://www.doubao.com/chat/")()
+}
+
 func OpenWebGemini() {
 	OpenWeb("https://gemini.google.com/app")()
 }
