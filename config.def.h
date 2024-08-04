@@ -96,9 +96,9 @@ static const char *scratchpadcmd[]     = { "st", "-g", "120x32", "-t", "scratchp
 
 static const char *screen_light_dec[]               = SH("sudo light -U 5");
 static const char *screen_light_inc[]               = SH("sudo light -A 5");
-static const char *screenslock[]                    = SH("xset dpms force off && slock");
+static const char *screenslock[]                    = SH("slock");
+static const char *sys_suspend[]                    = SH("systemctl suspend && slock");
 static const char *sys_shutdown[]                   = SH("systemctl poweroff");
-static const char *sys_suspend[]                    = SH("systemctl suspend");
 static const char *volume_dec[]                     = SH("amixer set Speaker unmute; amixer set Speaker 98; amixer set Master 5%-");
 static const char *volume_inc[]                     = SH("amixer set Speaker unmute; amixer set Speaker 98; amixer set Master 5%+");
 static const char *volume_toggle[]                  = SH("amixer set Speaker unmute; amixer set Speaker 98; amixer set Master toggle");
