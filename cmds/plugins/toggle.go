@@ -256,8 +256,8 @@ func ToggleSysShortcuts() {
 		"󰒲  suspend":     "systemctl suspend",
 		"  poweroff":    "systemctl poweroff",
 		"ﰇ  reboot":      "systemctl reboot",
-		"󰷛  slock":       "slock & sleep 0.5 & xset dpms force off",
 		"󰶐  off-display": "sleep .5; xset dpms force off",
+		"󰷛  slock":       "slock & sleep 0.5 & xset dpms force off",
 	}
 	list := []string{}
 	for k := range SysShortCuts {
