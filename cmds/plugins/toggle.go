@@ -47,7 +47,18 @@ func ToggleBlueTooth() {
 	sugar.Notify("connect to bluetooth success")
 }
 
-func ToggleCalendarTodaySchedule() {
+func ToggleCalendar() {
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=month'",
+			sugar.GetGeoForSt(0.84, 0.04, 24, 12),
+			WinNameFloatWindow,
+			WinNameFloatWindow,
+		),
+	)
+}
+
+func ToggleCalendarSchedulingToday() {
 	sugar.Toggle(
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'",
