@@ -68,6 +68,9 @@ static const unsigned int gapoh     = 24;
 static const unsigned int gapow     = 32;
 static const unsigned int gapih     = 12;
 static const unsigned int gapiw     = 16;
+static const unsigned int stairpx   = 20;       /* depth of the stairs layout */
+static const int stairdirection     = 1;        /* 0: left-aligned, 1: right-aligned */
+static const int stairsamesize      = 1;        /* 1 means shrink all the staired windows to the same size */
 
 static const Layout layouts[] = {
    { "⧉",  layout_fibonaccispiral     },
@@ -84,6 +87,7 @@ static const Layout layouts[] = {
    { "󰓌",  layout_hacker              },
    { "⬚",  layout_monocle             },
    { "◧",  layout_tileright_vertical  },
+   { "[S]",layout_stairs              },
 // { "∅",  NULL                       }, // no layout, abandon
    { NULL, NULL                       },
 };
@@ -357,6 +361,7 @@ static const Key keys[] = {
    { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                      } },
    { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                      } },
    { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[13]                      } },
+   { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[14]                      } },
 
    { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                           } },
    { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                      } },
