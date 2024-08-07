@@ -332,7 +332,6 @@ static const Key keys[] = {
    { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                                } },
    { MODKEY,                       XK_slash,      focusmon,          {.i = +1                                } },
    { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                                } },
-
    { MODKEY,                       XK_minus,      scratchpad_show,   {0                                      } },
    { MODKEY|ShiftMask,             XK_minus,      scratchpad_hide,   {0                                      } },
    { MODKEY,                       XK_equal,      scratchpad_remove, {0                                      } },
@@ -341,15 +340,6 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                            } },
    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                            } },
    { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                            } },
-
-// { MODKEY,                       XK_Down,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY,                       XK_Up,         xxxxxxxx,          {.v =                                   } },
-// { MODKEY,                       XK_Right,      xxxxxxxx,          {.v =                                   } },
-// { MODKEY,                       XK_Left,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ShiftMask,             XK_Down,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ShiftMask,             XK_Up,         xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ShiftMask,             XK_Right,      xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ShiftMask,             XK_Left,       xxxxxxxx,          {.v =                                   } },
 
    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[0]                       } },
    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[1]                       } },
