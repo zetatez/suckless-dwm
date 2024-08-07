@@ -297,6 +297,16 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio                  } },
    { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_screen                 } },
 
+   { SUPKEY,                       XK_k,          movewin,           {.ui = UP                               } },
+   { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                             } },
+   { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                             } },
+   { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                            } },
+
+   { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                           } },
+   { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                           } },
+   { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                           } },
+   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                           } },
+
    { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd                     } },
    { MODKEY,                       XK_c,          spawn,             {.v = toggle_clipmenu                   } },
    { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                          } },
@@ -323,6 +333,10 @@ static const Key keys[] = {
    { MODKEY,                       XK_slash,      focusmon,          {.i = +1                                } },
    { MODKEY|ShiftMask,             XK_slash,      tagmon,            {.i = +1                                } },
 
+   { MODKEY,                       XK_minus,      scratchpad_show,   {0                                      } },
+   { MODKEY|ShiftMask,             XK_minus,      scratchpad_hide,   {0                                      } },
+   { MODKEY,                       XK_equal,      scratchpad_remove, {0                                      } },
+
    { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025                            } },
    { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                            } },
    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                            } },
@@ -336,16 +350,6 @@ static const Key keys[] = {
 // { MODKEY|ShiftMask,             XK_Up,         xxxxxxxx,          {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_Right,      xxxxxxxx,          {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_Left,       xxxxxxxx,          {.v =                                   } },
-
-   { SUPKEY,                       XK_k,          movewin,           {.ui = UP                               } },
-   { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                             } },
-   { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                             } },
-   { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                            } },
-
-   { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                           } },
-   { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                           } },
-   { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                           } },
-   { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                           } },
 
    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[0]                       } },
    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[1]                       } },
