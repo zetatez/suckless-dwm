@@ -1,4 +1,3 @@
-
 /* key definitions */
 #define SUPKEY Mod4Mask
 #define MODKEY Mod1Mask
@@ -93,7 +92,6 @@ static char dmenumon[2]                = "0"; /* component of dmenucmd, manipula
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
 static const char *scratchpadcmd[]     = { "st", "-g", "120x32", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
-
 static const char *screen_light_dec[]                 = SH("sudo light -U 5");
 static const char *screen_light_inc[]                 = SH("sudo light -A 5");
 static const char *screen_lock[]                      = SH("slock");
