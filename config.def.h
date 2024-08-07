@@ -329,15 +329,7 @@ static const Key keys[] = {
 // { MODKEY|ShiftMask,             XK_Up,         xxxxxxxx,          {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_Right,      xxxxxxxx,          {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_Left,       xxxxxxxx,          {.v =                                   } },
-//
-// { MODKEY|ControlMask,           XK_Up,         xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask,           XK_Down,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask,           XK_Left,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask,           XK_Right,      xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask|ShiftMask, XK_Up,         xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask|ShiftMask, XK_Down,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask|ShiftMask, XK_Left,       xxxxxxxx,          {.v =                                   } },
-// { MODKEY|ControlMask|ShiftMask, XK_Right,      xxxxxxxx,          {.v =                                   } },
+
    { SUPKEY,                       XK_k,          movewin,           {.ui = UP                               } },
    { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                             } },
    { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                             } },
