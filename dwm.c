@@ -136,6 +136,7 @@ static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
 static void layout_overview(Monitor *m);
 static void layout_tileright_vertical(Monitor *m);
+static void layout_stairs(Monitor *m);
 
 /* variables */
 static const char broken[] = "broken";
@@ -3664,6 +3665,44 @@ layout_tileright_vertical(Monitor *m)
     }
   }
 }
+
+void
+layout_stairs(Monitor *m)
+{
+  unsigned int i, n, h, mw, my;
+  unsigned int ox, oy, ow, oh; /* stair offset values */
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+  if (n == 0)
+    return;
+
+  if (n > m->nmaster)
+    mw = m->nmaster ? m->ww * m->mfact : 0;
+  else
+    mw = m->ww;
+
+  for (i = my = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    if (i < m->nmaster) {
+      h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+      resize(c, m->wx, m->wy + my, mw - (2 * c->bw), h - (2 * c->bw), 0);
+      if (my + HEIGHT(c) < m->wh)
+        my += HEIGHT(c);
+    } else {
+      oy = i - m->nmaster;
+      ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
+      ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
+      oh = stairsamesize ? ow : i - m->nmaster;
+      resize(c,
+             m->wx + mw + (ox * stairpx),
+             m->wy + (oy * stairpx),
+             m->ww - mw - (2 * c->bw) - (ow * stairpx),
+             m->wh - (2 * c->bw) - (oh * stairpx),
+             0);
+    }
+  }
+}
+
 /* layout end */
 
 int
