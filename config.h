@@ -1,8 +1,7 @@
-/* key definitions */
+/* See LICENSE file for copyright and license details. */
+
 #define SUPKEY Mod4Mask
 #define MODKEY Mod1Mask
-
-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
 #define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
 
@@ -35,9 +34,6 @@ static const char *colors[][3]      = {
   [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const XPoint stickyicon[]    = { {0,0}, {4,0}, {4,8}, {2,6}, {0,8}, {0,0} }; /* represents the icon as an array of vertices */
-static const XPoint stickyiconbb    = {4,8};	                                      /* defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
-
 static const char *const autostart[] = {
   "dwmblocks", NULL,
   "picom", "-b", NULL,
@@ -46,7 +42,7 @@ static const char *const autostart[] = {
   NULL
 };
 
-/* tagging  ζ(s)=∑1/n^s */
+/* tagging */
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
@@ -57,6 +53,10 @@ static const Rule rules[] = {
   {"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
   {"yesplaymusic",           NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
+
+/* stickyicon */
+static const XPoint stickyicon[]    = { {0,0}, {4,0}, {4,8}, {2,6}, {0,8}, {0,0} }; /* stickyicon: represents the icon as an array of vertices */
+static const XPoint stickyiconbb    = {4,8};	                                      /* stickyicon: defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
 
 /* layout(s) */
 static const float mfact            = 0.50;
