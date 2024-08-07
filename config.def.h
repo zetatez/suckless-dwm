@@ -68,9 +68,9 @@ static const unsigned int gapoh     = 24;
 static const unsigned int gapow     = 32;
 static const unsigned int gapih     = 12;
 static const unsigned int gapiw     = 16;
-static const unsigned int stairpx   = 20;       /* depth of the stairs layout */
-static const int stairdirection     = 1;        /* 0: left-aligned, 1: right-aligned */
-static const int stairsamesize      = 1;        /* 1 means shrink all the staired windows to the same size */
+static const unsigned int stairpx   = 20;    /* layout_stairs: depth of the stairs layout */
+static const int stairdirection     = 1;     /* layout_stairs: 0: left-aligned, 1: right-aligned */
+static const int stairsamesize      = 1;     /* layout_stairs: 1 means shrink all the staired windows to the same size */
 
 static const Layout layouts[] = {
    { "⧉",  layout_fibonaccispiral     },
