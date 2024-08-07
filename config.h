@@ -289,12 +289,10 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_slash,      spawn,             {.v = toggle_rec_webcam                 } },
    { SUPKEY|ShiftMask,             XK_comma,      spawn,             {.v = toggle_rec_audio                  } },
    { SUPKEY|ShiftMask,             XK_period,     spawn,             {.v = toggle_rec_screen                 } },
-
    { SUPKEY,                       XK_k,          movewin,           {.ui = UP                               } },
    { SUPKEY,                       XK_j,          movewin,           {.ui = DOWN                             } },
    { SUPKEY,                       XK_h,          movewin,           {.ui = LEFT                             } },
    { SUPKEY,                       XK_l,          movewin,           {.ui = RIGHT                            } },
-
    { SUPKEY|ShiftMask,             XK_k,          resizewin,         {.ui = VECINC                           } },
    { SUPKEY|ShiftMask,             XK_j,          resizewin,         {.ui = VECDEC                           } },
    { SUPKEY|ShiftMask,             XK_h,          resizewin,         {.ui = HORDEC                           } },
@@ -327,6 +325,8 @@ static const Key keys[] = {
    { MODKEY|ControlMask,           XK_period,     shiftview,         {.i = +1                                } },
    { MODKEY,                       XK_k,          focusstack,        {.i = -1                                } },
    { MODKEY,                       XK_j,          focusstack,        {.i = +1                                } },
+   { MODKEY,                       XK_u,          movestack,         {.i = -1                                } },
+   { MODKEY|ShiftMask,             XK_u,          movestack,         {.i = +1                                } },
    { MODKEY|ControlMask,           XK_k,          movestack,         {.i = -1                                } },
    { MODKEY|ControlMask,           XK_j,          movestack,         {.i = +1                                } },
    { MODKEY|ShiftMask,             XK_h,          setmfact,          {.f = -0.025                            } },
@@ -363,7 +363,6 @@ static const Key keys[] = {
    { MODKEY,                       XK_7,          view,              {.ui = 1 << 6                           } },
    { MODKEY,                       XK_8,          view,              {.ui = 1 << 7                           } },
    { MODKEY,                       XK_9,          view,              {.ui = 1 << 8                           } },
-
    { MODKEY|ControlMask,           XK_1,          toggleview,        {.ui = 1 << 0                           } },
    { MODKEY|ControlMask,           XK_2,          toggleview,        {.ui = 1 << 1                           } },
    { MODKEY|ControlMask,           XK_3,          toggleview,        {.ui = 1 << 2                           } },
@@ -373,7 +372,6 @@ static const Key keys[] = {
    { MODKEY|ControlMask,           XK_7,          toggleview,        {.ui = 1 << 6                           } },
    { MODKEY|ControlMask,           XK_8,          toggleview,        {.ui = 1 << 7                           } },
    { MODKEY|ControlMask,           XK_9,          toggleview,        {.ui = 1 << 8                           } },
-
    { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                               } },
    { MODKEY|ShiftMask,             XK_1,          tag,               {.ui = 1 << 0                           } },
    { MODKEY|ShiftMask,             XK_2,          tag,               {.ui = 1 << 1                           } },
@@ -384,7 +382,6 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_7,          tag,               {.ui = 1 << 6                           } },
    { MODKEY|ShiftMask,             XK_8,          tag,               {.ui = 1 << 7                           } },
    { MODKEY|ShiftMask,             XK_9,          tag,               {.ui = 1 << 8                           } },
-
    { MODKEY|ControlMask|ShiftMask, XK_1,          previewtag,        {.ui = 0                                } },
    { MODKEY|ControlMask|ShiftMask, XK_2,          previewtag,        {.ui = 1                                } },
    { MODKEY|ControlMask|ShiftMask, XK_3,          previewtag,        {.ui = 2                                } },
