@@ -80,7 +80,7 @@ static const Layout layouts[] = {
    { "󰓌",  layout_hacker              },
    { "⬚",  layout_monocle             },
    { "◧",  layout_tileright_vertical  },
-   { "[S]",layout_stairs              },
+   { "󱎞",  layout_stairs              },
 // { "∅",  NULL                       }, // no layout, abandon
    { NULL, NULL                       },
 };
