@@ -3655,15 +3655,15 @@ layout_hacker(Monitor *m)
 
   if (n == 0) { return; }
 
-  cw = (m->ww - 2*gapow)*3/5;
-  ch = (m->wh - 2*gapoh)*3/5;
+  cw = m->ww*3/5;
+  ch = m->wh*3/5;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    cx = m->wx + gapow + (n-i-1)*(m->ww/34);
-    cy = m->wy + gapoh + (n-i-1)*(m->wh/34);
+    cx = m->ww*0.01 + m->wx + (n-i-1)*(m->ww/34);
+    cy = m->wh*0.01 + m->wy + (n-i-1)*(m->wh/34);
     if (cy + ch - 2*c->bw > m->wh) {
-      cx = (m->ww - 2*gapow)/2 - cw/2;
-      cy = (m->wh - 2*gapoh)/2 - ch/2;
+      cx = m->ww/2 - cw/2;
+      cy = m->wh/2 - ch/2;
     }
     resize(
       c,
@@ -3679,7 +3679,12 @@ layout_hacker(Monitor *m)
 void
 layout_overview(Monitor *m)
 {
+
   unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
+  unsigned int gapoh     = 24;
+  unsigned int gapow     = 32;
+  unsigned int gapih     = 12;
+  unsigned int gapiw     = 16;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3766,6 +3771,10 @@ layout_tileright_vertical(Monitor *m)
 void
 layout_stairs(Monitor *m)
 {
+  unsigned int stairpx   = 48;    /* depth of the stairs layout */
+  int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
+  int stairsamesize      = 0;     /* 1 means shrink all the staired windows to the same size */
+
   unsigned int i, n, h, mw, my;
   unsigned int ox, oy, ow, oh; /* stair offset values */
   Client *c;
