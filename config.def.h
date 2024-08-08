@@ -42,7 +42,6 @@ static const char *const autostart[] = {
   NULL
 };
 
-/* tagging  ζ(s)=∑1/n^s */
 /* tagging */
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
@@ -372,8 +371,7 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_q,          quit,              {0                                      } },
    { MODKEY|ShiftMask,             XK_p,          quit,              {1                                      } },
 
-   { MODKEY,                       XK_0,          view,              {.ui = ~0                               } },
-   { MODKEY,                       XK_1,          view,              {.ui = 1 << 0                           } },
+   { MODKEY,                       XK_1,          view,              {.ui = 1 << 0                           } }, // view tag 1
    { MODKEY,                       XK_2,          view,              {.ui = 1 << 1                           } },
    { MODKEY,                       XK_3,          view,              {.ui = 1 << 2                           } },
    { MODKEY,                       XK_4,          view,              {.ui = 1 << 3                           } },
@@ -382,17 +380,8 @@ static const Key keys[] = {
    { MODKEY,                       XK_7,          view,              {.ui = 1 << 6                           } },
    { MODKEY,                       XK_8,          view,              {.ui = 1 << 7                           } },
    { MODKEY,                       XK_9,          view,              {.ui = 1 << 8                           } },
-   { MODKEY|ControlMask,           XK_1,          toggleview,        {.ui = 1 << 0                           } },
-   { MODKEY|ControlMask,           XK_2,          toggleview,        {.ui = 1 << 1                           } },
-   { MODKEY|ControlMask,           XK_3,          toggleview,        {.ui = 1 << 2                           } },
-   { MODKEY|ControlMask,           XK_4,          toggleview,        {.ui = 1 << 3                           } },
-   { MODKEY|ControlMask,           XK_5,          toggleview,        {.ui = 1 << 4                           } },
-   { MODKEY|ControlMask,           XK_6,          toggleview,        {.ui = 1 << 5                           } },
-   { MODKEY|ControlMask,           XK_7,          toggleview,        {.ui = 1 << 6                           } },
-   { MODKEY|ControlMask,           XK_8,          toggleview,        {.ui = 1 << 7                           } },
-   { MODKEY|ControlMask,           XK_9,          toggleview,        {.ui = 1 << 8                           } },
-   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                               } },
-   { MODKEY|ShiftMask,             XK_1,          tag,               {.ui = 1 << 0                           } },
+   { MODKEY,                       XK_0,          view,              {.ui = ~0                               } }, // preview all tags
+   { MODKEY|ShiftMask,             XK_1,          tag,               {.ui = 1 << 0                           } }, // move to tag 1
    { MODKEY|ShiftMask,             XK_2,          tag,               {.ui = 1 << 1                           } },
    { MODKEY|ShiftMask,             XK_3,          tag,               {.ui = 1 << 2                           } },
    { MODKEY|ShiftMask,             XK_4,          tag,               {.ui = 1 << 3                           } },
@@ -401,6 +390,16 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_7,          tag,               {.ui = 1 << 6                           } },
    { MODKEY|ShiftMask,             XK_8,          tag,               {.ui = 1 << 7                           } },
    { MODKEY|ShiftMask,             XK_9,          tag,               {.ui = 1 << 8                           } },
+   { MODKEY|ShiftMask,             XK_0,          tag,               {.ui = ~0                               } }, // stick to all tags
+   { MODKEY|ControlMask,           XK_1,          toggleview,        {.ui = 1 << 0                           } }, // toggle view of tag 1
+   { MODKEY|ControlMask,           XK_2,          toggleview,        {.ui = 1 << 1                           } },
+   { MODKEY|ControlMask,           XK_3,          toggleview,        {.ui = 1 << 2                           } },
+   { MODKEY|ControlMask,           XK_4,          toggleview,        {.ui = 1 << 3                           } },
+   { MODKEY|ControlMask,           XK_5,          toggleview,        {.ui = 1 << 4                           } },
+   { MODKEY|ControlMask,           XK_6,          toggleview,        {.ui = 1 << 5                           } },
+   { MODKEY|ControlMask,           XK_7,          toggleview,        {.ui = 1 << 6                           } },
+   { MODKEY|ControlMask,           XK_8,          toggleview,        {.ui = 1 << 7                           } },
+   { MODKEY|ControlMask,           XK_9,          toggleview,        {.ui = 1 << 8                           } },
    { MODKEY|ControlMask|ShiftMask, XK_1,          previewtag,        {.ui = 0                                } },
    { MODKEY|ControlMask|ShiftMask, XK_2,          previewtag,        {.ui = 1                                } },
    { MODKEY|ControlMask|ShiftMask, XK_3,          previewtag,        {.ui = 2                                } },
@@ -423,7 +422,7 @@ static const Button buttons[] = {
    /* click                event mask      button          function        argument */
    { ClkLtSymbol,          0,              Button1,        setlayout,      {0                               } },
    { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]                } },
-   { ClkWinTitle,          0,              Button2,        setlayout,      {.v = &layouts[12]               } },
+   { ClkWinTitle,          0,              Button2,        setlayout,      {.v = &layouts[8]                } },
    { ClkStatusText,        0,              Button1,        spawn,          {.v = toggle_calendar_scheduling } },
    { ClkStatusText,        0,              Button2,        spawn,          {.v = toggle_sys_shortcuts       } },
    { ClkStatusText,        0,              Button3,        spawn,          {.v = toggle_calendar            } },
