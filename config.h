@@ -42,6 +42,7 @@ static const char *const autostart[] = {
   NULL
 };
 
+/* tagging  ζ(s)=∑1/n^s */
 /* tagging */
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
@@ -68,19 +69,19 @@ static const int lockfullscreen     = 0;
 static const Layout layouts[] = {
    { "⧉",  layout_fibonaccispiral     },
    { "⧉",  layout_fibonaccidwindle    },
-   { "⧈",  layout_centeranyshape      },
+   { "⧈",  layout_centerfreeshape     },
    { "⧈",  layout_centerequalratio    },
-   { "󰘸",  layout_deckvert            },
-   { "󰘸",  layout_deckhori            },
    { "⬓" , layout_bottomstackvert     },
    { "⬓",  layout_bottomstackhori     },
    { "◨",  layout_tileright           },
    { "◧",  layout_tileleft            },
    { "󰝘",  layout_grid                },
-   { "󰓌",  layout_hacker              },
    { "⬚",  layout_monocle             },
-   { "◧",  layout_tileright_vertical  },
+   { "󰓌",  layout_hacker              },
    { "󱎞",  layout_stairs              },
+// { "◧",  layout_tileright_vertical  },
+// { "󰘸",  layout_deckvert            },
+// { "󰘸",  layout_deckhori            },
 // { "∅",  NULL                       }, // no layout, abandon
    { NULL, NULL                       },
 };
@@ -91,6 +92,7 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]           = { "st", NULL };
+static const char *termcmd_kitty[]     = { "kitty", NULL };
 static const char *scratchpadcmd[]     = { "st", "-g", "120x32", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
 static const char *screen_light_dec[]                 = SH("sudo light -U 5");
 static const char *screen_light_inc[]                 = SH("sudo light -A 5");
@@ -299,6 +301,25 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_l,          resizewin,         {.ui = HORINC                           } },
 
 // MODKEY, etc
+// { MODKEY,                       XK_a,          xxxxx,             {.v =                                   } },
+// { MODKEY,                       XK_h,          xxxxx,             {.v =                                   } },
+// { MODKEY,                       XK_l,          xxxxx,             {.v =                                   } },
+// { MODKEY,                       XK_n,          xxxxx,             {.v = x                                 } },
+// { MODKEY,                       XK_x,          xxxxx,             {.v = x                                 } },
+// { MODKEY,                       XK_y,          xxxxx,             {.v = x                                 } },
+// { MODKEY,                       XK_z,          xxxxx,             {.v = x                                 } },
+// { MODKEY|ShiftMask,             XK_a,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_b,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_d,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_f,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_g,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_i,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_m,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_n,          xxxxx,             {.v = x                                 } },
+// { MODKEY|ShiftMask,             XK_o,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_x,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_y,          xxxxx,             {.v =                                   } },
+// { MODKEY|ShiftMask,             XK_z,          xxxxx,             {.v =                                   } },
    { MODKEY,                       XK_apostrophe, togglescratch,     {.v = scratchpadcmd                     } },
    { MODKEY,                       XK_c,          spawn,             {.v = toggle_clipmenu                   } },
    { MODKEY,                       XK_p,          spawn,             {.v = dmenucmd                          } },
@@ -333,25 +354,23 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_l,          setmfact,          {.f = +0.025                            } },
    { MODKEY|ShiftMask,             XK_j,          setffact,          {.f = -0.025                            } },
    { MODKEY|ShiftMask,             XK_k,          setffact,          {.f = +0.025                            } },
-   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                           } },
-   { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                      } },
-   { MODKEY|ShiftMask,             XK_q,          quit,              {0                                      } },
-   { MODKEY|ShiftMask,             XK_p,          quit,              {1                                      } },
    { MODKEY,                       XK_r,          setlayout,         {.v = &layouts[0]                       } },
    { MODKEY|ShiftMask,             XK_r,          setlayout,         {.v = &layouts[1]                       } },
    { MODKEY,                       XK_v,          setlayout,         {.v = &layouts[2]                       } },
    { MODKEY|ShiftMask,             XK_v,          setlayout,         {.v = &layouts[3]                       } },
-   { MODKEY,                       XK_y,          setlayout,         {.v = &layouts[4]                       } },
-   { MODKEY|ShiftMask,             XK_y,          setlayout,         {.v = &layouts[5]                       } },
-   { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[6]                       } },
-   { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[7]                       } },
-   { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[8]                       } },
-   { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[9]                       } },
-   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[10]                      } },
-   { MODKEY,                       XK_a,          setlayout,         {.v = &layouts[11]                      } },
-   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[12]                      } },
-   { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[13]                      } },
-   { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[14]                      } },
+   { MODKEY|ShiftMask,             XK_e,          setlayout,         {.v = &layouts[4]                       } },
+   { MODKEY,                       XK_e,          setlayout,         {.v = &layouts[5]                       } },
+   { MODKEY,                       XK_t,          setlayout,         {.v = &layouts[6]                       } },
+   { MODKEY|ShiftMask,             XK_t,          setlayout,         {.v = &layouts[7]                       } },
+   { MODKEY,                       XK_g,          setlayout,         {.v = &layouts[8]                       } },
+   { MODKEY,                       XK_m,          setlayout,         {.v = &layouts[9]                       } },
+   { MODKEY,                       XK_w,          setlayout,         {.v = &layouts[10]                      } },
+   { MODKEY|ShiftMask,             XK_w,          setlayout,         {.v = &layouts[11]                      } },
+   { MODKEY|ShiftMask,             XK_Return,     spawn,             {.v = termcmd                           } },
+   { MODKEY|ControlMask|ShiftMask, XK_Return,     spawn,             {.v = termcmd_kitty                     } },
+   { MODKEY|ShiftMask,             XK_c,          killclient,        {0                                      } },
+   { MODKEY|ShiftMask,             XK_q,          quit,              {0                                      } },
+   { MODKEY|ShiftMask,             XK_p,          quit,              {1                                      } },
 
    { MODKEY,                       XK_0,          view,              {.ui = ~0                               } },
    { MODKEY,                       XK_1,          view,              {.ui = 1 << 0                           } },
