@@ -9,7 +9,6 @@ import (
 var ActionMap = map[string]func(){
 	"ocr":                              OCR,
 	"ssh-to":                           SshTo,
-	"umount xyz":                       UmountXYZ,
 	"handle-copied":                    HandleCopied,
 	"wifi-connect":                     WifiConnect,
 	"format sql":                       FormatSql,
