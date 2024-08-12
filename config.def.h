@@ -36,9 +36,9 @@ static const char *colors[][3]      = {
 
 static const char *const autostart[] = {
   "dwmblocks", NULL,
-  "picom", "-b", NULL,
-  "dunst", "&", NULL,
+  "picom", NULL,
   "hhkb", NULL,
+  "autostart", NULL, // other stuff
   NULL
 };
 
@@ -85,6 +85,7 @@ static const Layout layouts[] = {
    { NULL, NULL                       },
 };
 
+// static const Layout overviewlayout = { "󰾍",  layout_overview };
 static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
@@ -138,16 +139,30 @@ static const char *toggle_top[]                       = SH("toggle-top");
 static const char *toggle_wallpaper[]                 = SH("toggle-wallpaper");
 static const char *launch_chrome[]                    = SH("launch-chrome");
 static const char *launch_edge[]                      = SH("launch-edge");
-static const char *openweb_chatgpt[]                  = SH("openweb-chatgpt");
-static const char *openweb_codeium[]                  = SH("openweb-codeium");
-static const char *openweb_doubao[]                   = SH("openweb-doubao");
-static const char *openweb_github[]                   = SH("openweb-github");
-static const char *openweb_google_mail[]              = SH("openweb-google-mail");
-static const char *openweb_google_translate[]         = SH("openweb-google-translate");
-static const char *openweb_instagram[]                = SH("openweb-instagram");
-static const char *openweb_leetcode[]                 = SH("openweb-leetcode");
-static const char *openweb_wechat[]                   = SH("openweb-wechat");
-static const char *openweb_youtube[]                  = SH("openweb-youtube");
+static const char *chrome_open_url_google[]           = SH("chrome-open-url-google");
+static const char *chrome_open_url_bing[]             = SH("chrome-open-url-bing");
+static const char *chrome_open_url_chatgpt[]          = SH("chrome-open-url-chatgpt");
+static const char *chrome_open_url_codeium[]          = SH("chrome-open-url-codeium");
+static const char *chrome_open_url_doubao[]           = SH("chrome-open-url-doubao");
+static const char *chrome_open_url_github[]           = SH("chrome-open-url-github");
+static const char *chrome_open_url_google_mail[]      = SH("chrome-open-url-google-mail");
+static const char *chrome_open_url_google_translate[] = SH("chrome-open-url-google-translate");
+static const char *chrome_open_url_instagram[]        = SH("chrome-open-url-instagram");
+static const char *chrome_open_url_leetcode[]         = SH("chrome-open-url-leetcode");
+static const char *chrome_open_url_wechat[]           = SH("chrome-open-url-wechat");
+static const char *chrome_open_url_youtube[]          = SH("chrome-open-url-youtube");
+// static const char *edge_open_url_google[]             = SH("edge-open-url-google");
+// static const char *edge_open_url_bing[]               = SH("edge-open-url-bing");
+static const char *edge_open_url_chatgpt[]            = SH("edge-open-url-chatgpt");
+static const char *edge_open_url_codeium[]            = SH("edge-open-url-codeium");
+static const char *edge_open_url_doubao[]             = SH("edge-open-url-doubao");
+static const char *edge_open_url_github[]             = SH("edge-open-url-github");
+static const char *edge_open_url_google_mail[]        = SH("edge-open-url-google-mail");
+static const char *edge_open_url_google_translate[]   = SH("edge-open-url-google-translate");
+static const char *edge_open_url_instagram[]          = SH("edge-open-url-instagram");
+static const char *edge_open_url_leetcode[]           = SH("edge-open-url-leetcode");
+static const char *edge_open_url_wechat[]             = SH("edge-open-url-wechat");
+static const char *edge_open_url_youtube[]            = SH("edge-open-url-youtube");
 static const char *lazy_open_file[]                   = ST("lazy-open-search-file");
 static const char *lazy_open_search_book[]            = ST("lazy-open-search-book");
 static const char *lazy_open_search_file_content[]    = ST("lazy-open-search-file-content");
@@ -191,28 +206,28 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_F12,        spawn,             {.v =                                   } },
 
 // SUPKEY + 1-9-0
-   { SUPKEY,                       XK_1,          spawn,             {.v = openweb_chatgpt                   } },
-   { SUPKEY,                       XK_2,          spawn,             {.v = openweb_codeium                   } },
-   { SUPKEY,                       XK_3,          spawn,             {.v = openweb_google_mail               } },
-   { SUPKEY,                       XK_4,          spawn,             {.v = openweb_google_translate          } },
-   { SUPKEY,                       XK_5,          spawn,             {.v = openweb_youtube                   } },
-   { SUPKEY,                       XK_6,          spawn,             {.v = openweb_wechat                    } },
-   { SUPKEY,                       XK_7,          spawn,             {.v = openweb_instagram                 } },
-   { SUPKEY,                       XK_8,          spawn,             {.v = openweb_github                    } },
-   { SUPKEY,                       XK_9,          spawn,             {.v = openweb_leetcode                  } },
-   { SUPKEY,                       XK_0,          spawn,             {.v = openweb_doubao                    } },
+   { SUPKEY,                       XK_1,          spawn,             {.v = chrome_open_url_chatgpt           } },
+   { SUPKEY,                       XK_2,          spawn,             {.v = chrome_open_url_codeium           } },
+   { SUPKEY,                       XK_3,          spawn,             {.v = chrome_open_url_google_mail       } },
+   { SUPKEY,                       XK_4,          spawn,             {.v = chrome_open_url_google_translate  } },
+   { SUPKEY,                       XK_5,          spawn,             {.v = chrome_open_url_youtube           } },
+   { SUPKEY,                       XK_6,          spawn,             {.v = chrome_open_url_wechat            } },
+   { SUPKEY,                       XK_7,          spawn,             {.v = chrome_open_url_instagram         } },
+   { SUPKEY,                       XK_8,          spawn,             {.v = chrome_open_url_github            } },
+   { SUPKEY,                       XK_9,          spawn,             {.v = chrome_open_url_leetcode          } },
+   { SUPKEY,                       XK_0,          spawn,             {.v = chrome_open_url_doubao            } },
 
 // SUPKEY|ShiftMask + 1-9-0
-// { SUPKEY|ShiftMask,             XK_1,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_2,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_3,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_4,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_5,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_6,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_7,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_8,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_9,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_0,          spawn,             {.v =                                   } },
+   { SUPKEY|ShiftMask,             XK_1,          spawn,             {.v = edge_open_url_chatgpt             } },
+   { SUPKEY|ShiftMask,             XK_2,          spawn,             {.v = edge_open_url_codeium             } },
+   { SUPKEY|ShiftMask,             XK_3,          spawn,             {.v = edge_open_url_google_mail         } },
+   { SUPKEY|ShiftMask,             XK_4,          spawn,             {.v = edge_open_url_google_translate    } },
+   { SUPKEY|ShiftMask,             XK_5,          spawn,             {.v = edge_open_url_youtube             } },
+   { SUPKEY|ShiftMask,             XK_6,          spawn,             {.v = edge_open_url_wechat              } },
+   { SUPKEY|ShiftMask,             XK_7,          spawn,             {.v = edge_open_url_instagram           } },
+   { SUPKEY|ShiftMask,             XK_8,          spawn,             {.v = edge_open_url_github              } },
+   { SUPKEY|ShiftMask,             XK_9,          spawn,             {.v = edge_open_url_leetcode            } },
+   { SUPKEY|ShiftMask,             XK_0,          spawn,             {.v = edge_open_url_doubao              } },
 
 // SUPKEY|ShiftMask,+ a-z, etc
    { SUPKEY,                       XK_a,          spawn,             {.v = toggle_python                     } },
@@ -240,7 +255,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_w,          spawn,             {.v = lazy_open_search_wiki             } },
    { SUPKEY,                       XK_x,          spawn,             {.v = toggle_wallpaper                  } },
    { SUPKEY,                       XK_y,          spawn,             {.v = toggle_show                       } },
-// { SUPKEY,                       XK_z,          spawn,             {.v =                                   } },
+   { SUPKEY,                       XK_z,          spawn,             {.v = chrome_open_url_google            } },
    { SUPKEY,                       XK_apostrophe, spawn,             {.v = toggle_termius                    } },
    { SUPKEY,                       XK_BackSpace,  spawn,             {.v = toggle_passmenu                   } },
    { SUPKEY,                       XK_Delete,     spawn,             {.v = toggle_sys_shortcuts              } },
@@ -276,9 +291,9 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_u,          spawn,             {.v =                                   } },
 // { SUPKEY|ShiftMask,             XK_v,          spawn,             {.v =                                   } },
 // { SUPKEY|ShiftMask,             XK_w,          spawn,             {.v =                                   } },
-// { SUPKEY|ShiftMask,             XK_x,          spawn,             {.v =                                   } },
+   { SUPKEY|ShiftMask,             XK_x,          spawn,             {.v = toggle_calendar_scheduling_today  } },
 // { SUPKEY|ShiftMask,             XK_y,          spawn,             {.v =                                   } },
-   { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = toggle_calendar_scheduling_today  } },
+   { SUPKEY|ShiftMask,             XK_z,          spawn,             {.v = chrome_open_url_bing              } },
 // { SUPKEY|ShiftMask,             XK_apostrophe, spawn,             {.v =                                   } },
    { SUPKEY|ShiftMask,             XK_Delete,     spawn,             {.v = sys_shutdown                      } },
 // { SUPKEY|ShiftMask,             XK_Escape,     spawn,             {.v =                                   } },
