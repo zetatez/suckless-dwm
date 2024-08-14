@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# ---------------------
+sudo light -S 94
+
+# ---------------------
+amixer --card=1 set Master  unmute
+amixer --card=1 set Speaker unmute
+amixer --card=1 set Capture cap    # cap, nocap
+amixer --card=1 set Master    94%
+amixer --card=1 set Speaker   92%
+amixer --card=1 set Capture   92%
+amixer --card=1 set Headphone 92% # 耳机
+
+amixer set Master  unmute
+amixer set Speaker unmute
+amixer set Capture cap    # cap, nocap
+amixer set Master    94%
+amixer set Speaker   88%
+amixer set Capture   88%
+amixer set Headphone 88% # 耳机
+
+# ---------------------
+xset r rate 158 128
