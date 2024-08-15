@@ -14,6 +14,14 @@ func OpenWeb(params, url string) func() {
 	}
 }
 
+func OpenWebGoogle() {
+	OpenWeb("--proxy-server="+ProxyServer, "http://www.google.com/")()
+}
+
+func OpenWebBing() {
+	OpenWeb("", "https://www.bing.com/")()
+}
+
 func OpenWebChatGPT() {
 	OpenWeb("--proxy-server="+ProxyServer, "https://chatgpt.com/")()
 }

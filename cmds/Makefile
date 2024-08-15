@@ -24,6 +24,8 @@ build: prepare build-shell-cmds
 	go build -o ./bins/note-diary                       ./cmds/note-diary/main.go
 	go build -o ./bins/note-flash-card                  ./cmds/note-flash-card/main.go
 	go build -o ./bins/note-timeline                    ./cmds/note-timeline/main.go
+	go build -o ./bins/openweb-google                   ./cmds/openweb-google/main.go
+	go build -o ./bins/openweb-bing                     ./cmds/openweb-bing/main.go
 	go build -o ./bins/openweb-chatgpt                  ./cmds/openweb-chatgpt/main.go
 	go build -o ./bins/openweb-doubao                   ./cmds/openweb-doubao/main.go
 	go build -o ./bins/openweb-codeium                  ./cmds/openweb-codeium/main.go
