@@ -6,7 +6,7 @@ import (
 	"cmds/sugar"
 )
 
-func OpenWeb(params, url string) func() {
+func ChromeOpenUrl(params, url string) func() {
 	return func() {
 		sugar.NewExecService().RunScriptShell(
 			fmt.Sprintf("chrome %s %s", params, url),
@@ -14,54 +14,116 @@ func OpenWeb(params, url string) func() {
 	}
 }
 
-func OpenWebGoogle() {
-	OpenWeb("--proxy-server="+ProxyServer, "http://www.google.com/")()
+func EdgeOpenUrl(params, url string) func() {
+	return func() {
+		sugar.NewExecService().RunScriptShell(
+			fmt.Sprintf("microsoft-edge-stable %s %s", params, url),
+		)
+	}
 }
 
-func OpenWebBing() {
-	OpenWeb("", "https://www.bing.com/")()
+// --------------------
+func ChromeOpenUrlGoogle() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "http://www.google.com/")()
 }
 
-func OpenWebChatGPT() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://chatgpt.com/")()
+func ChromeOpenUrlBing() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "http://www.bing.com/")()
 }
 
-func OpenWebDouBao() {
-	OpenWeb("", "https://www.doubao.com/chat/")()
+func ChromeOpenUrlChatGPT() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://chatgpt.com/")()
 }
 
-func OpenWebCodeium() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://codeium.com/live/general")()
+func ChromeOpenUrlDouBao() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://www.doubao.com/chat/")()
 }
 
-func OpenWebGoogleMail() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://mail.google.com/mail")()
+func ChromeOpenUrlCodeium() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://codeium.com/live/general")()
 }
 
-func OpenWebGoogleTranslate() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://translate.google.com/?sl=auto&tl=zh-CN")()
+func ChromeOpenUrlGoogleMail() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://mail.google.com/mail")()
 }
 
-func OpenWebGithub() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://github.com/zetatez")()
+func ChromeOpenUrlGoogleTranslate() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://translate.google.com/?sl=auto&tl=zh-CN")()
 }
 
-func OpenWebGithubGistShareCode() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://gist.github.com/")()
+func ChromeOpenUrlGithub() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://github.com/zetatez")()
 }
 
-func OpenWebLeetCode() {
-	OpenWeb("", "https://leetcode.cn/search/?q=%E6%9C%80")()
+func ChromeOpenUrlGithubGistShareCode() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://gist.github.com/")()
 }
 
-func OpenWebWeChat() {
-	OpenWeb("", "https://web.wechat.com/")()
+func ChromeOpenUrlLeetCode() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://leetcode.cn/search/?q=%E6%9C%80")()
 }
 
-func OpenWebYouTube() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://www.youtube.com")()
+func ChromeOpenUrlWeChat() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://web.wechat.com/")()
 }
 
-func OpenWebInstagram() {
-	OpenWeb("--proxy-server="+ProxyServer, "https://www.instagram.com")()
+func ChromeOpenUrlYouTube() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://www.youtube.com")()
+}
+
+func ChromeOpenUrlInstagram() {
+	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://www.instagram.com")()
+}
+
+// --------------------
+func EdgeOpenUrlGoogle() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "http://www.google.com/")()
+}
+
+func EdgeOpenUrlBing() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "http://www.bing.com/")()
+}
+
+func EdgeOpenUrlChatGPT() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://chatgpt.com/")()
+}
+
+func EdgeOpenUrlDouBao() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://www.doubao.com/chat/")()
+}
+
+func EdgeOpenUrlCodeium() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://codeium.com/live/general")()
+}
+
+func EdgeOpenUrlGoogleMail() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://mail.google.com/mail")()
+}
+
+func EdgeOpenUrlGoogleTranslate() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://translate.google.com/?sl=auto&tl=zh-CN")()
+}
+
+func EdgeOpenUrlGithub() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://github.com/zetatez")()
+}
+
+func EdgeOpenUrlGithubGistShareCode() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://gist.github.com/")()
+}
+
+func EdgeOpenUrlLeetCode() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://leetcode.cn/search/?q=%E6%9C%80")()
+}
+
+func EdgeOpenUrlWeChat() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://web.wechat.com/")()
+}
+
+func EdgeOpenUrlYouTube() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://www.youtube.com")()
+}
+
+func EdgeOpenUrlInstagram() {
+	EdgeOpenUrl("--proxy-server="+ProxyServer, "https://www.instagram.com")()
 }
