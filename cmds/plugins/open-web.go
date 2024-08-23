@@ -14,10 +14,11 @@ func ChromeOpenUrl(params, url string) func() {
 	}
 }
 
+// 专注模式: edge --kiosk --force-device-scale-factor=1.35 --proxy-server=socks5://127.0.0.1:7891  www.chatgpt.com
 func EdgeOpenUrl(params, url string) func() {
 	return func() {
 		sugar.NewExecService().RunScriptShell(
-			fmt.Sprintf("microsoft-edge-stable %s %s", params, url),
+			fmt.Sprintf("microsoft-edge-stable --kiosk --force-device-scale-factor=1.35 %s %s", params, url),
 		)
 	}
 }

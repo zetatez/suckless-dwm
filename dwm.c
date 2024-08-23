@@ -4082,17 +4082,43 @@ layout_workflow(Monitor *m)
       break;
     case 3:
       for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-        if (i == 0) {
+        if (i == 0) { // Left
           cw = m->ww * m->mfact - 2*c->bw;
           ch = m->wh - 2*c->bw;
           cx = m->wx;
           cy = m->wy + (m->wh - ch) / 2;
-        } else if (i == 1) {
+        } else if (i == 1) { // RightTop
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
           ch = m->wh * (1-m->ffact) - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
-        } else {
+        } else { // RightBottom
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh * m->ffact - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy + m->wh * (1-m->ffact);
+        }
+        resize(c, cx, cy, cw, ch, False);
+      }
+      break;
+    case 4:
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i == 3) { // TopLeft
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh * (1-m->ffact) - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy;
+        } else if (i == 2) { // BottomLeft
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh * m->ffact - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + m->wh * (1-m->ffact);
+        } else if (i == 0) { // TopRight
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh * (1-m->ffact) - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy;
+        } else { // BottomRight
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
           ch = m->wh * m->ffact - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
