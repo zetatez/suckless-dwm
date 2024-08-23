@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ChromeOpenUrlBing()
+	plugins.QuteBrowserOpenUrlWeChat()
 }

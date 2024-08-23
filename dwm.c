@@ -80,7 +80,7 @@ static void savesession();
 static void scan(void);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
-static void setffact(const Arg *arg);
+static void sethfact(const Arg *arg);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
@@ -138,12 +138,12 @@ static void layout_tileleft(Monitor *m);
 static void layout_bottomstackhori(Monitor *m);
 static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
-static void layout_stairs(Monitor *m);
-// static void layout_grid_gap(Monitor *m);
-// static void layout_deckvert(Monitor *m);
-// static void layout_deckhori(Monitor *m);
+static void layout_stairs_hori(Monitor *m);
+static void layout_stairs_vert(Monitor *m);
+static void layout_grid_gap(Monitor *m);
 // static void layout_tileright_vertical(Monitor *m);
 static void layout_overview(Monitor *m);
+static void layout_workflow(Monitor *m);
 
 /* variables */
 static const char broken[] = "broken";
@@ -193,7 +193,7 @@ static Client * scratchpad_last_showed = NULL;
 
 struct Pertag {
   const Layout *ltidxs[LENGTH(tags) + 1][2];
-  float ffacts[LENGTH(tags) + 1];
+  float hfacts[LENGTH(tags) + 1];
   float mfacts[LENGTH(tags) + 1];
   int nmasters[LENGTH(tags) + 1];
   int showbars[LENGTH(tags) + 1];
@@ -726,7 +726,7 @@ createmon(void)
   m = ecalloc(1, sizeof(Monitor));
   m->tagset[0] = m->tagset[1] = 1;
   m->mfact = mfact;
-  m->ffact = ffact;
+  m->hfact = hfact;
   m->nmaster = nmaster;
   m->showbar = showbar;
   m->topbar = topbar;
@@ -741,7 +741,7 @@ createmon(void)
   for (i = 0; i <= LENGTH(tags); i++) {
     m->pertag->nmasters[i] = m->nmaster;
     m->pertag->mfacts[i] = m->mfact;
-    m->pertag->ffacts[i] = m->ffact;
+    m->pertag->hfacts[i] = m->hfact;
     m->pertag->ltidxs[i][0] = m->lt[0];
     m->pertag->ltidxs[i][1] = m->lt[1];
     m->pertag->sellts[i] = m->sellt;
@@ -1758,7 +1758,7 @@ restack(Monitor *m)
 void
 reset(void) {
   selmon->mfact = mfact;
-  selmon->ffact = ffact;
+  selmon->hfact = hfact;
   selmon->nmaster = nmaster;
 
   if (selmon->sel) {
@@ -1912,7 +1912,6 @@ setlayout(const Arg *arg)
   }
 }
 
-/* arg > 1.0 will set mfact absolutely */
 void
 setmfact(const Arg *arg)
 {
@@ -1921,31 +1920,23 @@ setmfact(const Arg *arg)
   if (!arg || !selmon->lt[selmon->sellt]->arrange) {
     return;
   }
-  f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
-  if (f < 0.00 || f > 1.00) {
-    return;
-  }
+  f = arg->f + selmon->mfact;
+  f = f < 0.00 ? 0.001 : f > 1.00 ? 0.999 : f;
   selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;
   arrange(selmon);
 }
 
-/* arg > 1.0 will set ffact absolutely */
 void
-setffact(const Arg *arg)
+sethfact(const Arg *arg)
 {
   float f;
 
   if (!arg || !selmon->lt[selmon->sellt]->arrange) {
     return;
   }
-
-  f = arg->f < 1.0 ? arg->f + selmon->ffact : arg->f - 1.0;
-
-  if (f < 0.00 || f > 1.00) {
-    return;
-  }
-
-  selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag] = f;
+  f = arg->f + selmon->hfact;
+  f = f < 0.00 ? 0.001 : f > 1.00 ? 0.999 : f;
+  selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag] = f;
   arrange(selmon);
 }
 
@@ -2405,7 +2396,7 @@ toggleview(const Arg *arg)
     /* apply settings for this view */
     selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
     selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
-    selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];
+    selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag];
     selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
     selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
     selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
@@ -2797,7 +2788,7 @@ view(const Arg *arg)
 
   selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
   selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
-  selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];
+  selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag];
   selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
   selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
   selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
@@ -3225,9 +3216,9 @@ layout_centerfreeshape(Monitor *m)
     resize(
       c,
       m->ww / 2 - (m->ww * m->mfact) / 2,
-      m->wy + m->wh / 2 - (m->wh * m->ffact) / 2,
+      m->wy + m->wh / 2 - (m->wh * m->hfact) / 2,
       m->ww * m->mfact - 2*c->bw,
-      m->wh * m->ffact - 2*c->bw,
+      m->wh * m->hfact - 2*c->bw,
       False
     );
   }
@@ -3249,10 +3240,10 @@ layout_centerequalratio(Monitor *m)
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     resize(
       c,
-      m->ww/2 - (m->ww*m->ffact)/2,
-      m->wy + m->wh/2 - (m->wh*m->ffact)/2 + (topbar ? 1 : 0)*winpad,
-      m->ww*m->ffact - 2*c->bw,
-      (m->wh - (topbar ? 1 : 0)*winpad)*m->ffact - 2*c->bw,
+      m->ww/2 - (m->ww*m->hfact)/2,
+      m->wy + m->wh/2 - (m->wh*m->hfact)/2 + (topbar ? 1 : 0)*winpad,
+      m->ww*m->hfact - 2*c->bw,
+      (m->wh - (topbar ? 1 : 0)*winpad)*m->hfact - 2*c->bw,
       False
     );
   }
@@ -3277,35 +3268,40 @@ layout_fibonacci(Monitor *m, int s)
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
     if ((i % 2 && nh / 2 > 2 * c->bw) || (!(i % 2) && nw / 2 > 2 * c->bw)) {
       if (i < n - 1) {
-        if (i % 2)
+        if (i % 2) {
           nh /= 2;
-        else
+        } else {
           nw /= 2;
-        if ((i % 4) == 2 && !s)
+        }
+        if ((i % 4) == 2 && !s) {
           nx += nw;
-        else if ((i % 4) == 3 && !s)
+        } else if ((i % 4) == 3 && !s) {
           ny += nh;
+        }
       }
 
       if ((i % 4) == 0) {
-        if (s)
+        if (s) {
           ny += nh;
-        else
+        } else {
           ny -= nh;
+        }
       } else if ((i % 4) == 1) {
         nx += nw;
       } else if ((i % 4) == 2) {
         ny += nh;
       } else if ((i % 4) == 3) {
-        if (s)
+        if (s) {
           nx += nw;
-        else
+        } else {
           nx -= nw;
+        }
       }
 
       if (i == 0) {
-        if (n != 1)
+        if (n != 1) {
           nw = m->ww * m->mfact;
+        }
         ny = m->wy;
       } else if (i == 1) {
         nw = m->ww - nw;
@@ -3486,7 +3482,7 @@ layout_bottomstackhori(Monitor *m) {
   if (n == 0) { return; }
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
+    mh = m->nmaster ? (1 - m->hfact) * m->wh : 0;
     th = (m->wh - mh - (topbar ? 1 : 0)*winpad) / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
@@ -3535,7 +3531,7 @@ layout_bottomstackvert(Monitor *m)
   if (n == 0) { return; }
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->ffact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
+    mh = m->nmaster ? (1 - m->hfact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
     tw = m->ww / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
@@ -3606,7 +3602,7 @@ layout_hacker(Monitor *m)
 }
 
 void
-layout_stairs(Monitor *m)
+layout_stairs_hori(Monitor *m)
 {
   unsigned int stairpx   = 48;    /* depth of the stairs layout */
   int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
@@ -3616,32 +3612,87 @@ layout_stairs(Monitor *m)
   unsigned int ox, oy, ow, oh; /* stair offset values */
   Client *c;
 
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-  if (n == 0)
-    return;
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
 
-  if (n > m->nmaster)
+  if (n == 0) { return; }
+
+  if (n > m->nmaster) {
     mw = m->nmaster ? m->ww * m->mfact : 0;
-  else
+  } else {
     mw = m->ww;
+  }
 
   for (i = my = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       h = (m->wh - my) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx, m->wy + my, mw - (2 * c->bw), h - (2 * c->bw), 0);
-      if (my + HEIGHT(c) < m->wh)
+      if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
+      }
     } else {
       oy = i - m->nmaster;
       ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
       ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
       oh = stairsamesize ? ow : i - m->nmaster;
-      resize(c,
-             m->wx + mw + (ox * stairpx),
-             m->wy + (oy * stairpx),
-             m->ww - mw - (2 * c->bw) - (ow * stairpx),
-             m->wh - (2 * c->bw) - (oh * stairpx),
-             0);
+      resize(
+        c,
+        m->wx + mw + (ox * stairpx) % (m->ww - mw),
+        m->wy + (oy * stairpx) % m->wh,
+        m->ww - mw - (2 * c->bw) - (ow * stairpx) % (m->ww - mw),
+        m->wh - (2 * c->bw) - (oh * stairpx) % m->wh,
+        0
+      );
+    }
+  }
+}
+
+void
+layout_stairs_vert(Monitor *m)
+{
+  unsigned int stairpx   = 48;    /* depth of the stairs layout */
+  int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
+  int stairsamesize      = 0;     /* 1 means shrink all the staired windows to the same size */
+
+  unsigned int i, n, w, mw, mx;
+  unsigned int ox, oy, ow, oh; /* stair offset values */
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+
+  if (n == 0) { return; }
+
+  if (n > m->nmaster) {
+    mw = m->nmaster ? m->ww * m->mfact : 0;
+  } else {
+    mw = m->ww;
+  }
+
+  for (i = mx = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    if (i < m->nmaster) {
+      if (n <= m->nmaster) {
+        w = m->ww / MIN(n, (m->nmaster ? m->nmaster : 1));
+      } else {
+        w = mw / MIN(n, (m->nmaster ? m->nmaster : 1));
+      }
+      resize(c, m->wx + mx, m->wy, w - (2 * c->bw), m->wh - (2 * c->bw), 0);
+      if (mx + WIDTH(c) < m->ww) {
+        mx += WIDTH(c);
+      }
+    } else {
+      oy = i - m->nmaster;
+      ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
+      ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
+      oh = stairsamesize ? ow : i - m->nmaster;
+      resize(
+        c,
+        m->wx + mw + (ox * stairpx) % (m->ww - mw),
+        m->wy + (oy * stairpx) % m->wh,
+        m->ww - mw - (2 * c->bw) - (ow * stairpx) % (m->ww - mw),
+        m->wh - (2 * c->bw) - (oh * stairpx) % m->wh,
+        0
+      );
     }
   }
 }
@@ -3737,84 +3788,6 @@ layout_tileright_vertical(Monitor *m)
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
-    }
-  }
-}
-
-void
-layout_deckvert(Monitor *m) {
-  unsigned int i, n, mw;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww*m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster)
-      resize(
-        c,
-        m->wx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        mw - 2*c->bw,
-        m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
-    else
-      resize(
-        c,
-        m->wx + mw + (i - m->nmaster)*(m->ww - mw)/(n - m->nmaster),
-        m->wy + (topbar ? 1 : 0)*winpad,
-        m->ww - (mw + (i - m->nmaster) * (m->ww - mw)/(n - m->nmaster)) - 2*c->bw,
-        m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
-  }
-}
-
-void
-layout_deckhori(Monitor *m)
-{
-  unsigned int i, n, mh;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mh = m->nmaster ? m->wh * (1 - m->ffact) : 0;
-  } else {
-    mh = m->wh;
-  }
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      resize(
-        c,
-        m->wx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        m->ww - 2*c->bw,
-        mh - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
-    } else {
-      resize(
-        c,
-        m->wx,
-        m->wy + mh + (i - m->nmaster)*(m->wh - mh)/(n - m->nmaster),
-        m->ww - 2*c->bw,
-        m->wh - (mh + (i - m->nmaster)*(m->wh - (topbar ? 1 : 0)*winpad - mh)/(n - m->nmaster)) - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
     }
   }
 }
@@ -3993,6 +3966,117 @@ layout_overview(Monitor *m)
       );
     }
   }
+}
+
+void
+layout_workflow(Monitor *m)
+{
+  unsigned int i, n, cx, cy, cw, ch;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+
+  if (n == 0) { return; }
+
+  switch (n) {
+    case 1:
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        cw = m->ww - 2*c->bw;
+        ch = m->wh - 2*c->bw;
+        cx = m->wx;
+        cy = m->wy;
+        resize(c, cx, cy, cw, ch, False);
+      }
+      break;
+    case 2:
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i == 0) {
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + (m->wh - ch) / 2;
+        } else {
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx + m->ww - cw;
+          cy = m->wy + (m->wh - ch) / 2;
+        }
+        resize(c, cx, cy, cw, ch, False);
+      }
+      break;
+  case 3: // left-2 + right-1
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i == 1) { // Left layer1
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + (m->wh - ch) / 2;
+        } else if (i == 0) { // Left layer2
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + (m->wh - ch) / 2;
+        } else { // Right
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy;
+        }
+        resize(c, cx, cy, cw, ch, False);
+      }
+      break;
+    // case 3: // left-1 + right-top + right-bottom
+    //   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    //     if (i == 0) { // Left
+    //       cw = m->ww * m->mfact - 2*c->bw;
+    //       ch = m->wh - 2*c->bw;
+    //       cx = m->wx;
+    //       cy = m->wy + (m->wh - ch) / 2;
+    //     } else if (i == 1) { // RightTop
+    //       cw = m->ww * (1 - m->mfact) - 2*c->bw;
+    //       ch = m->wh * (1-m->hfact) - 2*c->bw;
+    //       cx = m->wx + m->ww * m->mfact;
+    //       cy = m->wy;
+    //     } else { // RightBottom
+    //       cw = m->ww * (1 - m->mfact) - 2*c->bw;
+    //       ch = m->wh * m->hfact - 2*c->bw;
+    //       cx = m->wx + m->ww * m->mfact;
+    //       cy = m->wy + m->wh * (1-m->hfact);
+    //     }
+    //     resize(c, cx, cy, cw, ch, False);
+    //   }
+    //   break;
+    case 4:
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i == 0) { // TopLeft
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh * (1-m->hfact) - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy;
+        } else if (i == 1) { // TopRight
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh * (1-m->hfact) - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy;
+        } else if (i == 3) { // BottomLeft
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh * m->hfact - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + m->wh * (1-m->hfact);
+        } else {  // BottomRight
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh * m->hfact - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy + m->wh * (1-m->hfact);
+        }
+        resize(c, cx, cy, cw, ch, False);
+      }
+      break;
+    default:
+      layout_fibonaccispiral(m);
+      break;
+  };
 }
 /* layout end */
 

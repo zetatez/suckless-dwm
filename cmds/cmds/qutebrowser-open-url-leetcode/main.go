@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleMusicYesPlayMusic()
+	plugins.QuteBrowserOpenUrlLeetCode()
 }

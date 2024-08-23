@@ -105,7 +105,7 @@ struct Monitor {
  	Pixmap *tagmap;
   char ltsymbol[16];
   float mfact;
-  float ffact;
+  float hfact;
   int nmaster;
   int num;
   int by;

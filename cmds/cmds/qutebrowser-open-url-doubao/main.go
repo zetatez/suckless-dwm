@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.EdgeOpenUrlWeChat()
+	plugins.QuteBrowserOpenUrlDouBao()
 }

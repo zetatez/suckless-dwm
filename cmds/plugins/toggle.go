@@ -138,10 +138,6 @@ func ToggleMusicNetCloud() {
 	sugar.Toggle("netease-cloud-music")
 }
 
-func ToggleMusicYesPlayMusic() {
-	sugar.Toggle("yesplaymusic")
-}
-
 func ToggleMutt() {
 	sugar.Toggle("st -e mutt")
 }

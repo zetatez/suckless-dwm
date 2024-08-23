@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.EdgeOpenUrlCodeium()
+	plugins.QuteBrowserOpenUrlGoogleMail()
 }

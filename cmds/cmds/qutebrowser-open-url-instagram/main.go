@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.EdgeOpenUrlGoogleMail()
+	plugins.QuteBrowserOpenUrlInstagram()
 }
