@@ -62,6 +62,7 @@ static const XPoint stickyiconbb    = {4,8};	                                   
 static const float mfact            = 0.50;
 static const float ffact            = 0.50;
 static const int nmaster            = 1;
+static const int maxnmaster         = 8;
 static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
 
