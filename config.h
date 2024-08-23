@@ -85,6 +85,7 @@ static const Layout layouts[] = {
    { NULL, NULL                       },
 };
 
+// static const Layout overviewlayout = { "󰾍",  layout_overview };
 static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
