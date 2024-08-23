@@ -138,12 +138,14 @@ static void layout_tileleft(Monitor *m);
 static void layout_bottomstackhori(Monitor *m);
 static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
-static void layout_stairs(Monitor *m);
+static void layout_stairs_hori(Monitor *m);
+static void layout_stairs_vert(Monitor *m);
 // static void layout_grid_gap(Monitor *m);
 // static void layout_deckvert(Monitor *m);
 // static void layout_deckhori(Monitor *m);
 // static void layout_tileright_vertical(Monitor *m);
 static void layout_overview(Monitor *m);
+static void layout_dynamic(Monitor *m);
 
 /* variables */
 static const char broken[] = "broken";
@@ -3606,7 +3608,7 @@ layout_hacker(Monitor *m)
 }
 
 void
-layout_stairs(Monitor *m)
+layout_stairs_hori(Monitor *m)
 {
   unsigned int stairpx   = 48;    /* depth of the stairs layout */
   int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
@@ -3616,32 +3618,87 @@ layout_stairs(Monitor *m)
   unsigned int ox, oy, ow, oh; /* stair offset values */
   Client *c;
 
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-  if (n == 0)
-    return;
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
 
-  if (n > m->nmaster)
+  if (n == 0) { return; }
+
+  if (n > m->nmaster) {
     mw = m->nmaster ? m->ww * m->mfact : 0;
-  else
+  } else {
     mw = m->ww;
+  }
 
   for (i = my = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       h = (m->wh - my) / (MIN(n, m->nmaster) - i);
       resize(c, m->wx, m->wy + my, mw - (2 * c->bw), h - (2 * c->bw), 0);
-      if (my + HEIGHT(c) < m->wh)
+      if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
+      }
     } else {
       oy = i - m->nmaster;
       ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
       ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
       oh = stairsamesize ? ow : i - m->nmaster;
-      resize(c,
-             m->wx + mw + (ox * stairpx),
-             m->wy + (oy * stairpx),
-             m->ww - mw - (2 * c->bw) - (ow * stairpx),
-             m->wh - (2 * c->bw) - (oh * stairpx),
-             0);
+      resize(
+        c,
+        m->wx + mw + (ox * stairpx) % (m->ww - mw),
+        m->wy + (oy * stairpx) % m->wh,
+        m->ww - mw - (2 * c->bw) - (ow * stairpx) % (m->ww - mw),
+        m->wh - (2 * c->bw) - (oh * stairpx) % m->wh,
+        0
+      );
+    }
+  }
+}
+
+void
+layout_stairs_vert(Monitor *m)
+{
+  unsigned int stairpx   = 48;    /* depth of the stairs layout */
+  int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
+  int stairsamesize      = 0;     /* 1 means shrink all the staired windows to the same size */
+
+  unsigned int i, n, w, mw, mx;
+  unsigned int ox, oy, ow, oh; /* stair offset values */
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+
+  if (n == 0) { return; }
+
+  if (n > m->nmaster) {
+    mw = m->nmaster ? m->ww * m->mfact : 0;
+  } else {
+    mw = m->ww;
+  }
+
+  for (i = mx = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    if (i < m->nmaster) {
+      if (n <= m->nmaster) {
+        w = m->ww / MIN(n, (m->nmaster ? m->nmaster : 1));
+      } else {
+        w = mw / MIN(n, (m->nmaster ? m->nmaster : 1));
+      }
+      resize(c, m->wx + mx, m->wy, w - (2 * c->bw), m->wh - (2 * c->bw), 0);
+      if (mx + WIDTH(c) < m->ww) {
+        mx += WIDTH(c);
+      }
+    } else {
+      oy = i - m->nmaster;
+      ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
+      ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
+      oh = stairsamesize ? ow : i - m->nmaster;
+      resize(
+        c,
+        m->wx + mw + (ox * stairpx) % (m->ww - mw),
+        m->wy + (oy * stairpx) % m->wh,
+        m->ww - mw - (2 * c->bw) - (ow * stairpx) % (m->ww - mw),
+        m->wh - (2 * c->bw) - (oh * stairpx) % m->wh,
+        0
+      );
     }
   }
 }
@@ -3994,6 +4051,31 @@ layout_overview(Monitor *m)
     }
   }
 }
+
+void
+layout_dynamic(Monitor *m)
+{
+  unsigned int n = 0;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+
+  if (n == 0) { return; }
+
+  switch (n) {
+    case 1:
+      layout_tileright(m);
+      break;
+    case 2:
+      layout_tileright(m);
+      break;
+    default:
+      layout_stairs_vert(m);
+      break;
+  };
+}
+
 /* layout end */
 
 int
