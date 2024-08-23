@@ -67,7 +67,7 @@ static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
 
 static const Layout layouts[] = {
-   { "⧉",  layout_dynamic             }, // default
+   { "",  layout_workflow            }, // default
    { "⧉",  layout_fibonaccispiral     },
    { "⧉",  layout_fibonaccidwindle    },
    { "⧈",  layout_centerfreeshape     },

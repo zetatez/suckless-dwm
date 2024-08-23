@@ -145,7 +145,7 @@ static void layout_stairs_vert(Monitor *m);
 // static void layout_deckhori(Monitor *m);
 // static void layout_tileright_vertical(Monitor *m);
 static void layout_overview(Monitor *m);
-static void layout_dynamic(Monitor *m);
+static void layout_workflow(Monitor *m);
 
 /* variables */
 static const char broken[] = "broken";
@@ -1914,7 +1914,6 @@ setlayout(const Arg *arg)
   }
 }
 
-/* arg > 1.0 will set mfact absolutely */
 void
 setmfact(const Arg *arg)
 {
@@ -1923,15 +1922,12 @@ setmfact(const Arg *arg)
   if (!arg || !selmon->lt[selmon->sellt]->arrange) {
     return;
   }
-  f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
-  if (f < 0.00 || f > 1.00) {
-    return;
-  }
+  f = arg->f + selmon->mfact;
+  f = f < 0.00 ? 0.001 : f > 1.00 ? 0.999 : f;
   selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;
   arrange(selmon);
 }
 
-/* arg > 1.0 will set ffact absolutely */
 void
 setffact(const Arg *arg)
 {
@@ -1940,13 +1936,8 @@ setffact(const Arg *arg)
   if (!arg || !selmon->lt[selmon->sellt]->arrange) {
     return;
   }
-
-  f = arg->f < 1.0 ? arg->f + selmon->ffact : arg->f - 1.0;
-
-  if (f < 0.00 || f > 1.00) {
-    return;
-  }
-
+  f = arg->f + selmon->ffact;
+  f = f < 0.00 ? 0.001 : f > 1.00 ? 0.999 : f;
   selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag] = f;
   arrange(selmon);
 }
@@ -4053,9 +4044,9 @@ layout_overview(Monitor *m)
 }
 
 void
-layout_dynamic(Monitor *m)
+layout_workflow(Monitor *m)
 {
-  unsigned int n = 0;
+  unsigned int i, n, cx, cy, cw, ch;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -4065,17 +4056,56 @@ layout_dynamic(Monitor *m)
 
   switch (n) {
     case 1:
-      layout_tileright(m);
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        cw = m->ww - 2*c->bw;
+        ch = m->wh - 2*c->bw;
+        cx = m->wx;
+        cy = m->wy;
+        resize(c, cx, cy, cw, ch, False);
+      }
       break;
     case 2:
-      layout_tileright(m);
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i == 0) {
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + (m->wh - ch) / 2;
+        } else {
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx + m->ww - cw;
+          cy = m->wy + (m->wh - ch) / 2;
+        }
+        resize(c, cx, cy, cw, ch, False);
+      }
+      break;
+    case 3:
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        if (i == 0) {
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + (m->wh - ch) / 2;
+        } else if (i == 1) {
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh * (1-m->ffact) - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy;
+        } else {
+          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          ch = m->wh * m->ffact - 2*c->bw;
+          cx = m->wx + m->ww * m->mfact;
+          cy = m->wy + m->wh * (1-m->ffact);
+        }
+        resize(c, cx, cy, cw, ch, False);
+      }
       break;
     default:
-      layout_stairs_vert(m);
+      layout_tileright(m);
       break;
   };
 }
-
 /* layout end */
 
 int
