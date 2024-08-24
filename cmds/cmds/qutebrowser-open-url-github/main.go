@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.EdgeOpenUrlGoogle()
+	plugins.QuteBrowserOpenUrlGithub()
 }

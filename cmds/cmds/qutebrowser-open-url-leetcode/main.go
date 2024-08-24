@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.LaunchEdge()
+	plugins.QuteBrowserOpenUrlLeetCode()
 }

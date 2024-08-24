@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.EdgeOpenUrlChatGPT()
+	plugins.QuteBrowserOpenUrlYouTube()
 }

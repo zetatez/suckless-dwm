@@ -21,6 +21,15 @@ func LaunchChrome() {
 	)()
 }
 
+func LaunchQuteBrowser() {
+	LaunchApp(
+		fmt.Sprintf(
+			"qutebrowser --set content.proxy %s --target window",
+			ProxyServer,
+		),
+	)()
+}
+
 func LaunchEdge() {
 	LaunchApp(
 		fmt.Sprintf(

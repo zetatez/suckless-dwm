@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.EdgeOpenUrlDouBao()
+	plugins.QuteBrowserOpenUrlGoogleTranslate()
 }
