@@ -43,7 +43,7 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
@@ -67,16 +67,16 @@ static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
 
 static const Layout layouts[] = {
-   { "",  layout_workflow            }, // default
-   { "🍁 >",  layout_fibonaccispiral     },
-   { "🍁 <",  layout_fibonaccidwindle    },
+   { "𝚭",    layout_workflow            }, // default
+   { "🍁 >", layout_fibonaccispiral     },
+   { "🍁 <", layout_fibonaccidwindle    },
    { "⧈ *",  layout_centerfreeshape     },
    { "⧈ =",  layout_centerequalratio    },
    { "◨ >",  layout_tileright           },
    { "◧ <",  layout_tileleft            },
-   { "󰝘 G",  layout_grid                },
-   { " F",  layout_monocle             },
-   { "󰓌 S",  layout_hacker              },
+   { "󰝘",    layout_grid                },
+   { " ",   layout_monocle             },
+   { "󰓌",    layout_hacker              },
    { "󱎞 |",  layout_stairs_vert         },
    { "󱎞 ―",  layout_stairs_hori         },
    { "⬓ |" , layout_bottomstackvert     },
