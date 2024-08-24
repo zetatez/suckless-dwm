@@ -18,9 +18,7 @@ static const int sidepad            = 0;
 static const int defaultwinpad      = 0;
 static const int swallowfloating    = 1;
 static const char *fonts[]          = {
-  "Source Han Serif CN,思源宋体 CN,Source Han Serif CN ExtraLight,思源宋体 CN ExtraLight:style=ExtraLight,Regular:size=18",
-  // "Hack:style=Regular:size=18:antialias=true:autohint=true",
-  // "DejaVuSansMono Nerd Font:style=Book:size=16",
+  "DejaVuSansMono Nerd Font:style=Book:size=18",
 };
 static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
 static const char col_gray1[]       = "#222222";
