@@ -20,7 +20,7 @@ static const int swallowfloating    = 1;
 static const char *fonts[]          = {
   "DejaVuSansMono Nerd Font:style=Book:size=18",
 };
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=14";
+static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=16";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -86,8 +86,7 @@ static const Layout layouts[] = {
    { NULL, NULL                       },
 };
 
-// static const Layout overviewlayout = { "󰾍",  layout_overview };
-static const Layout overviewlayout = { "󰾍",  layout_overview };
+static const Layout overviewlayout = { "  󰾍",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
