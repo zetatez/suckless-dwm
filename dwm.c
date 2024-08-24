@@ -80,7 +80,7 @@ static void savesession();
 static void scan(void);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
-static void setffact(const Arg *arg);
+static void sethfact(const Arg *arg);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
@@ -195,7 +195,7 @@ static Client * scratchpad_last_showed = NULL;
 
 struct Pertag {
   const Layout *ltidxs[LENGTH(tags) + 1][2];
-  float ffacts[LENGTH(tags) + 1];
+  float hfacts[LENGTH(tags) + 1];
   float mfacts[LENGTH(tags) + 1];
   int nmasters[LENGTH(tags) + 1];
   int showbars[LENGTH(tags) + 1];
@@ -728,7 +728,7 @@ createmon(void)
   m = ecalloc(1, sizeof(Monitor));
   m->tagset[0] = m->tagset[1] = 1;
   m->mfact = mfact;
-  m->ffact = ffact;
+  m->hfact = hfact;
   m->nmaster = nmaster;
   m->showbar = showbar;
   m->topbar = topbar;
@@ -743,7 +743,7 @@ createmon(void)
   for (i = 0; i <= LENGTH(tags); i++) {
     m->pertag->nmasters[i] = m->nmaster;
     m->pertag->mfacts[i] = m->mfact;
-    m->pertag->ffacts[i] = m->ffact;
+    m->pertag->hfacts[i] = m->hfact;
     m->pertag->ltidxs[i][0] = m->lt[0];
     m->pertag->ltidxs[i][1] = m->lt[1];
     m->pertag->sellts[i] = m->sellt;
@@ -1760,7 +1760,7 @@ restack(Monitor *m)
 void
 reset(void) {
   selmon->mfact = mfact;
-  selmon->ffact = ffact;
+  selmon->hfact = hfact;
   selmon->nmaster = nmaster;
 
   if (selmon->sel) {
@@ -1929,16 +1929,16 @@ setmfact(const Arg *arg)
 }
 
 void
-setffact(const Arg *arg)
+sethfact(const Arg *arg)
 {
   float f;
 
   if (!arg || !selmon->lt[selmon->sellt]->arrange) {
     return;
   }
-  f = arg->f + selmon->ffact;
+  f = arg->f + selmon->hfact;
   f = f < 0.00 ? 0.001 : f > 1.00 ? 0.999 : f;
-  selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag] = f;
+  selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag] = f;
   arrange(selmon);
 }
 
@@ -2398,7 +2398,7 @@ toggleview(const Arg *arg)
     /* apply settings for this view */
     selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
     selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
-    selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];
+    selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag];
     selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
     selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
     selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
@@ -2790,7 +2790,7 @@ view(const Arg *arg)
 
   selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
   selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
-  selmon->ffact = selmon->pertag->ffacts[selmon->pertag->curtag];
+  selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag];
   selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
   selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
   selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
@@ -3218,9 +3218,9 @@ layout_centerfreeshape(Monitor *m)
     resize(
       c,
       m->ww / 2 - (m->ww * m->mfact) / 2,
-      m->wy + m->wh / 2 - (m->wh * m->ffact) / 2,
+      m->wy + m->wh / 2 - (m->wh * m->hfact) / 2,
       m->ww * m->mfact - 2*c->bw,
-      m->wh * m->ffact - 2*c->bw,
+      m->wh * m->hfact - 2*c->bw,
       False
     );
   }
@@ -3242,10 +3242,10 @@ layout_centerequalratio(Monitor *m)
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     resize(
       c,
-      m->ww/2 - (m->ww*m->ffact)/2,
-      m->wy + m->wh/2 - (m->wh*m->ffact)/2 + (topbar ? 1 : 0)*winpad,
-      m->ww*m->ffact - 2*c->bw,
-      (m->wh - (topbar ? 1 : 0)*winpad)*m->ffact - 2*c->bw,
+      m->ww/2 - (m->ww*m->hfact)/2,
+      m->wy + m->wh/2 - (m->wh*m->hfact)/2 + (topbar ? 1 : 0)*winpad,
+      m->ww*m->hfact - 2*c->bw,
+      (m->wh - (topbar ? 1 : 0)*winpad)*m->hfact - 2*c->bw,
       False
     );
   }
@@ -3484,7 +3484,7 @@ layout_bottomstackhori(Monitor *m) {
   if (n == 0) { return; }
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->ffact) * m->wh : 0;
+    mh = m->nmaster ? (1 - m->hfact) * m->wh : 0;
     th = (m->wh - mh - (topbar ? 1 : 0)*winpad) / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
@@ -3533,7 +3533,7 @@ layout_bottomstackvert(Monitor *m)
   if (n == 0) { return; }
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->ffact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
+    mh = m->nmaster ? (1 - m->hfact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
     tw = m->ww / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
@@ -3844,7 +3844,7 @@ layout_deckhori(Monitor *m)
   if (n == 0) { return; }
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? m->wh * (1 - m->ffact) : 0;
+    mh = m->nmaster ? m->wh * (1 - m->hfact) : 0;
   } else {
     mh = m->wh;
   }
@@ -4094,14 +4094,14 @@ layout_workflow(Monitor *m)
           cy = m->wy + (m->wh - ch) / 2;
         } else if (i == 1) { // RightTop
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
-          ch = m->wh * (1-m->ffact) - 2*c->bw;
+          ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
         } else { // RightBottom
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
-          ch = m->wh * m->ffact - 2*c->bw;
+          ch = m->wh * m->hfact - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
-          cy = m->wy + m->wh * (1-m->ffact);
+          cy = m->wy + m->wh * (1-m->hfact);
         }
         resize(c, cx, cy, cw, ch, False);
       }
@@ -4110,24 +4110,24 @@ layout_workflow(Monitor *m)
       for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
         if (i == 3) { // TopLeft
           cw = m->ww * m->mfact - 2*c->bw;
-          ch = m->wh * (1-m->ffact) - 2*c->bw;
+          ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx;
           cy = m->wy;
         } else if (i == 2) { // BottomLeft
           cw = m->ww * m->mfact - 2*c->bw;
-          ch = m->wh * m->ffact - 2*c->bw;
+          ch = m->wh * m->hfact - 2*c->bw;
           cx = m->wx;
-          cy = m->wy + m->wh * (1-m->ffact);
+          cy = m->wy + m->wh * (1-m->hfact);
         } else if (i == 0) { // TopRight
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
-          ch = m->wh * (1-m->ffact) - 2*c->bw;
+          ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
         } else { // BottomRight
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
-          ch = m->wh * m->ffact - 2*c->bw;
+          ch = m->wh * m->hfact - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
-          cy = m->wy + m->wh * (1-m->ffact);
+          cy = m->wy + m->wh * (1-m->hfact);
         }
         resize(c, cx, cy, cw, ch, False);
       }

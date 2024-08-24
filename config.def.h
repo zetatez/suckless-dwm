@@ -60,7 +60,7 @@ static const XPoint stickyiconbb    = {4,8};	                                   
 
 /* layout(s) */
 static const float mfact            = 0.50;
-static const float ffact            = 0.50;
+static const float hfact            = 0.50;
 static const int nmaster            = 1;
 static const int maxnmaster         = 8;
 static const int resizehints        = 0;
@@ -322,6 +322,7 @@ static const Key keys[] = {
 // { MODKEY,                       XK_x,            xxxxx,             {.v = x                                 } },
 // { MODKEY,                       XK_y,            xxxxx,             {.v = x                                 } },
 // { MODKEY,                       XK_z,            xxxxx,             {.v = x                                 } },
+// { MODKEY|ShiftMask,             XK_a,            xxxxx,             {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_b,            xxxxx,             {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_d,            xxxxx,             {.v =                                   } },
 // { MODKEY|ShiftMask,             XK_g,            xxxxx,             {.v =                                   } },
@@ -346,7 +347,6 @@ static const Key keys[] = {
    { MODKEY,                       XK_o,            toggleoverview,    {0                                      } },
    { MODKEY,                       XK_s,            reset,             {0                                      } },
    { MODKEY,                       XK_a,            setlayout,         {0                                      } }, // teemporary layout switch
-// { MODKEY|ShiftMask,             XK_a,            xxxxxxxxx,         {0                                      } },
    { MODKEY|ShiftMask,             XK_s,            togglesticky,      {0                                      } },
    { MODKEY|ShiftMask,             XK_space,        focusmaster,       {0                                      } },
    { MODKEY,                       XK_minus,        scratchpad_show,   {0                                      } },
@@ -368,8 +368,8 @@ static const Key keys[] = {
    { MODKEY,                       XK_j,            focusstack,        {.i = +1                                } },
    { MODKEY|ShiftMask,             XK_h,            setmfact,          {.f = -0.025                            } },
    { MODKEY|ShiftMask,             XK_l,            setmfact,          {.f = +0.025                            } },
-   { MODKEY|ShiftMask,             XK_j,            setffact,          {.f = -0.025                            } },
-   { MODKEY|ShiftMask,             XK_k,            setffact,          {.f = +0.025                            } },
+   { MODKEY|ShiftMask,             XK_j,            sethfact,          {.f = -0.025                            } },
+   { MODKEY|ShiftMask,             XK_k,            sethfact,          {.f = +0.025                            } },
    { MODKEY,                       XK_space,        setlayout,         {.v = &layouts[0]                       } },
    { MODKEY,                       XK_r,            setlayout,         {.v = &layouts[1]                       } },
    { MODKEY|ShiftMask,             XK_r,            setlayout,         {.v = &layouts[2]                       } },
