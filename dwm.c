@@ -4108,22 +4108,22 @@ layout_workflow(Monitor *m)
       break;
     case 4:
       for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-        if (i == 3) { // TopLeft
+        if (i == 0) { // TopLeft
           cw = m->ww * m->mfact - 2*c->bw;
           ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx;
           cy = m->wy;
-        } else if (i == 2) { // BottomLeft
-          cw = m->ww * m->mfact - 2*c->bw;
-          ch = m->wh * m->hfact - 2*c->bw;
-          cx = m->wx;
-          cy = m->wy + m->wh * (1-m->hfact);
-        } else if (i == 0) { // TopRight
+        } else if (i == 1) { // TopRight
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
           ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
-        } else { // BottomRight
+        } else if (i == 3) { // BottomLeft
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh * m->hfact - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + m->wh * (1-m->hfact);
+        } else {  // BottomRight
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
           ch = m->wh * m->hfact - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
