@@ -4128,7 +4128,7 @@ layout_workflow(Monitor *m)
       }
       break;
     default:
-      layout_tileright(m);
+      layout_fibonaccispiral(m);
       break;
   };
 }
