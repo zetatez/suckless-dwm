@@ -1,42 +1,36 @@
 /* See LICENSE file for copyright and license details. */
 
-#define SUPKEY Mod4Mask
-#define MODKEY Mod1Mask
-#define SH(cmd)   { "/bin/sh", "-c", cmd, NULL }
-#define ST(cmd)   { "st", "-e", "/bin/sh", "-c", cmd, NULL }
+#define SUPKEY  Mod4Mask
+#define MODKEY  Mod1Mask
+#define SH(cmd) { "/bin/sh", "-c", cmd, NULL }
+#define ST(cmd) { "st", "-e", "/bin/sh", "-c", cmd, NULL }
 
 /* appearance */
-static const unsigned int borderpx  = 1;
-static const unsigned int snap      = 0;
-static const int scalepreview       = 3;
-static const int previewbar         = 1;
-static const int showbar            = 1;
-static const int topbar             = 1;
-static const int barheight          = 18;
-static const int vertpad            = 0;
-static const int sidepad            = 0;
-static const int defaultwinpad      = 0;
-static const int swallowfloating    = 1;
-static const char *fonts[]          = { "DejaVuSansMono Nerd Font:style=Book:size=18" };
-static const char dmenufont[]       = "DejaVuSansMono Nerd Font:style=Book:size=16";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
-static const char *colors[][3]      = {
+static const unsigned int borderpx = 1;
+static const unsigned int snap     = 0;
+static const int scalepreview      = 3;
+static const int previewbar        = 1;
+static const int showbar           = 1;
+static const int topbar            = 1;
+static const int barheight         = 18;
+static const int vertpad           = 0;
+static const int sidepad           = 0;
+static const int defaultwinpad     = 0;
+static const int swallowfloating   = 1;
+static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=18" };
+static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=16";
+static const char col_gray1[]      = "#222222";
+static const char col_gray2[]      = "#444444";
+static const char col_gray3[]      = "#bbbbbb";
+static const char col_gray4[]      = "#eeeeee";
+static const char col_cyan[]       = "#005577";
+static const char *colors[][3]     = {
   /*               fg         bg         border   */
   [SchemeNorm] = { col_gray3, col_cyan,  col_gray2 },
   [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const char *const autostart[] = {
-  "dwmblocks", NULL,
-  "picom", NULL,
-  "hhkb", NULL,
-  "autostart", NULL, // other stuff
-  NULL
-};
+static const char *const autostart[] = { "dwmblocks", NULL, "picom", NULL, "hhkb", NULL, "autostart", NULL, NULL };
 
 /* tagging */
 static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
@@ -85,11 +79,11 @@ static const Layout layouts[] = {
 static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
-static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]          = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]           = { "st", NULL };
-static const char *termcmd_kitty[]     = { "kitty", NULL };
-static const char *scratchpadcmd[]     = { "st", "-g", "120x32", "-t", "scratchpad", NULL }; // patch: dwm-scratchpad
+static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
+static const char *dmenucmd[]                               = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *termcmd[]                                = { "st", NULL };
+static const char *termcmd_kitty[]                          = { "kitty", NULL };
+static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 static const char *screen_light_dec[]                       = SH("sudo light -N 8; sudo light -U 5");
 static const char *screen_light_inc[]                       = SH("sudo light -A 5");
 static const char *screen_lock[]                            = SH("slock");
