@@ -140,9 +140,7 @@ static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
 static void layout_stairs_hori(Monitor *m);
 static void layout_stairs_vert(Monitor *m);
-// static void layout_grid_gap(Monitor *m);
-// static void layout_deckvert(Monitor *m);
-// static void layout_deckhori(Monitor *m);
+static void layout_grid_gap(Monitor *m);
 // static void layout_tileright_vertical(Monitor *m);
 static void layout_overview(Monitor *m);
 static void layout_workflow(Monitor *m);
@@ -3790,84 +3788,6 @@ layout_tileright_vertical(Monitor *m)
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
-    }
-  }
-}
-
-void
-layout_deckvert(Monitor *m) {
-  unsigned int i, n, mw;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww*m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster)
-      resize(
-        c,
-        m->wx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        mw - 2*c->bw,
-        m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
-    else
-      resize(
-        c,
-        m->wx + mw + (i - m->nmaster)*(m->ww - mw)/(n - m->nmaster),
-        m->wy + (topbar ? 1 : 0)*winpad,
-        m->ww - (mw + (i - m->nmaster) * (m->ww - mw)/(n - m->nmaster)) - 2*c->bw,
-        m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
-  }
-}
-
-void
-layout_deckhori(Monitor *m)
-{
-  unsigned int i, n, mh;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mh = m->nmaster ? m->wh * (1 - m->hfact) : 0;
-  } else {
-    mh = m->wh;
-  }
-
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      resize(
-        c,
-        m->wx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        m->ww - 2*c->bw,
-        mh - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
-    } else {
-      resize(
-        c,
-        m->wx,
-        m->wy + mh + (i - m->nmaster)*(m->wh - mh)/(n - m->nmaster),
-        m->ww - 2*c->bw,
-        m->wh - (mh + (i - m->nmaster)*(m->wh - (topbar ? 1 : 0)*winpad - mh)/(n - m->nmaster)) - 2*c->bw - (topbar ? 1 : 0)*winpad,
-        c->bw
-      );
     }
   }
 }

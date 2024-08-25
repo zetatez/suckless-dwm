@@ -39,7 +39,7 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
@@ -71,6 +71,7 @@ static const Layout layouts[] = {
    { "◨ >",  layout_tileright           },
    { "◧ <",  layout_tileleft            },
    { "󰝘",    layout_grid                },
+   { "󱇙",    layout_grid_gap            },
    { " ",   layout_monocle             },
    { "󰓌",    layout_hacker              },
    { "󱎞 |",  layout_stairs_vert         },
@@ -78,8 +79,6 @@ static const Layout layouts[] = {
    { "⬓ |" , layout_bottomstackvert     },
    { "⬓ ―",  layout_bottomstackhori     },
 // { "◧",  layout_tileright_vertical  },
-// { "󰘸",  layout_deckvert            },
-// { "󰘸",  layout_deckhori            },
 // { "∅",  NULL                       }, // no layout, abandon
    { NULL, NULL                       },
 };
@@ -371,12 +370,13 @@ static const Key keys[] = {
    { MODKEY,                       XK_t,            setlayout,         {.v = &layouts[5]                           } },
    { MODKEY|ShiftMask,             XK_t,            setlayout,         {.v = &layouts[6]                           } },
    { MODKEY,                       XK_g,            setlayout,         {.v = &layouts[7]                           } },
-   { MODKEY,                       XK_m,            setlayout,         {.v = &layouts[8]                           } },
-   { MODKEY|ShiftMask,             XK_m,            setlayout,         {.v = &layouts[9]                           } },
-   { MODKEY,                       XK_w,            setlayout,         {.v = &layouts[10]                          } },
-   { MODKEY|ShiftMask,             XK_w,            setlayout,         {.v = &layouts[11]                          } },
+   { MODKEY|ShiftMask,             XK_g,            setlayout,         {.v = &layouts[8]                           } },
+   { MODKEY,                       XK_m,            setlayout,         {.v = &layouts[9]                           } },
+   { MODKEY|ShiftMask,             XK_m,            setlayout,         {.v = &layouts[10]                          } },
+   { MODKEY,                       XK_w,            setlayout,         {.v = &layouts[11]                          } },
+   { MODKEY|ShiftMask,             XK_w,            setlayout,         {.v = &layouts[12]                          } },
    { MODKEY|ShiftMask,             XK_e,            setlayout,         {.v = &layouts[13]                          } },
-   { MODKEY,                       XK_e,            setlayout,         {.v = &layouts[12]                          } },
+   { MODKEY,                       XK_e,            setlayout,         {.v = &layouts[14]                          } },
    { MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                               } },
    { MODKEY|ControlMask|ShiftMask, XK_Return,       spawn,             {.v = termcmd_kitty                         } },
    { MODKEY|ShiftMask,             XK_c,            killclient,        {0                                          } },
