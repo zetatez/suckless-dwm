@@ -65,7 +65,6 @@ build: prepare build-shell-cmds
 	go build -o ./bins/toggle-lua                                ./cmds/toggle-lua/main.go &
 	go build -o ./bins/toggle-music                              ./cmds/toggle-music/main.go &
 	go build -o ./bins/toggle-music-net-cloud                    ./cmds/toggle-music-net-cloud/main.go &
-	go build -o ./bins/toggle-music-yes-play-music               ./cmds/toggle-music-yes-play-music/main.go &
 	go build -o ./bins/toggle-mutt                               ./cmds/toggle-mutt/main.go &
 	go build -o ./bins/toggle-obsidian                           ./cmds/toggle-obsidian/main.go &
 	go build -o ./bins/toggle-passmenu                           ./cmds/toggle-passmenu/main.go &

@@ -45,9 +45,8 @@ static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
   {"floatwindow",            NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
-  {"Vimb",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // for markdown. Vimb V must be capital
+  {"Vimb",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // for markdown.    Vimb V must be capital
   {"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
-  {"yesplaymusic",           NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
 /* stickyicon */
