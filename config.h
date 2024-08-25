@@ -39,7 +39,7 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
@@ -84,7 +84,7 @@ static const Layout layouts[] = {
    { NULL, NULL                       },
 };
 
-static const Layout overviewlayout = { "  󰾍",  layout_overview };
+static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */

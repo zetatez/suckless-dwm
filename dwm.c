@@ -4085,27 +4085,48 @@ layout_workflow(Monitor *m)
         resize(c, cx, cy, cw, ch, False);
       }
       break;
-    case 3:
+  case 3: // left-2 + right-1
       for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-        if (i == 0) { // Left
+        if (i == 1) { // Left layer1
           cw = m->ww * m->mfact - 2*c->bw;
           ch = m->wh - 2*c->bw;
           cx = m->wx;
           cy = m->wy + (m->wh - ch) / 2;
-        } else if (i == 1) { // RightTop
+        } else if (i == 0) { // Left layer2
+          cw = m->ww * m->mfact - 2*c->bw;
+          ch = m->wh - 2*c->bw;
+          cx = m->wx;
+          cy = m->wy + (m->wh - ch) / 2;
+        } else { // Right
           cw = m->ww * (1 - m->mfact) - 2*c->bw;
-          ch = m->wh * (1-m->hfact) - 2*c->bw;
+          ch = m->wh - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
-        } else { // RightBottom
-          cw = m->ww * (1 - m->mfact) - 2*c->bw;
-          ch = m->wh * m->hfact - 2*c->bw;
-          cx = m->wx + m->ww * m->mfact;
-          cy = m->wy + m->wh * (1-m->hfact);
         }
         resize(c, cx, cy, cw, ch, False);
       }
       break;
+    // case 3: // left-1 + right-top + right-bottom
+    //   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    //     if (i == 0) { // Left
+    //       cw = m->ww * m->mfact - 2*c->bw;
+    //       ch = m->wh - 2*c->bw;
+    //       cx = m->wx;
+    //       cy = m->wy + (m->wh - ch) / 2;
+    //     } else if (i == 1) { // RightTop
+    //       cw = m->ww * (1 - m->mfact) - 2*c->bw;
+    //       ch = m->wh * (1-m->hfact) - 2*c->bw;
+    //       cx = m->wx + m->ww * m->mfact;
+    //       cy = m->wy;
+    //     } else { // RightBottom
+    //       cw = m->ww * (1 - m->mfact) - 2*c->bw;
+    //       ch = m->wh * m->hfact - 2*c->bw;
+    //       cx = m->wx + m->ww * m->mfact;
+    //       cy = m->wy + m->wh * (1-m->hfact);
+    //     }
+    //     resize(c, cx, cy, cw, ch, False);
+    //   }
+    //   break;
     case 4:
       for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
         if (i == 0) { // TopLeft

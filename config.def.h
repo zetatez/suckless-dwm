@@ -78,13 +78,11 @@ static const Layout layouts[] = {
    { "⬓ |" , layout_bottomstackvert     },
    { "⬓ ―",  layout_bottomstackhori     },
 // { "◧",  layout_tileright_vertical  },
-// { "󰘸",  layout_deckvert            },
-// { "󰘸",  layout_deckhori            },
 // { "∅",  NULL                       }, // no layout, abandon
    { NULL, NULL                       },
 };
 
-static const Layout overviewlayout = { "  󰾍",  layout_overview };
+static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                = "0"; /* component of dmenucmd, manipulated in spawn() */
