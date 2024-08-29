@@ -73,6 +73,10 @@ func ToggleCalendarScheduling() {
 	sugar.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
 }
 
+func ToggleDarkTable() {
+	sugar.Toggle("darktable")
+}
+
 func ToggleFlameshot() {
 	sugar.Toggle("flameshot gui")
 }

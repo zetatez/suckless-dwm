@@ -54,6 +54,7 @@ build: prepare build-shell-cmds
 	go build -o ./bins/toggle-calendar-scheduling                ./cmds/toggle-calendar-scheduling/main.go &
 	go build -o ./bins/toggle-calendar-scheduling-today          ./cmds/toggle-calendar-scheduling-today/main.go &
 	go build -o ./bins/toggle-clipmenu                           ./cmds/toggle-clipmenu/main.go &
+	go build -o ./bins/toggle-darktable                          ./cmds/toggle-darktable/main.go &
 	go build -o ./bins/toggle-flameshot                          ./cmds/toggle-flameshot/main.go &
 	go build -o ./bins/toggle-inkscape                           ./cmds/toggle-inkscape/main.go &
 	go build -o ./bins/toggle-irssi                              ./cmds/toggle-irssi/main.go &
