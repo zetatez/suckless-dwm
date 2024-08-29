@@ -5,8 +5,6 @@ go 1.21.6
 require (
 	github.com/go-vgo/robotgo v0.110.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.845
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ocr v1.0.845
 	golang.design/x/clipboard v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )

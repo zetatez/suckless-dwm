@@ -7,7 +7,6 @@ import (
 )
 
 var ActionMap = map[string]func(){
-	"ocr":                              OCR,
 	"ssh-to":                           SshTo,
 	"handle-copied":                    HandleCopied,
 	"wifi-connect":                     WifiConnect,
@@ -19,7 +18,7 @@ var ActionMap = map[string]func(){
 	"get current-datetime":             GetCurrentDatetime,
 	"get current-unix-sec":             GetCurrentUnixSec,
 	"get host name":                    GetHostName,
-	"get ip":                           GetIP,
+	"get ip address":                   GetIPAddress,
 	"transform date time to unix sec":  TransformDatetime2UnixSec,
 	"transform unix sec to date time":  TransformUnixSec2DateTime,
 	"note diary":                       NoteDiary,

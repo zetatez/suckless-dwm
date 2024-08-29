@@ -30,10 +30,16 @@ static const char *colors[][3]     = {
   [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const char *const autostart[] = { "dwmblocks", NULL, "picom", NULL, "hhkb", NULL, "autostart", NULL, NULL };
+static const char *const autostart[] = {
+  "dwmblocks", NULL,
+  "picom"    , NULL,
+  "hhkb"     , NULL,
+  "autostart", NULL,
+  NULL,
+};
 
 /* tagging */
-static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "󰣨", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
@@ -103,6 +109,7 @@ static const char *toggle_calendar[]                        = SH("toggle-calenda
 static const char *toggle_calendar_scheduling[]             = SH("toggle-calendar-scheduling");
 static const char *toggle_calendar_scheduling_today[]       = SH("toggle-calendar-scheduling-today");
 static const char *toggle_clipmenu[]                        = SH("toggle-clipmenu");
+static const char *toggle_darktable[]                       = SH("toggle-darktable");
 static const char *toggle_flameshot[]                       = SH("toggle-flameshot");
 static const char *toggle_inkscape[]                        = SH("toggle-inkscape");
 static const char *toggle_joshuto[]                         = SH("toggle-joshuto");
@@ -111,6 +118,7 @@ static const char *toggle_python[]                          = SH("toggle-python"
 static const char *toggle_keyboard_light[]                  = SH("toggle-keyboard-light");
 static const char *toggle_krita[]                           = SH("toggle-krita");
 static const char *toggle_lazydocker[]                      = SH("toggle-lazydocker");
+static const char *toggle_lazygit[]                         = SH("toggle-lazygit");
 static const char *toggle_music_net_cloud[]                 = SH("toggle-music-net-cloud");
 static const char *toggle_mutt[]                            = SH("toggle-mutt");
 static const char *toggle_obsidian[]                        = SH("toggle-obsidian");
@@ -164,46 +172,32 @@ static const char *handle_copied[]                          = SH("handle-copied"
 static const char *search[]                                 = SH("search");
 
 static const Key keys[] = {
-/*  modifier                      key            function           argument                                       */
+/*  modifier                      key               function           argument                                    */
 // SUPKEY + F1-F12
-   { SUPKEY,                       XK_F1,         spawn,             {.v = volume_toggle                           } },
-   { SUPKEY,                       XK_F2,         spawn,             {.v = volume_dec                              } },
-   { SUPKEY,                       XK_F3,         spawn,             {.v = volume_inc                              } },
-   { SUPKEY,                       XK_F4,         spawn,             {.v = microphone_toggle                       } },
-   { SUPKEY,                       XK_F5,         spawn,             {.v = microphone_dec                          } },
-   { SUPKEY,                       XK_F6,         spawn,             {.v = microphone_inc                          } },
-   { SUPKEY,                       XK_F7,         spawn,             {.v = wifi_connect                            } },
-   { SUPKEY,                       XK_F8,         spawn,             {.v = toggle_screen                           } },
-   { SUPKEY,                       XK_F9,         spawn,             {.v = toggle_bluetooth                        } },
-   { SUPKEY,                       XK_F10,        spawn,             {.v = screen_light_dec                        } },
-   { SUPKEY,                       XK_F11,        spawn,             {.v = screen_light_inc                        } },
-   { SUPKEY,                       XK_F12,        spawn,             {.v = toggle_keyboard_light                   } },
-
-// SUPKEY|ShiftMask + F1-F12
-// { SUPKEY|ShiftMask,             XK_F1,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F2,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F3,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F4,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F5,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F6,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F7,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F8,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F9,         spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F10,        spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F11,        spawn,             {.v =                                         } },
-// { SUPKEY|ShiftMask,             XK_F12,        spawn,             {.v =                                         } },
+   { SUPKEY,                       XK_F1,           spawn,             {.v = volume_toggle                         } },
+   { SUPKEY,                       XK_F2,           spawn,             {.v = volume_dec                            } },
+   { SUPKEY,                       XK_F3,           spawn,             {.v = volume_inc                            } },
+   { SUPKEY,                       XK_F4,           spawn,             {.v = microphone_toggle                     } },
+   { SUPKEY,                       XK_F5,           spawn,             {.v = microphone_dec                        } },
+   { SUPKEY,                       XK_F6,           spawn,             {.v = microphone_inc                        } },
+   { SUPKEY,                       XK_F7,           spawn,             {.v = wifi_connect                          } },
+   { SUPKEY,                       XK_F8,           spawn,             {.v = toggle_screen                         } },
+   { SUPKEY,                       XK_F9,           spawn,             {.v = toggle_bluetooth                      } },
+   { SUPKEY,                       XK_F10,          spawn,             {.v = screen_light_dec                      } },
+   { SUPKEY,                       XK_F11,          spawn,             {.v = screen_light_inc                      } },
+   { SUPKEY,                       XK_F12,          spawn,             {.v = toggle_keyboard_light                 } },
 
 // SUPKEY + 1-9-0
-   { SUPKEY,                       XK_1,          spawn,             {.v = chrome_open_url_chatgpt                 } },
-   { SUPKEY,                       XK_2,          spawn,             {.v = chrome_open_url_codeium                 } },
-   { SUPKEY,                       XK_3,          spawn,             {.v = chrome_open_url_google_mail             } },
-   { SUPKEY,                       XK_4,          spawn,             {.v = chrome_open_url_google_translate        } },
-   { SUPKEY,                       XK_5,          spawn,             {.v = chrome_open_url_youtube                 } },
-   { SUPKEY,                       XK_6,          spawn,             {.v = chrome_open_url_wechat                  } },
-   { SUPKEY,                       XK_7,          spawn,             {.v = chrome_open_url_instagram               } },
-   { SUPKEY,                       XK_8,          spawn,             {.v = chrome_open_url_github                  } },
-   { SUPKEY,                       XK_9,          spawn,             {.v = chrome_open_url_leetcode                } },
-   { SUPKEY,                       XK_0,          spawn,             {.v = chrome_open_url_doubao                  } },
+   { SUPKEY,                       XK_1,            spawn,             {.v = chrome_open_url_chatgpt               } },
+   { SUPKEY,                       XK_2,            spawn,             {.v = chrome_open_url_codeium               } },
+   { SUPKEY,                       XK_3,            spawn,             {.v = chrome_open_url_google_mail           } },
+   { SUPKEY,                       XK_4,            spawn,             {.v = chrome_open_url_google_translate      } },
+   { SUPKEY,                       XK_5,            spawn,             {.v = chrome_open_url_youtube               } },
+   { SUPKEY,                       XK_6,            spawn,             {.v = chrome_open_url_wechat                } },
+   { SUPKEY,                       XK_7,            spawn,             {.v = chrome_open_url_instagram             } },
+   { SUPKEY,                       XK_8,            spawn,             {.v = chrome_open_url_github                } },
+   { SUPKEY,                       XK_9,            spawn,             {.v = chrome_open_url_leetcode              } },
+   { SUPKEY,                       XK_0,            spawn,             {.v = chrome_open_url_doubao                } },
 
 // SUPKEY|ShiftMask + 1-9-0
    { SUPKEY|ShiftMask,             XK_1,            spawn,             {.v = qutebrowser_open_url_chatgpt          } },
@@ -220,58 +214,56 @@ static const Key keys[] = {
 // SUPKEY|ShiftMask,+ a-z, etc
    { SUPKEY,                       XK_a,            spawn,             {.v = toggle_python                         } },
    { SUPKEY,                       XK_b,            spawn,             {.v = launch_chrome                         } },
-   { SUPKEY,                       XK_c,            spawn,             {.v = toggle_mutt                           } },
-   { SUPKEY,                       XK_d,            spawn,             {.v = note_diary                            } },
+   { SUPKEY,                       XK_c,            spawn,             {.v = toggle_calendar_scheduling            } },
+   { SUPKEY,                       XK_d,            spawn,             {.v = toggle_darktable                      } },
    { SUPKEY,                       XK_e,            spawn,             {.v = launch_qutebrowser                    } },
    { SUPKEY,                       XK_f,            spawn,             {.v = lazy_open_file                        } },
    { SUPKEY,                       XK_g,            spawn,             {.v = lazy_open_search_file_content         } },
-// { SUPKEY,                       XK_h,            spawn,             {.v = x                                     } },
-// { SUPKEY,                       XK_i,            spawn,             {.v =                                       } },
-// { SUPKEY,                       XK_j,            spawn,             {.v = x                                     } },
-// { SUPKEY,                       XK_k,            spawn,             {.v = x                                     } },
-// { SUPKEY,                       XK_l,            spawn,             {.v = x                                     } },
+   { SUPKEY,                       XK_i,            spawn,             {.v = toggle_inkscape                       } },
    { SUPKEY,                       XK_m,            spawn,             {.v = toggle_julia                          } },
    { SUPKEY,                       XK_n,            spawn,             {.v = toggle_obsidian                       } },
    { SUPKEY,                       XK_o,            spawn,             {.v = handle_copied                         } },
-   { SUPKEY,                       XK_p,            spawn,             {.v = lazy_open_search_book                 } },
+   { SUPKEY,                       XK_p,            spawn,             {.v = toggle_krita                          } },
    { SUPKEY,                       XK_q,            spawn,             {.v = screen_lock                           } },
    { SUPKEY,                       XK_r,            spawn,             {.v = toggle_joshuto                        } },
    { SUPKEY,                       XK_s,            spawn,             {.v = search                                } },
-// { SUPKEY,                       XK_t,            spawn,             {.v =                                       } },
-   { SUPKEY,                       XK_u,            spawn,             {.v = toggle_screenkey                      } },
+   { SUPKEY,                       XK_t,            spawn,             {.v = lazy_open_search_book                 } },
+   { SUPKEY,                       XK_u,            spawn,             {.v = toggle_calendar_scheduling_today      } },
    { SUPKEY,                       XK_v,            spawn,             {.v = lazy_open_search_media                } },
    { SUPKEY,                       XK_w,            spawn,             {.v = lazy_open_search_wiki                 } },
    { SUPKEY,                       XK_x,            spawn,             {.v = toggle_wallpaper                      } },
    { SUPKEY,                       XK_y,            spawn,             {.v = toggle_show                           } },
    { SUPKEY,                       XK_z,            spawn,             {.v = chrome_open_url_google                } },
-   { SUPKEY,                       XK_apostrophe,   spawn,             {.v = toggle_termius                        } },
-   { SUPKEY,                       XK_BackSpace,    spawn,             {.v = toggle_passmenu                       } },
-   { SUPKEY,                       XK_Delete,       spawn,             {.v = toggle_sys_shortcuts                  } },
-   { SUPKEY,                       XK_Escape,       spawn,             {.v = toggle_top                            } },
-// { SUPKEY,                       XK_Print,        spawn,             {.v =                                       } },
    { SUPKEY,                       XK_Home,         spawn,             {.v = toggle_flameshot                      } },
+   { SUPKEY,                       XK_Escape,       spawn,             {.v = toggle_top                            } },
+   { SUPKEY,                       XK_Delete,       spawn,             {.v = toggle_sys_shortcuts                  } },
+   { SUPKEY,                       XK_BackSpace,    spawn,             {.v = toggle_passmenu                       } },
+// { SUPKEY,                       XK_bracketleft,  spawn,             {.v =                                       } },
+// { SUPKEY,                       XK_bracketleft,  spawn,             {.v =                                       } },
    { SUPKEY,                       XK_backslash,    spawn,             {.v = keyboard_rate                         } },
-   { SUPKEY,                       XK_slash,        spawn,             {.v = note_flash_card                       } },
-   { SUPKEY,                       XK_comma,        spawn,             {.v = jump_to_code_from_log                 } },
-   { SUPKEY,                       XK_period,       spawn,             {.v = note_timeline                         } },
+   { SUPKEY,                       XK_semicolon,    spawn,             {.v = jump_to_code_from_log                 } },
+   { SUPKEY,                       XK_apostrophe,   spawn,             {.v = toggle_termius                        } },
+   { SUPKEY,                       XK_comma,        spawn,             {.v = note_diary                            } },
+   { SUPKEY,                       XK_period,       spawn,             {.v = note_flash_card                       } },
+   { SUPKEY,                       XK_slash,        spawn,             {.v = note_timeline                         } },
+   { SUPKEY,                       XK_k,            movewin,           {.ui = UP                                   } },
+   { SUPKEY,                       XK_j,            movewin,           {.ui = DOWN                                 } },
+   { SUPKEY,                       XK_h,            movewin,           {.ui = LEFT                                 } },
+   { SUPKEY,                       XK_l,            movewin,           {.ui = RIGHT                                } },
 
 // SUPKEY-ShiftMask + a-z, etc
    { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v = toggle_addressbook                    } },
 // { SUPKEY|ShiftMask,             XK_b,            spawn,             {.v =                                       } },
-   { SUPKEY|ShiftMask,             XK_c,            spawn,             {.v = toggle_calendar_scheduling            } },
+// { SUPKEY|ShiftMask,             XK_c,            spawn,             {.v =                                       } },
    { SUPKEY|ShiftMask,             XK_d,            spawn,             {.v = toggle_lazydocker                     } },
-// { SUPKEY|ShiftMask,             XK_e,            spawn,             {.v =                                       } },
+   { SUPKEY|ShiftMask,             XK_e,            spawn,             {.v = toggle_mutt                           } },
 // { SUPKEY|ShiftMask,             XK_f,            spawn,             {.v =                                       } },
-// { SUPKEY|ShiftMask,             XK_g,            spawn,             {.v = x                                     } },
-// { SUPKEY|ShiftMask,             XK_h,            spawn,             {.v = x                                     } },
-   { SUPKEY|ShiftMask,             XK_i,            spawn,             {.v = toggle_inkscape                       } },
-// { SUPKEY|ShiftMask,             XK_j,            spawn,             {.v = x                                     } },
-// { SUPKEY|ShiftMask,             XK_k,            spawn,             {.v = x                                     } },
-// { SUPKEY|ShiftMask,             XK_l,            spawn,             {.v = x                                     } },
+   { SUPKEY|ShiftMask,             XK_g,            spawn,             {.v = toggle_lazygit                        } },
+// { SUPKEY|ShiftMask,             XK_i,            spawn,             {.v =                                       } },
    { SUPKEY|ShiftMask,             XK_m,            spawn,             {.v = toggle_music_net_cloud                } },
 // { SUPKEY|ShiftMask,             XK_n,            spawn,             {.v =                                       } },
 // { SUPKEY|ShiftMask,             XK_o,            spawn,             {.v =                                       } },
-   { SUPKEY|ShiftMask,             XK_p,            spawn,             {.v = toggle_krita                          } },
+// { SUPKEY|ShiftMask,             XK_p,            spawn,             {.v =                                       } },
    { SUPKEY|ShiftMask,             XK_q,            spawn,             {.v = sys_suspend                           } },
    { SUPKEY|ShiftMask,             XK_r,            spawn,             {.v = toggle_redshift                       } },
    { SUPKEY|ShiftMask,             XK_s,            spawn,             {.v = toggle_sublime                        } },
@@ -279,24 +271,22 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_u,            spawn,             {.v =                                       } },
 // { SUPKEY|ShiftMask,             XK_v,            spawn,             {.v =                                       } },
 // { SUPKEY|ShiftMask,             XK_w,            spawn,             {.v =                                       } },
-   { SUPKEY|ShiftMask,             XK_x,            spawn,             {.v = toggle_calendar_scheduling_today      } },
+// { SUPKEY|ShiftMask,             XK_x,            spawn,             {.v =                                       } },
 // { SUPKEY|ShiftMask,             XK_y,            spawn,             {.v =                                       } },
    { SUPKEY|ShiftMask,             XK_z,            spawn,             {.v = qutebrowser_open_url_google           } },
-// { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             {.v =                                       } },
-   { SUPKEY|ShiftMask,             XK_Delete,       spawn,             {.v = sys_shutdown                          } },
-// { SUPKEY|ShiftMask,             XK_Escape,       spawn,             {.v =                                       } },
-// { SUPKEY|ShiftMask,             XK_Print,        spawn,             {.v =                                       } },
 // { SUPKEY|ShiftMask,             XK_Home,         spawn,             {.v =                                       } },
 // { SUPKEY|ShiftMask,             XK_End,          spawn,             {.v =                                       } },
-// { SUPKEY|ShiftMask,             XK_backslash,    spawn,             {.v =                                       } },
+// { SUPKEY|ShiftMask,             XK_Escape,       spawn,             {.v =                                       } },
+   { SUPKEY|ShiftMask,             XK_Delete,       spawn,             {.v = sys_shutdown                          } },
 // { SUPKEY|ShiftMask,             XK_BackSpace,    spawn,             {.v =                                       } },
-   { SUPKEY|ShiftMask,             XK_slash,        spawn,             {.v = toggle_rec_webcam                     } },
+// { SUPKEY|ShiftMask,             XK_bracketleft,  spawn,             {.v =                                       } },
+// { SUPKEY|ShiftMask,             XK_bracketleft,  spawn,             {.v =                                       } },
+// { SUPKEY|ShiftMask,             XK_backslash,    spawn,             {.v =                                       } },
+// { SUPKEY|ShiftMask,             XK_semicolon,    spawn,             {.v =                                       } },
+   { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             {.v = toggle_screenkey                      } },
    { SUPKEY|ShiftMask,             XK_comma,        spawn,             {.v = toggle_rec_audio                      } },
    { SUPKEY|ShiftMask,             XK_period,       spawn,             {.v = toggle_rec_screen                     } },
-   { SUPKEY,                       XK_k,            movewin,           {.ui = UP                                   } },
-   { SUPKEY,                       XK_j,            movewin,           {.ui = DOWN                                 } },
-   { SUPKEY,                       XK_h,            movewin,           {.ui = LEFT                                 } },
-   { SUPKEY,                       XK_l,            movewin,           {.ui = RIGHT                                } },
+   { SUPKEY|ShiftMask,             XK_slash,        spawn,             {.v = toggle_rec_webcam                     } },
    { SUPKEY|ShiftMask,             XK_k,            resizewin,         {.ui = VECINC                               } },
    { SUPKEY|ShiftMask,             XK_j,            resizewin,         {.ui = VECDEC                               } },
    { SUPKEY|ShiftMask,             XK_h,            resizewin,         {.ui = HORDEC                               } },
@@ -432,7 +422,7 @@ static const Button buttons[] = {
    { ClkLtSymbol,          0,              Button1,        setlayout,           {0                                 } },
    { ClkLtSymbol,          0,              Button2,        setlayout,           {.v = &layouts[8]                  } },
    { ClkLtSymbol,          0,              Button3,        setlayout,           {.v = &overviewlayout              } },
-   { ClkStatusText,        0,              Button1,        spawn,               {.v = toggle_calendar_scheduling   } },
+// { ClkStatusText,        0,              Button1,        spawn,               {.v = toggle_calendar_scheduling   } },
    { ClkStatusText,        0,              Button2,        spawn,               {.v = toggle_sys_shortcuts         } },
    { ClkStatusText,        0,              Button3,        spawn,               {.v = toggle_calendar              } },
 // { ClkWinTitle,          0,              Button1,        xxxxxxxxx,           {0                                 } },
