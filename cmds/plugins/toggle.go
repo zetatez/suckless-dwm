@@ -123,6 +123,10 @@ func ToggleLazyDocker() {
 	sugar.Toggle("st -e lazydocker")
 }
 
+func ToggleLazyGit() {
+	sugar.Toggle("st -e lazygit")
+}
+
 func ToggleMusic() {
 	wg := sync.WaitGroup{}
 	wg.Add(2)

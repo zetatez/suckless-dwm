@@ -63,6 +63,7 @@ build: prepare build-shell-cmds
 	go build -o ./bins/toggle-keyboard-light                     ./cmds/toggle-keyboard-light/main.go &
 	go build -o ./bins/toggle-krita                              ./cmds/toggle-krita/main.go &
 	go build -o ./bins/toggle-lazydocker                         ./cmds/toggle-lazydocker/main.go &
+	go build -o ./bins/toggle-lazygit                            ./cmds/toggle-lazygit/main.go &
 	go build -o ./bins/toggle-lua                                ./cmds/toggle-lua/main.go &
 	go build -o ./bins/toggle-music                              ./cmds/toggle-music/main.go &
 	go build -o ./bins/toggle-music-net-cloud                    ./cmds/toggle-music-net-cloud/main.go &
