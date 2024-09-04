@@ -416,7 +416,7 @@ static const Button buttons[] = {
    { ClkLtSymbol,          0,              Button1,        setlayout,           {0                                 } },
    { ClkLtSymbol,          0,              Button2,        setlayout,           {.v = &layouts[8]                  } },
    { ClkLtSymbol,          0,              Button3,        setlayout,           {.v = &overviewlayout              } },
-   { ClkStatusText,        0,              Button1,        spawn,               {.v = toggle_calendar_scheduling   } },
+// { ClkStatusText,        0,              Button1,        spawn,               {.v = toggle_calendar_scheduling   } },
    { ClkStatusText,        0,              Button2,        spawn,               {.v = toggle_sys_shortcuts         } },
    { ClkStatusText,        0,              Button3,        spawn,               {.v = toggle_calendar              } },
 // { ClkWinTitle,          0,              Button1,        xxxxxxxxx,           {0                                 } },
