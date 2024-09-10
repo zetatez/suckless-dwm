@@ -30,7 +30,13 @@ static const char *colors[][3]     = {
   [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
-static const char *const autostart[] = { "dwmblocks", NULL, "picom", NULL, "hhkb", NULL, "autostart", NULL, NULL };
+static const char *const autostart[] = {
+  "dwmblocks", NULL,
+  "picom"    , NULL,
+  "hhkb"     , NULL,
+  "autostart", NULL,
+  NULL,
+};
 
 /* tagging */
 static const char *tags[] = { "󰣨", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
