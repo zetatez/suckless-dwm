@@ -7,7 +7,6 @@ import (
 )
 
 var ActionMap = map[string]func(){
-	"ocr":                              OCR,
 	"ssh-to":                           SshTo,
 	"handle-copied":                    HandleCopied,
 	"wifi-connect":                     WifiConnect,
