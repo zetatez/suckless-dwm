@@ -3,6 +3,7 @@ package plugins
 import (
 	"bufio"
 	"fmt"
+	"net"
 	"os"
 	"path"
 	"regexp"
@@ -36,23 +37,43 @@ func GetHostName() {
 	sugar.Notify("previous clipboard expired")
 }
 
-func GetIP() {
-	err := clipboard.Init()
+func GetIPAddress() {
+	interfaceName := "wlan0"
+	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
 		sugar.Notify(err)
 		return
 	}
-	cmd := "hostname -i"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+
+	addrs, err := iface.Addrs()
 	if err != nil {
 		sugar.Notify(err)
 		return
 	}
-	content := stdout
-	sugar.Notify(fmt.Sprintf("get success: %s", content))
-	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	<-changed
-	sugar.Notify("previous clipboard expired")
+
+	for _, addr := range addrs {
+		var ip net.IP
+
+		switch v := addr.(type) {
+		case *net.IPNet:
+			ip = v.IP
+		case *net.IPAddr:
+			ip = v.IP
+		}
+
+		if ip.IsLoopback() {
+			continue
+		}
+
+		if ip.To4() != nil {
+			content := ip.String()
+			sugar.Notify(fmt.Sprintf("get success: %s", content))
+			changed := clipboard.Write(clipboard.FmtText, []byte(content))
+			<-changed
+			sugar.Notify("previous clipboard expired")
+		}
+	}
+	return
 }
 
 func GetCurrentDatetime() {
