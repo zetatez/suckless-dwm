@@ -321,7 +321,6 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_f,            togglefloating,    {0                                          } },
    { MODKEY,                       XK_o,            toggleoverview,    {0                                          } },
    { MODKEY,                       XK_s,            reset,             {0                                          } },
-   { MODKEY,                       XK_a,            setlayout,         {0                                          } }, // teemporary layout switch
    { MODKEY|ShiftMask,             XK_s,            togglesticky,      {0                                          } },
    { MODKEY|ShiftMask,             XK_space,        focusmaster,       {0                                          } },
    { MODKEY,                       XK_minus,        scratchpad_show,   {0                                          } },
@@ -345,7 +344,9 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_l,            setmfact,          {.f = +0.025                                } },
    { MODKEY|ShiftMask,             XK_j,            sethfact,          {.f = -0.025                                } },
    { MODKEY|ShiftMask,             XK_k,            sethfact,          {.f = +0.025                                } },
-   { MODKEY,                       XK_space,        setlayout,         {.v = &layouts[0]                           } },
+   { MODKEY,                       XK_space,        togglefloating,    {0                                          } },
+   { MODKEY,                       XK_u,            setlayout,         {0                                          } }, // teemporary layout switch
+   { MODKEY,                       XK_a,            setlayout,         {.v = &layouts[0]                           } },
    { MODKEY,                       XK_r,            setlayout,         {.v = &layouts[1]                           } },
    { MODKEY|ShiftMask,             XK_r,            setlayout,         {.v = &layouts[2]                           } },
    { MODKEY,                       XK_v,            setlayout,         {.v = &layouts[3]                           } },
