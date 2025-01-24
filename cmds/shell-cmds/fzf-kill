@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ $# -ne 0 ]; then
+  echo "wrong param, expected exact 0 param"
+  exit 1
+fi
+
+pid=$((ps -ef|fzf --prompt='kill -9 >' --select-1 --exit-0)|awk '{print $2}')
+
+if [[ "$pid" != "" ]]
+then
+  kill -9 $pid
+fi
