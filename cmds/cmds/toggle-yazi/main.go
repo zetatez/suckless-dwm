@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleJoshuto()
+	plugins.ToggleYazi()
 }

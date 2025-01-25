@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -14,6 +15,45 @@ import (
 	"github.com/go-vgo/robotgo"
 	"github.com/shirou/gopsutil/process"
 )
+
+const (
+	OSTypeLinux   = "Linux"
+	OSTypeMacOS   = "macOS"
+	OSTypeWindows = "Windows"
+	OSTypeUnknown = "Unknown"
+)
+
+func GetOSType() string {
+	os := runtime.GOOS
+	switch os {
+	case "linux":
+		return OSTypeLinux
+	case "darwin":
+		return OSTypeMacOS
+	case "windows":
+		return OSTypeWindows
+	default:
+		return OSTypeUnknown
+	}
+}
+
+const (
+	TermianlTypeSt    = "st"
+	TermianlTypeKitty = "kitty"
+)
+
+func GetOSTerminal() string {
+	switch GetOSType() {
+	case OSTypeLinux:
+		return TermianlTypeSt
+	case OSTypeMacOS:
+		return TermianlTypeKitty
+	default:
+		Notify("Unsupported OS")
+		os.Exit(1)
+		return "xxx"
+	}
+}
 
 func IsDirExists(path string) (exist bool) {
 	if Exists(path) && IsDir(path) {
@@ -255,7 +295,14 @@ func Toggle(proc string) {
 }
 
 func Notify(msg ...interface{}) {
-	NewExecService().RunScriptShell(fmt.Sprintf("notify-send '%v'", msg))
+	switch GetOSType() {
+	case OSTypeLinux:
+		NewExecService().RunScriptShell(fmt.Sprintf("notify-send '%v'", msg))
+	case OSTypeMacOS:
+		NewExecService().RunScriptShell(fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
+	default:
+		return
+	}
 }
 
 func GetKeyBoardStatus(kbPath string) (brightness int64, err error) {
@@ -279,7 +326,7 @@ func GetPosition(xr float64, yr float64) (x, y int) {
 	return int(float64(width) * xr), int(float64(height) * yr)
 }
 
-func GetGeoForSt(xr float64, yr float64, w int, h int) (geo string) {
+func GetGeoForTerminal(xr float64, yr float64, w int, h int) (geo string) {
 	x, y := GetPosition(xr, yr)
 	return fmt.Sprintf("%dx%d+%d+%d", w, h, x, y)
 }
