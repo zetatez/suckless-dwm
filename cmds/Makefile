@@ -56,7 +56,7 @@ build: prepare build-shell-cmds
 	go build -o ./bins/toggle-flameshot                          ./cmds/toggle-flameshot/main.go
 	go build -o ./bins/toggle-inkscape                           ./cmds/toggle-inkscape/main.go
 	go build -o ./bins/toggle-irssi                              ./cmds/toggle-irssi/main.go
-	go build -o ./bins/toggle-joshuto                            ./cmds/toggle-joshuto/main.go
+	go build -o ./bins/toggle-yazi                               ./cmds/toggle-yazi/main.go
 	go build -o ./bins/toggle-julia                              ./cmds/toggle-julia/main.go
 	go build -o ./bins/toggle-keyboard-light                     ./cmds/toggle-keyboard-light/main.go
 	go build -o ./bins/toggle-krita                              ./cmds/toggle-krita/main.go
