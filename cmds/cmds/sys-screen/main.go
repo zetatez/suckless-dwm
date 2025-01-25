@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleScreen()
+	plugins.SysScreen()
 }

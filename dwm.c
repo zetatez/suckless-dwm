@@ -138,8 +138,6 @@ static void layout_tileleft(Monitor *m);
 static void layout_bottomstackhori(Monitor *m);
 static void layout_bottomstackvert(Monitor *m);
 static void layout_hacker(Monitor *m);
-static void layout_stairs_hori(Monitor *m);
-static void layout_stairs_vert(Monitor *m);
 static void layout_grid_gap(Monitor *m);
 // static void layout_tileright_vertical(Monitor *m);
 static void layout_overview(Monitor *m);
@@ -3031,7 +3029,8 @@ zoom(const Arg *arg)
 }
 
 void
-cyclelayout(const Arg *arg) {
+cyclelayout(const Arg *arg)
+{
   Layout *l;
   for(l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++)
     ;
@@ -3100,7 +3099,8 @@ restoresession(void)
 }
 
 void
-movestack(const Arg *arg) {
+movestack(const Arg *arg)
+{
 	Client *c = NULL, *p = NULL, *pc = NULL, *i;
 
   /* early exit if no selected client. panic if not check. fix movestack patch bug */
@@ -3165,7 +3165,8 @@ movestack(const Arg *arg) {
 }
 
 static void
-shiftview(const Arg *arg) {
+shiftview(const Arg *arg)
+{
   Arg shifted;
 
   if(arg->i > 0) {
@@ -3259,20 +3260,24 @@ layout_centerequalratio(Monitor *m)
 void
 layout_fibonacci(Monitor *m, int s)
 {
-  unsigned int i, n, nx, ny, nw, nh;
+  unsigned int i, n;
   Client *c;
+  unsigned int nx, ny, nw, nh;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
+  // initialize window positions and sizes
   nx = m->wx;
   ny = 0;
   nw = m->ww;
-  nh = m->wh - (topbar ? 1 : 0)*winpad;
+  nh = m->wh - (topbar ? 1 : 0) * winpad;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+  // main layout loop
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    // adjust width or height if necessary
     if ((i % 2 && nh / 2 > 2 * c->bw) || (!(i % 2) && nw / 2 > 2 * c->bw)) {
       if (i < n - 1) {
         if (i % 2) {
@@ -3280,6 +3285,7 @@ layout_fibonacci(Monitor *m, int s)
         } else {
           nw /= 2;
         }
+
         if ((i % 4) == 2 && !s) {
           nx += nw;
         } else if ((i % 4) == 3 && !s) {
@@ -3287,24 +3293,23 @@ layout_fibonacci(Monitor *m, int s)
         }
       }
 
-      if ((i % 4) == 0) {
-        if (s) {
-          ny += nh;
-        } else {
-          ny -= nh;
-        }
-      } else if ((i % 4) == 1) {
-        nx += nw;
-      } else if ((i % 4) == 2) {
-        ny += nh;
-      } else if ((i % 4) == 3) {
-        if (s) {
+      // adjust position based on fibonacci sequence logic
+      switch (i % 4) {
+        case 0:
+          ny = s ? ny + nh : ny - nh;
+          break;
+        case 1:
           nx += nw;
-        } else {
-          nx -= nw;
-        }
+          break;
+        case 2:
+          ny += nh;
+          break;
+        case 3:
+          nx = s ? nx + nw : nx - nw;
+          break;
       }
 
+      // update sizes for the first two clients
       if (i == 0) {
         if (n != 1) {
           nw = m->ww * m->mfact;
@@ -3313,18 +3318,10 @@ layout_fibonacci(Monitor *m, int s)
       } else if (i == 1) {
         nw = m->ww - nw;
       }
-
-      i++;
     }
 
-    resize(
-      c,
-      nx,
-      ny + (topbar ? 1 : 0)*winpad,
-      nw - 2*c->bw,
-      nh - 2*c->bw,
-      False
-    );
+    // resize the client window
+    resize(c, nx, ny + (topbar ? 1 : 0) * winpad, nw - 2 * c->bw, nh - 2 * c->bw, False);
   }
 }
 
@@ -3351,78 +3348,56 @@ layout_grid(Monitor *m)
 
   if (n == 0) { return; }
 
-  for (cols = 0; cols <= n / 2; cols++) {
-    if (cols * cols >= n) {
-      break;
-    }
+  cols = 1;
+  while (cols * cols < n) {
+    cols++;
   }
+  rows = (n + cols - 1) / cols;
 
-  rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
-  ch = (m->wh - (topbar ? 1 : 0)*winpad) / (rows ? rows : 1);
-  cw = m->ww / (cols ? cols : 1);
-  ah = rows ? (m->wh - (topbar ? 1 : 0)*winpad - rows * ch) / 2 : 0;
-  aw = cols ? (m->ww - cols * cw) / 2 : 0;
+  ch = (m->wh - (topbar ? 1 : 0) * winpad) / rows;
+  cw = m->ww / cols;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+  ah = (m->wh - rows * ch) / 2;
+  aw = (m->ww - cols * cw) / 2;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     cx = m->wx + aw + (i % cols) * cw;
     cy = m->wy + ah + (i / cols) * ch;
-    if (i > cols * (rows - 1) - 1 && n != cols * rows) {
-      cx = m->wx + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
-      cy = m->wy + ah + (i / cols) * ch;
+
+    if (i >= cols * (rows - 1) && n != cols * rows) {
+      cx += ((cw + aw) * (cols - n % cols)) / 2;
     }
-    resize(
-      c,
-      cx,
-      cy + (topbar ? 1 : 0)*winpad,
-      cw - 2*c->bw,
-      ch - 2*c->bw,
-      False
-    );
-    i++;
+
+    resize(c, cx, cy + (topbar ? 1 : 0) * winpad, cw - 2 * c->bw, ch - 2 * c->bw, False);
   }
 }
 
 void
 layout_tileright(Monitor *m)
 {
-  unsigned int i, n, h, mw, my, ty;
+  unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww * m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
+  mw = (n > m->nmaster) ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
-  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
-      h = (m->wh - my - (topbar ? 1 : 0)*winpad) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx,
-        m->wy + my + (topbar ? 1 : 0)*winpad,
-        mw - (2*c->bw),
-        h - (2*c->bw),
-        0
-      );
+      h = (m->wh - my - winpad_offset) / (MIN(n, m->nmaster) - i);
+      resize(c, m->wx, m->wy + my + winpad_offset, mw - 2 * c->bw, h - 2 * c->bw, False);
       if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
       }
     } else {
-      h = (m->wh - ty - (topbar ? 1 : 0)*winpad) / (n - i);
-      resize(
-        c,
-        m->wx + mw,
-        m->wy + ty + (topbar ? 1 : 0)*winpad,
-        m->ww - mw - (2*c->bw),
-        h - (2*c->bw),
-        0
-      );
+      h = (m->wh - ty - winpad_offset) / (n - i);
+      resize(c, m->wx + mw, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
@@ -3431,45 +3406,31 @@ layout_tileright(Monitor *m)
 }
 
 void
-layout_tileleft(Monitor *m) {
-  unsigned int i, n, h, mw, my, ty;
+layout_tileleft(Monitor *m)
+{
+  unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww*(1-m->mfact) : 0;
-  } else {
-    mw = m->ww;
-  }
+  mw = (n > m->nmaster) ? (m->nmaster ? m->ww * (1 - m->mfact) : 0) : m->ww;
 
-  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
-      h = (m->wh - my - (topbar ? 1 : 0)*winpad) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx + m->ww - mw,
-        m->wy + my + (topbar ? 1 : 0)*winpad,
-        mw - (2 * c->bw),
-        h - (2 * c->bw),
-        0
-      );
+      h = (m->wh - my - winpad_offset) / (MIN(n, m->nmaster) - i);
+      resize(c, m->wx + m->ww - mw, m->wy + my + winpad_offset, mw - 2 * c->bw, h - 2 * c->bw, False);
       if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
       }
     } else {
-      h = (m->wh - ty - (topbar ? 1 : 0) * winpad) / (n - i);
-      resize(
-        c,
-        m->wx,
-        m->wy + ty + (topbar ? 1 : 0)*winpad,
-        m->ww - mw - 2*c->bw,
-        h - 2*c->bw,
-        0
-      );
+      h = (m->wh - ty - winpad_offset) / (n - i);
+      resize(c, m->wx, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
@@ -3478,47 +3439,37 @@ layout_tileleft(Monitor *m) {
 }
 
 void
-layout_bottomstackhori(Monitor *m) {
-  int w, mh, mx, tx, ty, th;
+layout_bottomstackhori(Monitor *m)
+{
+  int w, mh, mx = 0, tx, ty, th;
   unsigned int i, n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
+
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
 
   if (n > m->nmaster) {
     mh = m->nmaster ? (1 - m->hfact) * m->wh : 0;
-    th = (m->wh - mh - (topbar ? 1 : 0)*winpad) / (n - m->nmaster);
+    th = (m->wh - mh - winpad_offset) / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
-    th = mh = m->wh - (topbar ? 1 : 0)*winpad;
+    th = mh = m->wh - winpad_offset;
     ty = m->wy;
   }
 
-  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  for (i = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx + mx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        w - 2*c->bw,
-        mh - 2*c->bw,
-        0
-      );
+      resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
-      resize(
-        c,
-        tx,
-        ty + (topbar ? 1 : 0)*winpad,
-        m->ww - 2*c->bw,
-        th - 2*c->bw,
-        0
-      );
-      if (th != m->wh - (topbar ? 1 : 0)*winpad) {
+      resize(c, tx, ty + winpad_offset, m->ww - 2 * c->bw, th - 2 * c->bw, False);
+      if (th != m->wh - winpad_offset) {
         ty += HEIGHT(c);
       }
     }
@@ -3528,47 +3479,36 @@ layout_bottomstackhori(Monitor *m) {
 void
 layout_bottomstackvert(Monitor *m)
 {
-  int w, h, mh, mx, tx, ty, tw;
+  int w, h, mh, mx = 0, tx, ty, tw;
   unsigned int i, n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
+
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->hfact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
+    mh = m->nmaster ? (1 - m->hfact) * (m->wh - winpad_offset) : 0;
     tw = m->ww / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
-    mh = m->wh - (topbar ? 1 : 0)*winpad;
+    mh = m->wh - winpad_offset;
     tw = m->ww;
     ty = m->wy;
   }
 
-  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  for (i = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx + mx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        w - 2*c->bw,
-        mh - 2*c->bw,
-        0
-      );
+      resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
-      h = m->wh - (topbar ? 1 : 0)*winpad - mh;
-      resize(
-        c,
-        tx,
-        ty + (topbar ? 1 : 0)*winpad,
-        tw - 2*c->bw,
-        h - 2*c->bw,
-        0
-      );
+      h = m->wh - winpad_offset - mh;
+      resize(c, tx, ty + winpad_offset, tw - 2 * c->bw, h - 2 * c->bw, False);
       if (tw != m->ww) {
         tx += WIDTH(c);
       }
@@ -3579,128 +3519,39 @@ layout_bottomstackvert(Monitor *m)
 void
 layout_hacker(Monitor *m)
 {
-  unsigned int i, n, cx, cy, cw, ch;
+  unsigned int i, n;
+  int cx, cy, cw, ch;
+  int offset_x, offset_y, initial_offset_x, initial_offset_y;
+  int center_x, center_y;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
-  cw = m->ww*3/5;
-  ch = m->wh*3/5;
+  cw = m->ww * 3 / 5;
+  ch = m->wh * 3 / 5;
+
+  center_x = m->wx + (m->ww - cw) / 2;
+  center_y = m->wy + (m->wh - ch) / 2;
+
+  initial_offset_x = m->wx + m->ww * 0.01;
+  initial_offset_y = m->wy + m->wh * 0.01;
+
+  offset_x = m->ww / 32;
+  offset_y = m->wh / 32;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    cx = m->ww*0.01 + m->wx + (n-i-1)*(m->ww/32);
-    cy = m->wh*0.01 + m->wy + (n-i-1)*(m->wh/32);
-    if (cy + ch - 2*c->bw > m->wh) {
-      cx = m->ww/2 - cw/2;
-      cy = m->wh/2 - ch/2;
+    cx = initial_offset_x + (n - i - 1) * offset_x;
+    cy = initial_offset_y + (n - i - 1) * offset_y;
+
+    if (cy + ch > m->wh) {
+      cx = center_x;
+      cy = center_y;
     }
-    resize(
-      c,
-      cx,
-      cy,
-      cw - 2*c->bw,
-      ch - 2*c->bw,
-      False
-    );
-  }
-}
 
-void
-layout_stairs_hori(Monitor *m)
-{
-  unsigned int stairpx   = 48;    /* depth of the stairs layout */
-  int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
-  int stairsamesize      = 0;     /* 1 means shrink all the staired windows to the same size */
-
-  unsigned int i, n, h, mw, my;
-  unsigned int ox, oy, ow, oh; /* stair offset values */
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww * m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
-
-  for (i = my = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-      resize(c, m->wx, m->wy + my, mw - (2 * c->bw), h - (2 * c->bw), 0);
-      if (my + HEIGHT(c) < m->wh) {
-        my += HEIGHT(c);
-      }
-    } else {
-      oy = i - m->nmaster;
-      ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
-      ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
-      oh = stairsamesize ? ow : i - m->nmaster;
-      resize(
-        c,
-        m->wx + mw + (ox * stairpx) % (m->ww - mw),
-        m->wy + (oy * stairpx) % m->wh,
-        m->ww - mw - (2 * c->bw) - (ow * stairpx) % (m->ww - mw),
-        m->wh - (2 * c->bw) - (oh * stairpx) % m->wh,
-        0
-      );
-    }
-  }
-}
-
-void
-layout_stairs_vert(Monitor *m)
-{
-  unsigned int stairpx   = 48;    /* depth of the stairs layout */
-  int stairdirection     = 1;     /* 0: left-aligned, 1: right-aligned */
-  int stairsamesize      = 0;     /* 1 means shrink all the staired windows to the same size */
-
-  unsigned int i, n, w, mw, mx;
-  unsigned int ox, oy, ow, oh; /* stair offset values */
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww * m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
-
-  for (i = mx = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      if (n <= m->nmaster) {
-        w = m->ww / MIN(n, (m->nmaster ? m->nmaster : 1));
-      } else {
-        w = mw / MIN(n, (m->nmaster ? m->nmaster : 1));
-      }
-      resize(c, m->wx + mx, m->wy, w - (2 * c->bw), m->wh - (2 * c->bw), 0);
-      if (mx + WIDTH(c) < m->ww) {
-        mx += WIDTH(c);
-      }
-    } else {
-      oy = i - m->nmaster;
-      ox = stairdirection ? n - i - 1 : (stairsamesize ? i - m->nmaster : 0);
-      ow = stairsamesize ? n - m->nmaster - 1 : n - i - 1;
-      oh = stairsamesize ? ow : i - m->nmaster;
-      resize(
-        c,
-        m->wx + mw + (ox * stairpx) % (m->ww - mw),
-        m->wy + (oy * stairpx) % m->wh,
-        m->ww - mw - (2 * c->bw) - (ow * stairpx) % (m->ww - mw),
-        m->wh - (2 * c->bw) - (oh * stairpx) % m->wh,
-        0
-      );
-    }
+    resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
   }
 }
 
@@ -3750,60 +3601,9 @@ layout_grid_gap(Monitor *m)
   }
 }
 
-/*
-void
-layout_tileright_vertical(Monitor *m)
-{
-  unsigned int i, n, h, mw, mx, ty;
-  Client *c;
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
-
-  if (n == 0) { return; }
-
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww * m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
-
-  for (i = ty = mx = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      h = m->wh - 2*c->bw - (topbar ? 1 : 0)*winpad;
-      resize(
-        c,
-        mx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        (mw - MIN(m->nmaster, n) * 2*c->bw) / MIN(m->nmaster, n),
-        h,
-        0
-      );
-      if (mx + WIDTH(c) < mw) {
-        mx += WIDTH(c);
-      }
-    } else {
-      h = (m->wh - ty - (topbar ? 1 : 0)*winpad) / (n - i);
-      resize(
-        c,
-        m->wx + mw,
-        m->wy + ty + (topbar ? 1 : 0)*winpad,
-        m->ww - mw - 2*c->bw,
-        h - 2*c->bw,
-        0
-      );
-      if (ty + HEIGHT(c) < m->wh) {
-        ty += HEIGHT(c);
-      }
-    }
-  }
-}
-*/
-
 void
 layout_overview(Monitor *m)
 {
-
   unsigned int gapoh     = 24;
   unsigned int gapow     = 32;
   unsigned int gapih     = 12;
@@ -3817,160 +3617,163 @@ layout_overview(Monitor *m)
 
   if (n == 0) { return; }
 
-  if (n == 1) {
-    for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-      switch (i) {
-        case 0:
-          cw = m->ww * 13/20;
-          ch = m->wh * 99/100;
-          cx = m->wx + (m->ww - cw) / 2;
-          cy = m->wy + (m->wh - ch) / 2;
-          break;
-      };
-      resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
-    }
-    return;
-  } else if (n == 2) {
-    for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-      switch (i) {
-        case 0:
-          cw = m->ww * 6/10 - gapow - gapih;
-          ch = m->wh * 93/100;
-          cx = m->wx + m->ww * 1/60 + gapow;
-          cy = m->wy + (m->wh - ch) / 2;
-          break;
-        default:
-          cw = m->ww * 3/10 - gapow;
-          ch = m->wh * 6/20 - gapoh;
-          cx = m->wx + m->ww - gapow - cw - m->ww * 1/60;
-          cy = m->wy + gapoh + m->wh * 2/20;
-          break;
-      };
-      resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
-    }
-    return;
-  } else if (n == 3) {
-    for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-      switch (i) {
-        case 2: // left
-          cw = m->ww * 16/100 - gapow - gapiw;
-          ch = m->wh * 3/10;
-          cx = m->wx + gapow + m->ww * 1/200;
-          cy = m->wy + (m->wh - ch) / 2;
-          break;
-        case 0: // center -- master
-          cw = m->ww * 60/100;
-          ch = m->wh * 70/100;
-          cx = m->wx + m->ww * 18/100;
-          cy = m->wy + m->wh * 15/100;
-          break;
-        default: // right
-          cw = m->ww * 18/100 - gapow - gapiw;
-          ch = m->wh * 16/100;
-          cx = m->wx + m->ww - cw - gapow - m->ww * 3/100;
-          cy = m->wy + m->wh - ch - m->wh * 3/100;
-          break;
-      };
-      resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
-    }
-    return;
-  } else if (n == 4) {
-    for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-      switch (i) {
-        case 3: // left
-          cw = m->ww / 8 - gapow - gapiw;
-          ch = m->wh / 5;
-          cx = m->wx + gapow;
-          cy = m->wy + (m->wh - ch) / 2;
-          break;
-        case 0: // center-1 -- master
-          cw = m->ww * 4/8 - 2*gapiw;
-          ch = m->wh * 4/5;
-          cx = m->wx + gapow + (m->ww / 8 - gapow - gapiw) + gapiw + gapiw;
-          cy = m->wy + (m->wh - ch) / 2;
-          break;
-        case 1: // center-2
-          cw = m->ww * 7/20 - 2*gapiw;
-          ch = m->wh * 2/5;
-          cx = m->wx + gapow + (m->ww / 8 - gapow - gapiw) + gapiw + gapiw + (m->ww * 4/8 - 2*gapiw) + gapiw + gapiw;
-          cy = m->wy + m->wh * 4/100;
-          break;
-        default: // right
-          cw = m->ww / 8 - gapow - gapiw;
-          ch = m->wh / 5;
-          cx = m->wx + m->ww - gapow - cw - m->ww / 8;
-          cy = m->wy + m->wh - gapoh - ch - m->wh * 4/100;
-          break;
-      };
-      resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
-    }
-    return;
-  } else if (n == 5) {
-    for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-      switch (i) {
-        case 4:
-          cw = m->ww * 2/20 - gapow - gapiw;
-          ch = m->wh * 2/20;
-          cx = m->wx + gapow;
-          cy = m->wy + (m->wh - ch) / 2 + m->wh / 4;
-          break;
-        case 0: // center master
-          cw = m->ww * 8/20;
-          ch = m->wh * 14/20;
-          cx = m->wx + gapow + (m->ww * 2/20 - gapow - gapiw) + gapiw + gapiw;
-          cy = m->wy + (m->wh - ch) / 2;
-          break;
-        case 1: // top
-          cw = m->ww * 4/20;
-          ch = m->wh * 4/20;
-          cx = m->wx + gapow + (m->ww * 2/20 - gapow - gapiw) + gapiw + gapiw + (m->ww * 8/20) + gapiw + gapiw;
-          cy = m->wy + m->wh * 1/20;
-          break;
-        case 2: // buttom
-          cw = m->ww * 6/20;
-          ch = m->wh * 6/20 - gapoh - gapih;
-          cx = m->wx + gapow + (m->ww * 2/20 - gapow - gapiw) + gapiw + gapiw + (m->ww * 8/20) + gapiw + gapiw + (m->ww * 1/20) + gapiw + gapiw;
-          cy = m->wy + m->wh - m->wh * 1/20 - ch;
-          break;
-        default: // right
-          cw = m->ww * 2/20 - gapow - gapiw;
-          ch = m->wh * 2/20 - gapoh - gapih;
-          cx = m->wx + m->ww - gapow - cw - gapiw;
-          cy = m->wy + m->wh - gapoh - ch - gapih;
-          break;
-      };
-      resize(c, cx, cy, cw - 2*c->bw, ch - 2*c->bw, False);
-    }
-    return;
-  } else { // grid
-    gapow = m->ww * 4/100;
-    gapoh = m->wh * 16/100;
-
-    for (rows = 0, cols = 0; rows * cols <= n; rows++) {
-      cols = 4*rows;
-    }
-
-    // rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
-    ch = (m->wh - 2 * gapoh) / (rows ? rows : 1);
-    cw = (m->ww - 2 * gapow) / (cols ? cols : 1);
-    ah = rows ? (m->wh - 2 * gapoh - rows * ch) / 2 : 0;
-    aw = cols ? (m->ww - 2 * gapow - cols * cw) / 2 : 0;
-
-    for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-      cx = m->wx + gapow + aw + (i % cols) * cw;
-      cy = m->wy + gapoh + ah + (i / cols) * ch;
-      if (i > cols * (rows - 1) - 1 && n != cols * rows) {
-        cx = m->wx + gapow + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
-        cy = m->wy + gapoh + ah + (i / cols) * ch;
+  switch (n) {
+    case 1: {
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        cw = m->ww * 13 / 20;
+        ch = m->wh * 99 / 100;
+        cx = m->wx + (m->ww - cw) / 2;
+        cy = m->wy + (m->wh - ch) / 2;
+        resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
       }
-      resize(
-        c,
-        cx,
-        cy,
-        cw - gapiw / 2 - 2 * c->bw,
-        ch - gapih / 2 - 2 * c->bw,
-        False
-      );
+      break;
+    }
+    case 2: {
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        switch (i) {
+          case 0:
+            cw = m->ww * 6 / 10 - gapow - gapih;
+            ch = m->wh * 93 / 100;
+            cx = m->wx + m->ww * 1 / 60 + gapow;
+            cy = m->wy + (m->wh - ch) / 2;
+            break;
+          default:
+            cw = m->ww * 3 / 10 - gapow;
+            ch = m->wh * 6 / 20 - gapoh;
+            cx = m->wx + m->ww - gapow - cw - m->ww * 1 / 60;
+            cy = m->wy + gapoh + m->wh * 2 / 20;
+            break;
+        };
+        resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
+      }
+      break;
+    }
+    case 3: {
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        switch (i) {
+          case 2: // left
+            cw = m->ww * 16 / 100 - gapow - gapiw;
+            ch = m->wh * 3 / 10;
+            cx = m->wx + gapow + m->ww * 1 / 200;
+            cy = m->wy + (m->wh - ch) / 2;
+            break;
+          case 0: // center -- master
+            cw = m->ww * 60 / 100;
+            ch = m->wh * 70 / 100;
+            cx = m->wx + m->ww * 18 / 100;
+            cy = m->wy + m->wh * 15 / 100;
+            break;
+          default: // right
+            cw = m->ww * 18 / 100 - gapow - gapiw;
+            ch = m->wh * 16 / 100;
+            cx = m->wx + m->ww - cw - gapow - m->ww * 3 / 100;
+            cy = m->wy + m->wh - ch - m->wh * 3 / 100;
+            break;
+        };
+        resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
+      }
+      break;
+    }
+    case 4: {
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        switch (i) {
+          case 3: // left
+            cw = m->ww / 8 - gapow - gapiw;
+            ch = m->wh / 5;
+            cx = m->wx + gapow;
+            cy = m->wy + (m->wh - ch) / 2;
+            break;
+          case 0: // center-1 -- master
+            cw = m->ww * 4 / 8 - 2 * gapiw;
+            ch = m->wh * 4 / 5;
+            cx = m->wx + gapow + (m->ww / 8 - gapow - gapiw) + gapiw + gapiw;
+            cy = m->wy + (m->wh - ch) / 2;
+            break;
+          case 1: // center-2
+            cw = m->ww * 7 / 20 - 2 * gapiw;
+            ch = m->wh * 2 / 5;
+            cx = m->wx + gapow + (m->ww / 8 - gapow - gapiw) + gapiw + gapiw + (m->ww * 4 / 8 - 2 * gapiw) + gapiw + gapiw;
+            cy = m->wy + m->wh * 4 / 100;
+            break;
+          default: // right
+            cw = m->ww / 8 - gapow - gapiw;
+            ch = m->wh / 5;
+            cx = m->wx + m->ww - gapow - cw - m->ww / 8;
+            cy = m->wy + m->wh - gapoh - ch - m->wh * 4 / 100;
+            break;
+        };
+        resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
+      }
+      break;
+    }
+    case 5: {
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        switch (i) {
+          case 4:
+            cw = m->ww * 2 / 20 - gapow - gapiw;
+            ch = m->wh * 2 / 20;
+            cx = m->wx + gapow;
+            cy = m->wy + (m->wh - ch) / 2 + m->wh / 4;
+            break;
+          case 0: // center master
+            cw = m->ww * 8 / 20;
+            ch = m->wh * 14 / 20;
+            cx = m->wx + gapow + (m->ww * 2 / 20 - gapow - gapiw) + gapiw + gapiw;
+            cy = m->wy + (m->wh - ch) / 2;
+            break;
+          case 1: // top
+            cw = m->ww * 4 / 20;
+            ch = m->wh * 4 / 20;
+            cx = m->wx + gapow + (m->ww * 2 / 20 - gapow - gapiw) + gapiw + gapiw + (m->ww * 8 / 20) + gapiw + gapiw;
+            cy = m->wy + m->wh * 1 / 20;
+            break;
+          case 2: // bottom
+            cw = m->ww * 6 / 20;
+            ch = m->wh * 6 / 20 - gapoh - gapih;
+            cx = m->wx + gapow + (m->ww * 2 / 20 - gapow - gapiw) + gapiw + gapiw + (m->ww * 8 / 20) + gapiw + gapiw + (m->ww * 1 / 20) + gapiw + gapiw;
+            cy = m->wy + m->wh - m->wh * 1 / 20 - ch;
+            break;
+          default: // right
+            cw = m->ww * 2 / 20 - gapow - gapiw;
+            ch = m->wh * 2 / 20 - gapoh - gapih;
+            cx = m->wx + m->ww - gapow - cw - gapiw;
+            cy = m->wy + m->wh - gapoh - ch - gapih;
+            break;
+        };
+        resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
+      }
+      break;
+    }
+    default: { // grid layout
+      gapow = m->ww * 4 / 100;
+      gapoh = m->wh * 16 / 100;
+
+      for (rows = 0, cols = 0; rows * cols <= n; rows++) {
+        cols = 4 * rows;
+      }
+
+      ch = (m->wh - 2 * gapoh) / (rows ? rows : 1);
+      cw = (m->ww - 2 * gapow) / (cols ? cols : 1);
+      ah = rows ? (m->wh - 2 * gapoh - rows * ch) / 2 : 0;
+      aw = cols ? (m->ww - 2 * gapow - cols * cw) / 2 : 0;
+
+      for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+        cx = m->wx + gapow + aw + (i % cols) * cw;
+        cy = m->wy + gapoh + ah + (i / cols) * ch;
+        if (i > cols * (rows - 1) - 1 && n != cols * rows) {
+          cx = m->wx + gapow + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols)) / 2;
+          cy = m->wy + gapoh + ah + (i / cols) * ch;
+        }
+        resize(
+          c,
+          cx,
+          cy,
+          cw - gapiw / 2 - 2 * c->bw,
+          ch - gapih / 2 - 2 * c->bw,
+          False
+        );
+      }
+      break;
     }
   }
 }

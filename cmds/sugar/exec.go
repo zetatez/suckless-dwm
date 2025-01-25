@@ -2,6 +2,7 @@ package sugar
 
 import (
 	"bytes"
+	"fmt"
 	"os/exec"
 )
 
@@ -11,60 +12,28 @@ func NewExecService() *ExecService {
 	return &ExecService{}
 }
 
-func (s *ExecService) RunScriptShell(script string) (
-	stdout string,
-	stderr string,
-	err error,
-) {
-	return s.run(
-		exec.Command(
-			"/bin/bash",
-			"-c",
-			script,
-		),
-	)
+func (s *ExecService) RunScript(lang, script string) (stdout, stderr string, err error) {
+	var cmd *exec.Cmd
+
+	switch lang {
+	case "bash":
+		cmd = exec.Command("/bin/bash", "-c", script)
+	case "python":
+		cmd = exec.Command("python3", "-c", script)
+	case "lua":
+		cmd = exec.Command("lua", "-e", script)
+	default:
+		err = fmt.Errorf("unsupported language: %s", lang)
+		return "", "", err
+	}
+
+	return s.run(cmd)
 }
 
-func (s *ExecService) RunScriptPython(script string) (
-	stdout string,
-	stderr string,
-	err error,
-) {
-	return s.run(
-		exec.Command(
-			"python3",
-			"-c",
-			script,
-		),
-	)
-}
-
-func (s *ExecService) RunScriptLua(script string) (
-	stdout string,
-	stderr string,
-	err error,
-) {
-	return s.run(
-		exec.Command(
-			"lua",
-			"-e",
-			script,
-		),
-	)
-}
-
-func (s *ExecService) run(cmd *exec.Cmd) (
-	stdout string,
-	stderr string,
-	err error,
-) {
+func (s *ExecService) run(cmd *exec.Cmd) (stdout, stderr string, err error) {
 	var stdoutbyte, stderrbyte bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &stdoutbyte, &stderrbyte
 	err = cmd.Run()
-	if err != nil {
-		stdout, stderr = stdoutbyte.String(), stderrbyte.String()
-		return stdout, stderr, err
-	}
 	stdout, stderr = stdoutbyte.String(), stderrbyte.String()
-	return stdout, stderr, nil
+	return stdout, stderr, err
 }

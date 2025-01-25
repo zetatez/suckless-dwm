@@ -181,7 +181,7 @@ func Choose(prompt string, list []string) (item string, err error) {
 		strings.Join(list, "\n"),
 		prompt,
 	)
-	stdout, _, err := NewExecService().RunScriptShell(script)
+	stdout, _, err := NewExecService().RunScript("bash", script)
 	if err != nil {
 		return "", err
 	}
@@ -195,7 +195,7 @@ func GetInput(prompt string) (input string, err error) {
 		"rofi -show -dmenu < /dev/null -p '%s'",
 		prompt,
 	)
-	stdout, _, err := NewExecService().RunScriptShell(script)
+	stdout, _, err := NewExecService().RunScript("bash", script)
 	if err != nil {
 		return "", err
 	}
@@ -206,7 +206,7 @@ func GetInput(prompt string) (input string, err error) {
 func Lazy(option string, filepath string) {
 	switch option {
 	case "view", "open", "exec", "copy", "rename", "delete":
-		NewExecService().RunScriptShell(
+		NewExecService().RunScript("bash",
 			fmt.Sprintf("st -e lazy -o %s -f %s &", option, filepath),
 		)
 	default:
@@ -290,16 +290,16 @@ func Toggle(proc string) {
 	if IsRunning(proc) {
 		Kill(proc)
 	} else {
-		NewExecService().RunScriptShell(proc)
+		NewExecService().RunScript("bash", proc)
 	}
 }
 
 func Notify(msg ...interface{}) {
 	switch GetOSType() {
 	case OSTypeLinux:
-		NewExecService().RunScriptShell(fmt.Sprintf("notify-send '%v'", msg))
+		NewExecService().RunScript("bash", fmt.Sprintf("notify-send '%v'", msg))
 	case OSTypeMacOS:
-		NewExecService().RunScriptShell(fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
+		NewExecService().RunScript("bash", fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
 	default:
 		return
 	}
@@ -384,7 +384,7 @@ func SSH(host string, port int, user string, password string) (err error) {
 			host,
 		),
 	)
-	_, _, err = NewExecService().RunScriptShell(cmd)
+	_, _, err = NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		return err
 	}

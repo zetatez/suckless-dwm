@@ -24,7 +24,7 @@ func GetHostName() {
 		return
 	}
 	cmd := "hostname"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -72,7 +72,6 @@ func GetIPAddress() {
 			sugar.Notify("previous clipboard expired")
 		}
 	}
-	return
 }
 
 func GetCurrentDatetime() {
@@ -142,31 +141,31 @@ func TransformUnixSec2DateTime() {
 
 func LazyOpenSearchFile() {
 	cmd := `st -e lazy-open-search-file`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchBook() {
 	cmd := `st -e lazy-open-search-book`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchWiki() {
 	cmd := `st -e lazy-open-search-wiki`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchMedia() {
 	cmd := `st -e lazy-open-search-media`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchFileContent() {
 	cmd := `st -e lazy-open-search-file-content`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func SearchFromWeb(content string) {
-	sugar.NewExecService().RunScriptShell(
+	sugar.NewExecService().RunScript("bash",
 		fmt.Sprintf(
 			// "chrome --proxy-server=%s https://www.google.com/search?q='%s'",
 			"qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
@@ -192,7 +191,7 @@ func SearchBooksOnline() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			sugar.NewExecService().RunScriptShell(
+			sugar.NewExecService().RunScript("bash",
 				fmt.Sprintf(
 					// "chrome --proxy-server=%s %s",
 					"qutebrowser --set content.proxy %s %s",
@@ -220,7 +219,7 @@ func SearchVideosOnline() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			sugar.NewExecService().RunScriptShell(
+			sugar.NewExecService().RunScript("bash",
 				fmt.Sprintf(
 					// "chrome --proxy-server=%s %s",
 					"qutebrowser --set content.proxy %s %s",
@@ -235,7 +234,7 @@ func SearchVideosOnline() {
 
 func NoteDiary() {
 	dateStr := time.Now().Format(time.DateOnly)
-	fileDir := path.Join(os.Getenv("HOME"), "github", "obsidian", "diary")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "diary")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -259,7 +258,7 @@ func NoteTimeline() {
 	t := time.Now()
 	dateStr := t.Format(time.DateOnly)
 	datetimeStr := t.Format(time.DateTime)
-	fileDir := path.Join(os.Getenv("HOME"), "github", "obsidian", "timeline")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "timeline")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -290,11 +289,8 @@ func NoteTimeline() {
 
 func NoteFlashCard() {
 	t := time.Now()
-	fileDir := path.Join(os.Getenv("HOME"), "github", "obsidian", "flash-card")
-	filePath := path.Join(
-		fileDir,
-		t.Format("2006-01-02.15.04.05.000000000")+".md",
-	)
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "flash-card")
+	filePath := path.Join(fileDir, t.Format("2006-01-02.15.04.05.000000000")+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
 			sugar.Notify(err)
@@ -310,7 +306,7 @@ func NoteFlashCard() {
 		fmt.Fprintf(f, "### %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	_, _, err := sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -e nvim +$ '%s'", filePath))
+	_, _, err := sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -e nvim +$ '%s'", filePath))
 	if err != nil {
 		sugar.Notify(err)
 	}
@@ -336,39 +332,6 @@ func HandleCopied() {
 	}
 }
 
-func WifiConnect() {
-	cmd := "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
-	if err != nil {
-		sugar.Notify(err)
-		return
-	}
-	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to wifi'", stdout)
-	stdout, _, err = sugar.NewExecService().RunScriptShell(cmd)
-	if err != nil {
-		sugar.Notify(err)
-		return
-	}
-	essid := strings.TrimSpace(stdout)
-	if essid == "" {
-		return
-	}
-	cmd = "dmenu < /dev/null -p 'password'"
-	stdout, _, err = sugar.NewExecService().RunScriptShell(cmd)
-	if err != nil {
-		sugar.Notify(err)
-		return
-	}
-	password := strings.TrimSpace(stdout)
-	cmd = fmt.Sprintf("nmcli device wifi connect %s password %s", essid, password)
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
-	if err != nil {
-		sugar.Notify(err)
-		return
-	}
-	sugar.Notify("wifi connect success")
-}
-
 func JumpToCodeFromLog() {
 	err := clipboard.Init()
 	if err != nil {
@@ -391,7 +354,7 @@ func JumpToCodeFromLog() {
 		row,
 		filepath,
 	)
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return

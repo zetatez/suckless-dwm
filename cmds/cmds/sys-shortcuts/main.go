@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleDarkTable()
+	plugins.SysShortcuts()
 }

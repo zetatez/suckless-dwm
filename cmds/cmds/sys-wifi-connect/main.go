@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleSysShortcuts()
+	plugins.SysWifiConnect()
 }

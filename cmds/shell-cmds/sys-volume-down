@@ -1,0 +1,5 @@
+#!/bin/bash
+
+amixer set Speaker unmute
+amixer set Speaker 98
+amixer set Master 5%-
