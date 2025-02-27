@@ -24,7 +24,7 @@ func GetHostName() {
 		return
 	}
 	cmd := "hostname"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -142,31 +142,31 @@ func TransformUnixSec2DateTime() {
 
 func LazyOpenSearchFile() {
 	cmd := `st -e lazy-open-search-file`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchBook() {
 	cmd := `st -e lazy-open-search-book`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchWiki() {
 	cmd := `st -e lazy-open-search-wiki`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchMedia() {
 	cmd := `st -e lazy-open-search-media`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func LazyOpenSearchFileContent() {
 	cmd := `st -e lazy-open-search-file-content`
-	sugar.NewExecService().RunScriptShell(cmd)
+	sugar.NewExecService().RunScript("bash", cmd)
 }
 
 func SearchFromWeb(content string) {
-	sugar.NewExecService().RunScriptShell(
+	sugar.NewExecService().RunScript("bash",
 		fmt.Sprintf(
 			// "chrome --proxy-server=%s https://www.google.com/search?q='%s'",
 			"qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
@@ -192,7 +192,7 @@ func SearchBooksOnline() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			sugar.NewExecService().RunScriptShell(
+			sugar.NewExecService().RunScript("bash",
 				fmt.Sprintf(
 					// "chrome --proxy-server=%s %s",
 					"qutebrowser --set content.proxy %s %s",
@@ -220,7 +220,7 @@ func SearchVideosOnline() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			sugar.NewExecService().RunScriptShell(
+			sugar.NewExecService().RunScript("bash",
 				fmt.Sprintf(
 					// "chrome --proxy-server=%s %s",
 					"qutebrowser --set content.proxy %s %s",
@@ -310,7 +310,7 @@ func NoteFlashCard() {
 		fmt.Fprintf(f, "### %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	_, _, err := sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -e nvim +$ '%s'", filePath))
+	_, _, err := sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -e nvim +$ '%s'", filePath))
 	if err != nil {
 		sugar.Notify(err)
 	}
@@ -338,13 +338,13 @@ func HandleCopied() {
 
 func WifiConnect() {
 	cmd := "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
 	}
 	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to wifi'", stdout)
-	stdout, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -354,14 +354,14 @@ func WifiConnect() {
 		return
 	}
 	cmd = "dmenu < /dev/null -p 'password'"
-	stdout, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
 	}
 	password := strings.TrimSpace(stdout)
 	cmd = fmt.Sprintf("nmcli device wifi connect %s password %s", essid, password)
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -391,7 +391,7 @@ func JumpToCodeFromLog() {
 		row,
 		filepath,
 	)
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return

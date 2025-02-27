@@ -46,7 +46,7 @@ import sqlparse
 print(sqlparse.format("""%s""", reindent=True, indent=2, keyword_case='lower'))
 `
 	cmd = fmt.Sprintf(cmd, string(text))
-	stdout, _, err := sugar.NewExecService().RunScriptPython(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("python", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return

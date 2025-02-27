@@ -17,7 +17,7 @@ func ToggleAddressbook() {
 
 func ToggleBlueTooth() {
 	cmd := "bluetoothctl devices"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -28,7 +28,7 @@ func ToggleBlueTooth() {
 		return
 	}
 	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to'", stdout)
-	stdout, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -39,7 +39,7 @@ func ToggleBlueTooth() {
 	}
 	deviceid := slice[1]
 	cmd = fmt.Sprintf("bluetoothctl connect %s", deviceid)
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -121,7 +121,7 @@ func ToggleKeyboardLight() {
 		brightness = 1
 	}
 	cmd := fmt.Sprintf("sudo sh -c 'echo %d > %s'", brightness, kbPath)
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -202,7 +202,7 @@ func ToggleScreen() {
 	primaryMonitor := "eDP-1"
 	secondMonitor := "eDP-1"
 	cmd := "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -227,7 +227,7 @@ func ToggleScreen() {
 		"roate left right-of":  fmt.Sprintf("xrandr --output %s --auto --rotate left --right-of %s --auto", secondMonitor, primaryMonitor),
 		"roate right right-of": fmt.Sprintf("xrandr --output %s --auto --rotate right --right-of %s --auto", secondMonitor, primaryMonitor),
 	}
-	_, _, err = sugar.NewExecService().RunScriptShell(cmds["default"])
+	_, _, err = sugar.NewExecService().RunScript("bash", cmds["default"])
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -246,14 +246,14 @@ func ToggleScreen() {
 		sugar.Notify("wrong choice")
 		return
 	}
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
 	}
 	time.Sleep(10 * time.Millisecond)
 	cmd = fmt.Sprintf("feh --bg-fill %s", path.Join(os.Getenv("HOME"), WallPaperPath, DefaultWallpaper))
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -290,7 +290,7 @@ func ToggleSysShortcuts() {
 	}
 	cmd, ok := SysShortCuts[content]
 	if ok {
-		sugar.NewExecService().RunScriptShell(cmd)
+		sugar.NewExecService().RunScript("bash", cmd)
 	}
 }
 
@@ -314,7 +314,7 @@ func TogglePassmenu() {
 
 func ToggleRedShift() {
 	cmd := "systemctl --user status redshift.service"
-	stdout, _, err := sugar.NewExecService().RunScriptShell(cmd)
+	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -325,7 +325,7 @@ func ToggleRedShift() {
 	default:
 		cmd = "systemctl --user start redshift.service"
 	}
-	_, _, err = sugar.NewExecService().RunScriptShell(cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
 		return
@@ -347,9 +347,9 @@ func ToggleRecAudio() {
 	default:
 		switch sugar.GetOSType() {
 		case sugar.OSTypeLinux:
-			sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -t %s -c %s -e %s", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))))))
+			sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -t %s -c %s -e %s", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))))))
 		case sugar.OSTypeMacOS:
-			sugar.NewExecService().RunScriptShell(fmt.Sprintf("kitty -t %s -e %s", WinNameScratchPad, fmt.Sprintf("ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))))))
+			sugar.NewExecService().RunScript("bash", fmt.Sprintf("kitty -t %s -e %s", WinNameScratchPad, fmt.Sprintf("ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))))))
 		}
 
 	}
@@ -363,9 +363,9 @@ func ToggleRecScreen() {
 		w, h := sugar.GetScreenSize()
 		switch sugar.GetOSType() {
 		case sugar.OSTypeLinux:
-			sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -t %s -c %s -e %s ", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", w, h, os.Getenv("DISPLAY"), path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))))))
+			sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -t %s -c %s -e %s ", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", w, h, os.Getenv("DISPLAY"), path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))))))
 		case sugar.OSTypeMacOS:
-			sugar.NewExecService().RunScriptShell(fmt.Sprintf("kitty -T %s -e %s ", WinNameScratchPad, fmt.Sprintf("ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", w, h, os.Getenv("DISPLAY"), path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))))))
+			sugar.NewExecService().RunScript("bash", fmt.Sprintf("kitty -T %s -e %s ", WinNameScratchPad, fmt.Sprintf("ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", w, h, os.Getenv("DISPLAY"), path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))))))
 		}
 	}
 }
@@ -377,9 +377,9 @@ func ToggleRecWebcam() {
 	default:
 		switch sugar.GetOSType() {
 		case sugar.OSTypeLinux:
-			sugar.NewExecService().RunScriptShell(fmt.Sprintf("st -t %s -c %s -e %s", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))))))
+			sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -t %s -c %s -e %s", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))))))
 		case sugar.OSTypeMacOS:
-			sugar.NewExecService().RunScriptShell(fmt.Sprintf("kitty -T %s -e %s", WinNameScratchPad, fmt.Sprintf("ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))))))
+			sugar.NewExecService().RunScript("bash", fmt.Sprintf("kitty -T %s -e %s", WinNameScratchPad, fmt.Sprintf("ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))))))
 		}
 	}
 }
@@ -389,7 +389,7 @@ func ToggleShow() {
 	case sugar.IsRunning("ffplay"):
 		sugar.Kill("ffplay")
 	default:
-		sugar.NewExecService().RunScriptShell(
+		sugar.NewExecService().RunScript("bash",
 			fmt.Sprintf("%s -e %s", sugar.GetOSTerminal(), "ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0"),
 		)
 	}

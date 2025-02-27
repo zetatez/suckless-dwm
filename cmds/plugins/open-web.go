@@ -8,7 +8,8 @@ import (
 
 func ChromeOpenUrl(params, url string) func() {
 	return func() {
-		sugar.NewExecService().RunScriptShell(
+		sugar.NewExecService().RunScript(
+			"bash",
 			fmt.Sprintf("chrome %s %s", params, url),
 		)
 	}
@@ -17,7 +18,8 @@ func ChromeOpenUrl(params, url string) func() {
 // qutebrowser --set content.proxy socks5://127.0.0.1:7891
 func QuteBrowserOpenUrl(params, url string) func() {
 	return func() {
-		sugar.NewExecService().RunScriptShell(
+		sugar.NewExecService().RunScript(
+			"bash",
 			fmt.Sprintf("qutebrowser %s %s", params, url),
 		)
 	}
@@ -26,7 +28,8 @@ func QuteBrowserOpenUrl(params, url string) func() {
 // edge --kiosk --force-device-scale-factor=1.35 --proxy-server=socks5://127.0.0.1:7891  www.chatgpt.com
 func EdgeOpenUrl(params, url string) func() {
 	return func() {
-		sugar.NewExecService().RunScriptShell(
+		sugar.NewExecService().RunScript(
+			"bash",
 			fmt.Sprintf("microsoft-edge-stable --kiosk --force-device-scale-factor=1.35 %s %s", params, url),
 		)
 	}

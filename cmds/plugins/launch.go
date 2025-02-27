@@ -8,7 +8,7 @@ import (
 
 func LaunchApp(cmd string) func() {
 	return func() {
-		sugar.NewExecService().RunScriptShell(cmd)
+		sugar.NewExecService().RunScript("bash", cmd)
 	}
 }
 
