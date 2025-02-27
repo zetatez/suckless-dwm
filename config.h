@@ -67,12 +67,12 @@ static const Layout layouts[] = {
    { "🍁 <", layout_fibonaccidwindle    },
    { "⧈ *",  layout_centerfreeshape     },
    { "⧈ =",  layout_centerequalratio    },
-   { "◨ >",  layout_tileright           },
+   { "◨ >",  layout_tileright           }, // 5
    { "◧ <",  layout_tileleft            },
    { "󰝘",    layout_grid                },
    { "󱇙",    layout_grid_gap            },
    { " ",   layout_monocle             },
-   { "󰓌",    layout_hacker              },
+   { "󰓌",    layout_hacker              }, // 10
    { "⬓ |" , layout_bottomstackvert     },
    { "⬓ ―",  layout_bottomstackhori     }, // 12
 // { "∅",  NULL                         }, // no layout, abandon
