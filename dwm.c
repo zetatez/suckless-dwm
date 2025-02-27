@@ -3334,8 +3334,7 @@ layout_fibonaccispiral(Monitor *m) {
 }
 
 void
-layout_grid(Monitor *m)
-{
+layout_grid(Monitor *m) {
   unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
   Client *c;
 
@@ -3344,34 +3343,27 @@ layout_grid(Monitor *m)
 
   if (n == 0) { return; }
 
-  for (cols = 0; cols <= n / 2; cols++) {
-    if (cols * cols >= n) {
-      break;
-    }
+  cols = 1;
+  while (cols * cols < n) {
+    cols++;
   }
+  rows = (n + cols - 1) / cols;
 
-  rows = (cols && (cols - 1) * cols >= n) ? cols - 1 : cols;
-  ch = (m->wh - (topbar ? 1 : 0)*winpad) / (rows ? rows : 1);
-  cw = m->ww / (cols ? cols : 1);
-  ah = rows ? (m->wh - (topbar ? 1 : 0)*winpad - rows * ch) / 2 : 0;
-  aw = cols ? (m->ww - cols * cw) / 2 : 0;
+  ch = (m->wh - (topbar ? 1 : 0) * winpad) / rows;
+  cw = m->ww / cols;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+  ah = (m->wh - rows * ch) / 2;
+  aw = (m->ww - cols * cw) / 2;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     cx = m->wx + aw + (i % cols) * cw;
     cy = m->wy + ah + (i / cols) * ch;
-    if (i > cols * (rows - 1) - 1 && n != cols * rows) {
-      cx = m->wx + aw + (i % cols) * cw + ((cw + aw) * (cols - n % cols))/2;
-      cy = m->wy + ah + (i / cols) * ch;
+
+    if (i >= cols * (rows - 1) && n != cols * rows) {
+      cx += ((cw + aw) * (cols - n % cols)) / 2;
     }
-    resize(
-      c,
-      cx,
-      cy + (topbar ? 1 : 0)*winpad,
-      cw - 2*c->bw,
-      ch - 2*c->bw,
-      False
-    );
-    i++;
+
+    resize(c, cx, cy + (topbar ? 1 : 0) * winpad, cw - 2 * c->bw, ch - 2 * c->bw, False);
   }
 }
 
