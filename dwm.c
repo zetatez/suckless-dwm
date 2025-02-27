@@ -3257,22 +3257,25 @@ layout_centerequalratio(Monitor *m)
 }
 
 void
-layout_fibonacci(Monitor *m, int s)
-{
-  unsigned int i, n, nx, ny, nw, nh;
+layout_fibonacci(Monitor *m, int s) {
+  unsigned int i, n;
   Client *c;
+  unsigned int nx, ny, nw, nh;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
+  // initialize window positions and sizes
   nx = m->wx;
   ny = 0;
   nw = m->ww;
-  nh = m->wh - (topbar ? 1 : 0)*winpad;
+  nh = m->wh - (topbar ? 1 : 0) * winpad;
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+  // main layout loop
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+    // adjust width or height if necessary
     if ((i % 2 && nh / 2 > 2 * c->bw) || (!(i % 2) && nw / 2 > 2 * c->bw)) {
       if (i < n - 1) {
         if (i % 2) {
@@ -3280,6 +3283,7 @@ layout_fibonacci(Monitor *m, int s)
         } else {
           nw /= 2;
         }
+
         if ((i % 4) == 2 && !s) {
           nx += nw;
         } else if ((i % 4) == 3 && !s) {
@@ -3287,24 +3291,23 @@ layout_fibonacci(Monitor *m, int s)
         }
       }
 
-      if ((i % 4) == 0) {
-        if (s) {
-          ny += nh;
-        } else {
-          ny -= nh;
-        }
-      } else if ((i % 4) == 1) {
-        nx += nw;
-      } else if ((i % 4) == 2) {
-        ny += nh;
-      } else if ((i % 4) == 3) {
-        if (s) {
+      // adjust position based on fibonacci sequence logic
+      switch (i % 4) {
+        case 0:
+          ny = s ? ny + nh : ny - nh;
+          break;
+        case 1:
           nx += nw;
-        } else {
-          nx -= nw;
-        }
+          break;
+        case 2:
+          ny += nh;
+          break;
+        case 3:
+          nx = s ? nx + nw : nx - nw;
+          break;
       }
 
+      // update sizes for the first two clients
       if (i == 0) {
         if (n != 1) {
           nw = m->ww * m->mfact;
@@ -3313,30 +3316,20 @@ layout_fibonacci(Monitor *m, int s)
       } else if (i == 1) {
         nw = m->ww - nw;
       }
-
-      i++;
     }
 
-    resize(
-      c,
-      nx,
-      ny + (topbar ? 1 : 0)*winpad,
-      nw - 2*c->bw,
-      nh - 2*c->bw,
-      False
-    );
+    // resize the client window
+    resize(c, nx, ny + (topbar ? 1 : 0) * winpad, nw - 2 * c->bw, nh - 2 * c->bw, False);
   }
 }
 
 void
-layout_fibonaccidwindle(Monitor *m)
-{
+layout_fibonaccidwindle(Monitor *m) {
   layout_fibonacci(m, 1);
 }
 
 void
-layout_fibonaccispiral(Monitor *m)
-{
+layout_fibonaccispiral(Monitor *m) {
   layout_fibonacci(m, 0);
 }
 
