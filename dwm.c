@@ -3510,32 +3510,39 @@ layout_bottomstackvert(Monitor *m) {
 void
 layout_hacker(Monitor *m)
 {
-  unsigned int i, n, cx, cy, cw, ch;
+  unsigned int i, n;
+  int cx, cy, cw, ch;
+  int offset_x, offset_y, initial_offset_x, initial_offset_y;
+  int center_x, center_y;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
-  cw = m->ww*3/5;
-  ch = m->wh*3/5;
+  cw = m->ww * 3 / 5;
+  ch = m->wh * 3 / 5;
+
+  center_x = m->wx + (m->ww - cw) / 2;
+  center_y = m->wy + (m->wh - ch) / 2;
+
+  initial_offset_x = m->wx + m->ww * 0.01;
+  initial_offset_y = m->wy + m->wh * 0.01;
+
+  offset_x = m->ww / 32;
+  offset_y = m->wh / 32;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    cx = m->ww*0.01 + m->wx + (n-i-1)*(m->ww/32);
-    cy = m->wh*0.01 + m->wy + (n-i-1)*(m->wh/32);
-    if (cy + ch - 2*c->bw > m->wh) {
-      cx = m->ww/2 - cw/2;
-      cy = m->wh/2 - ch/2;
+    cx = initial_offset_x + (n - i - 1) * offset_x;
+    cy = initial_offset_y + (n - i - 1) * offset_y;
+
+    if (cy + ch > m->wh) {
+      cx = center_x;
+      cy = center_y;
     }
-    resize(
-      c,
-      cx,
-      cy,
-      cw - 2*c->bw,
-      ch - 2*c->bw,
-      False
-    );
+
+    resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
   }
 }
 
