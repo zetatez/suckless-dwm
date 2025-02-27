@@ -3367,7 +3367,8 @@ layout_grid(Monitor *m) {
   }
 }
 
-void layout_tileright(Monitor *m) {
+void
+layout_tileright(Monitor *m) {
   unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
@@ -3398,7 +3399,8 @@ void layout_tileright(Monitor *m) {
   }
 }
 
-void layout_tileleft(Monitor *m) {
+void
+layout_tileleft(Monitor *m) {
   unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
@@ -3431,46 +3433,35 @@ void layout_tileleft(Monitor *m) {
 
 void
 layout_bottomstackhori(Monitor *m) {
-  int w, mh, mx, tx, ty, th;
+  int w, mh, mx = 0, tx, ty, th;
   unsigned int i, n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
+
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
 
   if (n > m->nmaster) {
     mh = m->nmaster ? (1 - m->hfact) * m->wh : 0;
-    th = (m->wh - mh - (topbar ? 1 : 0)*winpad) / (n - m->nmaster);
+    th = (m->wh - mh - winpad_offset) / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
-    th = mh = m->wh - (topbar ? 1 : 0)*winpad;
+    th = mh = m->wh - winpad_offset;
     ty = m->wy;
   }
 
-  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  for (i = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx + mx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        w - 2*c->bw,
-        mh - 2*c->bw,
-        0
-      );
+      resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
-      resize(
-        c,
-        tx,
-        ty + (topbar ? 1 : 0)*winpad,
-        m->ww - 2*c->bw,
-        th - 2*c->bw,
-        0
-      );
-      if (th != m->wh - (topbar ? 1 : 0)*winpad) {
+      resize(c, tx, ty + winpad_offset, m->ww - 2 * c->bw, th - 2 * c->bw, False);
+      if (th != m->wh - winpad_offset) {
         ty += HEIGHT(c);
       }
     }
@@ -3478,49 +3469,37 @@ layout_bottomstackhori(Monitor *m) {
 }
 
 void
-layout_bottomstackvert(Monitor *m)
-{
-  int w, h, mh, mx, tx, ty, tw;
+layout_bottomstackvert(Monitor *m) {
+  int w, h, mh, mx = 0, tx, ty, tw;
   unsigned int i, n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
+
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
 
   if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->hfact) * (m->wh - (topbar ? 1 : 0)*winpad) : 0;
+    mh = m->nmaster ? (1 - m->hfact) * (m->wh - winpad_offset) : 0;
     tw = m->ww / (n - m->nmaster);
     ty = m->wy + mh;
   } else {
-    mh = m->wh - (topbar ? 1 : 0)*winpad;
+    mh = m->wh - winpad_offset;
     tw = m->ww;
     ty = m->wy;
   }
 
-  for (i = mx = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  for (i = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx + mx,
-        m->wy + (topbar ? 1 : 0)*winpad,
-        w - 2*c->bw,
-        mh - 2*c->bw,
-        0
-      );
+      resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
-      h = m->wh - (topbar ? 1 : 0)*winpad - mh;
-      resize(
-        c,
-        tx,
-        ty + (topbar ? 1 : 0)*winpad,
-        tw - 2*c->bw,
-        h - 2*c->bw,
-        0
-      );
+      h = m->wh - winpad_offset - mh;
+      resize(c, tx, ty + winpad_offset, tw - 2 * c->bw, h - 2 * c->bw, False);
       if (tw != m->ww) {
         tx += WIDTH(c);
       }
