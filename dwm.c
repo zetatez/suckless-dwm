@@ -3367,47 +3367,30 @@ layout_grid(Monitor *m) {
   }
 }
 
-void
-layout_tileright(Monitor *m)
-{
-  unsigned int i, n, h, mw, my, ty;
+void layout_tileright(Monitor *m) {
+  unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
 
-  if (n == 0) { return; }
+  if (n == 0) return;
 
-  if (n > m->nmaster) {
-    mw = m->nmaster ? m->ww * m->mfact : 0;
-  } else {
-    mw = m->ww;
-  }
+  mw = (n > m->nmaster) ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
-  for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  unsigned int topbar_offset = topbar ? 1 : 0;
+  unsigned int winpad_offset = topbar_offset * winpad;
+
+  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
-      h = (m->wh - my - (topbar ? 1 : 0)*winpad) / (MIN(n, m->nmaster) - i);
-      resize(
-        c,
-        m->wx,
-        m->wy + my + (topbar ? 1 : 0)*winpad,
-        mw - (2*c->bw),
-        h - (2*c->bw),
-        0
-      );
+      h = (m->wh - my - winpad_offset) / (MIN(n, m->nmaster) - i);
+      resize(c, m->wx, m->wy + my + winpad_offset, mw - 2 * c->bw, h - 2 * c->bw, False);
       if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
       }
     } else {
-      h = (m->wh - ty - (topbar ? 1 : 0)*winpad) / (n - i);
-      resize(
-        c,
-        m->wx + mw,
-        m->wy + ty + (topbar ? 1 : 0)*winpad,
-        m->ww - mw - (2*c->bw),
-        h - (2*c->bw),
-        0
-      );
+      h = (m->wh - ty - winpad_offset) / (n - i);
+      resize(c, m->wx + mw, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
