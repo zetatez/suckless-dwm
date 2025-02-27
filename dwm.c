@@ -3029,7 +3029,8 @@ zoom(const Arg *arg)
 }
 
 void
-cyclelayout(const Arg *arg) {
+cyclelayout(const Arg *arg)
+{
   Layout *l;
   for(l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++)
     ;
@@ -3098,7 +3099,8 @@ restoresession(void)
 }
 
 void
-movestack(const Arg *arg) {
+movestack(const Arg *arg)
+{
 	Client *c = NULL, *p = NULL, *pc = NULL, *i;
 
   /* early exit if no selected client. panic if not check. fix movestack patch bug */
@@ -3163,7 +3165,8 @@ movestack(const Arg *arg) {
 }
 
 static void
-shiftview(const Arg *arg) {
+shiftview(const Arg *arg)
+{
   Arg shifted;
 
   if(arg->i > 0) {
@@ -3255,7 +3258,8 @@ layout_centerequalratio(Monitor *m)
 }
 
 void
-layout_fibonacci(Monitor *m, int s) {
+layout_fibonacci(Monitor *m, int s)
+{
   unsigned int i, n;
   Client *c;
   unsigned int nx, ny, nw, nh;
@@ -3322,17 +3326,20 @@ layout_fibonacci(Monitor *m, int s) {
 }
 
 void
-layout_fibonaccidwindle(Monitor *m) {
+layout_fibonaccidwindle(Monitor *m)
+{
   layout_fibonacci(m, 1);
 }
 
 void
-layout_fibonaccispiral(Monitor *m) {
+layout_fibonaccispiral(Monitor *m)
+{
   layout_fibonacci(m, 0);
 }
 
 void
-layout_grid(Monitor *m) {
+layout_grid(Monitor *m)
+{
   unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
   Client *c;
 
@@ -3366,7 +3373,8 @@ layout_grid(Monitor *m) {
 }
 
 void
-layout_tileright(Monitor *m) {
+layout_tileright(Monitor *m)
+{
   unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
@@ -3398,7 +3406,8 @@ layout_tileright(Monitor *m) {
 }
 
 void
-layout_tileleft(Monitor *m) {
+layout_tileleft(Monitor *m)
+{
   unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
 
@@ -3430,7 +3439,8 @@ layout_tileleft(Monitor *m) {
 }
 
 void
-layout_bottomstackhori(Monitor *m) {
+layout_bottomstackhori(Monitor *m)
+{
   int w, mh, mx = 0, tx, ty, th;
   unsigned int i, n;
   Client *c;
@@ -3467,7 +3477,8 @@ layout_bottomstackhori(Monitor *m) {
 }
 
 void
-layout_bottomstackvert(Monitor *m) {
+layout_bottomstackvert(Monitor *m)
+{
   int w, h, mh, mx = 0, tx, ty, tw;
   unsigned int i, n;
   Client *c;
