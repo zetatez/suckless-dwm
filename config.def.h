@@ -73,13 +73,10 @@ static const Layout layouts[] = {
    { "󱇙",    layout_grid_gap            },
    { " ",   layout_monocle             },
    { "󰓌",    layout_hacker              },
-   { "󱎞 |",  layout_stairs_vert         },
-   { "󱎞 ―",  layout_stairs_hori         },
    { "⬓ |" , layout_bottomstackvert     },
-   { "⬓ ―",  layout_bottomstackhori     },
-// { "◧",  layout_tileright_vertical  },
-// { "∅",  NULL                       }, // no layout, abandon
-   { NULL, NULL                       },
+   { "⬓ ―",  layout_bottomstackhori     }, // 12
+// { "∅",  NULL                         }, // no layout, abandon
+   { NULL, NULL                         },
 };
 
 static const Layout overviewlayout = { "󰾍",  layout_overview };
@@ -359,10 +356,10 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_g,            setlayout,         {.v = &layouts[8]                           } },
    { MODKEY,                       XK_m,            setlayout,         {.v = &layouts[9]                           } },
    { MODKEY|ShiftMask,             XK_m,            setlayout,         {.v = &layouts[10]                          } },
-   { MODKEY,                       XK_w,            setlayout,         {.v = &layouts[11]                          } },
-   { MODKEY|ShiftMask,             XK_w,            setlayout,         {.v = &layouts[12]                          } },
-   { MODKEY|ShiftMask,             XK_e,            setlayout,         {.v = &layouts[13]                          } },
-   { MODKEY,                       XK_e,            setlayout,         {.v = &layouts[14]                          } },
+   { MODKEY|ShiftMask,             XK_e,            setlayout,         {.v = &layouts[11]                          } },
+   { MODKEY,                       XK_e,            setlayout,         {.v = &layouts[12]                          } },
+// { MODKEY,                       XK_w,            setlayout,         {.v = &layouts[11]                          } },
+// { MODKEY|ShiftMask,             XK_w,            setlayout,         {.v = &layouts[12]                          } },
    { MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                               } },
    { ControlMask|ShiftMask,        XK_Return,       spawn,             {.v = termcmd_kitty                         } },
    { MODKEY|ShiftMask,             XK_c,            killclient,        {0                                          } },
