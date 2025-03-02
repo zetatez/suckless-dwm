@@ -199,9 +199,9 @@ func ToggleNewsboat() {
 }
 
 func ToggleScreen() {
-	primaryMonitor := "eDP-1"
-	secondMonitor := "eDP-1"
-	cmd := "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
+	primaryMonitor := "eDP1"
+	secondMonitor := "eDP1"
+	cmd := "xrandr|grep ' connected'|grep -v 'eDP1'|awk '{print $1}'"
 	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
@@ -214,18 +214,18 @@ func ToggleScreen() {
 	}
 	secondMonitor = stdout
 	cmds := map[string]string{
-		"defualt":              fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
-		"clone":                fmt.Sprintf("xrandr --output %s --mode 1920x1080", secondMonitor),
-		"monitor only":         fmt.Sprintf("xrandr --output %s --auto --output %s --off", secondMonitor, primaryMonitor),
-		"laptop only":          fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
-		"left of":              fmt.Sprintf("xrandr --output %s --auto --left-of %s --auto", secondMonitor, primaryMonitor),
-		"right of":             fmt.Sprintf("xrandr --output %s --auto --right-of %s --auto", secondMonitor, primaryMonitor),
-		"above":                fmt.Sprintf("xrandr --output %s --auto --above %s --auto", secondMonitor, primaryMonitor),
-		"below":                fmt.Sprintf("xrandr --output %s --auto --below %s --auto", secondMonitor, primaryMonitor),
-		"roate left left-of":   fmt.Sprintf("xrandr --output %s --auto --rotate left --left-of %s --auto", secondMonitor, primaryMonitor),
-		"roate right left-of":  fmt.Sprintf("xrandr --output %s --auto --rotate right --left-of %s --auto", secondMonitor, primaryMonitor),
-		"roate left right-of":  fmt.Sprintf("xrandr --output %s --auto --rotate left --right-of %s --auto", secondMonitor, primaryMonitor),
-		"roate right right-of": fmt.Sprintf("xrandr --output %s --auto --rotate right --right-of %s --auto", secondMonitor, primaryMonitor),
+		"defualt":                fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
+		"clone":                  fmt.Sprintf("xrandr --output %s --mode 1920x1080", secondMonitor),
+		"primary only":           fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
+		"second  only":           fmt.Sprintf("xrandr --output %s --auto --output %s --off", secondMonitor, primaryMonitor),
+		"left  of":               fmt.Sprintf("xrandr --output %s --auto --left-of %s --auto", secondMonitor, primaryMonitor),
+		"right of":               fmt.Sprintf("xrandr --output %s --auto --right-of %s --auto", secondMonitor, primaryMonitor),
+		"above":                  fmt.Sprintf("xrandr --output %s --auto --above %s --auto", secondMonitor, primaryMonitor),
+		"below":                  fmt.Sprintf("xrandr --output %s --auto --below %s --auto", secondMonitor, primaryMonitor),
+		"roate left  & left-of":  fmt.Sprintf("xrandr --output %s --auto --rotate left  --left-of %s --auto", secondMonitor, primaryMonitor),
+		"roate right & left-of":  fmt.Sprintf("xrandr --output %s --auto --rotate right --left-of %s --auto", secondMonitor, primaryMonitor),
+		"roate left  & right-of": fmt.Sprintf("xrandr --output %s --auto --rotate left  --right-of %s --auto", secondMonitor, primaryMonitor),
+		"roate right & right-of": fmt.Sprintf("xrandr --output %s --auto --rotate right --right-of %s --auto", secondMonitor, primaryMonitor),
 	}
 	_, _, err = sugar.NewExecService().RunScript("bash", cmds["default"])
 	if err != nil {
@@ -252,7 +252,7 @@ func ToggleScreen() {
 		return
 	}
 	time.Sleep(10 * time.Millisecond)
-	cmd = fmt.Sprintf("feh --bg-fill %s", path.Join(os.Getenv("HOME"), WallPaperPath, DefaultWallpaper))
+	cmd = fmt.Sprintf("feh --bg-fill %s", path.Join(os.Getenv("HOME"), WallPaperPath))
 	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
