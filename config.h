@@ -308,8 +308,6 @@ static const Key keys[] = {
    { MODKEY,                       XK_u,            spawn,             {.v = lazy_open_file                        } },
    { MODKEY,                       XK_q,            spawn,             {.v = screen_lock                           } },
 // { MODKEY|ShiftMask,             XK_u,            xxxxx,             {.i =                                       } },
-// { MODKEY,                       XK_bracketleft,  xxxxx,             {.i =                                       } },
-// { MODKEY,                       XK_bracketright, xxxxx,             {.i =                                       } },
    { MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                         } },
    { MODKEY,                       XK_c,            spawn,             {.v = toggle_clipmenu                       } },
    { MODKEY,                       XK_p,            spawn,             {.v = dmenucmd                              } },
@@ -325,8 +323,12 @@ static const Key keys[] = {
    { MODKEY,                       XK_minus,        scratchpad_show,   {0                                          } },
    { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,   {0                                          } },
    { MODKEY,                       XK_equal,        scratchpad_remove, {0                                          } },
-   { MODKEY,                       XK_slash,        focusmon,          {.i = +1                                    } }, // monitor related
-   { MODKEY|ShiftMask,             XK_slash,        tagmon,            {.i = +1                                    } }, // monitor related
+// { MODKEY,                       XK_slash,        xxx,               {.i = +1                                    } },
+// { MODKEY|ShiftMask,             XK_slash,        xxx,               {.i = +1                                    } },
+   { MODKEY,                       XK_bracketleft,  focusmon,          {.i = +1                                    } }, // monitor related
+   { MODKEY,                       XK_bracketleft,  focusmon,          {.i = -1                                    } }, // monitor related, not tested
+   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = +1                                    } }, // monitor related
+   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = -1                                    } }, // monitor related, not tested
    { MODKEY,                       XK_d,            incnmaster,        {.i = -1                                    } },
    { MODKEY,                       XK_i,            incnmaster,        {.i = +1                                    } },
    { MODKEY,                       XK_h,            movestack,         {.i = -1                                    } },
@@ -344,7 +346,7 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_j,            sethfact,          {.f = -0.025                                } },
    { MODKEY|ShiftMask,             XK_k,            sethfact,          {.f = +0.025                                } },
    { MODKEY,                       XK_space,        togglefloating,    {0                                          } },
-   { MODKEY,                       XK_u,            setlayout,         {0                                          } }, // teemporary layout switch
+   { MODKEY,                       XK_u,            setlayout,         {0                                          } }, // temporary layout switch
    { MODKEY,                       XK_a,            setlayout,         {.v = &layouts[0]                           } },
    { MODKEY,                       XK_r,            setlayout,         {.v = &layouts[1]                           } },
    { MODKEY|ShiftMask,             XK_r,            setlayout,         {.v = &layouts[2]                           } },
