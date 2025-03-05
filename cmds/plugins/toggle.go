@@ -83,10 +83,6 @@ func ToggleCalendarScheduling() {
 	}
 }
 
-func ToggleDarkTable() {
-	sugar.Toggle("darktable")
-}
-
 func ToggleFlameshot() {
 	sugar.Toggle("flameshot gui")
 }
@@ -334,10 +330,6 @@ func ToggleRedShift() {
 
 func ToggleXournal() {
 	sugar.Toggle("xournalpp")
-}
-
-func ToggleTermius() {
-	sugar.Toggle("termius")
 }
 
 func ToggleRecAudio() {
