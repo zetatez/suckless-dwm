@@ -90,11 +90,11 @@ static const char *scratchpadcmd[]                          = { "st", "-g", "120
 static const Key keys[] = {
 /*  modifier                      key               function           argument                                    */
 { SUPKEY,                       XK_F1,           spawn,             {.v = Shell("sys-volume-toggle")                     } },
-{ SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys-volume-up")                         } },
-{ SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys-volume-down")                       } },
+{ SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys-volume-down")                       } },
+{ SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys-volume-up")                         } },
 { SUPKEY,                       XK_F4,           spawn,             {.v = Shell("sys-micro-toggle")                      } },
-{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys-micro-up")                          } },
-{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys-micro-down")                        } },
+{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys-micro-down")                        } },
+{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys-micro-up")                          } },
 { SUPKEY,                       XK_F7,           spawn,             {.v = Shell("sys-wifi-connect")                      } },
 { SUPKEY,                       XK_F8,           spawn,             {.v = Shell("sys-screen")                            } },
 { SUPKEY,                       XK_F9,           spawn,             {.v = Shell("sys-bluetooth")                         } },
