@@ -46,7 +46,7 @@ static const Rule rules[] = {
   {"floatwindow",            NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
   {"qutebrowser",            NULL,       NULL,      0,            0,            0,             1,           -1 }, // for markdown.
-  {"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
+//{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
 /* stickyicon */
@@ -90,11 +90,11 @@ static const char *scratchpadcmd[]                          = { "st", "-g", "120
 static const Key keys[] = {
 /*  modifier                      key               function           argument                                    */
 { SUPKEY,                       XK_F1,           spawn,             {.v = Shell("sys-volume-toggle")                     } },
-{ SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys-volume-up")                         } },
-{ SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys-volume-down")                       } },
+{ SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys-volume-down")                       } },
+{ SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys-volume-up")                         } },
 { SUPKEY,                       XK_F4,           spawn,             {.v = Shell("sys-micro-toggle")                      } },
-{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys-micro-up")                          } },
-{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys-micro-down")                        } },
+{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys-micro-down")                        } },
+{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys-micro-up")                          } },
 { SUPKEY,                       XK_F7,           spawn,             {.v = Shell("sys-wifi-connect")                      } },
 { SUPKEY,                       XK_F8,           spawn,             {.v = Shell("sys-screen")                            } },
 { SUPKEY,                       XK_F9,           spawn,             {.v = Shell("sys-bluetooth")                         } },
@@ -163,10 +163,10 @@ static const Key keys[] = {
 { SUPKEY,                       XK_comma,        spawn,             {.v = Shell("note-diary")                            } },
 { SUPKEY,                       XK_period,       spawn,             {.v = Shell("note-flash-card")                       } },
 { SUPKEY,                       XK_slash,        spawn,             {.v = Shell("note-timeline")                         } },
+{ SUPKEY,                       XK_apostrophe,   spawn,             {.v = Shell("toggle-tty-clock")                      } },
 // { SUPKEY,                       XK_Home,         spawn,             {.v =                                             } },
 // { SUPKEY,                       XK_bracketleft,  spawn,             {.v =                                             } },
 // { SUPKEY,                       XK_bracketleft,  spawn,             {.v =                                             } },
-// { SUPKEY,                       XK_apostrophe,   spawn,             {.v =                                             } },
 
 { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v = Shell("toggle-addressbook")                    } },
 { SUPKEY|ShiftMask,             XK_c,            killclient,        {0                                                   } },
@@ -284,7 +284,6 @@ static const Key keys[] = {
 // { MODKEY|ShiftMask,             XK_z,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_slash,        xxx,               {.i = +1                                          } },
 
-
 { MODKEY,                       XK_1,            view,              {.ui = 1 << 0                                        } }, // view tag 1
 { MODKEY,                       XK_2,            view,              {.ui = 1 << 1                                        } },
 { MODKEY,                       XK_3,            view,              {.ui = 1 << 2                                        } },
@@ -341,7 +340,7 @@ static const Button buttons[] = {
 { ClkLtSymbol,          0,              Button1,        setlayout,           {0                                          } },
 { ClkLtSymbol,          0,              Button2,        setlayout,           {.v = &layouts[8]                           } },
 { ClkLtSymbol,          0,              Button3,        setlayout,           {.v = &overviewlayout                       } },
-{ ClkStatusText,        0,              Button1,        spawn,               {.v = Shell("sys-screen")                   } },
+{ ClkStatusText,        0,              Button1,        spawn,               {.v = Shell("toggle-tty-clock")             } },
 { ClkStatusText,        0,              Button2,        spawn,               {.v = Shell("sys-shortcuts")                } },
 { ClkStatusText,        0,              Button3,        spawn,               {.v = Shell("toggle-calendar")              } },
 { ClkClientWin,         MODKEY,         Button1,        movemouse,           {0                                          } },
