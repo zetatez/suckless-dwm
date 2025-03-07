@@ -48,10 +48,6 @@ func ChromeOpenUrlDouBao() {
 	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://www.doubao.com/chat/")()
 }
 
-func ChromeOpenUrlCodeium() {
-	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://codeium.com/live/general")()
-}
-
 func ChromeOpenUrlGoogleMail() {
 	ChromeOpenUrl("--proxy-server="+ProxyServer, "https://mail.google.com/mail")()
 }
@@ -95,10 +91,6 @@ func QuteBrowserOpenUrlChatGPT() {
 
 func QuteBrowserOpenUrlDouBao() {
 	QuteBrowserOpenUrl("--set content.proxy "+ProxyServer, "https://www.doubao.com/chat/")()
-}
-
-func QuteBrowserOpenUrlCodeium() {
-	QuteBrowserOpenUrl("--set content.proxy "+ProxyServer, "https://codeium.com/live/general")()
 }
 
 func QuteBrowserOpenUrlGoogleMail() {

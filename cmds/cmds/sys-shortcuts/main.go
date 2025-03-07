@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.QuteBrowserOpenUrlCodeium()
+	plugins.SysShortcuts()
 }

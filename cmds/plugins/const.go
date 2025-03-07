@@ -5,4 +5,5 @@ const (
 	WallPaperPath      = "Pictures/wallpapers"
 	WinNameScratchPad  = "scratchpad"
 	WinNameFloatWindow = "floatwindow"
+	GithubPath         = "share/github"
 )

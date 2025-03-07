@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo light -N 8
+sudo light -U 5
