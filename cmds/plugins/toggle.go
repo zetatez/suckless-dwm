@@ -130,7 +130,16 @@ func ToggleLua() {
 	case sugar.OSTypeLinux:
 		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e lua", WinNameScratchPad, WinNameScratchPad))
 	case sugar.OSTypeMacOS:
-		sugar.Toggle(fmt.Sprintf("kitty -e lua", WinNameScratchPad, WinNameScratchPad))
+		sugar.Toggle("kitty -e lua")
+	}
+}
+
+func ToggleTTYClock() {
+	switch sugar.GetOSType() {
+	case sugar.OSTypeLinux:
+		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e tty-clock -s", sugar.GetGeoForTerminal(0.72, 0.04, 53, 8), WinNameFloatWindow, WinNameFloatWindow))
+	case sugar.OSTypeMacOS:
+		sugar.Toggle("kitty -e tty-clock -s")
 	}
 }
 

@@ -35,6 +35,7 @@ build: prepare build-shell-cmds
 	go build -o ./bins/toggle-clipmenu                           ./cmds/toggle-clipmenu/main.go
 	go build -o ./bins/toggle-flameshot                          ./cmds/toggle-flameshot/main.go
 	go build -o ./bins/toggle-inkscape                           ./cmds/toggle-inkscape/main.go
+	go build -o ./bins/toggle-tty-clock                          ./cmds/toggle-tty-clock/main.go
 	go build -o ./bins/toggle-irssi                              ./cmds/toggle-irssi/main.go
 	go build -o ./bins/toggle-julia                              ./cmds/toggle-julia/main.go
 	go build -o ./bins/toggle-krita                              ./cmds/toggle-krita/main.go
