@@ -227,6 +227,34 @@ func SearchVideosOnline() {
 	wg.Wait()
 }
 
+func NoteScripts() {
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
+	filePath := path.Join(fileDir, "scripts.md")
+	if !sugar.IsDirExists(fileDir) {
+		if err := os.Mkdir(fileDir, 0o755); err != nil {
+			sugar.Notify(err)
+			return
+		}
+	}
+	if !sugar.IsFileExists(filePath) {
+		f, err := os.Create(filePath)
+		if err != nil {
+			sugar.Notify(err)
+			return
+		}
+		fmt.Fprintf(f, "\n## Scripts\n\n")
+		f.Close()
+	}
+	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
+	if err != nil {
+		sugar.Notify(err)
+		return
+	}
+	fmt.Fprintf(f, "\n\n###")
+	f.Close()
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+}
+
 func NoteDiary() {
 	dateStr := time.Now().Format(time.DateOnly)
 	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "diary")
@@ -243,10 +271,10 @@ func NoteDiary() {
 			sugar.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "\n### %s\n\n", dateStr)
+		fmt.Fprintf(f, "\n### Diary %s\n\n", dateStr)
 		f.Close()
 	}
-	sugar.Toggle(fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
 func NoteTimeline() {
@@ -267,7 +295,7 @@ func NoteTimeline() {
 			sugar.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "\n## %s\n\n", dateStr)
+		fmt.Fprintf(f, "\n## Time Line %s\n\n", dateStr)
 		f.Close()
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
@@ -277,7 +305,7 @@ func NoteTimeline() {
 	}
 	fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
 	f.Close()
-	sugar.Toggle(fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
 func NoteFlashCard() {
@@ -296,10 +324,10 @@ func NoteFlashCard() {
 			sugar.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "### %s\n\n", t.Format(time.DateTime))
+		fmt.Fprintf(f, "### Flash Card %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	sugar.Toggle(fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
 func HandleCopied() {
