@@ -140,28 +140,23 @@ func TransformUnixSec2DateTime() {
 }
 
 func LazyOpenSearchFile() {
-	cmd := `st -e lazy-open-search-file`
-	sugar.NewExecService().RunScript("bash", cmd)
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", sugar.GetOSTerminal()))
 }
 
 func LazyOpenSearchBook() {
-	cmd := `st -e lazy-open-search-book`
-	sugar.NewExecService().RunScript("bash", cmd)
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", sugar.GetOSTerminal()))
 }
 
 func LazyOpenSearchWiki() {
-	cmd := `st -e lazy-open-search-wiki`
-	sugar.NewExecService().RunScript("bash", cmd)
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", sugar.GetOSTerminal()))
 }
 
 func LazyOpenSearchMedia() {
-	cmd := `st -e lazy-open-search-media`
-	sugar.NewExecService().RunScript("bash", cmd)
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", sugar.GetOSTerminal()))
 }
 
 func LazyOpenSearchFileContent() {
-	cmd := `st -e lazy-open-search-file-content`
-	sugar.NewExecService().RunScript("bash", cmd)
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", sugar.GetOSTerminal()))
 }
 
 func SearchFromWeb(content string) {
@@ -251,7 +246,7 @@ func NoteDiary() {
 		fmt.Fprintf(f, "\n### %s\n\n", dateStr)
 		f.Close()
 	}
-	sugar.Toggle(fmt.Sprintf("st -e nvim +$ '%s'", filePath))
+	sugar.Toggle(fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
 func NoteTimeline() {
@@ -282,9 +277,7 @@ func NoteTimeline() {
 	}
 	fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
 	f.Close()
-	sugar.Toggle(
-		fmt.Sprintf("st -e nvim +$ '%s'", filePath),
-	)
+	sugar.Toggle(fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
 func NoteFlashCard() {
@@ -306,10 +299,7 @@ func NoteFlashCard() {
 		fmt.Fprintf(f, "### %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	_, _, err := sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -e nvim +$ '%s'", filePath))
-	if err != nil {
-		sugar.Notify(err)
-	}
+	sugar.Toggle(fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
 func HandleCopied() {
@@ -349,12 +339,7 @@ func JumpToCodeFromLog() {
 	}
 	filepath := match[1]
 	row := match[2]
-	cmd := fmt.Sprintf(
-		"st -e nvim +%s %s",
-		row,
-		filepath,
-	)
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +%s %s", sugar.GetOSTerminal(), row, filepath))
 	if err != nil {
 		sugar.Notify(err)
 		return

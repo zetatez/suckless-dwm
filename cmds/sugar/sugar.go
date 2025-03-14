@@ -37,17 +37,12 @@ func GetOSType() string {
 	}
 }
 
-const (
-	TermianlTypeSt    = "st"
-	TermianlTypeKitty = "kitty"
-)
-
 func GetOSTerminal() string {
 	switch GetOSType() {
 	case OSTypeLinux:
-		return TermianlTypeSt
+		return "st"
 	case OSTypeMacOS:
-		return TermianlTypeKitty
+		return "kitty"
 	default:
 		Notify("Unsupported OS")
 		os.Exit(1)
@@ -207,7 +202,7 @@ func Lazy(option string, filepath string) {
 	switch option {
 	case "view", "open", "exec", "copy", "rename", "delete":
 		NewExecService().RunScript("bash",
-			fmt.Sprintf("st -e lazy -o %s -f %s &", option, filepath),
+			fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSTerminal(), option, filepath),
 		)
 	default:
 		return
@@ -373,19 +368,10 @@ func SSH(host string, port int, user string, password string) (err error) {
 	if shell == "" {
 		shell = "/bin/bash"
 	}
-	cmd := fmt.Sprintf(
-		"st -e %s -c '%s'",
-		shell,
-		fmt.Sprintf(
-			`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`,
-			password,
-			port,
-			user,
-			host,
-		),
-	)
+	cmd := fmt.Sprintf("%s -e %s -c '%s'", GetOSTerminal(), shell, fmt.Sprintf(`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`, password, port, user, host))
 	_, _, err = NewExecService().RunScript("bash", cmd)
 	if err != nil {
+		Notify(err)
 		return err
 	}
 	return nil
