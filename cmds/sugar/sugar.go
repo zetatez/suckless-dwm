@@ -201,9 +201,7 @@ func GetInput(prompt string) (input string, err error) {
 func Lazy(option string, filepath string) {
 	switch option {
 	case "view", "open", "exec", "copy", "rename", "delete":
-		NewExecService().RunScript("bash",
-			fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSTerminal(), option, filepath),
-		)
+		NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSTerminal(), option, filepath))
 	default:
 		return
 	}
