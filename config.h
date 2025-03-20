@@ -63,10 +63,10 @@ static const int lockfullscreen     = 0;
 
 static const Layout layouts[] = {
 { "🐧"                 , layout_workflow           }, // default
-{ " s"                , layout_fib_spiral         },
-{ " d"                , layout_fib_dwindle        },
-{ "▣"                  , layout_center_free_shape  },
-{ "󰼀"                  , layout_center_equal_ratio },
+{ ""                  , layout_fib_spiral         },
+{ ""                  , layout_fib_dwindle        },
+{ "⧈"                  , layout_center_free_shape  },
+{ "⧅"                  , layout_center_equal_ratio },
 { "󱂫"                  , layout_tile_right         }, // 5
 { "󱂪"                  , layout_tile_left          },
 { "󰝘"                  , layout_grid               },
