@@ -39,7 +39,7 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "󰣨", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
@@ -62,21 +62,21 @@ static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
 
 static const Layout layouts[] = {
-   { "𝚭",    layout_workflow            }, // default
-   { "🍁 >", layout_fibonaccispiral     },
-   { "🍁 <", layout_fibonaccidwindle    },
-   { "⧈ *",  layout_centerfreeshape     },
-   { "⧈ =",  layout_centerequalratio    },
-   { "◨ >",  layout_tileright           }, // 5
-   { "◧ <",  layout_tileleft            },
-   { "󰝘",    layout_grid                },
-   { "󱇙",    layout_grid_gap            },
-   { " ",   layout_monocle             },
-   { "󰓌",    layout_hacker              }, // 10
-   { "⬓ |" , layout_bottomstackvert     },
-   { "⬓ ―",  layout_bottomstackhori     }, // 12
-// { "∅",  NULL                         }, // no layout, abandon
-   { NULL, NULL                         },
+{ "🐧"                 , layout_workflow           }, // default
+{ ""                  , layout_fib_spiral         },
+{ ""                  , layout_fib_dwindle        },
+{ "▣"                  , layout_center_free_shape  },
+{ "󰼀"                  , layout_center_equal_ratio },
+{ "󱂫"                  , layout_tile_right         }, // 5
+{ "󱂪"                  , layout_tile_left          },
+{ "󰝘"                  , layout_grid               },
+{ "󱇙"                  , layout_grid_gap           },
+{ "󱣴"                  , layout_monocle            },
+{ ""                  , layout_hacker             }, // 10
+{ " |"                , layout_stack_vert         },
+{ " ―"                , layout_stack_hori         }, // 12
+// { "∅"               , NULL                      }, // no layout , abandon
+{ NULL                 , NULL                      },
 };
 
 static const Layout overviewlayout = { "󰾍",  layout_overview };
@@ -156,7 +156,7 @@ static const Key keys[] = {
 { SUPKEY,                       XK_y,            spawn,             {.v = Shell("toggle-show")                           } },
 { SUPKEY,                       XK_z,            spawn,             {.v = Shell("chrome-open-url-google")                } },
 { SUPKEY,                       XK_Escape,       spawn,             {.v = Shell("toggle-top")                            } },
-{ SUPKEY,                       XK_Delete,       spawn,             {.v = Shell("toggle-sys-shortcuts")                  } },
+{ SUPKEY,                       XK_Delete,       spawn,             {.v = Shell("sys-shortcuts")                         } },
 { SUPKEY,                       XK_BackSpace,    spawn,             {.v = Shell("toggle-passmenu")                       } },
 { SUPKEY,                       XK_backslash,    spawn,             {.v = Shell("set-keyboard-rate")                     } },
 { SUPKEY,                       XK_semicolon,    spawn,             {.v = Shell("jump-to-code-from-log")                 } },
