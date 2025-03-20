@@ -127,19 +127,18 @@ static void zoom(const Arg *arg);
 
 /* layout */
 static void layout_monocle(Monitor *m);
-static void layout_centerfreeshape(Monitor *m);
-static void layout_centerequalratio(Monitor *m);
+static void layout_center_free_shape(Monitor *m);
+static void layout_center_equal_ratio(Monitor *m);
 static void layout_fibonacci(Monitor *m, int s);
-static void layout_fibonaccidwindle(Monitor * m);
-static void layout_fibonaccispiral(Monitor * m);
+static void layout_fib_dwindle(Monitor * m);
+static void layout_fib_spiral(Monitor * m);
 static void layout_grid(Monitor *m);
-static void layout_tileright(Monitor *m);
-static void layout_tileleft(Monitor *m);
-static void layout_bottomstackhori(Monitor *m);
-static void layout_bottomstackvert(Monitor *m);
+static void layout_tile_right(Monitor *m);
+static void layout_tile_left(Monitor *m);
+static void layout_stack_hori(Monitor *m);
+static void layout_stack_vert(Monitor *m);
 static void layout_hacker(Monitor *m);
 static void layout_grid_gap(Monitor *m);
-// static void layout_tileright_vertical(Monitor *m);
 static void layout_overview(Monitor *m);
 static void layout_workflow(Monitor *m);
 
@@ -3208,7 +3207,7 @@ layout_monocle(Monitor *m)
 }
 
 void
-layout_centerfreeshape(Monitor *m)
+layout_center_free_shape(Monitor *m)
 {
   unsigned int n, i;
   Client *c;
@@ -3233,7 +3232,7 @@ layout_centerfreeshape(Monitor *m)
 }
 
 void
-layout_centerequalratio(Monitor *m)
+layout_center_equal_ratio(Monitor *m)
 {
   unsigned int n, i;
   Client *c;
@@ -3326,13 +3325,13 @@ layout_fibonacci(Monitor *m, int s)
 }
 
 void
-layout_fibonaccidwindle(Monitor *m)
+layout_fib_dwindle(Monitor *m)
 {
   layout_fibonacci(m, 1);
 }
 
 void
-layout_fibonaccispiral(Monitor *m)
+layout_fib_spiral(Monitor *m)
 {
   layout_fibonacci(m, 0);
 }
@@ -3373,7 +3372,7 @@ layout_grid(Monitor *m)
 }
 
 void
-layout_tileright(Monitor *m)
+layout_tile_right(Monitor *m)
 {
   unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
@@ -3406,7 +3405,7 @@ layout_tileright(Monitor *m)
 }
 
 void
-layout_tileleft(Monitor *m)
+layout_tile_left(Monitor *m)
 {
   unsigned int i, n, h, mw, my = 0, ty = 0;
   Client *c;
@@ -3439,7 +3438,7 @@ layout_tileleft(Monitor *m)
 }
 
 void
-layout_bottomstackhori(Monitor *m)
+layout_stack_hori(Monitor *m)
 {
   int w, mh, mx = 0, tx, ty, th;
   unsigned int i, n;
@@ -3477,7 +3476,7 @@ layout_bottomstackhori(Monitor *m)
 }
 
 void
-layout_bottomstackvert(Monitor *m)
+layout_stack_vert(Monitor *m)
 {
   int w, h, mh, mx = 0, tx, ty, tw;
   unsigned int i, n;
@@ -3863,7 +3862,7 @@ layout_workflow(Monitor *m)
       }
       break;
     default:
-      layout_fibonaccispiral(m);
+      layout_fib_spiral(m);
       break;
   };
 }
