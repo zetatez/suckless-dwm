@@ -39,13 +39,13 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
   {"floatwindow",            NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
-  {"qutebrowser",            NULL,       NULL,      0,            0,            0,             1,           -1 }, // for markdown.
+  {"Vimb",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // for markdown.
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
@@ -62,7 +62,7 @@ static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
 
 static const Layout layouts[] = {
-{ "🐧"                 , layout_workflow           }, // default
+{ ""                  , layout_workflow           }, // default
 { ""                  , layout_fib_spiral         },
 { ""                  , layout_fib_dwindle        },
 { "⧈"                  , layout_center_free_shape  },
@@ -255,7 +255,7 @@ static const Key keys[] = {
 { MODKEY,                       XK_g,            setlayout,         {.v = &layouts[7]                                    } },
 { MODKEY|ShiftMask,             XK_g,            setlayout,         {.v = &layouts[8]                                    } },
 { MODKEY,                       XK_m,            setlayout,         {.v = &layouts[9]                                    } },
-{ MODKEY|ShiftMask,             XK_m,            setlayout,         {.v = &layouts[10]                                   } },
+{ MODKEY,                       XK_w,            setlayout,         {.v = &layouts[10]                                   } },
 { MODKEY|ShiftMask,             XK_e,            setlayout,         {.v = &layouts[11]                                   } },
 { MODKEY,                       XK_e,            setlayout,         {.v = &layouts[12]                                   } },
 { MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                                        } },
@@ -278,6 +278,7 @@ static const Key keys[] = {
 // { MODKEY|ShiftMask,             XK_o,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_u,            xxxxx,             {.i =                                             } },
 // { MODKEY|ShiftMask,             XK_w,            xxxxx,             {.v =                                             } },
+// { MODKEY|ShiftMask,             XK_m,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_x,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_y,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_y,            xxxxx,             {.v =                                             } },
