@@ -1,7 +1,7 @@
 #!/bin/sh
 
-mkdir -p ~/git/
-cd ~/git
+mkdir -p ~/share/github/
+cd ~/share/github/
 
 repos=$(fd --type d --hidden -d 1)
 

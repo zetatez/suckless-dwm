@@ -155,7 +155,7 @@ func ToggleObsidian() {
 }
 
 func ToggleTop() {
-	sugar.Toggle(fmt.Sprintf("%s -e hop", sugar.GetOSTerminal()))
+	sugar.Toggle(fmt.Sprintf("%s -e htop", sugar.GetOSTerminal()))
 }
 
 func ToggleWallpaper() {
