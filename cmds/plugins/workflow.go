@@ -162,8 +162,8 @@ func LazyOpenSearchFileContent() {
 func SearchFromWeb(content string) {
 	sugar.NewExecService().RunScript("bash",
 		fmt.Sprintf(
-			// "chrome --proxy-server=%s https://www.google.com/search?q='%s'",
-			"qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
+			"chrome --proxy-server=%s https://www.google.com/search?q='%s'",
+			// "qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
 			ProxyServer,
 			content,
 		),
@@ -251,6 +251,34 @@ func NoteScripts() {
 		return
 	}
 	fmt.Fprintf(f, "\n\n###")
+	f.Close()
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+}
+
+func NoteToDo() {
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
+	filePath := path.Join(fileDir, "ToDo.md")
+	if !sugar.IsDirExists(fileDir) {
+		if err := os.Mkdir(fileDir, 0o755); err != nil {
+			sugar.Notify(err)
+			return
+		}
+	}
+	if !sugar.IsFileExists(filePath) {
+		f, err := os.Create(filePath)
+		if err != nil {
+			sugar.Notify(err)
+			return
+		}
+		fmt.Fprintf(f, "\n## ToDo\n\n")
+		f.Close()
+	}
+	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
+	if err != nil {
+		sugar.Notify(err)
+		return
+	}
+	fmt.Fprintf(f, fmt.Sprintf("\n- [ ] %s", time.Now().Format(time.DateOnly)))
 	f.Close()
 	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
