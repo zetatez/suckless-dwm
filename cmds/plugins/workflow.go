@@ -228,7 +228,7 @@ func SearchVideosOnline() {
 }
 
 func NoteScripts() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki")
 	filePath := path.Join(fileDir, "scripts.md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -255,9 +255,37 @@ func NoteScripts() {
 	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
 }
 
+func NoteToDo() {
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki")
+	filePath := path.Join(fileDir, "ToDo.md")
+	if !sugar.IsDirExists(fileDir) {
+		if err := os.Mkdir(fileDir, 0o755); err != nil {
+			sugar.Notify(err)
+			return
+		}
+	}
+	if !sugar.IsFileExists(filePath) {
+		f, err := os.Create(filePath)
+		if err != nil {
+			sugar.Notify(err)
+			return
+		}
+		fmt.Fprintf(f, "\n## ToDo\n\n")
+		f.Close()
+	}
+	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
+	if err != nil {
+		sugar.Notify(err)
+		return
+	}
+	fmt.Fprintf(f, fmt.Sprintf("\n- [ ] %s", time.Now().Format(time.DateOnly)))
+	f.Close()
+	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+}
+
 func NoteDiary() {
 	dateStr := time.Now().Format(time.DateOnly)
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "diary")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki", "diary")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -281,7 +309,7 @@ func NoteTimeline() {
 	t := time.Now()
 	dateStr := t.Format(time.DateOnly)
 	datetimeStr := t.Format(time.DateTime)
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "timeline")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki", "timeline")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -310,7 +338,7 @@ func NoteTimeline() {
 
 func NoteFlashCard() {
 	t := time.Now()
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "flash-card")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki", "flash-card")
 	filePath := path.Join(fileDir, t.Format("2006-01-02.15.04.05.000000000")+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {

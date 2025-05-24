@@ -19,6 +19,7 @@ build: prepare build-shell-cmds
 	go build -o ./bins/launch-chrome                             ./cmds/launch-chrome/main.go
 	go build -o ./bins/launch-qutebrowser                        ./cmds/launch-qutebrowser/main.go
 	go build -o ./bins/note-scripts                              ./cmds/note-scripts/main.go
+	go build -o ./bins/note-todo                                 ./cmds/note-todo/main.go
 	go build -o ./bins/note-diary                                ./cmds/note-diary/main.go
 	go build -o ./bins/note-flash-card                           ./cmds/note-flash-card/main.go
 	go build -o ./bins/note-timeline                             ./cmds/note-timeline/main.go
