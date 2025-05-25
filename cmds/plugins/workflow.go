@@ -162,8 +162,8 @@ func LazyOpenSearchFileContent() {
 func SearchFromWeb(content string) {
 	sugar.NewExecService().RunScript("bash",
 		fmt.Sprintf(
-			// "chrome --proxy-server=%s https://www.google.com/search?q='%s'",
-			"qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
+			"chrome --proxy-server=%s https://www.google.com/search?q='%s'",
+			// "qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
 			ProxyServer,
 			content,
 		),
