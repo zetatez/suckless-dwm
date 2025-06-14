@@ -228,7 +228,7 @@ func SearchVideosOnline() {
 }
 
 func NoteScripts() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
 	filePath := path.Join(fileDir, "scripts.md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -256,7 +256,7 @@ func NoteScripts() {
 }
 
 func NoteToDo() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
 	filePath := path.Join(fileDir, "ToDo.md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -285,7 +285,7 @@ func NoteToDo() {
 
 func NoteDiary() {
 	dateStr := time.Now().Format(time.DateOnly)
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki", "diary")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "diary")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -309,7 +309,7 @@ func NoteTimeline() {
 	t := time.Now()
 	dateStr := t.Format(time.DateOnly)
 	datetimeStr := t.Format(time.DateTime)
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki", "timeline")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "timeline")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -338,7 +338,7 @@ func NoteTimeline() {
 
 func NoteFlashCard() {
 	t := time.Now()
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "wiki", "flash-card")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "flash-card")
 	filePath := path.Join(fileDir, t.Format("2006-01-02.15.04.05.000000000")+".md")
 	if !sugar.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
