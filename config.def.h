@@ -264,6 +264,7 @@ static const Key keys[] = {
 { MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                                        } },
 { ControlMask|ShiftMask,        XK_Return,       spawn,             {.v = Shell("kitty")                                 } },
 { MODKEY|ShiftMask,             XK_c,            killclient,        {0                                                   } },
+{ MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,  {0                                                   } },
 { MODKEY|ShiftMask,             XK_q,            quit,              {0                                                   } },
 { MODKEY|ShiftMask,             XK_p,            quit,              {1                                                   } },
 // { MODKEY,                       XK_n,            xxxxx,             {.v = x                                           } },
@@ -308,6 +309,15 @@ static const Key keys[] = {
 { MODKEY|ShiftMask,             XK_8,            tag,               {.ui = 1 << 7                                        } },
 { MODKEY|ShiftMask,             XK_9,            tag,               {.ui = 1 << 8                                        } },
 { MODKEY|ShiftMask,             XK_0,            tag,               {.ui = ~0                                            } }, // stick to all tags
+{ MODKEY|ShiftMask|ControlMask, XK_1,            previewtag,        {.ui = 0                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_2,            previewtag,        {.ui = 1                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_3,            previewtag,        {.ui = 2                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_4,            previewtag,        {.ui = 3                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_5,            previewtag,        {.ui = 4                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_6,            previewtag,        {.ui = 5                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_7,            previewtag,        {.ui = 6                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_8,            previewtag,        {.ui = 7                                             } },
+{ MODKEY|ShiftMask|ControlMask, XK_9,            previewtag,        {.ui = 8                                             } },
 { MODKEY|ControlMask,           XK_1,            toggleview,        {.ui = 1 << 0                                        } }, // toggle view of tag 1
 { MODKEY|ControlMask,           XK_2,            toggleview,        {.ui = 1 << 1                                        } },
 { MODKEY|ControlMask,           XK_3,            toggleview,        {.ui = 1 << 2                                        } },
@@ -317,15 +327,6 @@ static const Key keys[] = {
 { MODKEY|ControlMask,           XK_7,            toggleview,        {.ui = 1 << 6                                        } },
 { MODKEY|ControlMask,           XK_8,            toggleview,        {.ui = 1 << 7                                        } },
 { MODKEY|ControlMask,           XK_9,            toggleview,        {.ui = 1 << 8                                        } },
-{ MODKEY|ControlMask|ShiftMask, XK_1,            previewtag,        {.ui = 0                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_2,            previewtag,        {.ui = 1                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_3,            previewtag,        {.ui = 2                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_4,            previewtag,        {.ui = 3                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_5,            previewtag,        {.ui = 4                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_6,            previewtag,        {.ui = 5                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_7,            previewtag,        {.ui = 6                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_8,            previewtag,        {.ui = 7                                             } },
-{ MODKEY|ControlMask|ShiftMask, XK_9,            previewtag,        {.ui = 8                                             } },
 };
 
 /* button definitions */
