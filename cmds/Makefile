@@ -4,84 +4,73 @@ prepare:
 	mkdir -p ./bins/
 	go mod tidy
 
-build-shell-cmds:
-	cp -f ./shell-cmds/* ./bins/
+build_shell_cmds:
+	cp -f ./shell_cmds/* ./bins/
 
 clean:
 	rm -rf bins/*
 
-build: prepare build-shell-cmds
-	go build -o ./bins/format-json                               ./cmds/format-json/main.go
-	go build -o ./bins/format-sql                                ./cmds/format-sql/main.go
-	go build -o ./bins/format-yaml                               ./cmds/format-yaml/main.go
-	go build -o ./bins/handle-copied                             ./cmds/handle-copied/main.go
-	go build -o ./bins/jump-to-code-from-log                     ./cmds/jump-to-code-from-log/main.go
-	go build -o ./bins/launch-chrome                             ./cmds/launch-chrome/main.go
-	go build -o ./bins/launch-qutebrowser                        ./cmds/launch-qutebrowser/main.go
-	go build -o ./bins/note-scripts                              ./cmds/note-scripts/main.go
-	go build -o ./bins/note-todo                                 ./cmds/note-todo/main.go
-	go build -o ./bins/note-diary                                ./cmds/note-diary/main.go
-	go build -o ./bins/note-flash-card                           ./cmds/note-flash-card/main.go
-	go build -o ./bins/note-timeline                             ./cmds/note-timeline/main.go
+build: prepare build_shell_cmds
+	go build -o ./bins/format_json                               ./cmds/format_json/main.go
+	go build -o ./bins/format_sql                                ./cmds/format_sql/main.go
+	go build -o ./bins/format_yaml                               ./cmds/format_yaml/main.go
+	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
+	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
+	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
+	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
+	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
+	go build -o ./bins/note_diary                                ./cmds/note_diary/main.go
+	go build -o ./bins/note_flash_card                           ./cmds/note_flash_card/main.go
+	go build -o ./bins/note_timeline                             ./cmds/note_timeline/main.go
 	go build -o ./bins/search                                    ./cmds/search/main.go
-	go build -o ./bins/ssh-to                                    ./cmds/ssh-to/main.go
-	go build -o ./bins/sys-bluetooth                             ./cmds/sys-bluetooth/main.go
-	go build -o ./bins/sys-screen                                ./cmds/sys-screen/main.go
-	go build -o ./bins/sys-shortcuts                             ./cmds/sys-shortcuts/main.go
-	go build -o ./bins/sys-toggle-keyboard-light                 ./cmds/sys-toggle-keyboard-light/main.go
-	go build -o ./bins/sys-wifi-connect                          ./cmds/sys-wifi-connect/main.go
-	go build -o ./bins/toggle-addressbook                        ./cmds/toggle-addressbook/main.go
-	go build -o ./bins/toggle-calendar                           ./cmds/toggle-calendar/main.go
-	go build -o ./bins/toggle-calendar-scheduling                ./cmds/toggle-calendar-scheduling/main.go
-	go build -o ./bins/toggle-calendar-scheduling-today          ./cmds/toggle-calendar-scheduling-today/main.go
-	go build -o ./bins/toggle-clipmenu                           ./cmds/toggle-clipmenu/main.go
-	go build -o ./bins/toggle-flameshot                          ./cmds/toggle-flameshot/main.go
-	go build -o ./bins/toggle-inkscape                           ./cmds/toggle-inkscape/main.go
-	go build -o ./bins/toggle-tty-clock                          ./cmds/toggle-tty-clock/main.go
-	go build -o ./bins/toggle-irssi                              ./cmds/toggle-irssi/main.go
-	go build -o ./bins/toggle-julia                              ./cmds/toggle-julia/main.go
-	go build -o ./bins/toggle-krita                              ./cmds/toggle-krita/main.go
-	go build -o ./bins/toggle-lazydocker                         ./cmds/toggle-lazydocker/main.go
-	go build -o ./bins/toggle-lazygit                            ./cmds/toggle-lazygit/main.go
-	go build -o ./bins/toggle-lua                                ./cmds/toggle-lua/main.go
-	go build -o ./bins/toggle-music                              ./cmds/toggle-music/main.go
-	go build -o ./bins/toggle-music-net-cloud                    ./cmds/toggle-music-net-cloud/main.go
-	go build -o ./bins/toggle-mutt                               ./cmds/toggle-mutt/main.go
-	go build -o ./bins/toggle-obsidian                           ./cmds/toggle-obsidian/main.go
-	go build -o ./bins/toggle-passmenu                           ./cmds/toggle-passmenu/main.go
-	go build -o ./bins/toggle-python                             ./cmds/toggle-python/main.go
-	go build -o ./bins/toggle-rec-audio                          ./cmds/toggle-rec-audio/main.go
-	go build -o ./bins/toggle-rec-screen                         ./cmds/toggle-rec-screen/main.go
-	go build -o ./bins/toggle-rec-webcam                         ./cmds/toggle-rec-webcam/main.go
-	go build -o ./bins/toggle-redshift                           ./cmds/toggle-redshift/main.go
-	go build -o ./bins/toggle-scala                              ./cmds/toggle-scala/main.go
-	go build -o ./bins/toggle-screenkey                          ./cmds/toggle-screenkey/main.go
-	go build -o ./bins/toggle-show                               ./cmds/toggle-show/main.go
-	go build -o ./bins/toggle-sublime                            ./cmds/toggle-sublime/main.go
-	go build -o ./bins/toggle-top                                ./cmds/toggle-top/main.go
-	go build -o ./bins/toggle-wallpaper                          ./cmds/toggle-wallpaper/main.go
-	go build -o ./bins/toggle-xournal                            ./cmds/toggle-xournal/main.go
-	go build -o ./bins/toggle-yazi                               ./cmds/toggle-yazi/main.go
-	go build -o ./bins/chrome-open-url-chatgpt                   ./cmds/chrome-open-url-chatgpt/main.go
-	go build -o ./bins/chrome-open-url-doubao                    ./cmds/chrome-open-url-doubao/main.go
-	go build -o ./bins/chrome-open-url-github                    ./cmds/chrome-open-url-github/main.go
-	go build -o ./bins/chrome-open-url-google                    ./cmds/chrome-open-url-google/main.go
-	go build -o ./bins/chrome-open-url-google-mail               ./cmds/chrome-open-url-google-mail/main.go
-	go build -o ./bins/chrome-open-url-google-translate          ./cmds/chrome-open-url-google-translate/main.go
-	go build -o ./bins/chrome-open-url-instagram                 ./cmds/chrome-open-url-instagram/main.go
-	go build -o ./bins/chrome-open-url-leetcode                  ./cmds/chrome-open-url-leetcode/main.go
-	go build -o ./bins/chrome-open-url-wechat                    ./cmds/chrome-open-url-wechat/main.go
-	go build -o ./bins/chrome-open-url-youtube                   ./cmds/chrome-open-url-youtube/main.go
-	go build -o ./bins/qutebrowser-open-url-chatgpt              ./cmds/qutebrowser-open-url-chatgpt/main.go
-	go build -o ./bins/qutebrowser-open-url-doubao               ./cmds/qutebrowser-open-url-doubao/main.go
-	go build -o ./bins/qutebrowser-open-url-github               ./cmds/qutebrowser-open-url-github/main.go
-	go build -o ./bins/qutebrowser-open-url-google               ./cmds/qutebrowser-open-url-google/main.go
-	go build -o ./bins/qutebrowser-open-url-google-mail          ./cmds/qutebrowser-open-url-google-mail/main.go
-	go build -o ./bins/qutebrowser-open-url-google-translate     ./cmds/qutebrowser-open-url-google-translate/main.go
-	go build -o ./bins/qutebrowser-open-url-instagram            ./cmds/qutebrowser-open-url-instagram/main.go
-	go build -o ./bins/qutebrowser-open-url-leetcode             ./cmds/qutebrowser-open-url-leetcode/main.go
-	go build -o ./bins/qutebrowser-open-url-wechat               ./cmds/qutebrowser-open-url-wechat/main.go
-	go build -o ./bins/qutebrowser-open-url-youtube              ./cmds/qutebrowser-open-url-youtube/main.go
+	go build -o ./bins/ssh_to                                    ./cmds/ssh_to/main.go
+	go build -o ./bins/sys_bluetooth                             ./cmds/sys_bluetooth/main.go
+	go build -o ./bins/sys_screen                                ./cmds/sys_screen/main.go
+	go build -o ./bins/sys_shortcuts                             ./cmds/sys_shortcuts/main.go
+	go build -o ./bins/sys_toggle_keyboard_light                 ./cmds/sys_toggle_keyboard_light/main.go
+	go build -o ./bins/sys_wifi_connect                          ./cmds/sys_wifi_connect/main.go
+	go build -o ./bins/toggle_addressbook                        ./cmds/toggle_addressbook/main.go
+	go build -o ./bins/toggle_calendar                           ./cmds/toggle_calendar/main.go
+	go build -o ./bins/toggle_calendar_scheduling                ./cmds/toggle_calendar_scheduling/main.go
+	go build -o ./bins/toggle_calendar_scheduling_today          ./cmds/toggle_calendar_scheduling_today/main.go
+	go build -o ./bins/toggle_clipmenu                           ./cmds/toggle_clipmenu/main.go
+	go build -o ./bins/toggle_flameshot                          ./cmds/toggle_flameshot/main.go
+	go build -o ./bins/toggle_inkscape                           ./cmds/toggle_inkscape/main.go
+	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
+	go build -o ./bins/toggle_irssi                              ./cmds/toggle_irssi/main.go
+	go build -o ./bins/toggle_julia                              ./cmds/toggle_julia/main.go
+	go build -o ./bins/toggle_krita                              ./cmds/toggle_krita/main.go
+	go build -o ./bins/toggle_lazydocker                         ./cmds/toggle_lazydocker/main.go
+	go build -o ./bins/toggle_lazygit                            ./cmds/toggle_lazygit/main.go
+	go build -o ./bins/toggle_lua                                ./cmds/toggle_lua/main.go
+	go build -o ./bins/toggle_music                              ./cmds/toggle_music/main.go
+	go build -o ./bins/toggle_music_net_cloud                    ./cmds/toggle_music_net_cloud/main.go
+	go build -o ./bins/toggle_mutt                               ./cmds/toggle_mutt/main.go
+	go build -o ./bins/toggle_obsidian                           ./cmds/toggle_obsidian/main.go
+	go build -o ./bins/toggle_passmenu                           ./cmds/toggle_passmenu/main.go
+	go build -o ./bins/toggle_python                             ./cmds/toggle_python/main.go
+	go build -o ./bins/toggle_rec_audio                          ./cmds/toggle_rec_audio/main.go
+	go build -o ./bins/toggle_rec_screen                         ./cmds/toggle_rec_screen/main.go
+	go build -o ./bins/toggle_rec_webcam                         ./cmds/toggle_rec_webcam/main.go
+	go build -o ./bins/toggle_redshift                           ./cmds/toggle_redshift/main.go
+	go build -o ./bins/toggle_scala                              ./cmds/toggle_scala/main.go
+	go build -o ./bins/toggle_screenkey                          ./cmds/toggle_screenkey/main.go
+	go build -o ./bins/toggle_show                               ./cmds/toggle_show/main.go
+	go build -o ./bins/toggle_sublime                            ./cmds/toggle_sublime/main.go
+	go build -o ./bins/toggle_top                                ./cmds/toggle_top/main.go
+	go build -o ./bins/toggle_wallpaper                          ./cmds/toggle_wallpaper/main.go
+	go build -o ./bins/toggle_xournal                            ./cmds/toggle_xournal/main.go
+	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
+	go build -o ./bins/chrome_open_url_chatgpt                   ./cmds/chrome_open_url_chatgpt/main.go
+	go build -o ./bins/chrome_open_url_doubao                    ./cmds/chrome_open_url_doubao/main.go
+	go build -o ./bins/chrome_open_url_github                    ./cmds/chrome_open_url_github/main.go
+	go build -o ./bins/chrome_open_url_google                    ./cmds/chrome_open_url_google/main.go
+	go build -o ./bins/chrome_open_url_google_mail               ./cmds/chrome_open_url_google_mail/main.go
+	go build -o ./bins/chrome_open_url_google_translate          ./cmds/chrome_open_url_google_translate/main.go
+	go build -o ./bins/chrome_open_url_instagram                 ./cmds/chrome_open_url_instagram/main.go
+	go build -o ./bins/chrome_open_url_leetcode                  ./cmds/chrome_open_url_leetcode/main.go
+	go build -o ./bins/chrome_open_url_wechat                    ./cmds/chrome_open_url_wechat/main.go
+	go build -o ./bins/chrome_open_url_youtube                   ./cmds/chrome_open_url_youtube/main.go
 	@echo "Done!"
 
 .PHONY: default

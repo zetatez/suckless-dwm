@@ -1,8 +1,0 @@
-#!/bin/sh
-
-if [[ "$#" -ne 0 ]]; then
-  cd $(autojump $@)
-  return
-fi
-local dest="$(fd --type d . /Users/shiyi | fzf --prompt='jump to >' --preview 'lazy -p {}' --select-1 --exit-0)"
-echo "cd $dest" && cd $dest

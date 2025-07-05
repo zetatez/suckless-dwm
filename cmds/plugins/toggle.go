@@ -101,7 +101,7 @@ func ToggleKrita() {
 func TogglePython() {
 	switch sugar.GetOSTerminal() {
 	case "st":
-		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt'", WinNameScratchPad, WinNameScratchPad))
+		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'", WinNameScratchPad, WinNameScratchPad))
 	case "kitty":
 		sugar.Toggle("kitty -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt'")
 	}
