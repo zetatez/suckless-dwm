@@ -39,7 +39,7 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
