@@ -17,7 +17,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
 	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
 	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
-	go build -o ./bins/launch_qutebrowser                        ./cmds/launch_qutebrowser/main.go
 	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
 	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
 	go build -o ./bins/note_diary                                ./cmds/note_diary/main.go
@@ -72,16 +71,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/chrome_open_url_leetcode                  ./cmds/chrome_open_url_leetcode/main.go
 	go build -o ./bins/chrome_open_url_wechat                    ./cmds/chrome_open_url_wechat/main.go
 	go build -o ./bins/chrome_open_url_youtube                   ./cmds/chrome_open_url_youtube/main.go
-	go build -o ./bins/qutebrowser_open_url_chatgpt              ./cmds/qutebrowser_open_url_chatgpt/main.go
-	go build -o ./bins/qutebrowser_open_url_doubao               ./cmds/qutebrowser_open_url_doubao/main.go
-	go build -o ./bins/qutebrowser_open_url_github               ./cmds/qutebrowser_open_url_github/main.go
-	go build -o ./bins/qutebrowser_open_url_google               ./cmds/qutebrowser_open_url_google/main.go
-	go build -o ./bins/qutebrowser_open_url_google_mail          ./cmds/qutebrowser_open_url_google_mail/main.go
-	go build -o ./bins/qutebrowser_open_url_google_translate     ./cmds/qutebrowser_open_url_google_translate/main.go
-	go build -o ./bins/qutebrowser_open_url_instagram            ./cmds/qutebrowser_open_url_instagram/main.go
-	go build -o ./bins/qutebrowser_open_url_leetcode             ./cmds/qutebrowser_open_url_leetcode/main.go
-	go build -o ./bins/qutebrowser_open_url_wechat               ./cmds/qutebrowser_open_url_wechat/main.go
-	go build -o ./bins/qutebrowser_open_url_youtube              ./cmds/qutebrowser_open_url_youtube/main.go
 	@echo "Done!"
 
 .PHONY: default
