@@ -12,34 +12,33 @@ import (
 )
 
 func ToggleAddressbook() {
-	sugar.Toggle(fmt.Sprintf("%s -e abook", sugar.GetOSTerminal()))
+	sugar.Toggle("st -e abook")
 }
 
 func ToggleCalendar() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=month'", sugar.GetGeoForTerminal(0.84, 0.04, 24, 12), WinNameFloatWindow, WinNameFloatWindow))
-	case "kitty":
-		sugar.Toggle("kitty -e nvim +':set laststatus=0' +'Calendar -view=month'")
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=month'",
+			sugar.GetGeoForTerminal(0.84, 0.04, 24, 12),
+			WinNameFloatWindow,
+			WinNameFloatWindow,
+		),
+	)
 }
 
 func ToggleCalendarSchedulingToday() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'", sugar.GetGeoForTerminal(0.80, 0.05, 36, 32), WinNameFloatWindow, WinNameFloatWindow))
-	case "kitty":
-		sugar.Toggle("kitty -e nvim +':set laststatus=0' +'Calendar -view=day'")
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'",
+			sugar.GetGeoForTerminal(0.80, 0.05, 36, 32),
+			WinNameFloatWindow,
+			WinNameFloatWindow,
+		),
+	)
 }
 
 func ToggleCalendarScheduling() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
-	case "kitty":
-		sugar.Toggle("kitty -e nvim +':set laststatus=0' +'Calendar -view=week'")
-	}
+	sugar.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
 }
 
 func ToggleFlameshot() {
@@ -51,24 +50,40 @@ func ToggleInkscape() {
 }
 
 func ToggleYazi() {
-	sugar.Toggle(fmt.Sprintf("%s -e yazi", sugar.GetOSTerminal()))
+	sugar.Toggle(
+		fmt.Sprintf(
+			"%s -e yazi",
+			sugar.GetOSTerminal(),
+		),
+	)
 }
 
 func ToggleJulia() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e julia", WinNameScratchPad, WinNameScratchPad))
-	case "kitty":
-		sugar.Toggle(fmt.Sprintf("kitty -T %s -e julia", WinNameScratchPad))
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -t %s -c %s -e julia",
+			WinNameScratchPad,
+			WinNameScratchPad,
+		),
+	)
 }
 
 func ToggleLazyDocker() {
-	sugar.Toggle(fmt.Sprintf("%s -e lazydocker", sugar.GetOSTerminal()))
+	sugar.Toggle(
+		fmt.Sprintf(
+			"%s -e lazydocker",
+			sugar.GetOSTerminal(),
+		),
+	)
 }
 
 func ToggleLazyGit() {
-	sugar.Toggle(fmt.Sprintf("%s -e lazygit", sugar.GetOSTerminal()))
+	sugar.Toggle(
+		fmt.Sprintf(
+			"%s -e lazygit",
+			sugar.GetOSTerminal(),
+		),
+	)
 }
 
 func ToggleMusic() {
@@ -76,12 +91,22 @@ func ToggleMusic() {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(fmt.Sprintf("%s -e cava", sugar.GetOSTerminal()))
+		sugar.Toggle(
+			fmt.Sprintf(
+				"%s -e cava",
+				sugar.GetOSTerminal(),
+			),
+		)
 	}()
 	time.Sleep(10 * time.Millisecond)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(fmt.Sprintf("%s -e ncmpcpp", sugar.GetOSTerminal()))
+		sugar.Toggle(
+			fmt.Sprintf(
+				"%s -e ncmpcpp",
+				sugar.GetOSTerminal(),
+			),
+		)
 	}()
 	wg.Wait()
 }
@@ -91,7 +116,12 @@ func ToggleMusicNetCloud() {
 }
 
 func ToggleMutt() {
-	sugar.Toggle(fmt.Sprintf("%s -e mutt", sugar.GetOSTerminal()))
+	sugar.Toggle(
+		fmt.Sprintf(
+			"%s -e mutt",
+			sugar.GetOSTerminal(),
+		),
+	)
 }
 
 func ToggleKrita() {
@@ -99,47 +129,62 @@ func ToggleKrita() {
 }
 
 func TogglePython() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'", WinNameScratchPad, WinNameScratchPad))
-	case "kitty":
-		sugar.Toggle("kitty -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt'")
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'",
+			WinNameScratchPad,
+			WinNameScratchPad,
+		),
+	)
 }
 
 func ToggleScala() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e scala", WinNameScratchPad, WinNameScratchPad))
-	case "kitty":
-		sugar.Toggle("kitty -e scala")
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -t %s -c %s -e scala",
+			WinNameScratchPad,
+			WinNameScratchPad,
+		),
+	)
 }
 
 func ToggleLua() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -t %s -c %s -e lua", WinNameScratchPad, WinNameScratchPad))
-	case "kitty":
-		sugar.Toggle("kitty -e lua")
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -t %s -c %s -e lua",
+			WinNameScratchPad,
+			WinNameScratchPad,
+		),
+	)
 }
 
 func ToggleTTYClock() {
-	switch sugar.GetOSTerminal() {
-	case "st":
-		sugar.Toggle(fmt.Sprintf("st -g %s -t %s -c %s -e tty-clock -s", sugar.GetGeoForTerminal(0.72, 0.04, 53, 8), WinNameFloatWindow, WinNameFloatWindow))
-	case "kitty":
-		sugar.Toggle("kitty -e tty-clock -s")
-	}
+	sugar.Toggle(
+		fmt.Sprintf(
+			"st -g %s -t %s -c %s -e tty-clock -s",
+			sugar.GetGeoForTerminal(0.72, 0.04, 53, 8),
+			WinNameFloatWindow,
+			WinNameFloatWindow,
+		),
+	)
 }
 
 func ToggleIrssi() {
-	sugar.Toggle(fmt.Sprintf("%s -e irssi", sugar.GetOSTerminal()))
+	sugar.Toggle(
+		fmt.Sprintf(
+			"%s -e irssi",
+			sugar.GetOSTerminal(),
+		),
+	)
 }
 
 func ToggleNewsboat() {
-	sugar.Toggle(fmt.Sprintf("%s -e newsboat", sugar.GetOSTerminal()))
+	sugar.Toggle(
+		fmt.Sprintf(
+			"%s -e newsboat",
+			sugar.GetOSTerminal(),
+		),
+	)
 }
 
 func ToggleScreenKey() {
@@ -155,12 +200,15 @@ func ToggleObsidian() {
 }
 
 func ToggleTop() {
-	sugar.Toggle(fmt.Sprintf("%s -e htop", sugar.GetOSTerminal()))
+	sugar.Toggle("st -e htop")
 }
 
 func ToggleWallpaper() {
 	sugar.Toggle(
-		fmt.Sprintf("feh --bg-fill --recursive --randomize %s", path.Join(os.Getenv("HOME"), WallPaperPath)),
+		fmt.Sprintf(
+			"feh --bg-fill --recursive --randomize %s",
+			path.Join(os.Getenv("HOME"), WallPaperPath),
+		),
 	)
 }
 
@@ -201,13 +249,15 @@ func ToggleRecAudio() {
 	case sugar.IsRunning("ffmpeg"):
 		sugar.Kill("ffmpeg")
 	default:
-		switch sugar.GetOSTerminal() {
-		case "st":
-			sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -t %s -c %s -e %s", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))))))
-		case "kitty":
-			sugar.NewExecService().RunScript("bash", fmt.Sprintf("kitty -t %s -e %s", WinNameScratchPad, fmt.Sprintf("ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))))))
-		}
-
+		sugar.NewExecService().RunScript(
+			"bash",
+			fmt.Sprintf(
+				"st -t %s -c %s -e ffmpeg -y -r 60 -f alsa -i default -c:a flac %s",
+				WinNameScratchPad,
+				WinNameScratchPad,
+				path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))),
+			),
+		)
 	}
 }
 
@@ -217,12 +267,18 @@ func ToggleRecScreen() {
 		sugar.Kill("ffmpeg")
 	default:
 		w, h := sugar.GetScreenSize()
-		switch sugar.GetOSTerminal() {
-		case "st":
-			sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -t %s -c %s -e %s ", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", w, h, os.Getenv("DISPLAY"), path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))))))
-		case "kitty":
-			sugar.NewExecService().RunScript("bash", fmt.Sprintf("kitty -T %s -e %s ", WinNameScratchPad, fmt.Sprintf("ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", w, h, os.Getenv("DISPLAY"), path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))))))
-		}
+		sugar.NewExecService().RunScript(
+			"bash",
+			fmt.Sprintf(
+				"st -t %s -c %s -e ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s",
+				WinNameScratchPad,
+				WinNameScratchPad,
+				w,
+				h,
+				os.Getenv("DISPLAY"),
+				path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-screen-%s.mkv", time.Now().Local().Format("2006-01-02-15-04-05"))),
+			),
+		)
 	}
 }
 
@@ -231,12 +287,15 @@ func ToggleRecWebcam() {
 	case sugar.IsRunning("ffmpeg"):
 		sugar.Kill("ffmpeg")
 	default:
-		switch sugar.GetOSTerminal() {
-		case "st":
-			sugar.NewExecService().RunScript("bash", fmt.Sprintf("st -t %s -c %s -e %s", WinNameScratchPad, WinNameScratchPad, fmt.Sprintf("ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))))))
-		case "kitty":
-			sugar.NewExecService().RunScript("bash", fmt.Sprintf("kitty -T %s -e %s", WinNameScratchPad, fmt.Sprintf("ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))))))
-		}
+		sugar.NewExecService().RunScript(
+			"bash",
+			fmt.Sprintf(
+				"st -t %s -c %s -e ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s",
+				WinNameScratchPad,
+				WinNameScratchPad,
+				path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))),
+			),
+		)
 	}
 }
 
@@ -245,8 +304,9 @@ func ToggleShow() {
 	case sugar.IsRunning("ffplay"):
 		sugar.Kill("ffplay")
 	default:
-		sugar.NewExecService().RunScript("bash",
-			fmt.Sprintf("%s -e %s", sugar.GetOSTerminal(), "ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0"),
+		sugar.NewExecService().RunScript(
+			"bash",
+			"st -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0",
 		)
 	}
 }
