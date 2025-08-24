@@ -71,6 +71,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/chrome_open_url_leetcode                  ./cmds/chrome_open_url_leetcode/main.go
 	go build -o ./bins/chrome_open_url_wechat                    ./cmds/chrome_open_url_wechat/main.go
 	go build -o ./bins/chrome_open_url_youtube                   ./cmds/chrome_open_url_youtube/main.go
+	chmod +x ./bins/*
 	@echo "Done!"
 
 .PHONY: default
