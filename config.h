@@ -2,8 +2,8 @@
 
 #define SUPKEY  Mod4Mask
 #define MODKEY  Mod1Mask
-#define Termi(cmd) (const char *[]){ "st", "-e", "/bin/sh", "-c", cmd, NULL }
-#define Shell(cmd)    (const char *[]){ "/bin/sh", "-c", cmd, NULL }
+#define Termi(cmd) (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
+#define Shell(cmd)    (const char *[]){"/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
 static const unsigned int borderpx = 1;
@@ -17,24 +17,27 @@ static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 1;
 static const int swallowfloating   = 1;
-static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=15" };
-static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=15";
+static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
+static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=18";
 static const char col_gray1[]      = "#222222";
 static const char col_gray2[]      = "#444444";
 static const char col_gray3[]      = "#bbbbbb";
 static const char col_gray4[]      = "#eeeeee";
 static const char col_cyan[]       = "#005577";
+static const char col_bg[]       = "#E06C75";
+static const char col_fg[]       = "#FFFF00";
 static const char *colors[][3]     = {
-  /*               fg         bg         border   */
-  [SchemeNorm] = { col_gray3, col_cyan, col_gray2 },
-  [SchemeSel]  = { col_gray4, col_cyan, col_cyan },
+//                  fg         bg        border
+// [SchemeNorm] = { col_gray3, col_cyan, col_gray2 },
+// [SchemeSel]  = { col_gray4, col_cyan, col_cyan  },
+   [SchemeNorm] = { col_bg   , col_cyan, col_gray2 },
+   [SchemeSel]  = { col_fg   , col_cyan, col_cyan  },
 };
 
 static const char *const autostart[] = {
-  "dwmblocks", NULL,
-  "picom"    , NULL,
-  "hhkb"     , NULL,
-  "autostart", NULL,
+  "dwmblocks"        , NULL ,
+  "reset_sys_default", NULL ,
+  "daemon"           , NULL ,
   NULL,
 };
 
@@ -46,7 +49,7 @@ static const Rule rules[] = {
   {"floatwindow",            NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for markdown
-  {"chrome",                 NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for typst
+  {"chrome",                 NULL,       NULL,      0,            0,            0,             0,           -1 },
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
@@ -64,7 +67,7 @@ static const int lockfullscreen     = 0;
 static const int refreshrate        = 120;  /* refresh rate (per second) for client move/resize */
 
 static const Layout layouts[] = {
-{ ""                  , layout_workflow           }, // default
+{ "󰴈"                  , layout_workflow           }, // default
 { ""                  , layout_fib_spiral         },
 { ""                  , layout_fib_dwindle        },
 { "⧈"                  , layout_center_free_shape  },
@@ -95,17 +98,17 @@ static const Key keys[] = {
 { SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys_volume_down")                       } },
 { SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys_volume_up")                         } },
 { SUPKEY,                       XK_F4,           spawn,             {.v = Shell("sys_micro_toggle")                      } },
-{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys_micro_down")                        } },
-{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys_micro_up")                          } },
-{ SUPKEY,                       XK_F7,           spawn,             {.v = Shell("sys_wifi_connect")                      } },
-{ SUPKEY,                       XK_F8,           spawn,             {.v = Shell("sys_screen")                            } },
+{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys_screen_light_down")                 } },
+{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys_screen_light_up")                   } },
+{ SUPKEY,                       XK_F7,           spawn,             {.v = Shell("sys_screen")                            } },
+{ SUPKEY,                       XK_F8,           spawn,             {.v = Shell("sys_wifi_connect")                      } },
 { SUPKEY,                       XK_F9,           spawn,             {.v = Shell("sys_bluetooth")                         } },
-{ SUPKEY,                       XK_F10,          spawn,             {.v = Shell("sys_screen_light_down")                 } },
-{ SUPKEY,                       XK_F11,          spawn,             {.v = Shell("sys_screen_light_up")                   } },
+{ SUPKEY,                       XK_F10,          spawn,             {.v = Shell("sys_micro_down")                        } },
+{ SUPKEY,                       XK_F11,          spawn,             {.v = Shell("sys_micro_up")                          } },
 { SUPKEY,                       XK_F12,          spawn,             {.v = Shell("sys_toggle_keyboard_light")             } },
 
-{ SUPKEY,                       XK_1,            spawn,             {.v = Shell("chrome_open_url_chatgpt")               } },
 { SUPKEY,                       XK_2,            spawn,             {.v = Shell("chrome_open_url_youtube")               } },
+{ SUPKEY,                       XK_1,            spawn,             {.v = Shell("chrome_open_url_chatgpt")               } },
 { SUPKEY,                       XK_3,            spawn,             {.v = Shell("chrome_open_url_github")                } },
 { SUPKEY,                       XK_4,            spawn,             {.v = Shell("chrome_open_url_google_mail")           } },
 { SUPKEY,                       XK_5,            spawn,             {.v = Shell("chrome_open_url_google_translate")      } },
@@ -147,7 +150,7 @@ static const Key keys[] = {
 { SUPKEY,                       XK_n,            spawn,             {.v = Shell("toggle_python")                         } },
 { SUPKEY,                       XK_o,            spawn,             {.v = Shell("handle_copied")                         } },
 { SUPKEY,                       XK_p,            spawn,             {.v = Termi("lazy_open_search_book")                 } },
-{ SUPKEY,                       XK_q,            spawn,             {.v = Shell("systemctl suspend && slock")            } },
+{ SUPKEY,                       XK_q,            spawn,             {.v = Shell("slock")                                 } },
 { SUPKEY,                       XK_r,            spawn,             {.v = Shell("toggle_yazi")                           } },
 { SUPKEY,                       XK_s,            spawn,             {.v = Shell("search")                                } },
 { SUPKEY,                       XK_t,            spawn,             {.v = Termi("lazy_open_search_file")                 } },
@@ -160,7 +163,7 @@ static const Key keys[] = {
 { SUPKEY,                       XK_Escape,       spawn,             {.v = Shell("toggle_top")                            } },
 { SUPKEY,                       XK_Delete,       spawn,             {.v = Shell("sys_shortcuts")                         } },
 { SUPKEY,                       XK_BackSpace,    spawn,             {.v = Shell("toggle_passmenu")                       } },
-{ SUPKEY,                       XK_backslash,    spawn,             {.v = Shell("set_keyboard_rate")                     } },
+{ SUPKEY,                       XK_backslash,    spawn,             {.v = Shell("reset_sys_default")                     } },
 { SUPKEY,                       XK_semicolon,    spawn,             {.v = Shell("jump_to_code_from_log")                 } },
 { SUPKEY,                       XK_apostrophe,   spawn,             {.v = Shell("toggle_tty_clock")                      } },
 { SUPKEY,                       XK_bracketleft,  spawn,             {.v = Shell("toggle_calendar_scheduling")            } },
@@ -170,8 +173,6 @@ static const Key keys[] = {
 // { SUPKEY,                       XK_comma,        spawn,             {.v =                                             } },
 // { SUPKEY,                       XK_period,       spawn,             {.v =                                             } },
 // { SUPKEY,                       XK_slash,        spawn,             {.v =                                             } },
-  //
-{ SUPKEY|ShiftMask,             XK_a,            spawn,             {.v = Shell("toggle_addressbook")                    } },
 { SUPKEY|ShiftMask,             XK_s,            spawn,             {.v = Shell("toggle_sublime")                        } },
 { SUPKEY|ShiftMask,             XK_c,            killclient,        {0                                                   } },
 { SUPKEY|ShiftMask,             XK_i,            spawn,             {.v = Shell("toggle_inkscape")                       } },
@@ -179,27 +180,28 @@ static const Key keys[] = {
 { SUPKEY|ShiftMask,             XK_n,            spawn,             {.v = Shell("toggle_julia")                          } },
 { SUPKEY|ShiftMask,             XK_o,            spawn,             {.v = Shell("toggle_obsidian")                       } },
 { SUPKEY|ShiftMask,             XK_p,            spawn,             {.v = Shell("toggle_krita")                          } },
-{ SUPKEY|ShiftMask,             XK_r,            spawn,             {.v = Shell("toggle_redshift")                       } },
 { SUPKEY|ShiftMask,             XK_x,            spawn,             {.v = Shell("toggle_wallpaper")                      } },
-// { SUPKEY|ShiftMask,             XK_z,            spawn,             {.v =                                                } },
 { SUPKEY|ShiftMask,             XK_Delete,       spawn,             {.v = Shell("systemctl poweroff")                    } },
 { SUPKEY|ShiftMask,             XK_comma,        spawn,             {.v = Shell("toggle_rec_audio")                      } },
 { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             {.v = Shell("toggle_screenkey")                      } },
 { SUPKEY|ShiftMask,             XK_period,       spawn,             {.v = Shell("toggle_rec_screen")                     } },
 { SUPKEY|ShiftMask,             XK_slash,        spawn,             {.v = Shell("toggle_rec_webcam")                     } },
 { SUPKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                                        } },
+// { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_b,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_d,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_e,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_f,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_g,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_q,            spawn,             {.v =                                             } },
+// { SUPKEY|ShiftMask,             XK_r,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_s,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_t,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_u,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_v,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_w,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_y,            spawn,             {.v =                                             } },
+// { SUPKEY|ShiftMask,             XK_z,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_Home,         spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_End,          spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_Escape,       spawn,             {.v =                                             } },

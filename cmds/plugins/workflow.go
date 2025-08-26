@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"cmds/sugar"
+	"cmds/utils"
 
 	"golang.design/x/clipboard"
 )
@@ -20,33 +20,33 @@ import (
 func GetHostName() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	cmd := "hostname"
-	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	content := stdout
-	sugar.Notify(fmt.Sprintf("get success: %s", content))
+	utils.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
 	<-changed
-	sugar.Notify("previous clipboard expired")
+	utils.Notify("previous clipboard expired")
 }
 
 func GetIPAddress() {
 	interfaceName := "wlan0"
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 
 	addrs, err := iface.Addrs()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 
@@ -66,10 +66,10 @@ func GetIPAddress() {
 
 		if ip.To4() != nil {
 			content := ip.String()
-			sugar.Notify(fmt.Sprintf("get success: %s", content))
+			utils.Notify(fmt.Sprintf("get success: %s", content))
 			changed := clipboard.Write(clipboard.FmtText, []byte(content))
 			<-changed
-			sugar.Notify("previous clipboard expired")
+			utils.Notify("previous clipboard expired")
 		}
 	}
 }
@@ -77,90 +77,90 @@ func GetIPAddress() {
 func GetCurrentDatetime() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	content := time.Now().Format(time.DateTime)
-	sugar.Notify(fmt.Sprintf("get success: %s", content))
+	utils.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
 	<-changed
-	sugar.Notify("previous clipboard expired")
+	utils.Notify("previous clipboard expired")
 }
 
 func GetCurrentUnixSec() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	content := fmt.Sprintf("%d", time.Now().Unix())
-	sugar.Notify(fmt.Sprintf("get success: %s", content))
+	utils.Notify(fmt.Sprintf("get success: %s", content))
 	changed := clipboard.Write(clipboard.FmtText, []byte(content))
 	<-changed
-	sugar.Notify("previous clipboard expired")
+	utils.Notify("previous clipboard expired")
 }
 
 func TransformDatetime2UnixSec() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	text := clipboard.Read(clipboard.FmtText)
 
 	t, err := time.Parse(time.DateTime, strings.TrimSpace(string(text)))
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	formatedText := fmt.Sprintf("%d", t.Unix())
-	sugar.Notify(fmt.Sprintf("tranfer success: \n%s", formatedText))
+	utils.Notify(fmt.Sprintf("tranfer success: \n%s", formatedText))
 	changed := clipboard.Write(clipboard.FmtText, []byte(formatedText))
 	<-changed
-	sugar.Notify("previous clipboard expired")
+	utils.Notify("previous clipboard expired")
 }
 
 func TransformUnixSec2DateTime() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	text := clipboard.Read(clipboard.FmtText)
 	unix, err := strconv.ParseInt(strings.TrimSpace(string(text)), 10, 64)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	datetime := time.Unix(unix, 0).Format(time.DateTime)
-	sugar.Notify(fmt.Sprintf("tranfer success: \n%s", datetime))
+	utils.Notify(fmt.Sprintf("tranfer success: \n%s", datetime))
 	changed := clipboard.Write(clipboard.FmtText, []byte(datetime))
 	<-changed
-	sugar.Notify("previous clipboard expired")
+	utils.Notify("previous clipboard expired")
 }
 
 func LazyOpenSearchFile() {
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", sugar.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchBook() {
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", sugar.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchWiki() {
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", sugar.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchMedia() {
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", sugar.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchFileContent() {
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", sugar.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", utils.GetOSDefaultTerminal()))
 }
 
 func SearchFromWeb(content string) {
-	sugar.NewExecService().RunScript("bash",
+	utils.RunScript("bash",
 		fmt.Sprintf(
 			"chrome --proxy-server=%s https://www.google.com/search?q='%s'",
 			// "qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
@@ -171,9 +171,9 @@ func SearchFromWeb(content string) {
 }
 
 func SearchBooksOnline() {
-	content, err := sugar.GetInput("search books online: ")
+	content, err := utils.GetInput("search books online: ")
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	urls := []string{
@@ -186,7 +186,7 @@ func SearchBooksOnline() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			sugar.NewExecService().RunScript("bash",
+			utils.RunScript("bash",
 				fmt.Sprintf(
 					// "chrome --proxy-server=%s %s",
 					"qutebrowser --set content.proxy %s %s",
@@ -200,9 +200,9 @@ func SearchBooksOnline() {
 }
 
 func SearchVideosOnline() {
-	content, err := sugar.GetInput("search videos online: ")
+	content, err := utils.GetInput("search videos online: ")
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	urls := []string{
@@ -214,7 +214,7 @@ func SearchVideosOnline() {
 		wg.Add(1)
 		go func(url string) {
 			defer wg.Done()
-			sugar.NewExecService().RunScript("bash",
+			utils.RunScript("bash",
 				fmt.Sprintf(
 					// "chrome --proxy-server=%s %s",
 					"qutebrowser --set content.proxy %s %s",
@@ -230,16 +230,16 @@ func SearchVideosOnline() {
 func NoteScripts() {
 	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
 	filePath := path.Join(fileDir, "scripts.md")
-	if !sugar.IsDirExists(fileDir) {
+	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 	}
-	if !sugar.IsFileExists(filePath) {
+	if !utils.IsFileExists(filePath) {
 		f, err := os.Create(filePath)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		fmt.Fprintf(f, "\n## Scripts\n\n")
@@ -247,27 +247,30 @@ func NoteScripts() {
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	fmt.Fprintf(f, "\n\n###")
 	f.Close()
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	utils.RunScript(
+		"bash",
+		fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath),
+	)
 }
 
 func NoteToDo() {
 	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
 	filePath := path.Join(fileDir, "ToDo.md")
-	if !sugar.IsDirExists(fileDir) {
+	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 	}
-	if !sugar.IsFileExists(filePath) {
+	if !utils.IsFileExists(filePath) {
 		f, err := os.Create(filePath)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		fmt.Fprintf(f, "\n## ToDo\n\n")
@@ -275,34 +278,34 @@ func NoteToDo() {
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	fmt.Fprintf(f, fmt.Sprintf("\n- [ ] %s", time.Now().Format(time.DateOnly)))
 	f.Close()
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func NoteDiary() {
 	dateStr := time.Now().Format(time.DateOnly)
 	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "diary")
 	filePath := path.Join(fileDir, dateStr+".md")
-	if !sugar.IsDirExists(fileDir) {
+	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 	}
-	if !sugar.IsFileExists(filePath) {
+	if !utils.IsFileExists(filePath) {
 		f, err := os.Create(filePath)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		fmt.Fprintf(f, "\n### Diary %s\n\n", dateStr)
 		f.Close()
 	}
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", sugar.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func NoteTimeline() {
@@ -311,16 +314,16 @@ func NoteTimeline() {
 	datetimeStr := t.Format(time.DateTime)
 	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "timeline")
 	filePath := path.Join(fileDir, dateStr+".md")
-	if !sugar.IsDirExists(fileDir) {
+	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 	}
-	if !sugar.IsFileExists(filePath) {
+	if !utils.IsFileExists(filePath) {
 		f, err := os.Create(filePath)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		fmt.Fprintf(f, "\n## Time Line %s\n\n", dateStr)
@@ -328,49 +331,49 @@ func NoteTimeline() {
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
 	f.Close()
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func NoteFlashCard() {
 	t := time.Now()
 	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "flash-card")
 	filePath := path.Join(fileDir, t.Format("2006-01-02.15.04.05.000000000")+".md")
-	if !sugar.IsDirExists(fileDir) {
+	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 	}
-	if !sugar.IsFileExists(filePath) {
+	if !utils.IsFileExists(filePath) {
 		f, err := os.Create(filePath)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		fmt.Fprintf(f, "### Flash Card %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", sugar.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func HandleCopied() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	text := clipboard.Read(clipboard.FmtText)
 	content := strings.TrimSpace(string(text))
 	switch {
-	case sugar.Exists(content) && sugar.IsFile(content):
-		sugar.Lazy("open", content)
+	case utils.Exists(content) && utils.IsFile(content):
+		utils.Lazy("open", content)
 		return
-	case sugar.IsUrl(content):
+	case utils.IsURL(content):
 		ChromeOpenUrl("--proxy-server="+ProxyServer, content)()
 		return
 	default:
@@ -381,7 +384,7 @@ func HandleCopied() {
 func JumpToCodeFromLog() {
 	err := clipboard.Init()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	textbyte := clipboard.Read(clipboard.FmtText)
@@ -390,24 +393,24 @@ func JumpToCodeFromLog() {
 	r := regexp.MustCompile(regex)
 	match := r.FindStringSubmatch(text)
 	if len(match) < 3 {
-		sugar.Notify("not match")
+		utils.Notify("not match")
 		return
 	}
 	filepath := match[1]
 	row := match[2]
-	_, _, err = sugar.NewExecService().RunScript("bash", fmt.Sprintf("%s -e nvim +%s %s", sugar.GetOSTerminal(), row, filepath))
+	_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +%s %s", utils.GetOSDefaultTerminal(), row, filepath))
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 }
 
 func SshTo() {
 	mysshListFilePath := path.Join(os.Getenv("HOME"), ".ssh/my.ssh.list")
-	if !sugar.IsFileExists(mysshListFilePath) {
+	if !utils.IsFileExists(mysshListFilePath) {
 		f, err := os.Create(mysshListFilePath)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		f.Close()
@@ -416,7 +419,7 @@ func SshTo() {
 	// read from to ~/.ssh/my.ssh.list
 	b, err := os.ReadFile(mysshListFilePath)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	mySshList := []map[string]string{}
@@ -442,9 +445,9 @@ func SshTo() {
 	}
 
 	// read from ~/.ssh/known_hosts
-	knownHosts, err := sugar.GetKnownHosts()
+	knownHosts, err := utils.GetKnownHosts()
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 
@@ -458,9 +461,9 @@ func SshTo() {
 	}
 
 	// choose
-	chioce, err := sugar.Choose("ssh to: ", promptList)
+	chioce, err := utils.Choose("ssh to: ", promptList)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	chioce = strings.TrimSpace(chioce)
@@ -471,33 +474,33 @@ func SshTo() {
 		host := strings.TrimSpace(slice[0])
 		user := strings.TrimSpace(slice[1])
 		password := strings.TrimSpace(slice[2])
-		err = sugar.SSH(host, 22, user, password)
+		err = utils.SSH(host, 22, user, password)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 		return
 	default:
 		host := strings.TrimSpace(slice[0])
-		user, err := sugar.GetInput("user: ")
+		user, err := utils.GetInput("user: ")
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
-		password, err := sugar.GetInput("password: ")
+		password, err := utils.GetInput("password: ")
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
-		desc, err := sugar.GetInput("desc: ")
+		desc, err := utils.GetInput("desc: ")
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 
-		err = sugar.SSH(host, 22, user, password)
+		err = utils.SSH(host, 22, user, password)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 			return
 		}
 
@@ -508,7 +511,7 @@ func SshTo() {
 			0o666,
 		)
 		if err != nil {
-			sugar.Notify(err)
+			utils.Notify(err)
 		}
 		defer file.Close()
 		writer := bufio.NewWriter(file)

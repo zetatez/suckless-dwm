@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cmds/sugar"
+	"cmds/utils"
 )
 
 func main() {
-	sugar.Toggle("st -e mutt")
+	utils.Toggle("st -e mutt")
 }

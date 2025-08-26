@@ -8,18 +8,18 @@ import (
 	"sync"
 	"time"
 
-	"cmds/sugar"
+	"cmds/utils"
 )
 
 func ToggleAddressbook() {
-	sugar.Toggle("st -e abook")
+	utils.Toggle("st -e abook")
 }
 
 func ToggleCalendar() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=month'",
-			sugar.GetGeoForTerminal(0.84, 0.04, 24, 12),
+			utils.GetGeoForTerminal(0.84, 0.04, 24, 12),
 			WinNameFloatWindow,
 			WinNameFloatWindow,
 		),
@@ -27,10 +27,10 @@ func ToggleCalendar() {
 }
 
 func ToggleCalendarSchedulingToday() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'",
-			sugar.GetGeoForTerminal(0.80, 0.05, 36, 32),
+			utils.GetGeoForTerminal(0.80, 0.05, 36, 32),
 			WinNameFloatWindow,
 			WinNameFloatWindow,
 		),
@@ -38,28 +38,28 @@ func ToggleCalendarSchedulingToday() {
 }
 
 func ToggleCalendarScheduling() {
-	sugar.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
+	utils.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
 }
 
 func ToggleFlameshot() {
-	sugar.Toggle("flameshot gui")
+	utils.Toggle("flameshot gui")
 }
 
 func ToggleInkscape() {
-	sugar.Toggle("inkscape")
+	utils.Toggle("inkscape")
 }
 
 func ToggleYazi() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e yazi",
-			sugar.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
 
 func ToggleJulia() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e julia",
 			WinNameScratchPad,
@@ -69,19 +69,19 @@ func ToggleJulia() {
 }
 
 func ToggleLazyDocker() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e lazydocker",
-			sugar.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
 
 func ToggleLazyGit() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e lazygit",
-			sugar.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
@@ -91,20 +91,20 @@ func ToggleMusic() {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(
+		utils.Toggle(
 			fmt.Sprintf(
 				"%s -e cava",
-				sugar.GetOSTerminal(),
+				utils.GetOSDefaultShell(),
 			),
 		)
 	}()
 	time.Sleep(10 * time.Millisecond)
 	go func() {
 		defer wg.Done()
-		sugar.Toggle(
+		utils.Toggle(
 			fmt.Sprintf(
 				"%s -e ncmpcpp",
-				sugar.GetOSTerminal(),
+				utils.GetOSDefaultShell(),
 			),
 		)
 	}()
@@ -112,24 +112,24 @@ func ToggleMusic() {
 }
 
 func ToggleMusicNetCloud() {
-	sugar.Toggle("netease-cloud-music")
+	utils.Toggle("netease-cloud-music")
 }
 
 func ToggleMutt() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e mutt",
-			sugar.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
 
 func ToggleKrita() {
-	sugar.Toggle("krita")
+	utils.Toggle("krita")
 }
 
 func TogglePython() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'",
 			WinNameScratchPad,
@@ -139,7 +139,7 @@ func TogglePython() {
 }
 
 func ToggleScala() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e scala",
 			WinNameScratchPad,
@@ -149,7 +149,7 @@ func ToggleScala() {
 }
 
 func ToggleLua() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e lua",
 			WinNameScratchPad,
@@ -159,10 +159,10 @@ func ToggleLua() {
 }
 
 func ToggleTTYClock() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e tty-clock -s",
-			sugar.GetGeoForTerminal(0.72, 0.04, 53, 8),
+			utils.GetGeoForTerminal(0.72, 0.04, 53, 8),
 			WinNameFloatWindow,
 			WinNameFloatWindow,
 		),
@@ -170,41 +170,41 @@ func ToggleTTYClock() {
 }
 
 func ToggleIrssi() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e irssi",
-			sugar.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
 
 func ToggleNewsboat() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e newsboat",
-			sugar.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
 
 func ToggleScreenKey() {
-	sugar.Toggle("screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow")
+	utils.Toggle("screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow")
 }
 
 func ToggleSublime() {
-	sugar.Toggle("subl")
+	utils.Toggle("subl")
 }
 
 func ToggleObsidian() {
-	sugar.Toggle("obsidian")
+	utils.Toggle("obsidian")
 }
 
 func ToggleTop() {
-	sugar.Toggle("st -e htop")
+	utils.Toggle("st -e btop")
 }
 
 func ToggleWallpaper() {
-	sugar.Toggle(
+	utils.Toggle(
 		fmt.Sprintf(
 			"feh --bg-fill --recursive --randomize %s",
 			path.Join(os.Getenv("HOME"), WallPaperPath),
@@ -213,18 +213,18 @@ func ToggleWallpaper() {
 }
 
 func ToggleClipmenu() {
-	sugar.Toggle("sh -c clipmenu")
+	utils.Toggle("sh -c clipmenu")
 }
 
 func TogglePassmenu() {
-	sugar.Toggle("passmenu")
+	utils.Toggle("passmenu")
 }
 
 func ToggleRedShift() {
 	cmd := "systemctl --user status redshift.service"
-	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	switch {
@@ -233,23 +233,23 @@ func ToggleRedShift() {
 	default:
 		cmd = "systemctl --user start redshift.service"
 	}
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 }
 
 func ToggleXournal() {
-	sugar.Toggle("xournalpp")
+	utils.Toggle("xournalpp")
 }
 
 func ToggleRecAudio() {
 	switch {
-	case sugar.IsRunning("ffmpeg"):
-		sugar.Kill("ffmpeg")
+	case utils.IsRunning("ffmpeg"):
+		utils.Kill("ffmpeg")
 	default:
-		sugar.NewExecService().RunScript(
+		utils.RunScript(
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -y -r 60 -f alsa -i default -c:a flac %s",
@@ -263,11 +263,11 @@ func ToggleRecAudio() {
 
 func ToggleRecScreen() {
 	switch {
-	case sugar.IsRunning("ffmpeg"):
-		sugar.Kill("ffmpeg")
+	case utils.IsRunning("ffmpeg"):
+		utils.Kill("ffmpeg")
 	default:
-		w, h := sugar.GetScreenSize()
-		sugar.NewExecService().RunScript(
+		w, h := utils.GetScreenSize()
+		utils.RunScript(
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s",
@@ -284,10 +284,10 @@ func ToggleRecScreen() {
 
 func ToggleRecWebcam() {
 	switch {
-	case sugar.IsRunning("ffmpeg"):
-		sugar.Kill("ffmpeg")
+	case utils.IsRunning("ffmpeg"):
+		utils.Kill("ffmpeg")
 	default:
-		sugar.NewExecService().RunScript(
+		utils.RunScript(
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s",
@@ -301,10 +301,10 @@ func ToggleRecWebcam() {
 
 func ToggleShow() {
 	switch {
-	case sugar.IsRunning("ffplay"):
-		sugar.Kill("ffplay")
+	case utils.IsRunning("ffplay"):
+		utils.Kill("ffplay")
 	default:
-		sugar.NewExecService().RunScript(
+		utils.RunScript(
 			"bash",
 			"st -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0",
 		)
