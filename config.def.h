@@ -31,10 +31,10 @@ static const char *colors[][3]     = {
 };
 
 static const char *const autostart[] = {
-  "dwmblocks", NULL,
-  "picom"    , NULL,
-  "hhkb"     , NULL,
-  "autostart", NULL,
+  "dwmblocks"        , NULL ,
+  "picom"            , NULL ,
+  "hhkb"             , NULL ,
+  "reset_sys_default", NULL ,
   NULL,
 };
 
@@ -160,7 +160,7 @@ static const Key keys[] = {
 { SUPKEY,                       XK_Escape,       spawn,             {.v = Shell("toggle_top")                            } },
 { SUPKEY,                       XK_Delete,       spawn,             {.v = Shell("sys_shortcuts")                         } },
 { SUPKEY,                       XK_BackSpace,    spawn,             {.v = Shell("toggle_passmenu")                       } },
-{ SUPKEY,                       XK_backslash,    spawn,             {.v = Shell("set_keyboard_rate")                     } },
+{ SUPKEY,                       XK_backslash,    spawn,             {.v = Shell("reset_sys_default")                     } },
 { SUPKEY,                       XK_semicolon,    spawn,             {.v = Shell("jump_to_code_from_log")                 } },
 { SUPKEY,                       XK_apostrophe,   spawn,             {.v = Shell("toggle_tty_clock")                      } },
 { SUPKEY,                       XK_bracketleft,  spawn,             {.v = Shell("toggle_calendar_scheduling")            } },
