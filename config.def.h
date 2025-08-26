@@ -134,7 +134,7 @@ static const Key keys[] = {
 { SUPKEY|ShiftMask,             XK_h,            resizewin,         {.ui = HORDEC                                        } },
 { SUPKEY|ShiftMask,             XK_l,            resizewin,         {.ui = HORINC                                        } },
 
-// { SUPKEY,                       XK_a,            spawn,             {.v =                                                } },
+{ SUPKEY,                       XK_a,            spawn,             {.v = Shell("launch_thunar")                         } },
 { SUPKEY,                       XK_b,            spawn,             {.v = Shell("launch_chrome")                         } },
 { SUPKEY,                       XK_c,            spawn,             {.v = Shell("note_timeline")                         } },
 { SUPKEY,                       XK_d,            spawn,             {.v = Shell("toggle_lazydocker")                     } },

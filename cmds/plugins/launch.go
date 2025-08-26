@@ -29,3 +29,7 @@ func LaunchEdge() {
 		),
 	)()
 }
+
+func LaunchThunar() {
+	LaunchApp("thunar ~")()
+}

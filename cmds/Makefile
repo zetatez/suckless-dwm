@@ -17,6 +17,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
 	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
 	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
+	go build -o ./bins/launch_thunar                             ./cmds/launch_thunar/main.go
 	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
 	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
 	go build -o ./bins/note_diary                                ./cmds/note_diary/main.go
