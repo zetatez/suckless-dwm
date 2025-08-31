@@ -64,7 +64,7 @@ static const int lockfullscreen     = 0;
 static const int refreshrate        = 120;  /* refresh rate (per second) for client move/resize */
 
 static const Layout layouts[] = {
-{ ""                  , layout_workflow           }, // default
+{ "󰴈"                  , layout_workflow           }, // default
 { ""                  , layout_fib_spiral         },
 { ""                  , layout_fib_dwindle        },
 { "⧈"                  , layout_center_free_shape  },
