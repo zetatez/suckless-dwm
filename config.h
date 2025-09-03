@@ -27,7 +27,7 @@ static const char col_cyan[]       = "#005577";
 static const char col_bg[]       = "#E06C75";
 static const char col_fg[]       = "#FFFF00";
 static const char *colors[][3]     = {
-  /*               fg         bg         border   */
+//                  fg         bg        border
 // [SchemeNorm] = { col_gray3, col_cyan, col_gray2 },
 // [SchemeSel]  = { col_gray4, col_cyan, col_cyan  },
    [SchemeNorm] = { col_bg   , col_cyan, col_gray2 },
@@ -36,7 +36,7 @@ static const char *colors[][3]     = {
 
 static const char *const autostart[] = {
   "dwmblocks"        , NULL ,
-  "picom"            , NULL ,
+  "daemon_for_picom" , NULL ,
   "hhkb"             , NULL ,
   "reset_sys_default", NULL ,
   NULL,
