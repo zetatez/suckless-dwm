@@ -279,14 +279,6 @@ func Kill(proc string) {
 	}
 }
 
-func Toggle(proc string) {
-	if IsRunning(proc) {
-		Kill(proc)
-	} else {
-		NewExecService().RunScript("bash", proc)
-	}
-}
-
 func Notify(msg ...interface{}) {
 	switch GetOSType() {
 	case OSTypeLinux:
@@ -295,6 +287,14 @@ func Notify(msg ...interface{}) {
 		NewExecService().RunScript("bash", fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
 	default:
 		return
+	}
+}
+
+func Toggle(proc string) {
+	if IsRunning(proc) {
+		Kill(proc)
+	} else {
+		NewExecService().RunScript("bash", proc)
 	}
 }
 

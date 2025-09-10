@@ -467,14 +467,7 @@ buttonpress(XEvent *e)
   }
   if (ev->window == selmon->barwin) {
     i = x = 0;
- 		unsigned int occ = 0;
- 		for(c = m->clients; c; c=c->next) {
- 			occ |= c->tags;
-    }
     do {
- 			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i)) {
- 				continue;
-      }
       x += TEXTW(tags[i]);
     } while (ev->x >= x && ++i < LENGTH(tags));
     if (i < LENGTH(tags)) {
@@ -845,15 +838,12 @@ drawbar(Monitor *m)
     //
   } else {
     for (i = 0; i < LENGTH(tags); i++) {
-   		if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i)) {
-   			continue;
-      }
       w = TEXTW(tags[i]);
       drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
       drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-      // if (occ & 1 << i) {                                                                                                  // do not draw rect
-      //   drw_rect(drw, x + boxs, boxs, boxw, boxw, m == selmon && selmon->sel && selmon->sel->tags & 1 << i, urg & 1 << i); // do not draw rect
-      // }
+      if (occ & 1 << i) {
+        drw_rect(drw, x + boxs, boxs, boxw, boxw, m == selmon && selmon->sel && selmon->sel->tags & 1 << i, urg & 1 << i);
+      }
       x += w;
     }
   }
