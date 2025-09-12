@@ -36,9 +36,9 @@ static const char *colors[][3]     = {
 
 static const char *const autostart[] = {
   "dwmblocks"        , NULL ,
-  "daemon_for_picom" , NULL ,
-  "hhkb"             , NULL ,
-  "reset_sys_default", NULL ,
+  // "daemon_for_picom" , NULL ,
+  // "hhkb"             , NULL ,
+  // "reset_sys_default", NULL ,
   NULL,
 };
 
