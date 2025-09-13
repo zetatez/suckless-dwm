@@ -36,9 +36,9 @@ static const char *colors[][3]     = {
 
 static const char *const autostart[] = {
   "dwmblocks"        , NULL ,
-  // "daemon_for_picom" , NULL ,
-  // "hhkb"             , NULL ,
-  // "reset_sys_default", NULL ,
+  "daemon_for_picom" , NULL ,
+  "hhkb"             , NULL ,
+  "reset_sys_default", NULL ,
   NULL,
 };
 
@@ -99,13 +99,13 @@ static const Key keys[] = {
 { SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys_volume_down")                       } },
 { SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys_volume_up")                         } },
 { SUPKEY,                       XK_F4,           spawn,             {.v = Shell("sys_micro_toggle")                      } },
-{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys_micro_down")                        } },
-{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys_micro_up")                          } },
-{ SUPKEY,                       XK_F7,           spawn,             {.v = Shell("sys_wifi_connect")                      } },
-{ SUPKEY,                       XK_F8,           spawn,             {.v = Shell("sys_screen")                            } },
+{ SUPKEY,                       XK_F5,           spawn,             {.v = Shell("sys_screen_light_down")                 } },
+{ SUPKEY,                       XK_F6,           spawn,             {.v = Shell("sys_screen_light_up")                   } },
+{ SUPKEY,                       XK_F7,           spawn,             {.v = Shell("sys_screen")                            } },
+{ SUPKEY,                       XK_F8,           spawn,             {.v = Shell("sys_wifi_connect")                      } },
 { SUPKEY,                       XK_F9,           spawn,             {.v = Shell("sys_bluetooth")                         } },
-{ SUPKEY,                       XK_F10,          spawn,             {.v = Shell("sys_screen_light_down")                 } },
-{ SUPKEY,                       XK_F11,          spawn,             {.v = Shell("sys_screen_light_up")                   } },
+{ SUPKEY,                       XK_F10,          spawn,             {.v = Shell("sys_micro_down")                        } },
+{ SUPKEY,                       XK_F11,          spawn,             {.v = Shell("sys_micro_up")                          } },
 { SUPKEY,                       XK_F12,          spawn,             {.v = Shell("sys_toggle_keyboard_light")             } },
 
 { SUPKEY,                       XK_1,            spawn,             {.v = Shell("chrome_open_url_chatgpt")               } },

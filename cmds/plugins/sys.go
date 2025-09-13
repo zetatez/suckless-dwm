@@ -118,8 +118,8 @@ func SysShortcuts() {
 }
 
 func SysScreen() {
-	primaryMonitor, secondMonitor := "eDP1", "eDP1"
-	cmd := "xrandr|grep ' connected'|grep -v 'eDP1'|awk '{print $1}'"
+	primaryMonitor, secondMonitor := "eDP-1", "eDP-1"
+	cmd := "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
 	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
 	if err != nil {
 		sugar.Notify(err)
