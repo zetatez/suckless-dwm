@@ -5,6 +5,9 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strings"
+
+	"github.com/shirou/gopsutil/process"
 )
 
 // -------------------- 环境变量 --------------------
@@ -87,4 +90,71 @@ func GetAbsPath(path string) (string, error) {
 // -------------------- 进程 --------------------
 func GetPID() int {
 	return os.Getpid()
+}
+
+func IsRunning(proc string) (isrunning bool) {
+	curpid := os.Getpid()
+	proc = strings.ReplaceAll(strings.ReplaceAll(proc, "'", ""), `"`, "")
+	procs, err := process.Processes()
+	if err != nil {
+		return false
+	}
+	for _, p := range procs {
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		if p.Pid == int32(curpid) {
+			continue
+		}
+		if name == proc {
+			return true
+		}
+	}
+	for _, p := range procs {
+		cmdline, err := p.Cmdline()
+		if err != nil {
+			continue
+		}
+		if p.Pid == int32(curpid) {
+			continue
+		}
+		if strings.Contains(cmdline, proc) {
+			return true
+		}
+	}
+	return false
+}
+
+func Kill(proc string) {
+	curpid := os.Getpid()
+	proc = strings.ReplaceAll(strings.ReplaceAll(proc, "'", ""), `"`, "")
+	procs, err := process.Processes()
+	if err != nil {
+		return
+	}
+	for _, p := range procs {
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		if p.Pid == int32(curpid) {
+			continue
+		}
+		if name == proc {
+			p.Kill()
+		}
+	}
+	for _, p := range procs {
+		cmdline, err := p.Cmdline()
+		if err != nil {
+			continue
+		}
+		if p.Pid == int32(curpid) {
+			continue
+		}
+		if strings.Contains(cmdline, proc) {
+			p.Kill()
+		}
+	}
 }
