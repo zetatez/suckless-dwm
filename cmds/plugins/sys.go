@@ -7,14 +7,14 @@ import (
 	"strings"
 	"time"
 
-	"cmds/sugar"
+	"cmds/utils"
 )
 
 func SysToggleKeyboardLight() {
 	kbdCtlFilePath := "/sys/class/leds/tpacpi::kbd_backlight/brightness"
-	brightness, err := sugar.GetKeyBoardStatus(kbdCtlFilePath)
+	brightness, err := utils.GetKeyBoardStatus(kbdCtlFilePath)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	if brightness == 1 {
@@ -23,56 +23,56 @@ func SysToggleKeyboardLight() {
 		brightness = 1
 	}
 	cmd := fmt.Sprintf("sudo sh -c 'echo %d > %s'", brightness, kbdCtlFilePath)
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 }
 
 func SysBlueTooth() {
 	cmd := "bluetoothctl devices"
-	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	stdout = strings.TrimSpace(stdout)
 	if stdout == "" {
-		sugar.Notify("no bluetooth device was found")
+		utils.Notify("no bluetooth device was found")
 		return
 	}
 	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to'", stdout)
-	stdout, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	slice := strings.Split(strings.TrimSpace(stdout), " ")
 	if len(slice) != 3 {
-		sugar.Notify("connect to bluetooth failed")
+		utils.Notify("connect to bluetooth failed")
 	}
 	deviceid := slice[1]
 	cmd = fmt.Sprintf("bluetoothctl connect %s", deviceid)
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
-	sugar.Notify("connect to bluetooth success")
+	utils.Notify("connect to bluetooth success")
 }
 
 func SysWifiConnect() {
 	cmd := "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq"
-	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to wifi'", stdout)
-	stdout, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	essid := strings.TrimSpace(stdout)
@@ -80,19 +80,19 @@ func SysWifiConnect() {
 		return
 	}
 	cmd = "dmenu < /dev/null -p 'password'"
-	stdout, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	password := strings.TrimSpace(stdout)
 	cmd = fmt.Sprintf("nmcli device wifi connect %s password %s", essid, password)
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
-	sugar.Notify("wifi connect success")
+	utils.Notify("wifi connect success")
 }
 
 func SysShortcuts() {
@@ -107,27 +107,27 @@ func SysShortcuts() {
 	for k := range SysShortCuts {
 		list = append(list, k)
 	}
-	content, err := sugar.Choose(": ", list)
+	content, err := utils.Choose(": ", list)
 	if err != nil {
 		return
 	}
 	cmd, ok := SysShortCuts[content]
 	if ok {
-		sugar.NewExecService().RunScript("bash", cmd)
+		utils.RunScript("bash", cmd)
 	}
 }
 
 func SysScreen() {
 	primaryMonitor, secondMonitor := "eDP-1", "eDP-1"
 	cmd := "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
-	stdout, _, err := sugar.NewExecService().RunScript("bash", cmd)
+	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	stdout = strings.TrimSpace(stdout)
 	if stdout == "" {
-		sugar.Notify("only have one monitor")
+		utils.Notify("only have one monitor")
 		return
 	}
 	secondMonitor = stdout
@@ -145,35 +145,35 @@ func SysScreen() {
 		"roate left  & right-of": fmt.Sprintf("xrandr --output %s --auto --rotate left  --right-of %s --auto", secondMonitor, primaryMonitor),
 		"roate right & right-of": fmt.Sprintf("xrandr --output %s --auto --rotate right --right-of %s --auto", secondMonitor, primaryMonitor),
 	}
-	_, _, err = sugar.NewExecService().RunScript("bash", cmds["default"])
+	_, _, err = utils.RunScript("bash", cmds["default"])
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	list := make([]string, 0)
 	for k := range cmds {
 		list = append(list, k)
 	}
-	choice, err := sugar.Choose("screen strategy: ", list)
+	choice, err := utils.Choose("screen strategy: ", list)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	cmd, ok := cmds[choice]
 	if !ok {
-		sugar.Notify("wrong choice")
+		utils.Notify("wrong choice")
 		return
 	}
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 	time.Sleep(10 * time.Millisecond)
 	cmd = fmt.Sprintf("feh --bg-fill %s", path.Join(os.Getenv("HOME"), WallPaperPath))
-	_, _, err = sugar.NewExecService().RunScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
-		sugar.Notify(err)
+		utils.Notify(err)
 		return
 	}
 }

@@ -1,16 +1,16 @@
 package main
 
 import (
-	"cmds/sugar"
+	"cmds/utils"
 	"os"
 	"time"
 )
 
 func main() {
 	for {
-		if !sugar.IsRunning("picom") {
-			sugar.NewExecService().RunScript("bash", "picom --config "+os.Getenv("HOME")+"/.config/picom/picom.conf")
+		if !utils.IsRunning("picom") {
+			utils.RunScript("bash", "picom --config "+os.Getenv("HOME")+"/.config/picom/picom.conf")
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 }

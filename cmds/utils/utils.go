@@ -1,4 +1,4 @@
-package sugar
+package utils
 
 import (
 	"fmt"
@@ -176,7 +176,7 @@ func Choose(prompt string, list []string) (item string, err error) {
 		strings.Join(list, "\n"),
 		prompt,
 	)
-	stdout, _, err := NewExecService().RunScript("bash", script)
+	stdout, _, err := RunScript("bash", script)
 	if err != nil {
 		return "", err
 	}
@@ -190,7 +190,7 @@ func GetInput(prompt string) (input string, err error) {
 		"rofi -show -dmenu < /dev/null -p '%s'",
 		prompt,
 	)
-	stdout, _, err := NewExecService().RunScript("bash", script)
+	stdout, _, err := RunScript("bash", script)
 	if err != nil {
 		return "", err
 	}
@@ -201,7 +201,7 @@ func GetInput(prompt string) (input string, err error) {
 func Lazy(option string, filepath string) {
 	switch option {
 	case "view", "open", "exec", "copy", "rename", "delete":
-		NewExecService().RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSTerminal(), option, filepath))
+		RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSTerminal(), option, filepath))
 	default:
 		return
 	}
@@ -279,12 +279,12 @@ func Kill(proc string) {
 	}
 }
 
-func Notify(msg ...interface{}) {
+func Notify(msg ...any) {
 	switch GetOSType() {
 	case OSTypeLinux:
-		NewExecService().RunScript("bash", fmt.Sprintf("notify-send '%v'", msg))
+		RunScript("bash", fmt.Sprintf("notify-send '%v'", msg))
 	case OSTypeMacOS:
-		NewExecService().RunScript("bash", fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
+		RunScript("bash", fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
 	default:
 		return
 	}
@@ -294,7 +294,7 @@ func Toggle(proc string) {
 	if IsRunning(proc) {
 		Kill(proc)
 	} else {
-		NewExecService().RunScript("bash", proc)
+		RunScript("bash", proc)
 	}
 }
 
@@ -367,7 +367,7 @@ func SSH(host string, port int, user string, password string) (err error) {
 		shell = "/bin/bash"
 	}
 	cmd := fmt.Sprintf("%s -e %s -c '%s'", GetOSTerminal(), shell, fmt.Sprintf(`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`, password, port, user, host))
-	_, _, err = NewExecService().RunScript("bash", cmd)
+	_, _, err = RunScript("bash", cmd)
 	if err != nil {
 		Notify(err)
 		return err

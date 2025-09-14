@@ -3,7 +3,7 @@ package plugins
 import (
 	"sort"
 
-	"cmds/sugar"
+	"cmds/utils"
 )
 
 var ActionMap = map[string]func(){
@@ -120,7 +120,7 @@ func (s *Search) Search() {
 		list = append(list, k)
 	}
 	sort.Strings(list)
-	content, err := sugar.Choose("search: ", list)
+	content, err := utils.Choose("search: ", list)
 	if err != nil {
 		return
 	}
@@ -129,10 +129,10 @@ func (s *Search) Search() {
 	case ok:
 		f()
 		return
-	case sugar.Exists(content) && sugar.IsFile(content):
-		sugar.Lazy("open", content)
+	case utils.Exists(content) && utils.IsFile(content):
+		utils.Lazy("open", content)
 		return
-	case sugar.IsUrl(content):
+	case utils.IsUrl(content):
 		ChromeOpenUrl("--proxy-server="+ProxyServer, content)()
 		return
 	default:

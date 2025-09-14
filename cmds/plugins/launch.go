@@ -3,12 +3,12 @@ package plugins
 import (
 	"fmt"
 
-	"cmds/sugar"
+	"cmds/utils"
 )
 
 func LaunchApp(cmd string) func() {
 	return func() {
-		sugar.NewExecService().RunScript("bash", cmd)
+		utils.RunScript("bash", cmd)
 	}
 }
 
