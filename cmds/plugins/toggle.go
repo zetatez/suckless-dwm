@@ -53,7 +53,7 @@ func ToggleYazi() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e yazi",
-			utils.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
@@ -72,7 +72,7 @@ func ToggleLazyDocker() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e lazydocker",
-			utils.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
@@ -81,7 +81,7 @@ func ToggleLazyGit() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e lazygit",
-			utils.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
@@ -94,7 +94,7 @@ func ToggleMusic() {
 		utils.Toggle(
 			fmt.Sprintf(
 				"%s -e cava",
-				utils.GetOSTerminal(),
+				utils.GetOSDefaultShell(),
 			),
 		)
 	}()
@@ -104,7 +104,7 @@ func ToggleMusic() {
 		utils.Toggle(
 			fmt.Sprintf(
 				"%s -e ncmpcpp",
-				utils.GetOSTerminal(),
+				utils.GetOSDefaultShell(),
 			),
 		)
 	}()
@@ -119,7 +119,7 @@ func ToggleMutt() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e mutt",
-			utils.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
@@ -173,7 +173,7 @@ func ToggleIrssi() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e irssi",
-			utils.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }
@@ -182,7 +182,7 @@ func ToggleNewsboat() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e newsboat",
-			utils.GetOSTerminal(),
+			utils.GetOSDefaultShell(),
 		),
 	)
 }

@@ -132,7 +132,7 @@ func (s *Search) Search() {
 	case utils.Exists(content) && utils.IsFile(content):
 		utils.Lazy("open", content)
 		return
-	case utils.IsUrl(content):
+	case utils.IsURL(content):
 		ChromeOpenUrl("--proxy-server="+ProxyServer, content)()
 		return
 	default:

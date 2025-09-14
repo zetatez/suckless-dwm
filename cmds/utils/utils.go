@@ -2,12 +2,8 @@ package utils
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path"
-	"path/filepath"
-	"regexp"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,200 +12,13 @@ import (
 	"github.com/shirou/gopsutil/process"
 )
 
-const (
-	OSTypeLinux   = "Linux"
-	OSTypeMacOS   = "macOS"
-	OSTypeWindows = "Windows"
-	OSTypeUnknown = "Unknown"
-)
-
-func GetOSType() string {
-	os := runtime.GOOS
-	switch os {
-	case "linux":
-		return OSTypeLinux
-	case "darwin":
-		return OSTypeMacOS
-	case "windows":
-		return OSTypeWindows
-	default:
-		return OSTypeUnknown
-	}
-}
-
-func GetOSTerminal() string {
-	switch GetOSType() {
-	case OSTypeLinux:
-		return "st"
-	case OSTypeMacOS:
-		return "kitty"
-	default:
-		Notify("Unsupported OS")
-		os.Exit(1)
-		return "xxx"
-	}
-}
-
-func IsDirExists(path string) (exist bool) {
-	if Exists(path) && IsDir(path) {
-		return true
-	}
-	return false
-}
-
-func IsFileExists(path string) (exist bool) {
-	if Exists(path) && !IsDir(path) {
-		return true
-	}
-	return false
-}
-
-func Exists(path string) (exist bool) {
-	_, err := os.Stat(path)
-	if err != nil {
-		return os.IsExist(err)
-	}
-	return true
-}
-
-func IsDir(path string) (isDir bool) {
-	info, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	return info.IsDir()
-}
-
-func CopyDir(src string, dst string) (err error) {
-	if strings.TrimSpace(src) == strings.TrimSpace(dst) {
-		return fmt.Errorf("src path %s is equal to dst path %s", src, dst)
-	}
-
-	if !IsDirExists(src) {
-		return fmt.Errorf("src path %s is not exist", src)
-	}
-
-	if !IsDirExists(dst) {
-		err = os.MkdirAll(dst, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-
-	absSrc, err := filepath.Abs(src)
-	if err != nil {
-		return err
-	}
-
-	absDst, err := filepath.Abs(dst)
-	if err != nil {
-		return err
-	}
-
-	err = filepath.Walk(
-		absSrc,
-		func(s string, info os.FileInfo, err error) error {
-			if s == absSrc {
-				return nil
-			}
-			if info == nil {
-				return err
-			}
-			d := strings.ReplaceAll(s, absSrc, absDst)
-			if info.IsDir() {
-				if !IsDirExists(d) {
-					if err = os.MkdirAll(d, os.ModePerm); err != nil {
-						return err
-					}
-				}
-			} else {
-				err = CopyFile(s, d)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		},
-	)
-
-	return err
-}
-
-func CopyFile(src string, dst string) (err error) {
-	s, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer s.Close()
-
-	sinfo, err := s.Stat()
-	if err != nil {
-		return err
-	}
-
-	d, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer d.Close()
-
-	_, err = io.Copy(d, s)
-	if err != nil {
-		return err
-	}
-
-	err = os.Chmod(dst, sinfo.Mode())
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func IsFile(path string) (isFile bool) {
-	return !IsDir(path)
-}
-
-func Choose(prompt string, list []string) (item string, err error) {
-	script := fmt.Sprintf(
-		// "echo '%s'|rofi -show -dmenu -p '%s'",
-		"echo '%s'|dmenu -p '%s'",
-		strings.Join(list, "\n"),
-		prompt,
-	)
-	stdout, _, err := RunScript("bash", script)
-	if err != nil {
-		return "", err
-	}
-	item = strings.TrimSpace(stdout)
-	return item, nil
-}
-
-func GetInput(prompt string) (input string, err error) {
-	script := fmt.Sprintf(
-		// "dmenu < /dev/null -p '%s'",           // cause: dmenu can not input ch
-		"rofi -show -dmenu < /dev/null -p '%s'",
-		prompt,
-	)
-	stdout, _, err := RunScript("bash", script)
-	if err != nil {
-		return "", err
-	}
-	input = strings.TrimSpace(stdout)
-	return input, nil
-}
-
 func Lazy(option string, filepath string) {
 	switch option {
 	case "view", "open", "exec", "copy", "rename", "delete":
-		RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSTerminal(), option, filepath))
+		RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSDefaultShell(), option, filepath))
 	default:
 		return
 	}
-}
-
-func IsUrl(content string) (isUrl bool) {
-	r := regexp.MustCompile("^(http|www|file).*")
-	return r.Match([]byte(content))
 }
 
 func IsRunning(proc string) (isrunning bool) {
@@ -279,17 +88,6 @@ func Kill(proc string) {
 	}
 }
 
-func Notify(msg ...any) {
-	switch GetOSType() {
-	case OSTypeLinux:
-		RunScript("bash", fmt.Sprintf("notify-send '%v'", msg))
-	case OSTypeMacOS:
-		RunScript("bash", fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, msg, "msg"))
-	default:
-		return
-	}
-}
-
 func Toggle(proc string) {
 	if IsRunning(proc) {
 		Kill(proc)
@@ -326,7 +124,6 @@ func GetGeoForTerminal(xr float64, yr float64, w int, h int) (geo string) {
 
 func GetGeoCenterForSt(wr float64, hr float64) (geo string) {
 	width, height := GetScreenSize()
-	Notify(width, height)
 	w := int(float64(width) * wr)
 	h := int(float64(height) * hr)
 	x := (width - w) / 2
@@ -366,7 +163,7 @@ func SSH(host string, port int, user string, password string) (err error) {
 	if shell == "" {
 		shell = "/bin/bash"
 	}
-	cmd := fmt.Sprintf("%s -e %s -c '%s'", GetOSTerminal(), shell, fmt.Sprintf(`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`, password, port, user, host))
+	cmd := fmt.Sprintf("%s -e %s -c '%s'", GetOSDefaultShell(), shell, fmt.Sprintf(`sshpass -p "%s" ssh -o "StrictHostKeyChecking no" -p %d %s@%s`, password, port, user, host))
 	_, _, err = RunScript("bash", cmd)
 	if err != nil {
 		Notify(err)

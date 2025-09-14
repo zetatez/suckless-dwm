@@ -140,23 +140,23 @@ func TransformUnixSec2DateTime() {
 }
 
 func LazyOpenSearchFile() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", utils.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", utils.GetOSDefaultShell()))
 }
 
 func LazyOpenSearchBook() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", utils.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", utils.GetOSDefaultShell()))
 }
 
 func LazyOpenSearchWiki() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", utils.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", utils.GetOSDefaultShell()))
 }
 
 func LazyOpenSearchMedia() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", utils.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", utils.GetOSDefaultShell()))
 }
 
 func LazyOpenSearchFileContent() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", utils.GetOSTerminal()))
+	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", utils.GetOSDefaultShell()))
 }
 
 func SearchFromWeb(content string) {
@@ -252,7 +252,7 @@ func NoteScripts() {
 	}
 	fmt.Fprintf(f, "\n\n###")
 	f.Close()
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultShell(), filePath))
 }
 
 func NoteToDo() {
@@ -280,7 +280,7 @@ func NoteToDo() {
 	}
 	fmt.Fprintf(f, fmt.Sprintf("\n- [ ] %s", time.Now().Format(time.DateOnly)))
 	f.Close()
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultShell(), filePath))
 }
 
 func NoteDiary() {
@@ -302,7 +302,7 @@ func NoteDiary() {
 		fmt.Fprintf(f, "\n### Diary %s\n\n", dateStr)
 		f.Close()
 	}
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", utils.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", utils.GetOSDefaultShell(), filePath))
 }
 
 func NoteTimeline() {
@@ -333,7 +333,7 @@ func NoteTimeline() {
 	}
 	fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
 	f.Close()
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultShell(), filePath))
 }
 
 func NoteFlashCard() {
@@ -355,7 +355,7 @@ func NoteFlashCard() {
 		fmt.Fprintf(f, "### Flash Card %s\n\n", t.Format(time.DateTime))
 		f.Close()
 	}
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSTerminal(), filePath))
+	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultShell(), filePath))
 }
 
 func HandleCopied() {
@@ -370,7 +370,7 @@ func HandleCopied() {
 	case utils.Exists(content) && utils.IsFile(content):
 		utils.Lazy("open", content)
 		return
-	case utils.IsUrl(content):
+	case utils.IsURL(content):
 		ChromeOpenUrl("--proxy-server="+ProxyServer, content)()
 		return
 	default:
@@ -395,7 +395,7 @@ func JumpToCodeFromLog() {
 	}
 	filepath := match[1]
 	row := match[2]
-	_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +%s %s", utils.GetOSTerminal(), row, filepath))
+	_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +%s %s", utils.GetOSDefaultShell(), row, filepath))
 	if err != nil {
 		utils.Notify(err)
 		return
