@@ -10,7 +10,6 @@ import (
 	"github.com/shirou/gopsutil/process"
 )
 
-// -------------------- 环境变量 --------------------
 func GetEnv(key, defaultVal string) string {
 	if v, ok := os.LookupEnv(key); ok {
 		return v
@@ -22,7 +21,6 @@ func SetEnv(key, value string) error {
 	return os.Setenv(key, value)
 }
 
-// -------------------- 系统信息 --------------------
 func GetOSType() string {
 	return runtime.GOOS
 }
@@ -43,7 +41,6 @@ func GetCurrentUser() (string, error) {
 	return u.Username, nil
 }
 
-// -------------------- 文件/目录 --------------------
 func Exists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
@@ -87,7 +84,6 @@ func GetAbsPath(path string) (string, error) {
 	return filepath.Abs(path)
 }
 
-// -------------------- 进程 --------------------
 func GetPID() int {
 	return os.Getpid()
 }
