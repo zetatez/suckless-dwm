@@ -36,9 +36,8 @@ static const char *colors[][3]     = {
 
 static const char *const autostart[] = {
   "dwmblocks"        , NULL ,
-  "daemon_for_picom" , NULL ,
-  "hhkb"             , NULL ,
   "reset_sys_default", NULL ,
+  "daemon"           , NULL ,
   NULL,
 };
 
@@ -50,8 +49,8 @@ static const Rule rules[] = {
   {"floatwindow",            NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for markdown
-  {"chrome",                 NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for typst
-//{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
+  {"chrome",                 NULL,       NULL,      0,            0,            0,             0,           -1 },
+  {"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
 /* stickyicon */
