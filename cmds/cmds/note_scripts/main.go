@@ -1,6 +1,8 @@
 package main
 
-import "cmds/plugins"
+import (
+	"cmds/plugins"
+)
 
 func main() {
 	plugins.NoteScripts()
