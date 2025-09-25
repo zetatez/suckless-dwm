@@ -30,7 +30,7 @@ func SysToggleKeyboardLight() {
 	}
 }
 
-func SysBlueTooth() {
+func SysBlueToothConnect() {
 	cmd := "bluetoothctl devices"
 	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
@@ -60,6 +60,42 @@ func SysBlueTooth() {
 		return
 	}
 	utils.Notify("connect to bluetooth success")
+}
+
+func SysBlueToothDisconnect() {
+	cmd := "bluetoothctl info | grep 'Device '"
+	stdout, _, err := utils.RunScript("bash", cmd)
+	if err != nil {
+		utils.Notify(err)
+		return
+	}
+	stdout = strings.TrimSpace(stdout)
+	if stdout == "" {
+		utils.Notify("no connected bluetooth device found")
+		return
+	}
+
+	cmd = fmt.Sprintf("echo '%s' | dmenu -p 'disconnect from'", stdout)
+	stdout, _, err = utils.RunScript("bash", cmd)
+	if err != nil {
+		utils.Notify(err)
+		return
+	}
+
+	slice := strings.Split(strings.TrimSpace(stdout), " ")
+	if len(slice) < 2 {
+		utils.Notify("disconnect bluetooth failed")
+		return
+	}
+	deviceid := slice[1]
+
+	cmd = fmt.Sprintf("bluetoothctl disconnect %s", deviceid)
+	_, _, err = utils.RunScript("bash", cmd)
+	if err != nil {
+		utils.Notify(err)
+		return
+	}
+	utils.Notify(fmt.Sprintf("disconnected from %s", deviceid))
 }
 
 func SysWifiConnect() {
