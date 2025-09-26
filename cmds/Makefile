@@ -27,6 +27,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/ssh_to                                    ./cmds/ssh_to/main.go
 	go build -o ./bins/sys_bluetooth_connect                     ./cmds/sys_bluetooth_connect/main.go
 	go build -o ./bins/sys_bluetooth_disconnect                  ./cmds/sys_bluetooth_disconnect/main.go
+	go build -o ./bins/sys_bluetooth_scan_and_connect            ./cmds/sys_bluetooth_scan_and_connect/main.go
 	go build -o ./bins/sys_screen                                ./cmds/sys_screen/main.go
 	go build -o ./bins/sys_shortcuts                             ./cmds/sys_shortcuts/main.go
 	go build -o ./bins/sys_toggle_keyboard_light                 ./cmds/sys_toggle_keyboard_light/main.go

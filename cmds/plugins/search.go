@@ -24,6 +24,7 @@ var ActionMap = map[string]func(){
 	"ssh to":                           SshTo,
 	"sys bluetooth connect":            SysBlueToothConnect,
 	"sys bluetooth disconnect":         SysBlueToothDisconnect,
+	"sys bluetooth scan and connect":   SysBlueToothScanAndConnect,
 	"sys screen":                       SysScreen,
 	"sys shortcuts":                    SysShortcuts,
 	"sys toggle keyboard light":        SysToggleKeyboardLight,

@@ -1,9 +1,12 @@
 package plugins
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -96,6 +99,97 @@ func SysBlueToothDisconnect() {
 		return
 	}
 	utils.Notify(fmt.Sprintf("disconnected from %s", deviceid))
+}
+
+func SysBlueToothScanAndConnect() {
+	devices, err := SysBlueToothScan()
+	if err != nil || len(devices) == 0 {
+		utils.Notify("没有发现蓝牙设备")
+		return
+	}
+
+	cmd := exec.Command("dmenu", "-p", "connect bluetooth")
+	cmd.Stdin = strings.NewReader(strings.Join(devices, "\n"))
+	out, _ := cmd.Output()
+	choice := strings.TrimSpace(string(out))
+	if choice == "" {
+		utils.Notify("未选择设备")
+		return
+	}
+
+	// parse mac
+	parts := strings.Fields(choice)
+	if len(parts) < 1 {
+		utils.Notify("选择无效")
+		return
+	}
+	mac := parts[0]
+
+	// pair -> trust -> connect
+	for _, c := range []string{
+		fmt.Sprintf("bluetoothctl pair %s", mac),
+		fmt.Sprintf("bluetoothctl trust %s", mac),
+		fmt.Sprintf("bluetoothctl connect %s", mac),
+	} {
+		_, _, err := utils.RunScript("bash", c)
+		if err != nil {
+			utils.Notify("执行失败: " + c)
+			return
+		}
+	}
+
+	utils.Notify("蓝牙连接成功: " + mac)
+}
+
+func SysBlueToothScan() ([]string, error) {
+	cmd := exec.Command("bluetoothctl")
+	stdin, _ := cmd.StdinPipe()
+	stdout, _ := cmd.StdoutPipe()
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	// start scan
+	_, _ = stdin.Write([]byte("scan on\n"))
+
+	scanner := bufio.NewScanner(stdout)
+	found := make(map[string]string)
+
+	re := regexp.MustCompile(`Device\s+([0-9A-F:]{17})\s+(.+)$`)
+
+	// read output for 6 seconds
+	timer := time.After(6 * time.Second)
+loop:
+	for {
+		select {
+		case <-timer:
+			break loop
+		default:
+			if !scanner.Scan() {
+				break loop
+			}
+			line := scanner.Text()
+			// fmt.Println(line)
+			if strings.Contains(line, "Device") {
+				if m := re.FindStringSubmatch(line); m != nil {
+					mac := m[1]
+					name := m[2]
+					found[mac] = name
+					fmt.Printf("MAC=%s, NAME=%s\n", mac, name)
+				}
+			}
+		}
+	}
+
+	// stop scan
+	_, _ = stdin.Write([]byte("scan off\nexit\n"))
+	_ = cmd.Wait()
+
+	var list []string
+	for mac, name := range found {
+		list = append(list, fmt.Sprintf("%s %s", mac, name))
+	}
+	return list, nil
 }
 
 func SysWifiConnect() {
