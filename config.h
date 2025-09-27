@@ -2,8 +2,8 @@
 
 #define SUPKEY  Mod4Mask
 #define MODKEY  Mod1Mask
-#define Termi(cmd) (const char *[]){ "st", "-e", "/bin/sh", "-c", cmd, NULL }
-#define Shell(cmd)    (const char *[]){ "/bin/sh", "-c", cmd, NULL }
+#define Termi(cmd) (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
+#define Shell(cmd)    (const char *[]){"/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
 static const unsigned int borderpx = 1;
@@ -17,8 +17,8 @@ static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 1;
 static const int swallowfloating   = 1;
-static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=15" };
-static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=15";
+static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
+static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=18";
 static const char col_gray1[]      = "#222222";
 static const char col_gray2[]      = "#444444";
 static const char col_gray3[]      = "#bbbbbb";
@@ -107,8 +107,8 @@ static const Key keys[] = {
 { SUPKEY,                       XK_F11,          spawn,             {.v = Shell("sys_micro_up")                          } },
 { SUPKEY,                       XK_F12,          spawn,             {.v = Shell("sys_toggle_keyboard_light")             } },
 
-{ SUPKEY,                       XK_1,            spawn,             {.v = Shell("chrome_open_url_chatgpt")               } },
 { SUPKEY,                       XK_2,            spawn,             {.v = Shell("chrome_open_url_youtube")               } },
+{ SUPKEY,                       XK_1,            spawn,             {.v = Shell("chrome_open_url_chatgpt")               } },
 { SUPKEY,                       XK_3,            spawn,             {.v = Shell("chrome_open_url_github")                } },
 { SUPKEY,                       XK_4,            spawn,             {.v = Shell("chrome_open_url_google_mail")           } },
 { SUPKEY,                       XK_5,            spawn,             {.v = Shell("chrome_open_url_google_translate")      } },
