@@ -536,6 +536,7 @@ cleanup(void)
   }
 
   for (i = 0; i < LENGTH(colors); i++) {
+    drw_scm_free(drw, scheme[i], 3);
     free(scheme[i]);
   }
 
