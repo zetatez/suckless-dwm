@@ -50,7 +50,7 @@ static const Rule rules[] = {
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for markdown
   {"chrome",                 NULL,       NULL,      0,            0,            0,             0,           -1 },
-  {"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
+//{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
 /* stickyicon */
