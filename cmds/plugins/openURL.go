@@ -6,6 +6,7 @@ import (
 	"cmds/utils"
 )
 
+// chrome --proxy-server=socks5://127.0.0.1:7891  www.chatgpt.com
 func ChromeOpenUrl(params, url string) func() {
 	return func() {
 		utils.RunScript(
@@ -25,7 +26,6 @@ func EdgeOpenUrl(params, url string) func() {
 	}
 }
 
-// --------------------
 func ChromeOpenUrlGoogle() {
 	ChromeOpenUrl("--proxy-server="+ProxyServer, "http://www.google.com/")()
 }
