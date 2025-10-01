@@ -220,8 +220,10 @@ drw_scm_free(Drw *drw, Clr *scm, size_t clrcount)
   if (!drw || !scm)
     return;
 
-  for (i = 0; i < clrcount; i++)
+  for (i = 0; i < clrcount; i++) {
     drw_clr_free(drw, &scm[i]);
+    free(scm);
+  }
 }
 
 void
