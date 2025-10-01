@@ -37,10 +37,6 @@ func RunScriptWithTimeout(lang, script string, timeout time.Duration) (stdout, s
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, args[0], append(args[1:], script)...)
-	return run(cmd)
-}
-
-func run(cmd *exec.Cmd) (stdout string, stderr string, err error) {
 	var outBuf, errBuf bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &outBuf, &errBuf
 	err = cmd.Run()
