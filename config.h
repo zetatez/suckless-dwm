@@ -2,8 +2,9 @@
 
 #define SUPKEY  Mod4Mask
 #define MODKEY  Mod1Mask
-#define Termi(cmd) (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
-#define Shell(cmd)    (const char *[]){"/bin/sh", "-c", cmd, NULL}
+#define LaunchApp(cmd) (const char *[]){cmd, NULL}
+#define Shell(cmd)     (const char *[]){"/bin/sh", "-c", cmd, NULL}
+#define Termi(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
 static const unsigned int borderpx = 1;
@@ -89,7 +90,6 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]                               = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]                                = { "st", NULL };
 static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 
 static const Key keys[] = {
@@ -186,7 +186,7 @@ static const Key keys[] = {
 { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             {.v = Shell("toggle_screenkey")                      } },
 { SUPKEY|ShiftMask,             XK_period,       spawn,             {.v = Shell("toggle_rec_screen")                     } },
 { SUPKEY|ShiftMask,             XK_slash,        spawn,             {.v = Shell("toggle_rec_webcam")                     } },
-{ SUPKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                                        } },
+{ SUPKEY|ShiftMask,             XK_Return,       spawn,             {.v = LaunchApp("kitty")                             } },
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_b,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_d,            spawn,             {.v =                                             } },
@@ -264,8 +264,7 @@ static const Key keys[] = {
 { MODKEY,                       XK_w,            setlayout,         {.v = &layouts[10]                                   } },
 { MODKEY|ShiftMask,             XK_e,            setlayout,         {.v = &layouts[11]                                   } },
 { MODKEY,                       XK_e,            setlayout,         {.v = &layouts[12]                                   } },
-{ MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = termcmd                                        } },
-{ ControlMask|ShiftMask,        XK_Return,       spawn,             {.v = Shell("kitty")                                 } },
+{ MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = LaunchApp("st")                                } },
 { MODKEY|ShiftMask,             XK_c,            killclient,        {0                                                   } },
 { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,  {0                                                   } },
 { MODKEY|ShiftMask,             XK_q,            quit,              {0                                                   } },
