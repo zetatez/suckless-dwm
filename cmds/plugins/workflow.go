@@ -140,34 +140,28 @@ func TransformUnixSec2DateTime() {
 }
 
 func LazyOpenSearchFile() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", utils.GetOSDefaultTerminal()))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchBook() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", utils.GetOSDefaultTerminal()))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-book", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchWiki() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", utils.GetOSDefaultTerminal()))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-wiki", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchMedia() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", utils.GetOSDefaultTerminal()))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-media", utils.GetOSDefaultTerminal()))
 }
 
 func LazyOpenSearchFileContent() {
-	utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", utils.GetOSDefaultTerminal()))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e lazy-open-search-file-content", utils.GetOSDefaultTerminal()))
 }
 
 func SearchFromWeb(content string) {
-	utils.RunScript("bash",
-		fmt.Sprintf(
-			"chrome --proxy-server=%s https://www.google.com/search?q='%s'",
-			// "qutebrowser --set content.proxy %s https://www.google.com/search?q='%s'",
-			ProxyServer,
-			content,
-		),
-	)
+	url := fmt.Sprintf("https://www.google.com/search?q='%s'", content)
+	OpenUrlWithQutebrowser(url)()
 }
 
 func SearchBooksOnline() {
@@ -177,24 +171,17 @@ func SearchBooksOnline() {
 		return
 	}
 	urls := []string{
-		"https://libgen.is/search.php?req='%s'",
 		"https://openlibrary.org/search?q='%s'",
 		"https://z-lib.id/s?q='%s'",
 	}
 	wg := sync.WaitGroup{}
-	for _, url := range urls {
+	for _, urlTpl := range urls {
 		wg.Add(1)
-		go func(url string) {
+		go func(urlTpl string) {
 			defer wg.Done()
-			utils.RunScript("bash",
-				fmt.Sprintf(
-					// "chrome --proxy-server=%s %s",
-					"qutebrowser --set content.proxy %s %s",
-					ProxyServer,
-					fmt.Sprintf(url, content),
-				),
-			)
-		}(url)
+			url := fmt.Sprintf(urlTpl, content)
+			OpenUrlWithQutebrowser(url)()
+		}(urlTpl)
 	}
 	wg.Wait()
 }
@@ -210,19 +197,13 @@ func SearchVideosOnline() {
 		"https://www.youtube.com/results?search_query='%s'",
 	}
 	wg := sync.WaitGroup{}
-	for _, url := range urls {
+	for _, urlTpl := range urls {
 		wg.Add(1)
-		go func(url string) {
+		go func(urlTpl string) {
 			defer wg.Done()
-			utils.RunScript("bash",
-				fmt.Sprintf(
-					// "chrome --proxy-server=%s %s",
-					"qutebrowser --set content.proxy %s %s",
-					ProxyServer,
-					fmt.Sprintf(url, content),
-				),
-			)
-		}(url)
+			url := fmt.Sprintf(urlTpl, content)
+			OpenUrlWithQutebrowser(url)()
+		}(urlTpl)
 	}
 	wg.Wait()
 }
@@ -242,17 +223,17 @@ func NoteScripts() {
 			utils.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "\n## Scripts\n\n")
-		f.Close()
+		_, _ = fmt.Fprintf(f, "\n## Scripts\n\n")
+		_ = f.Close()
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
 	if err != nil {
 		utils.Notify(err)
 		return
 	}
-	fmt.Fprintf(f, "\n\n###")
-	f.Close()
-	utils.RunScript(
+	_, _ = fmt.Fprintf(f, "\n\n###")
+	_ = f.Close()
+	_, _, _ = utils.RunScript(
 		"bash",
 		fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath),
 	)
@@ -273,17 +254,17 @@ func NoteToDo() {
 			utils.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "\n## ToDo\n\n")
-		f.Close()
+		_, _ = fmt.Fprintf(f, "\n## ToDo\n\n")
+		_ = f.Close()
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
 	if err != nil {
 		utils.Notify(err)
 		return
 	}
-	fmt.Fprintf(f, fmt.Sprintf("\n- [ ] %s", time.Now().Format(time.DateOnly)))
-	f.Close()
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
+	_, _ = fmt.Fprintf(f, "\n- [ ] %s", time.Now().Format(time.DateOnly))
+	_ = f.Close()
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func NoteDiary() {
@@ -302,10 +283,10 @@ func NoteDiary() {
 			utils.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "\n### Diary %s\n\n", dateStr)
-		f.Close()
+		_, _ = fmt.Fprintf(f, "\n### Diary %s\n\n", dateStr)
+		_ = f.Close()
 	}
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func NoteTimeline() {
@@ -326,17 +307,17 @@ func NoteTimeline() {
 			utils.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "\n## Time Line %s\n\n", dateStr)
-		f.Close()
+		_, _ = fmt.Fprintf(f, "\n## Time Line %s\n\n", dateStr)
+		_ = f.Close()
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
 	if err != nil {
 		utils.Notify(err)
 		return
 	}
-	fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
-	f.Close()
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
+	_, _ = fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
+	_ = f.Close()
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func NoteFlashCard() {
@@ -355,10 +336,10 @@ func NoteFlashCard() {
 			utils.Notify(err)
 			return
 		}
-		fmt.Fprintf(f, "### Flash Card %s\n\n", t.Format(time.DateTime))
-		f.Close()
+		_, _ = fmt.Fprintf(f, "### Flash Card %s\n\n", t.Format(time.DateTime))
+		_ = f.Close()
 	}
-	utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
 func HandleCopied() {
@@ -374,7 +355,8 @@ func HandleCopied() {
 		utils.Lazy("open", content)
 		return
 	case utils.IsURL(content):
-		ChromeOpenUrl("--proxy-server="+ProxyServer, content)()
+		url := content
+		OpenUrlWithQutebrowser(url)()
 		return
 	default:
 		SearchFromWeb(content)
@@ -413,7 +395,7 @@ func SshTo() {
 			utils.Notify(err)
 			return
 		}
-		f.Close()
+		_ = f.Close()
 	}
 
 	// read from to ~/.ssh/my.ssh.list
@@ -515,7 +497,7 @@ func SshTo() {
 		}
 		defer file.Close()
 		writer := bufio.NewWriter(file)
-		fmt.Fprintf(writer, "%-20s %-20s %-20s # %s\r\n", host, user, password, desc)
-		writer.Flush()
+		_, _ = fmt.Fprintf(writer, "%-20s %-20s %-20s # %s\r\n", host, user, password, desc)
+		_ = writer.Flush()
 	}
 }

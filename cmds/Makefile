@@ -11,19 +11,20 @@ clean:
 	rm -rf bins/*
 
 build: prepare build_shell_cmds
+	go build -o ./bins/search                                    ./cmds/search/main.go
 	go build -o ./bins/format_json                               ./cmds/format_json/main.go
 	go build -o ./bins/format_sql                                ./cmds/format_sql/main.go
 	go build -o ./bins/format_yaml                               ./cmds/format_yaml/main.go
 	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
 	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
 	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
-	go build -o ./bins/launch_thunar                             ./cmds/launch_thunar/main.go
+	go build -o ./bins/launch_qutebrowser                        ./cmds/launch_qutebrowser/main.go
+	go build -o ./bins/launch_file_manager                       ./cmds/launch_file_manager/main.go
 	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
 	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
 	go build -o ./bins/note_diary                                ./cmds/note_diary/main.go
 	go build -o ./bins/note_flash_card                           ./cmds/note_flash_card/main.go
 	go build -o ./bins/note_timeline                             ./cmds/note_timeline/main.go
-	go build -o ./bins/search                                    ./cmds/search/main.go
 	go build -o ./bins/ssh_to                                    ./cmds/ssh_to/main.go
 	go build -o ./bins/sys_bluetooth_connect                     ./cmds/sys_bluetooth_connect/main.go
 	go build -o ./bins/sys_bluetooth_disconnect                  ./cmds/sys_bluetooth_disconnect/main.go
@@ -39,7 +40,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_clipmenu                           ./cmds/toggle_clipmenu/main.go
 	go build -o ./bins/toggle_flameshot                          ./cmds/toggle_flameshot/main.go
 	go build -o ./bins/toggle_inkscape                           ./cmds/toggle_inkscape/main.go
-	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
 	go build -o ./bins/toggle_irssi                              ./cmds/toggle_irssi/main.go
 	go build -o ./bins/toggle_julia                              ./cmds/toggle_julia/main.go
 	go build -o ./bins/toggle_krita                              ./cmds/toggle_krita/main.go
@@ -61,19 +61,12 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_show                               ./cmds/toggle_show/main.go
 	go build -o ./bins/toggle_sublime                            ./cmds/toggle_sublime/main.go
 	go build -o ./bins/toggle_top                                ./cmds/toggle_top/main.go
-	go build -o ./bins/toggle_wallpaper                          ./cmds/toggle_wallpaper/main.go
+	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
 	go build -o ./bins/toggle_xournal                            ./cmds/toggle_xournal/main.go
 	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
-	go build -o ./bins/chrome_open_url_chatgpt                   ./cmds/chrome_open_url_chatgpt/main.go
-	go build -o ./bins/chrome_open_url_doubao                    ./cmds/chrome_open_url_doubao/main.go
-	go build -o ./bins/chrome_open_url_github                    ./cmds/chrome_open_url_github/main.go
-	go build -o ./bins/chrome_open_url_google                    ./cmds/chrome_open_url_google/main.go
-	go build -o ./bins/chrome_open_url_google_mail               ./cmds/chrome_open_url_google_mail/main.go
-	go build -o ./bins/chrome_open_url_google_translate          ./cmds/chrome_open_url_google_translate/main.go
-	go build -o ./bins/chrome_open_url_instagram                 ./cmds/chrome_open_url_instagram/main.go
-	go build -o ./bins/chrome_open_url_leetcode                  ./cmds/chrome_open_url_leetcode/main.go
-	go build -o ./bins/chrome_open_url_wechat                    ./cmds/chrome_open_url_wechat/main.go
-	go build -o ./bins/chrome_open_url_youtube                   ./cmds/chrome_open_url_youtube/main.go
+	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
+	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
+	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
 	go build -o ./bins/wallpaper                                 ./cmds/wallpaper/main.go
 	go build -o ./bins/daemon                                    ./cmds/daemon/main.go
 	chmod +x ./bins/*

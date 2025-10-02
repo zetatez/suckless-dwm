@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ChromeOpenUrlDouBao()
+	plugins.LaunchQutebrowser()
 }

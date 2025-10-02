@@ -53,7 +53,7 @@ func ToggleYazi() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e yazi",
-			utils.GetOSDefaultShell(),
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -72,7 +72,7 @@ func ToggleLazyDocker() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e lazydocker",
-			utils.GetOSDefaultShell(),
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -81,7 +81,7 @@ func ToggleLazyGit() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e lazygit",
-			utils.GetOSDefaultShell(),
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -94,7 +94,7 @@ func ToggleMusic() {
 		utils.Toggle(
 			fmt.Sprintf(
 				"%s -e cava",
-				utils.GetOSDefaultShell(),
+				utils.GetOSDefaultTerminal(),
 			),
 		)
 	}()
@@ -104,7 +104,7 @@ func ToggleMusic() {
 		utils.Toggle(
 			fmt.Sprintf(
 				"%s -e ncmpcpp",
-				utils.GetOSDefaultShell(),
+				utils.GetOSDefaultTerminal(),
 			),
 		)
 	}()
@@ -119,7 +119,7 @@ func ToggleMutt() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e mutt",
-			utils.GetOSDefaultShell(),
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -173,7 +173,7 @@ func ToggleIrssi() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e irssi",
-			utils.GetOSDefaultShell(),
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -182,7 +182,7 @@ func ToggleNewsboat() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"%s -e newsboat",
-			utils.GetOSDefaultShell(),
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -200,14 +200,10 @@ func ToggleObsidian() {
 }
 
 func ToggleTop() {
-	utils.Toggle("st -e btop")
-}
-
-func ToggleWallpaper() {
 	utils.Toggle(
 		fmt.Sprintf(
-			"feh --bg-fill --recursive --randomize %s",
-			path.Join(os.Getenv("HOME"), WallPaperPath),
+			"%s -e btop",
+			utils.GetOSDefaultTerminal(),
 		),
 	)
 }
@@ -249,7 +245,7 @@ func ToggleRecAudio() {
 	case utils.IsRunning("ffmpeg"):
 		utils.Kill("ffmpeg")
 	default:
-		utils.RunScript(
+		_, _, _ = utils.RunScript(
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -y -r 60 -f alsa -i default -c:a flac %s",
@@ -267,7 +263,7 @@ func ToggleRecScreen() {
 		utils.Kill("ffmpeg")
 	default:
 		w, h := utils.GetScreenSize()
-		utils.RunScript(
+		_, _, _ = utils.RunScript(
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s",
@@ -287,7 +283,7 @@ func ToggleRecWebcam() {
 	case utils.IsRunning("ffmpeg"):
 		utils.Kill("ffmpeg")
 	default:
-		utils.RunScript(
+		_, _, _ = utils.RunScript(
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s",
@@ -304,7 +300,7 @@ func ToggleShow() {
 	case utils.IsRunning("ffplay"):
 		utils.Kill("ffplay")
 	default:
-		utils.RunScript(
+		_, _, _ = utils.RunScript(
 			"bash",
 			"st -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0",
 		)

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+open_url_as_app --url='https://news.futunn.com/main/live?lang=zh-cn'

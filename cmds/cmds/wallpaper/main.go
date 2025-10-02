@@ -19,7 +19,7 @@ func main() {
 		}
 
 		if len(files) == 0 {
-			time.Sleep(8 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 
 		for _, picture := range files {
@@ -27,7 +27,7 @@ func main() {
 			if err := cmd.Run(); err != nil {
 				fmt.Println("failed to set wallpaper:", err)
 			}
-			time.Sleep(8 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 	}
 }

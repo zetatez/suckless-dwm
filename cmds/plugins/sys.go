@@ -243,12 +243,12 @@ func SysShortcuts() {
 	}
 	cmd, ok := SysShortCuts[content]
 	if ok {
-		utils.RunScript("bash", cmd)
+		_, _, _ = utils.RunScript("bash", cmd)
 	}
 }
 
 func SysScreen() {
-	primaryMonitor, secondMonitor := "eDP-1", "eDP-1"
+	primaryMonitor := "eDP-1"
 	cmd := "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
 	stdout, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
@@ -260,7 +260,7 @@ func SysScreen() {
 		utils.Notify("only have one monitor")
 		return
 	}
-	secondMonitor = stdout
+	secondMonitor := stdout
 	cmds := map[string]string{
 		"defualt":                fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
 		"clone":                  fmt.Sprintf("xrandr --output %s --mode 1920x1080", secondMonitor),
