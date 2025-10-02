@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+notify-send 'reset sys default'
 
 # ---------------------
 sudo light -S 92

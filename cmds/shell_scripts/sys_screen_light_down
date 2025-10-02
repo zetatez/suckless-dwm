@@ -2,3 +2,4 @@
 
 sudo light -N 8
 sudo light -U 5
+notify-send 'light -5%'

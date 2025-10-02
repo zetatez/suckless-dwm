@@ -17,6 +17,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
 	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
 	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
+	go build -o ./bins/launch_qutebrowser                        ./cmds/launch_qutebrowser/main.go
 	go build -o ./bins/launch_thunar                             ./cmds/launch_thunar/main.go
 	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
 	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
@@ -64,16 +65,8 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_wallpaper                          ./cmds/toggle_wallpaper/main.go
 	go build -o ./bins/toggle_xournal                            ./cmds/toggle_xournal/main.go
 	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
-	go build -o ./bins/chrome_open_url_chatgpt                   ./cmds/chrome_open_url_chatgpt/main.go
-	go build -o ./bins/chrome_open_url_doubao                    ./cmds/chrome_open_url_doubao/main.go
-	go build -o ./bins/chrome_open_url_github                    ./cmds/chrome_open_url_github/main.go
-	go build -o ./bins/chrome_open_url_google                    ./cmds/chrome_open_url_google/main.go
-	go build -o ./bins/chrome_open_url_google_mail               ./cmds/chrome_open_url_google_mail/main.go
-	go build -o ./bins/chrome_open_url_google_translate          ./cmds/chrome_open_url_google_translate/main.go
-	go build -o ./bins/chrome_open_url_instagram                 ./cmds/chrome_open_url_instagram/main.go
-	go build -o ./bins/chrome_open_url_leetcode                  ./cmds/chrome_open_url_leetcode/main.go
-	go build -o ./bins/chrome_open_url_wechat                    ./cmds/chrome_open_url_wechat/main.go
-	go build -o ./bins/chrome_open_url_youtube                   ./cmds/chrome_open_url_youtube/main.go
+	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
+	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
 	go build -o ./bins/wallpaper                                 ./cmds/wallpaper/main.go
 	go build -o ./bins/daemon                                    ./cmds/daemon/main.go
 	chmod +x ./bins/*
