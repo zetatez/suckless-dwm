@@ -208,15 +208,6 @@ func ToggleTop() {
 	)
 }
 
-func ToggleWallpaper() {
-	utils.Toggle(
-		fmt.Sprintf(
-			"feh --bg-fill --recursive --randomize %s",
-			path.Join(os.Getenv("HOME"), WallPaperPath),
-		),
-	)
-}
-
 func ToggleClipmenu() {
 	utils.Toggle("sh -c clipmenu")
 }

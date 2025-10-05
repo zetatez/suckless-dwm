@@ -19,7 +19,7 @@ static const int sidepad           = 0;
 static const int defaultwinpad     = 1;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
-static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=18";
+static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=24";
 static const char col_gray1[]      = "#222222";
 static const char col_gray2[]      = "#444444";
 static const char col_gray3[]      = "#bbbbbb";
@@ -89,11 +89,14 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]                               = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
+// static const char *dmenucmd[]                               = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
+// static const char *dmenucmd[]                               = { "rofi", "-modi", "drun,run,window", "-show", "drun", "-theme", "fullscreen-preview", NULL };
+static const char *dmenucmd[]                               = { "rofi", "-modi", "drun,run,window", "-show", "drun", "-theme", "fancy2.rasi", "-font", "JetBrainsMono Nerd Font 24", NULL };
 static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 
 static const Key keys[] = {
 /*  modifier                    key              function           argument                                              */
+
 { SUPKEY,                       XK_F1,           spawn,             {.v = Shell("sys_volume_toggle")                     } },
 { SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys_volume_down")                       } },
 { SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys_volume_up")                         } },
@@ -125,7 +128,7 @@ static const Key keys[] = {
 { SUPKEY|ShiftMask,             XK_5,            spawn,             {.v = Shell("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")      } },
 { SUPKEY|ShiftMask,             XK_6,            spawn,             {.v = Shell("open_url_with_chrome --url='https://www.doubao.com/chat/'")                        } },
 { SUPKEY|ShiftMask,             XK_7,            spawn,             {.v = Shell("open_url_with_chrome --url='https://www.instagram.com'")                           } },
-{ SUPKEY|ShiftMask,             XK_8,            spawn,             {.v = Shell("open_url_with_chrome --url='https://web.wechat.com/'")                             } },
+{ SUPKEY|ShiftMask,             XK_8,            spawn,             {.v = Shell("open_url_with_chrome --url='https://web.wechat . com/'")                             } },
 { SUPKEY|ShiftMask,             XK_9,            spawn,             {.v = Shell("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")             } },
 { SUPKEY|ShiftMask,             XK_0,            spawn,             {.v = Shell("open_url_with_chrome --url='http://www.google.com/'")                              } },
 
@@ -212,11 +215,11 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_backslash,    spawn,             {.v =                                             } },
 
 // MODKEY, etc
-{ MODKEY,                       XK_u,            spawn,             {.v = Termi("lazy_open_file")                        } },
-{ MODKEY,                       XK_q,            spawn,             {.v = Shell("slock")                                 } },
-{ MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                                  } },
-{ MODKEY,                       XK_c,            spawn,             {.v = Shell("toggle_clipmenu")                       } },
 { MODKEY,                       XK_p,            spawn,             {.v = dmenucmd                                       } },
+{ MODKEY,                       XK_slash,        spawn,             {.v = Shell("rofi -modi drun,run,window -show drun -theme fullscreen-preview.rasi -font 'JetBrainsMono Nerd Font 24'") } },
+{ MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                                  } },
+{ MODKEY,                       XK_q,            spawn,             {.v = Shell("slock")                                 } },
+{ MODKEY,                       XK_c,            spawn,             {.v = Shell("toggle_clipmenu")                       } },
 { MODKEY,                       XK_Return,       zoom,              {0                                                   } },
 { MODKEY,                       XK_Tab,          view,              {0                                                   } },
 { MODKEY,                       XK_b,            togglebar,         {0                                                   } },
@@ -229,10 +232,10 @@ static const Key keys[] = {
 { MODKEY,                       XK_minus,        scratchpad_show,   {0                                                   } },
 { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,   {0                                                   } },
 { MODKEY,                       XK_equal,        scratchpad_remove, {0                                                   } },
-{ MODKEY,                       XK_bracketleft,  focusmon,          {.i = +1                                             } }, // monitor related
 { MODKEY,                       XK_bracketleft,  focusmon,          {.i = -1                                             } }, // monitor related, not tested
-{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = +1                                             } }, // monitor related
-{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = -1                                             } }, // monitor related, not tested
+{ MODKEY,                       XK_bracketright, focusmon,          {.i = +1                                             } }, // monitor related
+{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = -1                                             } }, // monitor related
+{ MODKEY|ShiftMask,             XK_bracketright, tagmon,            {.i = +1                                             } }, // monitor related, not tested
 { MODKEY,                       XK_d,            incnmaster,        {.i = -1                                             } },
 { MODKEY,                       XK_i,            incnmaster,        {.i = +1                                             } },
 { MODKEY,                       XK_h,            movestack,         {.i = -1                                             } },
@@ -249,8 +252,8 @@ static const Key keys[] = {
 { MODKEY|ShiftMask,             XK_l,            setmfact,          {.f = +0.025                                         } },
 { MODKEY|ShiftMask,             XK_j,            sethfact,          {.f = -0.025                                         } },
 { MODKEY|ShiftMask,             XK_k,            sethfact,          {.f = +0.025                                         } },
-{ MODKEY,                       XK_space,        togglefloating,    {0                                                   } },
 { MODKEY,                       XK_u,            setlayout,         {0                                                   } }, // temporary layout switch
+{ MODKEY,                       XK_space,        togglefloating,    {0                                                   } },
 { MODKEY,                       XK_a,            setlayout,         {.v = &layouts[0]                                    } },
 { MODKEY,                       XK_r,            setlayout,         {.v = &layouts[1]                                    } },
 { MODKEY|ShiftMask,             XK_r,            setlayout,         {.v = &layouts[2]                                    } },
@@ -269,12 +272,12 @@ static const Key keys[] = {
 { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,  {0                                                   } },
 { MODKEY|ShiftMask,             XK_q,            quit,              {0                                                   } },
 { MODKEY|ShiftMask,             XK_p,            quit,              {1                                                   } },
+// { MODKEY,                       XK_slash,        spawn,             {.v =                                             } },
 // { MODKEY,                       XK_n,            xxxxx,             {.v = x                                           } },
 // { MODKEY,                       XK_w,            xxxxx,             {.v =                                             } },
 // { MODKEY,                       XK_x,            xxxxx,             {.v = x                                           } },
 // { MODKEY,                       XK_y,            xxxxx,             {.v = x                                           } },
 // { MODKEY,                       XK_z,            xxxxx,             {.v = x                                           } },
-// { MODKEY,                       XK_slash,        xxxxx,             {.i =                                             } },
 // { MODKEY|ShiftMask,             XK_a,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_b,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_d,            xxxxx,             {.v =                                             } },
@@ -289,7 +292,7 @@ static const Key keys[] = {
 // { MODKEY|ShiftMask,             XK_y,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_y,            xxxxx,             {.v =                                             } },
 // { MODKEY|ShiftMask,             XK_z,            xxxxx,             {.v =                                             } },
-// { MODKEY|ShiftMask,             XK_slash,        xxx,               {.i = +1                                          } },
+// { MODKEY|ShiftMask,             XK_slash,        xxx,               {.i =                                             } },
 
 { MODKEY,                       XK_1,            view,              {.ui = 1 << 0                                        } }, // view tag 1
 { MODKEY,                       XK_2,            view,              {.ui = 1 << 1                                        } },
@@ -357,3 +360,4 @@ static const Button buttons[] = {
 // { ClkWinTitle,          0,              Button2,        xxxxxxxxx,           {0                                       } },
 // { ClkWinTitle,          0,              Button3,        xxxxxxxxx,           {0                                       } },
 };
+

@@ -11,6 +11,7 @@ clean:
 	rm -rf bins/*
 
 build: prepare build_shell_cmds
+	go build -o ./bins/search                                    ./cmds/search/main.go
 	go build -o ./bins/format_json                               ./cmds/format_json/main.go
 	go build -o ./bins/format_sql                                ./cmds/format_sql/main.go
 	go build -o ./bins/format_yaml                               ./cmds/format_yaml/main.go
@@ -24,7 +25,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/note_diary                                ./cmds/note_diary/main.go
 	go build -o ./bins/note_flash_card                           ./cmds/note_flash_card/main.go
 	go build -o ./bins/note_timeline                             ./cmds/note_timeline/main.go
-	go build -o ./bins/search                                    ./cmds/search/main.go
 	go build -o ./bins/ssh_to                                    ./cmds/ssh_to/main.go
 	go build -o ./bins/sys_bluetooth_connect                     ./cmds/sys_bluetooth_connect/main.go
 	go build -o ./bins/sys_bluetooth_disconnect                  ./cmds/sys_bluetooth_disconnect/main.go
@@ -40,7 +40,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_clipmenu                           ./cmds/toggle_clipmenu/main.go
 	go build -o ./bins/toggle_flameshot                          ./cmds/toggle_flameshot/main.go
 	go build -o ./bins/toggle_inkscape                           ./cmds/toggle_inkscape/main.go
-	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
 	go build -o ./bins/toggle_irssi                              ./cmds/toggle_irssi/main.go
 	go build -o ./bins/toggle_julia                              ./cmds/toggle_julia/main.go
 	go build -o ./bins/toggle_krita                              ./cmds/toggle_krita/main.go
@@ -62,7 +61,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_show                               ./cmds/toggle_show/main.go
 	go build -o ./bins/toggle_sublime                            ./cmds/toggle_sublime/main.go
 	go build -o ./bins/toggle_top                                ./cmds/toggle_top/main.go
-	go build -o ./bins/toggle_wallpaper                          ./cmds/toggle_wallpaper/main.go
+	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
 	go build -o ./bins/toggle_xournal                            ./cmds/toggle_xournal/main.go
 	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
 	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
