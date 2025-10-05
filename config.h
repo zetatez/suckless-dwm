@@ -89,9 +89,8 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
-// static const char *dmenucmd[]                               = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
-// static const char *dmenucmd[]                               = { "rofi", "-modi", "drun,run,window", "-show", "drun", "-theme", "fullscreen-preview", NULL };
-static const char *dmenucmd[]                               = { "rofi", "-modi", "drun,run,window", "-show", "drun", "-theme", "fancy2.rasi", "-font", "JetBrainsMono Nerd Font 24", NULL };
+// static const char *dmenucmd[]                            = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[]                               = { "rofi", "-modi", "drun,run,window", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
 static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 
 static const Key keys[] = {
@@ -216,7 +215,7 @@ static const Key keys[] = {
 
 // MODKEY, etc
 { MODKEY,                       XK_p,            spawn,             {.v = dmenucmd                                       } },
-{ MODKEY,                       XK_slash,        spawn,             {.v = Shell("rofi -modi drun,run,window -show drun -theme fullscreen-preview.rasi -font 'JetBrainsMono Nerd Font 24'") } },
+{ MODKEY,                       XK_semicolon,    spawn,             {.v = Shell("rofi -modi drun,run,window -show drun -theme fancy2.rasi -font 'JetBrainsMono Nerd Font 24'") } },
 { MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                                  } },
 { MODKEY,                       XK_q,            spawn,             {.v = Shell("slock")                                 } },
 { MODKEY,                       XK_c,            spawn,             {.v = Shell("toggle_clipmenu")                       } },
@@ -232,10 +231,10 @@ static const Key keys[] = {
 { MODKEY,                       XK_minus,        scratchpad_show,   {0                                                   } },
 { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,   {0                                                   } },
 { MODKEY,                       XK_equal,        scratchpad_remove, {0                                                   } },
-{ MODKEY,                       XK_bracketleft,  focusmon,          {.i = -1                                             } }, // monitor related, not tested
-{ MODKEY,                       XK_bracketright, focusmon,          {.i = +1                                             } }, // monitor related
-{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = -1                                             } }, // monitor related
-{ MODKEY|ShiftMask,             XK_bracketright, tagmon,            {.i = +1                                             } }, // monitor related, not tested
+{ MODKEY,                       XK_bracketleft,  focusmon,          {.i = -1                                             } }, // multi monitors: focus on which one -1
+{ MODKEY,                       XK_bracketright, focusmon,          {.i = +1                                             } }, // multi monitors: focus on which one +1
+{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = -1                                             } }, // multi monitors: move win to monitor prev
+{ MODKEY|ShiftMask,             XK_bracketright, tagmon,            {.i = +1                                             } }, // multi monitors: move win to monitor next
 { MODKEY,                       XK_d,            incnmaster,        {.i = -1                                             } },
 { MODKEY,                       XK_i,            incnmaster,        {.i = +1                                             } },
 { MODKEY,                       XK_h,            movestack,         {.i = -1                                             } },
@@ -272,7 +271,7 @@ static const Key keys[] = {
 { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,  {0                                                   } },
 { MODKEY|ShiftMask,             XK_q,            quit,              {0                                                   } },
 { MODKEY|ShiftMask,             XK_p,            quit,              {1                                                   } },
-// { MODKEY,                       XK_slash,        spawn,             {.v =                                             } },
+{ MODKEY,                       XK_slash,        spawn,             {.v = Termi("lazy_open_search_file")                 } },
 // { MODKEY,                       XK_n,            xxxxx,             {.v = x                                           } },
 // { MODKEY,                       XK_w,            xxxxx,             {.v =                                             } },
 // { MODKEY,                       XK_x,            xxxxx,             {.v = x                                           } },
