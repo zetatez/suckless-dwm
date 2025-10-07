@@ -27,11 +27,12 @@ func OpenUrlWithQutebrowser(url string) func() {
 }
 
 // open url as app
-func OpenUrlAsAppWithChrome(url string) func() {
+func OpenUrlAsApp(url string) func() {
 	return func() {
+		// _, _, _ = utils.RunScript("bash", fmt.Sprintf("chrome --proxy-server=socks5://127.0.0.1:7891 --app=%s", url))
 		_, _, _ = utils.RunScript(
 			"bash",
-			fmt.Sprintf("chrome --proxy-server=socks5://127.0.0.1:7891 --app=%s", url),
+			fmt.Sprintf(`qutebrowser --set content.proxy 'socks5://127.0.0.1:7891' --target window '%s'`, url),
 		)
 	}
 }

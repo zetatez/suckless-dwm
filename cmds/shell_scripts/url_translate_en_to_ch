@@ -1,0 +1,3 @@
+#!/bin/sh
+
+open_url_as_app --url='https://translate.google.com/?sl=en&tl=zh-CN'

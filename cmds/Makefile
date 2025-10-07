@@ -66,6 +66,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
 	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
 	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
+	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
 	go build -o ./bins/wallpaper                                 ./cmds/wallpaper/main.go
 	go build -o ./bins/daemon                                    ./cmds/daemon/main.go
 	chmod +x ./bins/*

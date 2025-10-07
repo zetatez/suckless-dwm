@@ -90,7 +90,7 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
 // static const char *dmenucmd[]                            = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *dmenucmd[]                               = { "rofi", "-modi", "drun,run,window", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
+static const char *dmenucmd[]                               = { "rofi", "-show", "combi", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
 static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 
 static const Key keys[] = {
@@ -115,7 +115,7 @@ static const Key keys[] = {
 { SUPKEY,                       XK_4,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://mail.google.com/mail'")                   } },
 { SUPKEY,                       XK_5,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://translate.google.com/?sl=auto&tl=zh-CN'") } },
 { SUPKEY,                       XK_6,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://www.doubao.com/chat/'")                   } },
-{ SUPKEY,                       XK_7,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://www.instagram.com'")                      } },
+{ SUPKEY,                       XK_7,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://www.bilibili.com/'")                      } },
 { SUPKEY,                       XK_8,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://web.wechat.com/'")                        } },
 { SUPKEY,                       XK_9,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='https://leetcode.cn/search/?q=%E6%9C%80'")        } },
 { SUPKEY,                       XK_0,            spawn,             {.v = Shell("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
@@ -126,8 +126,8 @@ static const Key keys[] = {
 { SUPKEY|ShiftMask,             XK_4,            spawn,             {.v = Shell("open_url_with_chrome --url='https://mail.google.com/mail'")                        } },
 { SUPKEY|ShiftMask,             XK_5,            spawn,             {.v = Shell("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")      } },
 { SUPKEY|ShiftMask,             XK_6,            spawn,             {.v = Shell("open_url_with_chrome --url='https://www.doubao.com/chat/'")                        } },
-{ SUPKEY|ShiftMask,             XK_7,            spawn,             {.v = Shell("open_url_with_chrome --url='https://www.instagram.com'")                           } },
-{ SUPKEY|ShiftMask,             XK_8,            spawn,             {.v = Shell("open_url_with_chrome --url='https://web.wechat . com/'")                             } },
+{ SUPKEY|ShiftMask,             XK_7,            spawn,             {.v = Shell("open_url_with_chrome --url='https://www.bilibili.com/'")                           } },
+{ SUPKEY|ShiftMask,             XK_8,            spawn,             {.v = Shell("open_url_with_chrome --url='https://web.wechat.com/'")                             } },
 { SUPKEY|ShiftMask,             XK_9,            spawn,             {.v = Shell("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")             } },
 { SUPKEY|ShiftMask,             XK_0,            spawn,             {.v = Shell("open_url_with_chrome --url='http://www.google.com/'")                              } },
 
@@ -215,7 +215,7 @@ static const Key keys[] = {
 
 // MODKEY, etc
 { MODKEY,                       XK_p,            spawn,             {.v = dmenucmd                                       } },
-{ MODKEY,                       XK_semicolon,    spawn,             {.v = Shell("rofi -modi drun,run,window -show drun -theme fancy2.rasi -font 'JetBrainsMono Nerd Font 24'") } },
+// { MODKEY,                       XK_semicolon,    spawn,             {.v =                                                } },
 { MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                                  } },
 { MODKEY,                       XK_q,            spawn,             {.v = Shell("slock")                                 } },
 { MODKEY,                       XK_c,            spawn,             {.v = Shell("toggle_clipmenu")                       } },
