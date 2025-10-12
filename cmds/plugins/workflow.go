@@ -161,7 +161,7 @@ func LazyOpenSearchFileContent() {
 
 func SearchFromWeb(content string) {
 	url := fmt.Sprintf("https://www.google.com/search?q='%s'", content)
-	OpenUrlWithChrome(url)()
+	OpenUrlWithQutebrowser(url)()
 }
 
 func SearchBooksOnline() {
