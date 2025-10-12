@@ -29,10 +29,10 @@ static const char col_bg[]       = "#E06C75";
 static const char col_fg[]       = "#FFFF00";
 static const char *colors[][3]     = {
 //                  fg         bg        border
-// [SchemeNorm] = { col_gray3, col_cyan, col_gray2 },
-// [SchemeSel]  = { col_gray4, col_cyan, col_cyan  },
-   [SchemeNorm] = { col_bg   , col_cyan, col_gray2 },
-   [SchemeSel]  = { col_fg   , col_cyan, col_cyan  },
+[SchemeNorm] = { col_gray3, col_cyan, col_gray2 },
+[SchemeSel]  = { col_gray4, col_cyan, col_cyan  },
+   // [SchemeNorm] = { col_bg   , col_cyan, col_gray2 },
+   // [SchemeSel]  = { col_fg   , col_cyan, col_cyan  },
 };
 
 static const char *const autostart[] = {
@@ -68,19 +68,19 @@ static const int lockfullscreen     = 0;
 static const int refreshrate        = 120;  /* refresh rate (per second) for client move/resize */
 
 static const Layout layouts[] = {
-{ "󰴈"                  , layout_workflow           }, // default
-{ ""                  , layout_fib_spiral         },
-{ ""                  , layout_fib_dwindle        },
-{ "⧈"                  , layout_center_free_shape  },
-{ "⧅"                  , layout_center_equal_ratio },
-{ "󱂫"                  , layout_tile_right         }, // 5
-{ "󱂪"                  , layout_tile_left          },
-{ "󰝘"                  , layout_grid               },
-{ "󱇙"                  , layout_grid_gap           },
-{ "󱣴"                  , layout_monocle            },
-{ ""                  , layout_hacker             }, // 10
-{ " |"                , layout_stack_vert         },
-{ " ―"                , layout_stack_hori         }, // 12
+{ "W 󰴈"                  , layout_workflow           }, // default
+{ "F "                  , layout_fib_spiral         },
+{ "F "                  , layout_fib_dwindle        },
+{ "C ⧈"                  , layout_center_free_shape  },
+{ "C ⧅"                  , layout_center_equal_ratio },
+{ "T 󱂫"                  , layout_tile_right         }, // 5
+{ "T 󱂪"                  , layout_tile_left          },
+{ "G 󰝘"                  , layout_grid               },
+{ "G 󱇙"                  , layout_grid_gap           },
+{ "M 󱣴"                  , layout_monocle            },
+{ "H "                  , layout_hacker             }, // 10
+{ "S |"                , layout_stack_vert         },
+{ "S ―"                , layout_stack_hori         }, // 12
 // { "∅"               , NULL                      }, // no layout , abandon
 { NULL                 , NULL                      },
 };
