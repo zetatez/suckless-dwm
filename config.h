@@ -90,7 +90,7 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
 // static const char *dmenucmd[]                            = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *dmenucmd[]                               = { "rofi", "-show", "combi", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
+static const char *dmenucmd[]                               = { "rofi", "-show", "combi", "-combi-hide-mode-prefix", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
 static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 
 static const Key keys[] = {
@@ -215,7 +215,7 @@ static const Key keys[] = {
 
 // MODKEY, etc
 { MODKEY,                       XK_p,            spawn,             {.v = dmenucmd                                       } },
-// { MODKEY,                       XK_semicolon,    spawn,             {.v =                                                } },
+// { MODKEY,                    XK_semicolon,    spawn,             {.v =                                                } },
 { MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                                  } },
 { MODKEY,                       XK_q,            spawn,             {.v = Shell("slock")                                 } },
 { MODKEY,                       XK_c,            spawn,             {.v = Shell("toggle_clipmenu")                       } },
