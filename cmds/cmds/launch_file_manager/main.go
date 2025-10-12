@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.LaunchThunar()
+	plugins.LaunchFileManager()
 }

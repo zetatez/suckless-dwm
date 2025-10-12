@@ -14,22 +14,16 @@ func LaunchApp(cmd string) func() {
 
 func LaunchChrome() {
 	LaunchApp(
-		fmt.Sprintf(
-			"chrome --proxy-server=%s --new-window",
-			ProxyServer,
-		),
+		fmt.Sprintf("chrome --proxy-server=%s --new-window", ProxyServer),
 	)()
 }
 
 func LaunchQutebrowser() {
 	LaunchApp(
-		fmt.Sprintf(
-			"qutebrowser --set content.proxy '%s'",
-			ProxyServer,
-		),
+		fmt.Sprintf("qutebrowser --set content.proxy '%s'", ProxyServer),
 	)()
 }
 
-func LaunchThunar() {
+func LaunchFileManager() {
 	LaunchApp("thunar ~")()
 }
