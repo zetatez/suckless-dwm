@@ -97,6 +97,7 @@ var ActionMap = map[string]func(){
 	"web wechat file help":             OpenUrlWithQutebrowser("https://filehelper.weixin.qq.com/"),
 	"web wechat":                       OpenUrlWithQutebrowser("https://web.wechat.com/"),
 	"web wiki archlinux":               OpenUrlWithQutebrowser("https://wiki.archlinux.org"),
+	"web color":                        OpenUrlWithQutebrowser("https://coolors.co/palettes/trending"),
 }
 
 type Search struct{}
