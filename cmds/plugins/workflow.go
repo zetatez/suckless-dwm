@@ -356,7 +356,7 @@ func HandleCopied() {
 		return
 	case utils.IsURL(content):
 		url := content
-		OpenUrlWithChrome(url)()
+		OpenUrlWithQutebrowser(url)()
 		return
 	default:
 		SearchFromWeb(content)
