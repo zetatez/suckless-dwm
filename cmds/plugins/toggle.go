@@ -4,16 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 	"sync"
 	"time"
 
 	"cmds/utils"
 )
-
-func ToggleAddressbook() {
-	utils.Toggle("st -e abook")
-}
 
 func ToggleCalendar() {
 	utils.Toggle(
@@ -148,16 +143,6 @@ func ToggleScala() {
 	)
 }
 
-func ToggleLua() {
-	utils.Toggle(
-		fmt.Sprintf(
-			"st -t %s -c %s -e lua",
-			WinNameScratchPad,
-			WinNameScratchPad,
-		),
-	)
-}
-
 func ToggleTTYClock() {
 	utils.Toggle(
 		fmt.Sprintf(
@@ -214,26 +199,6 @@ func ToggleClipmenu() {
 
 func TogglePassmenu() {
 	utils.Toggle("passmenu")
-}
-
-func ToggleRedShift() {
-	cmd := "systemctl --user status redshift.service"
-	stdout, _, err := utils.RunScript("bash", cmd)
-	if err != nil {
-		utils.Notify(err)
-		return
-	}
-	switch {
-	case strings.Contains(stdout, "running"):
-		cmd = "systemctl --user stop redshift.service"
-	default:
-		cmd = "systemctl --user start redshift.service"
-	}
-	_, _, err = utils.RunScript("bash", cmd)
-	if err != nil {
-		utils.Notify(err)
-		return
-	}
 }
 
 func ToggleXournal() {

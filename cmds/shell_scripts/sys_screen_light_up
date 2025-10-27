@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sudo light -A 5
-notify-send 'light +5%'
+sudo light -A 1
+notify-send 'light +1%'
