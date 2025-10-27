@@ -80,10 +80,10 @@ static const Layout layouts[] = {
 { "G 󱇙"                  , layout_grid_gap           },
 { "M 󱣴"                  , layout_monocle            },
 { "H "                  , layout_hacker             }, // 10
-{ "S |"                , layout_stack_vert         },
-{ "S ―"                , layout_stack_hori         }, // 12
-// { "∅"               , NULL                      }, // no layout , abandon
-{ NULL                 , NULL                      },
+{ "S |"                  , layout_stack_vert         },
+{ "S ―"                  , layout_stack_hori         }, // 12
+// { "∅"                 , NULL                      }, // no layout , abandon
+{ NULL                   , NULL                      },
 };
 
 static const Layout overviewlayout = { "󰾍",  layout_overview };

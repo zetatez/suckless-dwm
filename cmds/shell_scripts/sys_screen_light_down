@@ -1,5 +1,5 @@
 #!/bin/bash
 
-sudo light -N 8
-sudo light -U 5
-notify-send 'light -5%'
+sudo light -N 1
+sudo light -U 1
+notify-send 'light -1%'
