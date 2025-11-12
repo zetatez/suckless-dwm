@@ -45,7 +45,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_lazydocker                         ./cmds/toggle_lazydocker/main.go
 	go build -o ./bins/toggle_lazygit                            ./cmds/toggle_lazygit/main.go
 	go build -o ./bins/toggle_music                              ./cmds/toggle_music/main.go
-	go build -o ./bins/toggle_music_net_cloud                    ./cmds/toggle_music_net_cloud/main.go
+	go build -o ./bins/toggle_netease_cloud_music                ./cmds/toggle_netease_cloud_music/main.go
 	go build -o ./bins/toggle_mutt                               ./cmds/toggle_mutt/main.go
 	go build -o ./bins/toggle_obsidian                           ./cmds/toggle_obsidian/main.go
 	go build -o ./bins/toggle_passmenu                           ./cmds/toggle_passmenu/main.go

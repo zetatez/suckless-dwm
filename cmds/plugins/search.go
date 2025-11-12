@@ -43,7 +43,7 @@ var ActionMap = map[string]func(){
 	"toggle lazydocker":                ToggleLazyDocker,
 	"toggle lazygit":                   ToggleLazyGit,
 	"toggle music":                     ToggleMusic,
-	"toggle music-net-cloud":           ToggleMusicNetCloud,
+	"toggle netease cloud music":       ToggleNeteaseCloudMusic,
 	"toggle mutt":                      ToggleMutt,
 	"toggle obsidian":                  ToggleObsidian,
 	"toggle passmenu":                  TogglePassmenu,

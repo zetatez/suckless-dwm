@@ -13,10 +13,10 @@ import (
 func ToggleCalendar() {
 	utils.Toggle(
 		fmt.Sprintf(
-			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=month'",
+			"st -g %s -t %s -c %s -e nvim +':Calendar -view=month'",
 			utils.GetGeoForTerminal(0.84, 0.04, 24, 12),
-			WinNameFloatWindow,
-			WinNameFloatWindow,
+			WinClsFloat,
+			WinClsFloat,
 		),
 	)
 }
@@ -24,16 +24,16 @@ func ToggleCalendar() {
 func ToggleCalendarSchedulingToday() {
 	utils.Toggle(
 		fmt.Sprintf(
-			"st -g %s -t %s -c %s -e nvim +':set laststatus=0' +'Calendar -view=day'",
+			"st -g %s -t %s -c %s -e nvim +':Calendar -view=day'",
 			utils.GetGeoForTerminal(0.80, 0.05, 36, 32),
-			WinNameFloatWindow,
-			WinNameFloatWindow,
+			WinClsFloat,
+			WinClsFloat,
 		),
 	)
 }
 
 func ToggleCalendarScheduling() {
-	utils.Toggle("st -t scheduling -c scheduling -e nvim +':set laststatus=0' +'Calendar -view=week'")
+	utils.Toggle("st -t scheduling -c scheduling -e nvim +':Calendar -view=week'")
 }
 
 func ToggleFlameshot() {
@@ -57,8 +57,8 @@ func ToggleJulia() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e julia",
-			WinNameScratchPad,
-			WinNameScratchPad,
+			WinClsScratchPad,
+			WinClsScratchPad,
 		),
 	)
 }
@@ -106,7 +106,7 @@ func ToggleMusic() {
 	wg.Wait()
 }
 
-func ToggleMusicNetCloud() {
+func ToggleNeteaseCloudMusic() {
 	utils.Toggle("netease-cloud-music")
 }
 
@@ -127,8 +127,8 @@ func TogglePython() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'",
-			WinNameScratchPad,
-			WinNameScratchPad,
+			WinClsScratchPad,
+			WinClsScratchPad,
 		),
 	)
 }
@@ -137,8 +137,8 @@ func ToggleScala() {
 	utils.Toggle(
 		fmt.Sprintf(
 			"st -t %s -c %s -e scala",
-			WinNameScratchPad,
-			WinNameScratchPad,
+			WinClsScratchPad,
+			WinClsScratchPad,
 		),
 	)
 }
@@ -148,8 +148,8 @@ func ToggleTTYClock() {
 		fmt.Sprintf(
 			"st -g %s -t %s -c %s -e tty-clock -s",
 			utils.GetGeoForTerminal(0.72, 0.04, 53, 8),
-			WinNameFloatWindow,
-			WinNameFloatWindow,
+			WinClsFloat,
+			WinClsFloat,
 		),
 	)
 }
@@ -214,8 +214,8 @@ func ToggleRecAudio() {
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -y -r 60 -f alsa -i default -c:a flac %s",
-				WinNameScratchPad,
-				WinNameScratchPad,
+				WinClsScratchPad,
+				WinClsScratchPad,
 				path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-audio-%s.flac", time.Now().Local().Format("2006-01-02-15-04-05"))),
 			),
 		)
@@ -232,8 +232,8 @@ func ToggleRecScreen() {
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s",
-				WinNameScratchPad,
-				WinNameScratchPad,
+				WinClsScratchPad,
+				WinClsScratchPad,
 				w,
 				h,
 				os.Getenv("DISPLAY"),
@@ -252,8 +252,8 @@ func ToggleRecWebcam() {
 			"bash",
 			fmt.Sprintf(
 				"st -t %s -c %s -e ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s",
-				WinNameScratchPad,
-				WinNameScratchPad,
+				WinClsScratchPad,
+				WinClsScratchPad,
 				path.Join(os.Getenv("HOME"), fmt.Sprintf("/Videos/rec-webcam-%s.mp4", time.Now().Local().Format("2006-01-02-15-04-05"))),
 			),
 		)
