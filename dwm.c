@@ -54,6 +54,7 @@ static void focusstack(const Arg *arg);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void jump_to_sel(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void killclient_unsel(const Arg *arg);
@@ -64,6 +65,7 @@ static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static void movestack(const Arg *arg);
 static void movewin(const Arg *arg);
+static void next_theme(const Arg *arg);
 static void pointerfocuswin(Client *c);
 static void pop(Client *c);
 static void previewtag(const Arg *arg);
@@ -94,6 +96,7 @@ static void showtagpreview(unsigned int i);
 static void sighup(int unused);
 static void sigterm(int unused);
 static void spawn(const Arg *arg);
+static void spawn_or_focus(const Arg *arg);
 static void scratchpad_hide ();
 static _Bool scratchpad_last_showed_is_killed(void);
 static void scratchpad_remove ();
@@ -108,6 +111,7 @@ static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
 static void toggleoverview(const Arg *arg);
 static void togglescratch(const Arg *arg);
+static void toggle_scratchpad(const Arg *arg);
 static void togglesticky(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -1191,6 +1195,19 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 #endif
 
 void
+jump_to_sel(const Arg *arg)
+{
+  Client *c = selmon->sel;
+  if (!c) { return; }
+
+  /* 清除 overview 状态 */
+  selmon->isoverview = 0;
+
+  /* 跳转到当前窗口所在的 tag */
+  view(&(Arg){ .ui = c->tags });
+}
+
+void
 keypress(XEvent *e)
 {
   unsigned int i;
@@ -1264,6 +1281,19 @@ manage(Window w, XWindowAttributes *wa)
   c->oldbw = wa->border_width;
 
   updatetitle(c);
+
+  XClassHint ch = { NULL, NULL };
+  if (XGetClassHint(dpy, c->win, &ch)) {
+    if (ch.res_class)
+      strncpy(c->class, ch.res_class, sizeof(c->class) - 1);
+    if (ch.res_name)
+      strncpy(c->instance, ch.res_name, sizeof(c->instance) - 1);
+    if (ch.res_class)
+      XFree(ch.res_class);
+    if (ch.res_name)
+      XFree(ch.res_name);
+  }
+
   if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
     c->mon = t->mon;
     c->tags = t->tags;
@@ -1497,6 +1527,22 @@ movewin(const Arg *arg)
   resize(c, nx, ny, c->w, c->h, 1);
   focus(c);
   pointerfocuswin(c);
+}
+
+void
+next_theme(const Arg *arg)
+{
+  current_theme_idx = (current_theme_idx + 1) % (sizeof(themes)/sizeof(themes[0]));
+
+  /* 更新 drw scheme */
+  for (int i = 0; i < SchemeLast; i++)
+    scheme[i] = drw_scm_create(drw, themes[current_theme_idx][i], 3);
+
+  /* 重绘 bar + arrange */
+  for (Monitor *m = mons; m; m = m->next)
+    drawbar(m);
+
+  arrange(selmon);
 }
 
 void
@@ -2182,6 +2228,38 @@ spawn(const Arg *arg)
 }
 
 static void
+spawn_or_focus(const Arg *arg)
+{
+  const char *const *data = arg->v;  // ← 完美匹配宏类型
+  const char *cmd   = data[0];
+  const char *class = data[1];
+
+  Client *c;
+  XClassHint ch = { NULL, NULL };
+
+  /* 找到窗口 -> focus */
+  for (c = selmon->clients; c; c = c->next) {
+    if (XGetClassHint(dpy, c->win, &ch)) {
+      if (ch.res_class && strcmp(ch.res_class, class) == 0) {
+        view(&(Arg){ .ui = c->tags });
+        focus(c);
+        arrange(selmon);
+
+        if (ch.res_name)  XFree(ch.res_name);
+        if (ch.res_class) XFree(ch.res_class);
+        return;
+      }
+    }
+    if (ch.res_name)  XFree(ch.res_name);
+    if (ch.res_class) XFree(ch.res_class);
+  }
+
+  /* 没找到 -> spawn */
+  // spawn(&(Arg){ .v = (const char *[]){ cmd, NULL } });
+  spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
+}
+
+static void
 scratchpad_hide ()
 {
 	if (selmon -> sel) {
@@ -2341,6 +2419,38 @@ togglescratch(const Arg *arg)
 }
 
 void
+toggle_scratchpad(const Arg *arg)
+{
+  const char *const *data = arg->v;
+  const char *cmd   = data[0];
+  const char *class = data[1];
+
+  Client *c;
+
+  /* 查找窗口 */
+  for (c = selmon->clients; c; c = c->next) {
+    if (strcmp(c->class, class) == 0) {
+
+      /* 已可见 → 隐藏（移到 scratchpad tag：1<<30） */
+      if (ISVISIBLE(c)) {
+        c->tags = 1 << 30;
+        arrange(selmon);
+        return;
+      }
+
+      /* 不可见 → 显示（放回当前 tag） */
+      c->tags = selmon->tagset[selmon->seltags];
+      focus(c);
+      arrange(selmon);
+      return;
+    }
+  }
+
+  /* 第一次调用：启动 scratchpad */
+  spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
+}
+
+void
 togglesticky(const Arg *arg)
 {
     if (!selmon->sel) {
@@ -2361,9 +2471,22 @@ togglefullscreen(const Arg *arg)
 void
 toggleoverview(const Arg *arg)
 {
-    uint target = selmon->sel ? selmon->sel->tags : selmon->tagset[selmon->seltags];
-    selmon->isoverview ^= 1;
-    view(&(Arg){ .ui = target });
+  static uint prevtag = 0;
+
+  if (!selmon->isoverview) {
+    /* 进入 overview，记录当前 tagset */
+    prevtag = selmon->tagset[selmon->seltags];
+    selmon->isoverview = 1;
+
+    /* 展示所有窗口 */
+    view(&(Arg){ .ui = ~0 });
+  } else {
+    /* 退出 overview，恢复原 tag */
+    selmon->isoverview = 0;
+
+    /* 如果 prevtag 合法就恢复，否则回到 1 号 tag */
+    view(&(Arg){ .ui = prevtag ? prevtag : 1 });
+  }
 }
 
 void
