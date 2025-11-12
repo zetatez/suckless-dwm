@@ -18,7 +18,6 @@ static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 1;
 static const int swallowfloating   = 1;
-// static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
 static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
 static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=24";
 static const char col_gray1[]      = "#222222";
