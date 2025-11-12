@@ -82,7 +82,6 @@ static const Layout layouts[] = {
 { "H "                  , layout_hacker             }, // 10
 { "S |"                  , layout_stack_vert         },
 { "S ―"                  , layout_stack_hori         }, // 12
-// { "∅"                 , NULL                      }, // no layout , abandon
 { NULL                   , NULL                      },
 };
 
@@ -90,13 +89,11 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
-// static const char *dmenucmd[]                            = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray4, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *dmenucmd[]                               = { "rofi", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
 static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
 
 static const Key keys[] = {
 /*  modifier                    key              function           argument                                              */
-
 { SUPKEY,                       XK_F1,           spawn,             {.v = Shell("sys_volume_toggle")                     } },
 { SUPKEY,                       XK_F2,           spawn,             {.v = Shell("sys_volume_down")                       } },
 { SUPKEY,                       XK_F3,           spawn,             {.v = Shell("sys_volume_up")                         } },
