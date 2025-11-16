@@ -47,7 +47,7 @@ static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", 
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
-  {"floatwindow",            NULL,       NULL,      0,            1,            0,             0,           -1 },
+  {"float",                  NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for markdown
   {"chrome",                 NULL,       NULL,      0,            0,            0,             0,           -1 },
