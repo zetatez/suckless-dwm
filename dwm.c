@@ -2182,35 +2182,35 @@ spawn(const Arg *arg)
 	}
 }
 
-static void
+  static void
 spawn_or_focus(const Arg *arg)
 {
-    const char **v = (const char **)arg->v;
-    const char *cmd   = v[0];     /* 启动命令 */
-    const char *class = v[1];     /* 启动命令对应应用的 class 名 */
+  const char **v = (const char **)arg->v;
+  const char *cmd   = v[0];     /* 启动命令 */
+  const char *class = v[1];     /* 启动命令对应应用的 class 名 */
 
-    Client *c;
-    XClassHint ch = { NULL, NULL };
+  Client *c;
+  XClassHint ch = { NULL, NULL };
 
-    /* 找到窗口 -> focus */
-    for (c = selmon->clients; c; c = c->next) {
-        if (XGetClassHint(dpy, c->win, &ch)) {
-            if (ch.res_class && strcmp(ch.res_class, class) == 0) {
-                view(&(Arg){ .ui = c->tags });
-                focus(c);
-                arrange(selmon);
+  /* 找到窗口 -> focus */
+  for (c = selmon->clients; c; c = c->next) {
+    if (XGetClassHint(dpy, c->win, &ch)) {
+      if (ch.res_class && strcmp(ch.res_class, class) == 0) {
+        view(&(Arg){ .ui = c->tags });
+        focus(c);
+        arrange(selmon);
 
-                if (ch.res_name)  XFree(ch.res_name);
-                if (ch.res_class) XFree(ch.res_class);
-                return;
-            }
-        }
         if (ch.res_name)  XFree(ch.res_name);
         if (ch.res_class) XFree(ch.res_class);
+        return;
+      }
     }
+    if (ch.res_name)  XFree(ch.res_name);
+    if (ch.res_class) XFree(ch.res_class);
+  }
 
-    /* 没找到 -> spawn */
-    spawn(&(Arg){ .v = (const char *[]){ cmd, NULL } });
+  /* 没找到 -> spawn */
+  spawn(&(Arg){ .v = (const char *[]){ cmd, NULL } });
 }
 
 static void
