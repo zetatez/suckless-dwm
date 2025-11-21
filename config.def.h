@@ -51,7 +51,6 @@ static const Rule rules[] = {
   {"float",                  NULL,       NULL,      0,            1,            0,             0,           -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for markdown
-  {"chrome",                 NULL,       NULL,      0,            0,            0,             0,           -1 },
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
 };
 
@@ -146,7 +145,8 @@ static const Key keys[] = {
 { SUPKEY,                       XK_d,            spawn,             {.v = Spawn("toggle_lazydocker")                                 } },
 { SUPKEY,                       XK_e,            spawn,             {.v = Spawn("toggle_mutt")                                       } },
 { SUPKEY,                       XK_f,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_file")                     } },
-{ SUPKEY,                       XK_g,            spawn,             {.v = Spawn("toggle_lazygit")                                    } },
+// { SUPKEY,                       XK_g,            spawn,             {.v = Spawn("toggle_lazygit")                                    } },
+{ SUPKEY,                       XK_g,            spawn_or_focus,    {.v = SpawnOrFocus("launch_chrome", "Google-chrome")             } },
 { SUPKEY,                       XK_i,            spawn,             {.v = Spawn("toggle_flameshot")                                  } },
 { SUPKEY,                       XK_m,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_file_content")             } },
 { SUPKEY,                       XK_n,            spawn,             {.v = Spawn("toggle_python")                                     } },
@@ -175,10 +175,12 @@ static const Key keys[] = {
 // { SUPKEY,                       XK_period,       spawn,             {.v =                                                         } },
 // { SUPKEY,                       XK_slash,        spawn,             {.v =                                                         } },
 //
-{ SUPKEY|ShiftMask,             XK_b,            spawn_or_focus,    {.v = SpawnOrFocus("launch_chrome", "Google-chrome")             } },
+{ SUPKEY|ShiftMask,             XK_b,            spawn,             {.v = Spawn("launch_qutebrowser")                                } },
+{ SUPKEY,                       XK_c,            spawn,             {.v = Spawn("note_timeline")                                     } },
 { SUPKEY|ShiftMask,             XK_c,            killclient,        {0                                                               } },
 { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    {.v = SpawnOrFocus("dingtalk", "com.alibabainc.dingtalk")        } },
 { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    {.v = SpawnOrFocus("feishu", "Feishu")                           } },
+{ SUPKEY|ShiftMask,             XK_g,            spawn,             {.v = Spawn("launch_chrome")                                     } },
 { SUPKEY|ShiftMask,             XK_s,            spawn_or_focus,    {.v = SpawnOrFocus("subl", "Sublime_text")                       } },
 { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    {.v = SpawnOrFocus("inkscape", "Inkscape")                       } },
 { SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,    {.v = SpawnOrFocus("netease-cloud-music", "netease-cloud-music") } },
@@ -194,7 +196,6 @@ static const Key keys[] = {
 
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_e,            spawn,             {.v =                                             } },
-// { SUPKEY|ShiftMask,             XK_g,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_q,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_r,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_t,            spawn,             {.v =                                             } },
