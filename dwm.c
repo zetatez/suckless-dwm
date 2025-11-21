@@ -94,6 +94,7 @@ static void showtagpreview(unsigned int i);
 static void sighup(int unused);
 static void sigterm(int unused);
 static void spawn(const Arg *arg);
+static void spawn_or_focus(const Arg *arg);
 static void scratchpad_hide ();
 static _Bool scratchpad_last_showed_is_killed(void);
 static void scratchpad_remove ();
@@ -2179,6 +2180,37 @@ spawn(const Arg *arg)
 		execvp(((char **)arg->v)[0], (char **)arg->v);
 		die("dwm: execvp '%s' failed:", ((char **)arg->v)[0]);
 	}
+}
+
+static void
+spawn_or_focus(const Arg *arg)
+{
+    const char **v = (const char **)arg->v;
+    const char *cmd   = v[0];     /* 启动命令 */
+    const char *class = v[1];     /* 启动命令对应应用的 class 名 */
+
+    Client *c;
+    XClassHint ch = { NULL, NULL };
+
+    /* 找到窗口 -> focus */
+    for (c = selmon->clients; c; c = c->next) {
+        if (XGetClassHint(dpy, c->win, &ch)) {
+            if (ch.res_class && strcmp(ch.res_class, class) == 0) {
+                view(&(Arg){ .ui = c->tags });
+                focus(c);
+                arrange(selmon);
+
+                if (ch.res_name)  XFree(ch.res_name);
+                if (ch.res_class) XFree(ch.res_class);
+                return;
+            }
+        }
+        if (ch.res_name)  XFree(ch.res_name);
+        if (ch.res_class) XFree(ch.res_class);
+    }
+
+    /* 没找到 -> spawn */
+    spawn(&(Arg){ .v = (const char *[]){ cmd, NULL } });
 }
 
 static void

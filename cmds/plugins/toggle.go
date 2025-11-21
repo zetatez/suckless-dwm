@@ -106,7 +106,7 @@ func ToggleMusic() {
 	wg.Wait()
 }
 
-func ToggleMusicNetCloud() {
+func ToggleNeteaseCloudMusic() {
 	utils.Toggle("netease-cloud-music")
 }
 

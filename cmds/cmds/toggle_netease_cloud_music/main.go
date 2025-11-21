@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleMusicNetCloud()
+	plugins.ToggleNeteaseCloudMusic()
 }
