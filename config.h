@@ -1,5 +1,101 @@
 /* See LICENSE file for copyright and license details. */
 
+void
+jump_to_sel(const Arg *arg)
+{
+    Client *c = selmon->sel;
+    if (!c) { return; }
+
+    /* 清除 overview 状态 */
+    selmon->isoverview = 0;
+
+    /* 跳转到当前窗口所在的 tag */
+    view(&(Arg){ .ui = c->tags });
+}
+
+void
+focus_picked_window(const Arg *arg)
+{
+    Monitor *m;
+    Client *c;
+    int pin[2], pout[2];
+    pid_t pid;
+    char buf[512];
+    char sel[512] = {0};
+    XClassHint ch;
+
+    if (pipe(pin) != 0 || pipe(pout) != 0) { return; }
+
+    pid = fork();
+    if (pid == 0) {
+        dup2(pin[0], 0);
+        dup2(pout[1], 1);
+        close(pin[1]);
+        close(pout[0]);
+        execlp("dmenu", "dmenu", "-i", "-l", "15", NULL);
+        exit(1);
+    }
+
+    close(pin[0]);
+    close(pout[1]);
+
+    /* 列出所有工作区窗口: 所有 monitor 的所有 clients */
+    for (m = mons; m; m = m->next) {
+        for (c = m->clients; c; c = c->next) {
+            ch.res_class = NULL;
+            ch.res_name = NULL;
+            XGetClassHint(dpy, c->win, &ch);
+
+            snprintf(buf, sizeof(buf),
+                     "[%d] %s - %s\n",
+                     c->tags ? ffs(c->tags) : 0,    /* 显示窗口所在的工作区 tag */
+                     ch.res_class ? ch.res_class : "unknown",
+                     c->name);
+
+            write(pin[1], buf, strlen(buf));
+
+            if (ch.res_class) XFree(ch.res_class);
+            if (ch.res_name) XFree(ch.res_name);
+        }
+    }
+
+    close(pin[1]);
+
+    /* 读取 dmenu 输出 */
+    if (read(pout[0], sel, sizeof(sel)) <= 0) { close(pout[0]); return; }
+    close(pout[0]);
+
+    sel[strcspn(sel, "\n")] = '\0';
+
+    /* 再次匹配窗口（所有工作区） */
+    for (m = mons; m; m = m->next) {
+        for (c = m->clients; c; c = c->next) {
+            ch.res_class = NULL;
+            ch.res_name = NULL;
+            XGetClassHint(dpy, c->win, &ch);
+
+            snprintf(buf, sizeof(buf), "[%d] %s - %s", c->tags ? ffs(c->tags) : 0, ch.res_class ? ch.res_class : "unknown", c->name);
+
+            if (strcmp(buf, sel) == 0) {
+                /* 切到对应 monitor */
+                if (m != selmon) { selmon = m; }
+
+                /* 切到窗口所在 tag */
+                if (c->tags) { view(&(Arg){ .ui = c->tags }); }
+
+                focus(c);
+                arrange(selmon);
+                if (ch.res_class) XFree(ch.res_class);
+                if (ch.res_name) XFree(ch.res_name);
+                return;
+            }
+
+            if (ch.res_class) XFree(ch.res_class);
+            if (ch.res_name) XFree(ch.res_name);
+        }
+    }
+}
+
 #define SUPKEY  Mod4Mask
 #define MODKEY  Mod1Mask
 #define Spawn(cmd)             (const char *[]){cmd, NULL}
@@ -8,7 +104,7 @@
 #define SpawnTermiCmd(cmd)        (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 1;
+static const unsigned int borderpx = 2;
 static const unsigned int snap     = 0;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
@@ -26,6 +122,7 @@ static const char col_gray2[]      = "#444444";
 static const char col_gray3[]      = "#bbbbbb";
 static const char col_gray4[]      = "#eeeeee";
 static const char col_cyan[]       = "#023047"; // #005577
+static const char col_magenta[]    = "#ff00ff";
 static const char col_bg[]         = "#0077b6";
 static const char col_fg[]         = "#00b4d8";
 static const char *colors[][3]     = {
@@ -33,7 +130,8 @@ static const char *colors[][3]     = {
 // [SchemeNorm] = { col_gray3, col_cyan,  col_gray2 },
 // [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
    [SchemeNorm] = { col_bg   , col_cyan, col_gray2 },
-   [SchemeSel]  = { col_fg   , col_cyan, col_cyan  },
+   // [SchemeSel]  = { col_fg   , col_cyan, col_cyan  },
+   [SchemeSel]  = { col_fg   , col_cyan, col_magenta  },
 };
 
 static const char *const autostart[] = {
@@ -214,66 +312,68 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_backslash,    spawn,             {.v =                                             } },
 
 // MODKEY, etc
-{ MODKEY,                       XK_semicolon,    spawn,             {.v = SpawnShellCmd("rofi -show run -theme fullscreen-preview -font 'JetBrainsMono Nerd Font 24'") } },
-{ MODKEY,                       XK_p,            spawn,             {.v = dmenucmd                               } },
-{ MODKEY,                       XK_apostrophe,   togglescratch,     {.v = scratchpadcmd                          } },
-{ MODKEY,                       XK_q,            spawn,             {.v = Spawn("slock")                         } },
-{ MODKEY,                       XK_c,            spawn,             {.v = Spawn("toggle_clipmenu")               } },
-{ MODKEY,                       XK_Return,       zoom,              {0                                           } },
-{ MODKEY,                       XK_Tab,          view,              {0                                           } },
-{ MODKEY,                       XK_b,            togglebar,         {0                                           } },
-{ MODKEY,                       XK_f,            togglefullscreen,  {0                                           } },
-{ MODKEY|ShiftMask,             XK_f,            togglefloating,    {0                                           } },
-{ MODKEY,                       XK_o,            toggleoverview,    {0                                           } },
-{ MODKEY,                       XK_s,            reset,             {0                                           } },
-{ MODKEY|ShiftMask,             XK_s,            togglesticky,      {0                                           } },
-{ MODKEY|ShiftMask,             XK_space,        focusmaster,       {0                                           } },
-{ MODKEY,                       XK_minus,        scratchpad_show,   {0                                           } },
-{ MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,   {0                                           } },
-{ MODKEY,                       XK_equal,        scratchpad_remove, {0                                           } },
-{ MODKEY,                       XK_bracketleft,  focusmon,          {.i = -1                                     } }, // multi monitors: focus on which one -1
-{ MODKEY,                       XK_bracketright, focusmon,          {.i = +1                                     } }, // multi monitors: focus on which one +1
-{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,            {.i = -1                                     } }, // multi monitors: move win to monitor prev
-{ MODKEY|ShiftMask,             XK_bracketright, tagmon,            {.i = +1                                     } }, // multi monitors: move win to monitor next
-{ MODKEY,                       XK_d,            incnmaster,        {.i = -1                                     } },
-{ MODKEY,                       XK_i,            incnmaster,        {.i = +1                                     } },
-{ MODKEY,                       XK_h,            movestack,         {.i = -1                                     } },
-{ MODKEY,                       XK_l,            movestack,         {.i = +1                                     } },
-{ MODKEY,                       XK_comma,        movestack,         {.i = -1                                     } },
-{ MODKEY,                       XK_period,       movestack,         {.i = +1                                     } },
-{ MODKEY|ShiftMask,             XK_comma,        shiftview,         {.i = -1                                     } },
-{ MODKEY|ShiftMask,             XK_period,       shiftview,         {.i = +1                                     } },
-{ MODKEY|ControlMask,           XK_comma,        cyclelayout,       {.i = -1                                     } }, // useless
-{ MODKEY|ControlMask,           XK_period,       cyclelayout,       {.i = +1                                     } }, // useless
-{ MODKEY,                       XK_k,            focusstack,        {.i = -1                                     } },
-{ MODKEY,                       XK_j,            focusstack,        {.i = +1                                     } },
-{ MODKEY|ShiftMask,             XK_h,            setmfact,          {.f = -0.025                                 } },
-{ MODKEY|ShiftMask,             XK_l,            setmfact,          {.f = +0.025                                 } },
-{ MODKEY|ShiftMask,             XK_j,            sethfact,          {.f = -0.025                                 } },
-{ MODKEY|ShiftMask,             XK_k,            sethfact,          {.f = +0.025                                 } },
-{ MODKEY,                       XK_u,            setlayout,         {0                                           } }, // temporary layout switch
-{ MODKEY,                       XK_space,        togglefloating,    {0                                           } },
-{ MODKEY,                       XK_a,            setlayout,         {.v = &layouts[0]                            } },
-{ MODKEY,                       XK_r,            setlayout,         {.v = &layouts[1]                            } },
-{ MODKEY|ShiftMask,             XK_r,            setlayout,         {.v = &layouts[2]                            } },
-{ MODKEY,                       XK_v,            setlayout,         {.v = &layouts[3]                            } },
-{ MODKEY|ShiftMask,             XK_v,            setlayout,         {.v = &layouts[4]                            } },
-{ MODKEY,                       XK_t,            setlayout,         {.v = &layouts[5]                            } },
-{ MODKEY|ShiftMask,             XK_t,            setlayout,         {.v = &layouts[6]                            } },
-{ MODKEY,                       XK_g,            setlayout,         {.v = &layouts[7]                            } },
-{ MODKEY|ShiftMask,             XK_g,            setlayout,         {.v = &layouts[8]                            } },
-{ MODKEY,                       XK_m,            setlayout,         {.v = &layouts[9]                            } },
-{ MODKEY,                       XK_w,            setlayout,         {.v = &layouts[10]                           } },
-{ MODKEY|ShiftMask,             XK_e,            setlayout,         {.v = &layouts[11]                           } },
-{ MODKEY,                       XK_e,            setlayout,         {.v = &layouts[12]                           } },
-{ MODKEY|ShiftMask,             XK_Return,       spawn,             {.v = Spawn("st")                            } },
-{ MODKEY|ShiftMask,             XK_c,            killclient,        {0                                           } },
-{ MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,  {0                                           } },
-{ MODKEY|ShiftMask,             XK_q,            quit,              {0                                           } },
-{ MODKEY|ShiftMask,             XK_p,            quit,              {1                                           } },
-{ MODKEY,                       XK_slash,        spawn,             {.v = SpawnTermiCmd("lazy_open_search_file") } },
+ { MODKEY,                       XK_semicolon,    spawn,               { .v = SpawnShellCmd("rofi -show run -theme fullscreen-preview -font 'JetBrainsMono Nerd Font 24'") } },
+ { MODKEY,                       XK_p,            spawn,               { .v = dmenucmd                               } },
+ { MODKEY,                       XK_apostrophe,   togglescratch,       { .v = scratchpadcmd                          } },
+ { MODKEY,                       XK_q,            spawn,               { .v = Spawn("slock")                         } },
+ { MODKEY,                       XK_c,            spawn,               { .v = Spawn("toggle_clipmenu")               } },
+ { MODKEY,                       XK_Return,       zoom,                { 0                                           } },
+ { MODKEY,                       XK_Tab,          view,                { 0                                           } },
+ { MODKEY,                       XK_b,            togglebar,           { 0                                           } },
+ { MODKEY,                       XK_f,            togglefullscreen,    { 0                                           } },
+ { MODKEY|ShiftMask,             XK_f,            togglefloating,      { 0                                           } },
+ { MODKEY,                       XK_o,            toggleoverview,      { 0                                           } },
+ { MODKEY|ShiftMask,             XK_o,            jump_to_sel,         { 0                                           } },
+ // { MODKEY|ShiftMask,             XK_o,            focus_picked_window, { 0                                           } },
+
+ { MODKEY,                       XK_s,            reset,               { 0                                           } },
+ { MODKEY|ShiftMask,             XK_s,            togglesticky,        { 0                                           } },
+ { MODKEY|ShiftMask,             XK_space,        focusmaster,         { 0                                           } },
+ { MODKEY,                       XK_minus,        scratchpad_show,     { 0                                           } },
+ { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,     { 0                                           } },
+ { MODKEY,                       XK_equal,        scratchpad_remove,   { 0                                           } },
+ { MODKEY,                       XK_bracketleft,  focusmon,            { .i = -1                                     } }, // multi monitors: focus on which one -1
+ { MODKEY,                       XK_bracketright, focusmon,            { .i = +1                                     } }, // multi monitors: focus on which one +1
+ { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,              { .i = -1                                     } }, // multi monitors: move win to monitor prev
+ { MODKEY|ShiftMask,             XK_bracketright, tagmon,              { .i = +1                                     } }, // multi monitors: move win to monitor next
+ { MODKEY,                       XK_d,            incnmaster,          { .i = -1                                     } },
+ { MODKEY,                       XK_i,            incnmaster,          { .i = +1                                     } },
+ { MODKEY,                       XK_h,            movestack,           { .i = -1                                     } },
+ { MODKEY,                       XK_l,            movestack,           { .i = +1                                     } },
+ { MODKEY,                       XK_comma,        movestack,           { .i = -1                                     } },
+ { MODKEY,                       XK_period,       movestack,           { .i = +1                                     } },
+ { MODKEY|ShiftMask,             XK_comma,        shiftview,           { .i = -1                                     } },
+ { MODKEY|ShiftMask,             XK_period,       shiftview,           { .i = +1                                     } },
+ { MODKEY|ControlMask,           XK_comma,        cyclelayout,         { .i = -1                                     } }, // useless
+ { MODKEY|ControlMask,           XK_period,       cyclelayout,         { .i = +1                                     } }, // useless
+ { MODKEY,                       XK_k,            focusstack,          { .i = -1                                     } },
+ { MODKEY,                       XK_j,            focusstack,          { .i = +1                                     } },
+ { MODKEY|ShiftMask,             XK_h,            setmfact,            { .f = -0.025                                 } },
+ { MODKEY|ShiftMask,             XK_l,            setmfact,            { .f = +0.025                                 } },
+ { MODKEY|ShiftMask,             XK_j,            sethfact,            { .f = -0.025                                 } },
+ { MODKEY|ShiftMask,             XK_k,            sethfact,            { .f = +0.025                                 } },
+ { MODKEY,                       XK_u,            setlayout,           { 0                                           } }, // temporary layout switch
+ { MODKEY,                       XK_space,        togglefloating,      { 0                                           } },
+ { MODKEY,                       XK_a,            setlayout,           { .v = &layouts[0]                            } },
+ { MODKEY,                       XK_r,            setlayout,           { .v = &layouts[1]                            } },
+ { MODKEY|ShiftMask,             XK_r,            setlayout,           { .v = &layouts[2]                            } },
+ { MODKEY,                       XK_v,            setlayout,           { .v = &layouts[3]                            } },
+ { MODKEY|ShiftMask,             XK_v,            setlayout,           { .v = &layouts[4]                            } },
+ { MODKEY,                       XK_t,            setlayout,           { .v = &layouts[5]                            } },
+ { MODKEY|ShiftMask,             XK_t,            setlayout,           { .v = &layouts[6]                            } },
+ { MODKEY,                       XK_g,            setlayout,           { .v = &layouts[7]                            } },
+ { MODKEY|ShiftMask,             XK_g,            setlayout,           { .v = &layouts[8]                            } },
+ { MODKEY,                       XK_m,            setlayout,           { .v = &layouts[9]                            } },
+ { MODKEY,                       XK_w,            setlayout,           { .v = &layouts[10]                           } },
+ { MODKEY|ShiftMask,             XK_e,            setlayout,           { .v = &layouts[11]                           } },
+ { MODKEY,                       XK_e,            setlayout,           { .v = &layouts[12]                           } },
+ { MODKEY|ShiftMask,             XK_Return,       spawn,               { .v = Spawn("st")                            } },
+ { MODKEY|ShiftMask,             XK_c,            killclient,          { 0                                           } },
+ { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,    { 0                                           } },
+ { MODKEY|ShiftMask,             XK_q,            quit,                { 0                                           } },
+ { MODKEY|ShiftMask,             XK_p,            quit,                { 1                                           } },
+ { MODKEY,                       XK_slash,        spawn,               { .v = SpawnTermiCmd("lazy_open_search_file") } },
 // { MODKEY,                       XK_n,            xxxxx,             {.v = x                                   } },
-// { MODKEY,                       XK_w,            xxxxx,             {.v =                                     } },
 // { MODKEY,                       XK_x,            xxxxx,             {.v = x                                   } },
 // { MODKEY,                       XK_y,            xxxxx,             {.v = x                                   } },
 // { MODKEY,                       XK_z,            xxxxx,             {.v = x                                   } },

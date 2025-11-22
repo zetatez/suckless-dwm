@@ -2393,9 +2393,22 @@ togglefullscreen(const Arg *arg)
 void
 toggleoverview(const Arg *arg)
 {
-    uint target = selmon->sel ? selmon->sel->tags : selmon->tagset[selmon->seltags];
-    selmon->isoverview ^= 1;
-    view(&(Arg){ .ui = target });
+  static uint prevtag = 0;
+
+  if (!selmon->isoverview) {
+    /* 进入 overview，记录当前 tagset */
+    prevtag = selmon->tagset[selmon->seltags];
+    selmon->isoverview = 1;
+
+    /* 展示所有窗口 */
+    view(&(Arg){ .ui = ~0 });
+  } else {
+    /* 退出 overview，恢复原 tag */
+    selmon->isoverview = 0;
+
+    /* 如果 prevtag 合法就恢复，否则回到 1 号 tag */
+    view(&(Arg){ .ui = prevtag ? prevtag : 1 });
+  }
 }
 
 void
