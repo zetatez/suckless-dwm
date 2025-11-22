@@ -51,6 +51,7 @@ static void focusin(XEvent *e);
 static void focusmaster(const Arg *arg);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+static void focus_picked_window(const Arg *arg);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
@@ -1036,6 +1037,89 @@ focusstack(const Arg *arg)
   if (c) {
     focus(c);
     restack(selmon);
+  }
+}
+
+void
+focus_picked_window(const Arg *arg)
+{
+  Monitor *m;
+  Client *c;
+  int pin[2], pout[2];
+  pid_t pid;
+  char buf[512];
+  char sel[512] = {0};
+  XClassHint ch;
+
+  if (pipe(pin) != 0 || pipe(pout) != 0) { return; }
+
+  pid = fork();
+  if (pid == 0) {
+    dup2(pin[0], 0);
+    dup2(pout[1], 1);
+    close(pin[1]);
+    close(pout[0]);
+    execlp("dmenu", "dmenu", "-i", "-l", "15", NULL);
+    exit(1);
+  }
+
+  close(pin[0]);
+  close(pout[1]);
+
+  /* 列出所有工作区窗口: 所有 monitor 的所有 clients */
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      ch.res_class = NULL;
+      ch.res_name = NULL;
+      XGetClassHint(dpy, c->win, &ch);
+
+      snprintf(buf, sizeof(buf),
+          "[%d] %s - %s\n",
+          c->tags ? ffs(c->tags) : 0,    /* 显示窗口所在的工作区 tag */
+          ch.res_class ? ch.res_class : "unknown",
+          c->name);
+
+      write(pin[1], buf, strlen(buf));
+
+      if (ch.res_class) XFree(ch.res_class);
+      if (ch.res_name) XFree(ch.res_name);
+    }
+  }
+
+  close(pin[1]);
+
+  /* 读取 dmenu 输出 */
+  if (read(pout[0], sel, sizeof(sel)) <= 0) { close(pout[0]); return; }
+  close(pout[0]);
+
+  sel[strcspn(sel, "\n")] = '\0';
+
+  /* 再次匹配窗口（所有工作区） */
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      ch.res_class = NULL;
+      ch.res_name = NULL;
+      XGetClassHint(dpy, c->win, &ch);
+
+      snprintf(buf, sizeof(buf), "[%d] %s - %s", c->tags ? ffs(c->tags) : 0, ch.res_class ? ch.res_class : "unknown", c->name);
+
+      if (strcmp(buf, sel) == 0) {
+        /* 切到对应 monitor */
+        if (m != selmon) { selmon = m; }
+
+        /* 切到窗口所在 tag */
+        if (c->tags) { view(&(Arg){ .ui = c->tags }); }
+
+        focus(c);
+        arrange(selmon);
+        if (ch.res_class) XFree(ch.res_class);
+        if (ch.res_name) XFree(ch.res_name);
+        return;
+      }
+
+      if (ch.res_class) XFree(ch.res_class);
+      if (ch.res_name) XFree(ch.res_name);
+    }
   }
 }
 

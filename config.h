@@ -1,88 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-void
-focus_picked_window(const Arg *arg)
-{
-  Monitor *m;
-  Client *c;
-  int pin[2], pout[2];
-  pid_t pid;
-  char buf[512];
-  char sel[512] = {0};
-  XClassHint ch;
-
-  if (pipe(pin) != 0 || pipe(pout) != 0) { return; }
-
-  pid = fork();
-  if (pid == 0) {
-    dup2(pin[0], 0);
-    dup2(pout[1], 1);
-    close(pin[1]);
-    close(pout[0]);
-    execlp("dmenu", "dmenu", "-i", "-l", "15", NULL);
-    exit(1);
-  }
-
-  close(pin[0]);
-  close(pout[1]);
-
-  /* 列出所有工作区窗口: 所有 monitor 的所有 clients */
-  for (m = mons; m; m = m->next) {
-    for (c = m->clients; c; c = c->next) {
-      ch.res_class = NULL;
-      ch.res_name = NULL;
-      XGetClassHint(dpy, c->win, &ch);
-
-      snprintf(buf, sizeof(buf),
-          "[%d] %s - %s\n",
-          c->tags ? ffs(c->tags) : 0,    /* 显示窗口所在的工作区 tag */
-          ch.res_class ? ch.res_class : "unknown",
-          c->name);
-
-      write(pin[1], buf, strlen(buf));
-
-      if (ch.res_class) XFree(ch.res_class);
-      if (ch.res_name) XFree(ch.res_name);
-    }
-  }
-
-  close(pin[1]);
-
-  /* 读取 dmenu 输出 */
-  if (read(pout[0], sel, sizeof(sel)) <= 0) { close(pout[0]); return; }
-  close(pout[0]);
-
-  sel[strcspn(sel, "\n")] = '\0';
-
-  /* 再次匹配窗口（所有工作区） */
-  for (m = mons; m; m = m->next) {
-    for (c = m->clients; c; c = c->next) {
-      ch.res_class = NULL;
-      ch.res_name = NULL;
-      XGetClassHint(dpy, c->win, &ch);
-
-      snprintf(buf, sizeof(buf), "[%d] %s - %s", c->tags ? ffs(c->tags) : 0, ch.res_class ? ch.res_class : "unknown", c->name);
-
-      if (strcmp(buf, sel) == 0) {
-        /* 切到对应 monitor */
-        if (m != selmon) { selmon = m; }
-
-        /* 切到窗口所在 tag */
-        if (c->tags) { view(&(Arg){ .ui = c->tags }); }
-
-        focus(c);
-        arrange(selmon);
-        if (ch.res_class) XFree(ch.res_class);
-        if (ch.res_name) XFree(ch.res_name);
-        return;
-      }
-
-      if (ch.res_class) XFree(ch.res_class);
-      if (ch.res_name) XFree(ch.res_name);
-    }
-  }
-}
-
 #define SUPKEY  Mod4Mask
 #define MODKEY  Mod1Mask
 #define Spawn(cmd)             (const char *[]){cmd, NULL}
@@ -192,107 +109,105 @@ static const char *scratchpadcmd[]                          = { "st", "-g", "120
 
 static const Key keys[] = {
 /*  modifier                    key              function           argument                                              */
-{ SUPKEY,                       XK_F1,           spawn,             {.v = Spawn("sys_volume_toggle")         } },
-{ SUPKEY,                       XK_F2,           spawn,             {.v = Spawn("sys_volume_down")           } },
-{ SUPKEY,                       XK_F3,           spawn,             {.v = Spawn("sys_volume_up")             } },
-{ SUPKEY,                       XK_F4,           spawn,             {.v = Spawn("sys_micro_toggle")          } },
-{ SUPKEY,                       XK_F5,           spawn,             {.v = Spawn("sys_screen_light_down")     } },
-{ SUPKEY,                       XK_F6,           spawn,             {.v = Spawn("sys_screen_light_up")       } },
-{ SUPKEY,                       XK_F7,           spawn,             {.v = Spawn("sys_screen")                } },
-{ SUPKEY,                       XK_F8,           spawn,             {.v = Spawn("sys_wifi_connect")          } },
-{ SUPKEY,                       XK_F9,           spawn,             {.v = Spawn("sys_bluetooth_connect")     } },
-{ SUPKEY,                       XK_F10,          spawn,             {.v = Spawn("sys_micro_down")            } },
-{ SUPKEY,                       XK_F11,          spawn,             {.v = Spawn("sys_micro_up")              } },
-{ SUPKEY,                       XK_F12,          spawn,             {.v = Spawn("sys_toggle_keyboard_light") } },
+ { SUPKEY,                       XK_F1,           spawn,               {.v = Spawn("sys_volume_toggle")         } },
+ { SUPKEY,                       XK_F2,           spawn,               {.v = Spawn("sys_volume_down")           } },
+ { SUPKEY,                       XK_F3,           spawn,               {.v = Spawn("sys_volume_up")             } },
+ { SUPKEY,                       XK_F4,           spawn,               {.v = Spawn("sys_micro_toggle")          } },
+ { SUPKEY,                       XK_F5,           spawn,               {.v = Spawn("sys_screen_light_down")     } },
+ { SUPKEY,                       XK_F6,           spawn,               {.v = Spawn("sys_screen_light_up")       } },
+ { SUPKEY,                       XK_F7,           spawn,               {.v = Spawn("sys_screen")                } },
+ { SUPKEY,                       XK_F8,           spawn,               {.v = Spawn("sys_wifi_connect")          } },
+ { SUPKEY,                       XK_F9,           spawn,               {.v = Spawn("sys_bluetooth_connect")     } },
+ { SUPKEY,                       XK_F10,          spawn,               {.v = Spawn("sys_micro_down")            } },
+ { SUPKEY,                       XK_F11,          spawn,               {.v = Spawn("sys_micro_up")              } },
+ { SUPKEY,                       XK_F12,          spawn,               {.v = Spawn("sys_toggle_keyboard_light") } },
 
-{ SUPKEY,                       XK_1,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://chatgpt.com/'")                           } },
-{ SUPKEY,                       XK_2,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://www.youtube.com'")                        } },
-{ SUPKEY,                       XK_3,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://github.com/zetatez'")                     } },
-{ SUPKEY,                       XK_4,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://mail.google.com/mail'")                   } },
-{ SUPKEY,                       XK_5,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://translate.google.com/?sl=auto&tl=zh-CN'") } },
-{ SUPKEY,                       XK_6,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://web.wechat.com/'")                        } },
-{ SUPKEY,                       XK_7,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://leetcode.cn/search/?q=%E6%9C%80'")        } },
-{ SUPKEY,                       XK_8,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
-{ SUPKEY,                       XK_9,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
-{ SUPKEY,                       XK_0,            spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
-{ SUPKEY,                       XK_slash,        spawn,             {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://gemini.google.com/app'")                  } },
+ { SUPKEY,                       XK_1,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://chatgpt.com/'")                           } },
+ { SUPKEY,                       XK_2,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://www.youtube.com'")                        } },
+ { SUPKEY,                       XK_3,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://github.com/zetatez'")                     } },
+ { SUPKEY,                       XK_4,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://mail.google.com/mail'")                   } },
+ { SUPKEY,                       XK_5,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://translate.google.com/?sl=auto&tl=zh-CN'") } },
+ { SUPKEY,                       XK_6,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://web.wechat.com/'")                        } },
+ { SUPKEY,                       XK_7,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://leetcode.cn/search/?q=%E6%9C%80'")        } },
+ { SUPKEY,                       XK_8,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
+ { SUPKEY,                       XK_9,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
+ { SUPKEY,                       XK_0,            spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='http://www.google.com/'")                         } },
+ { SUPKEY,                       XK_slash,        spawn,               {.v = SpawnShellCmd("open_url_with_qutebrowser --url='https://gemini.google.com/app'")                  } },
 
-{ SUPKEY|ShiftMask,             XK_1,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://chatgpt.com/'")                                } },
-{ SUPKEY|ShiftMask,             XK_2,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://www.youtube.com'")                             } },
-{ SUPKEY|ShiftMask,             XK_3,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://github.com/zetatez'")                          } },
-{ SUPKEY|ShiftMask,             XK_4,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://mail.google.com/mail'")                        } },
-{ SUPKEY|ShiftMask,             XK_5,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")      } },
-{ SUPKEY|ShiftMask,             XK_6,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://web.wechat.com/'")                             } },
-{ SUPKEY|ShiftMask,             XK_7,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")             } },
-{ SUPKEY|ShiftMask,             XK_8,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='http://www.google.com/'")                              } },
-{ SUPKEY|ShiftMask,             XK_9,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='http://www.google.com/'")                              } },
-{ SUPKEY|ShiftMask,             XK_0,            spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='http://www.google.com/'")                              } },
-{ SUPKEY|ShiftMask,             XK_slash,        spawn,             {.v = SpawnShellCmd("open_url_with_chrome --url='https://gemini.google.com/app'")                       } },
+ { SUPKEY|ShiftMask,             XK_1,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://chatgpt.com/'")                                } },
+ { SUPKEY|ShiftMask,             XK_2,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://www.youtube.com'")                             } },
+ { SUPKEY|ShiftMask,             XK_3,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://github.com/zetatez'")                          } },
+ { SUPKEY|ShiftMask,             XK_4,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://mail.google.com/mail'")                        } },
+ { SUPKEY|ShiftMask,             XK_5,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")      } },
+ { SUPKEY|ShiftMask,             XK_6,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://web.wechat.com/'")                             } },
+ { SUPKEY|ShiftMask,             XK_7,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")             } },
+ { SUPKEY|ShiftMask,             XK_8,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='http://www.google.com/'")                              } },
+ { SUPKEY|ShiftMask,             XK_9,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='http://www.google.com/'")                              } },
+ { SUPKEY|ShiftMask,             XK_0,            spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='http://www.google.com/'")                              } },
+ { SUPKEY|ShiftMask,             XK_slash,        spawn,               {.v = SpawnShellCmd("open_url_with_chrome --url='https://gemini.google.com/app'")                       } },
 
-{ SUPKEY,                       XK_k,            movewin,           {.ui = UP                                                        } },
-{ SUPKEY,                       XK_j,            movewin,           {.ui = DOWN                                                      } },
-{ SUPKEY,                       XK_h,            movewin,           {.ui = LEFT                                                      } },
-{ SUPKEY,                       XK_l,            movewin,           {.ui = RIGHT                                                     } },
-{ SUPKEY|ShiftMask,             XK_k,            resizewin,         {.ui = VECINC                                                    } },
-{ SUPKEY|ShiftMask,             XK_j,            resizewin,         {.ui = VECDEC                                                    } },
-{ SUPKEY|ShiftMask,             XK_h,            resizewin,         {.ui = HORDEC                                                    } },
-{ SUPKEY|ShiftMask,             XK_l,            resizewin,         {.ui = HORINC                                                    } },
+ { SUPKEY,                       XK_k,            movewin,             {.ui = UP                                                        } },
+ { SUPKEY,                       XK_j,            movewin,             {.ui = DOWN                                                      } },
+ { SUPKEY,                       XK_h,            movewin,             {.ui = LEFT                                                      } },
+ { SUPKEY,                       XK_l,            movewin,             {.ui = RIGHT                                                     } },
+ { SUPKEY|ShiftMask,             XK_k,            resizewin,           {.ui = VECINC                                                    } },
+ { SUPKEY|ShiftMask,             XK_j,            resizewin,           {.ui = VECDEC                                                    } },
+ { SUPKEY|ShiftMask,             XK_h,            resizewin,           {.ui = HORDEC                                                    } },
+ { SUPKEY|ShiftMask,             XK_l,            resizewin,           {.ui = HORINC                                                    } },
 
-{ SUPKEY,                       XK_a,            spawn,             {.v = Spawn("launch_file_manager")                               } },
-{ SUPKEY,                       XK_b,            spawn_or_focus,    {.v = SpawnOrFocus("launch_qutebrowser", "qutebrowser")          } },
-{ SUPKEY,                       XK_c,            spawn,             {.v = Spawn("note_timeline")                                     } },
-{ SUPKEY,                       XK_d,            spawn,             {.v = Spawn("toggle_lazydocker")                                 } },
-{ SUPKEY,                       XK_e,            spawn,             {.v = Spawn("toggle_mutt")                                       } },
-{ SUPKEY,                       XK_f,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_file")                     } },
-{ SUPKEY,                       XK_g,            spawn_or_focus,    {.v = SpawnOrFocus("launch_chrome", "Google-chrome")             } },
-{ SUPKEY,                       XK_i,            spawn,             {.v = Spawn("toggle_flameshot")                                  } },
-{ SUPKEY,                       XK_m,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_file_content")             } },
-{ SUPKEY,                       XK_n,            spawn,             {.v = Spawn("toggle_python")                                     } },
-{ SUPKEY,                       XK_o,            spawn,             {.v = Spawn("handle_copied")                                     } },
-{ SUPKEY,                       XK_p,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_book")                     } },
-{ SUPKEY,                       XK_q,            spawn,             {.v = Spawn("slock")                                             } },
-{ SUPKEY,                       XK_r,            spawn,             {.v = Spawn("toggle_yazi")                                       } },
-{ SUPKEY,                       XK_s,            spawn,             {.v = Spawn("search")                                            } },
-{ SUPKEY,                       XK_t,            next_theme,       {0                                                               } },
+ { SUPKEY,                       XK_a,            spawn,               {.v = Spawn("launch_file_manager")                               } },
+ { SUPKEY,                       XK_b,            spawn_or_focus,      {.v = SpawnOrFocus("launch_qutebrowser", "qutebrowser")          } },
+ { SUPKEY,                       XK_c,            spawn,               {.v = Spawn("note_timeline")                                     } },
+ { SUPKEY,                       XK_d,            spawn,               {.v = Spawn("toggle_lazydocker")                                 } },
+ { SUPKEY,                       XK_e,            spawn,               {.v = Spawn("toggle_mutt")                                       } },
+ { SUPKEY,                       XK_f,            spawn,               {.v = SpawnTermiCmd("lazy_open_search_file")                     } },
+ { SUPKEY,                       XK_g,            spawn_or_focus,      {.v = SpawnOrFocus("launch_chrome", "Google-chrome")             } },
+ { SUPKEY,                       XK_i,            spawn,               {.v = Spawn("toggle_flameshot")                                  } },
+ { SUPKEY,                       XK_m,            spawn,               {.v = SpawnTermiCmd("lazy_open_search_file_content")             } },
+ { SUPKEY,                       XK_n,            spawn,               {.v = Spawn("toggle_python")                                     } },
+ { SUPKEY,                       XK_o,            spawn,               {.v = Spawn("handle_copied")                                     } },
+ { SUPKEY,                       XK_p,            spawn,               {.v = SpawnTermiCmd("lazy_open_search_book")                     } },
+ { SUPKEY,                       XK_q,            spawn,               {.v = Spawn("slock")                                             } },
+ { SUPKEY,                       XK_r,            spawn,               {.v = Spawn("toggle_yazi")                                       } },
+ { SUPKEY,                       XK_s,            spawn,               {.v = Spawn("search")                                            } },
+ { SUPKEY,                       XK_t,            next_theme,          {0                                                               } },
+ { SUPKEY,                       XK_u,            spawn,               {.v = SpawnTermiCmd("lazy_open_search_media")                    } },
+ { SUPKEY,                       XK_v,            spawn,               {.v = Spawn("note_diary")                                        } },
+ { SUPKEY,                       XK_w,            spawn,               {.v = SpawnTermiCmd("lazy_open_search_wiki")                     } },
+ { SUPKEY,                       XK_x,            spawn,               {.v = Spawn("note_scripts")                                      } },
+ { SUPKEY,                       XK_y,            spawn,               {.v = Spawn("toggle_show")                                       } },
+ { SUPKEY,                       XK_z,            spawn,               {.v = Spawn("note_todo")                                         } },
+ { SUPKEY,                       XK_Escape,       spawn,               {.v = Spawn("toggle_top")                                        } },
+ { SUPKEY,                       XK_Delete,       spawn,               {.v = Spawn("sys_shortcuts")                                     } },
+ { SUPKEY,                       XK_BackSpace,    spawn,               {.v = Spawn("toggle_passmenu")                                   } },
+ { SUPKEY,                       XK_backslash,    spawn,               {.v = Spawn("reset_sys_default")                                 } },
+ { SUPKEY,                       XK_apostrophe,   spawn,               {.v = Spawn("toggle_tty_clock")                                  } },
+ { SUPKEY,                       XK_bracketleft,  spawn,               {.v = Spawn("toggle_calendar_scheduling")                        } },
+ { SUPKEY,                       XK_bracketright, spawn,               {.v = Spawn("toggle_calendar_scheduling_today")                  } },
+ { SUPKEY,                       XK_period,       spawn,               {.v = Spawn("jump_to_code_from_log")                             } },
 
-{ SUPKEY,                       XK_u,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_media")                    } },
-{ SUPKEY,                       XK_v,            spawn,             {.v = Spawn("note_diary")                                        } },
-{ SUPKEY,                       XK_w,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_wiki")                     } },
-{ SUPKEY,                       XK_x,            spawn,             {.v = Spawn("note_scripts")                                      } },
-{ SUPKEY,                       XK_y,            spawn,             {.v = Spawn("toggle_show")                                       } },
-{ SUPKEY,                       XK_z,            spawn,             {.v = Spawn("note_todo")                                         } },
-{ SUPKEY,                       XK_Escape,       spawn,             {.v = Spawn("toggle_top")                                        } },
-{ SUPKEY,                       XK_Delete,       spawn,             {.v = Spawn("sys_shortcuts")                                     } },
-{ SUPKEY,                       XK_BackSpace,    spawn,             {.v = Spawn("toggle_passmenu")                                   } },
-{ SUPKEY,                       XK_backslash,    spawn,             {.v = Spawn("reset_sys_default")                                 } },
-{ SUPKEY,                       XK_semicolon,    spawn,             {.v = Spawn("jump_to_code_from_log")                             } },
-{ SUPKEY,                       XK_apostrophe,   spawn,             {.v = Spawn("toggle_tty_clock")                                  } },
-{ SUPKEY,                       XK_bracketleft,  spawn,             {.v = Spawn("toggle_calendar_scheduling")                        } },
-{ SUPKEY,                       XK_bracketright, spawn,             {.v = Spawn("toggle_calendar_scheduling_today")                  } },
-
+// { SUPKEY,                       XK_semicolon,    spawn,             {.v =                                                         } },
 // { SUPKEY,                       XK_Home,         spawn,             {.v =                                                         } },
 // { SUPKEY,                       XK_comma,        spawn,             {.v =                                                         } },
-// { SUPKEY,                       XK_period,       spawn,             {.v =                                                         } },
-// { SUPKEY,                       XK_slash,        spawn,             {.v =                                                         } },
-//
-{ SUPKEY|ShiftMask,             XK_b,            spawn,             {.v = Spawn("launch_qutebrowser")                                } },
-{ SUPKEY,                       XK_c,            spawn,             {.v = Spawn("note_timeline")                                     } },
-{ SUPKEY|ShiftMask,             XK_c,            killclient,        {0                                                               } },
-{ SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    {.v = SpawnOrFocus("dingtalk", "com.alibabainc.dingtalk")        } },
-{ SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    {.v = SpawnOrFocus("feishu", "Feishu")                           } },
-{ SUPKEY|ShiftMask,             XK_g,            spawn,             {.v = Spawn("launch_chrome")                                     } },
-{ SUPKEY|ShiftMask,             XK_s,            spawn_or_focus,    {.v = SpawnOrFocus("subl", "Sublime_text")                       } },
-{ SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    {.v = SpawnOrFocus("inkscape", "Inkscape")                       } },
-{ SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,    {.v = SpawnOrFocus("netease-cloud-music", "netease-cloud-music") } },
-{ SUPKEY|ShiftMask,             XK_n,            spawn,             {.v = Spawn("toggle_julia")                                      } },
-{ SUPKEY|ShiftMask,             XK_o,            spawn_or_focus,    {.v = SpawnOrFocus("obsidian", "obsidian")                       } },
-{ SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,    {.v = SpawnOrFocus("krita", "krita")                             } },
-{ SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,    {.v = SpawnOrFocus("zoom", "zoom")                               } },
-{ SUPKEY|ShiftMask,             XK_Delete,       spawn,             {.v = SpawnShellCmd("systemctl poweroff")                        } },
-{ SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             {.v = Spawn("toggle_screenkey")                                  } },
-{ SUPKEY|ShiftMask,             XK_comma,        spawn,             {.v = Spawn("toggle_rec_audio")                                  } },
-{ SUPKEY|ShiftMask,             XK_period,       spawn,             {.v = Spawn("toggle_rec_screen")                                 } },
-{ SUPKEY|ShiftMask,             XK_Return,       spawn,             {.v = Spawn("kitty")                                             } },
+
+{ SUPKEY|ShiftMask,             XK_b,            spawn,                {.v = Spawn("launch_qutebrowser")                                } },
+{ SUPKEY,                       XK_c,            spawn,                {.v = Spawn("note_timeline")                                     } },
+{ SUPKEY|ShiftMask,             XK_c,            killclient,           {0                                                               } },
+{ SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,       {.v = SpawnOrFocus("dingtalk", "com.alibabainc.dingtalk")        } },
+{ SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,       {.v = SpawnOrFocus("feishu", "Feishu")                           } },
+{ SUPKEY|ShiftMask,             XK_g,            spawn,                {.v = Spawn("launch_chrome")                                     } },
+{ SUPKEY|ShiftMask,             XK_s,            spawn_or_focus,       {.v = SpawnOrFocus("subl", "Sublime_text")                       } },
+{ SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,       {.v = SpawnOrFocus("inkscape", "Inkscape")                       } },
+{ SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,       {.v = SpawnOrFocus("netease-cloud-music", "netease-cloud-music") } },
+{ SUPKEY|ShiftMask,             XK_n,            spawn,                {.v = Spawn("toggle_julia")                                      } },
+{ SUPKEY|ShiftMask,             XK_o,            spawn_or_focus,       {.v = SpawnOrFocus("obsidian", "obsidian")                       } },
+{ SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,       {.v = SpawnOrFocus("krita", "krita")                             } },
+{ SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,       {.v = SpawnOrFocus("zoom", "zoom")                               } },
+{ SUPKEY|ShiftMask,             XK_Delete,       spawn,                {.v = SpawnShellCmd("systemctl poweroff")                        } },
+{ SUPKEY|ShiftMask,             XK_apostrophe,   spawn,                {.v = Spawn("toggle_screenkey")                                  } },
+{ SUPKEY|ShiftMask,             XK_comma,        spawn,                {.v = Spawn("toggle_rec_audio")                                  } },
+{ SUPKEY|ShiftMask,             XK_period,       spawn,                {.v = Spawn("toggle_rec_screen")                                 } },
+{ SUPKEY|ShiftMask,             XK_Return,       spawn,                {.v = Spawn("kitty")                                             } },
 
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v =                                             } },
 // { SUPKEY|ShiftMask,             XK_e,            spawn,             {.v =                                             } },
@@ -316,20 +231,26 @@ static const Key keys[] = {
 // MODKEY, etc
  { MODKEY,                       XK_semicolon,    spawn,               { .v = SpawnShellCmd("rofi -show run -theme fullscreen-preview -font 'JetBrainsMono Nerd Font 24'") } },
  { MODKEY,                       XK_p,            spawn,               { .v = dmenucmd                               } },
+ { MODKEY|ShiftMask,             XK_p,            quit,                { 1                                           } },
  { MODKEY,                       XK_apostrophe,   togglescratch,       { .v = scratchpadcmd                          } },
  { MODKEY,                       XK_q,            spawn,               { .v = Spawn("slock")                         } },
+ { MODKEY|ShiftMask,             XK_q,            quit,                { 0                                           } },
  { MODKEY,                       XK_c,            spawn,               { .v = Spawn("toggle_clipmenu")               } },
+ { MODKEY|ShiftMask,             XK_c,            killclient,          { 0                                           } },
+ { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,    { 0                                           } },
  { MODKEY,                       XK_Return,       zoom,                { 0                                           } },
+ { MODKEY|ShiftMask,             XK_Return,       spawn,               { .v = Spawn("st")                            } },
  { MODKEY,                       XK_Tab,          view,                { 0                                           } },
  { MODKEY,                       XK_b,            togglebar,           { 0                                           } },
  { MODKEY,                       XK_f,            togglefullscreen,    { 0                                           } },
  { MODKEY|ShiftMask,             XK_f,            togglefloating,      { 0                                           } },
  { MODKEY,                       XK_o,            toggleoverview,      { 0                                           } },
- { MODKEY|ShiftMask,             XK_o,            jump_to_sel,         { 0                                           } },
- // { MODKEY|ShiftMask,             XK_o,            focus_picked_window, { 0                                           } },
-
+ { MODKEY|ShiftMask,             XK_o,            focus_picked_window, { 0                                           } },
+ { MODKEY,                       XK_u,            jump_to_sel,         { 0                                           } },
+ { MODKEY|ShiftMask,             XK_u,            setlayout,           { 0                                           } }, // temporary layout switch
  { MODKEY,                       XK_s,            reset,               { 0                                           } },
  { MODKEY|ShiftMask,             XK_s,            togglesticky,        { 0                                           } },
+ { MODKEY,                       XK_space,        togglefloating,      { 0                                           } },
  { MODKEY|ShiftMask,             XK_space,        focusmaster,         { 0                                           } },
  { MODKEY,                       XK_minus,        scratchpad_show,     { 0                                           } },
  { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,     { 0                                           } },
@@ -354,8 +275,7 @@ static const Key keys[] = {
  { MODKEY|ShiftMask,             XK_l,            setmfact,            { .f = +0.025                                 } },
  { MODKEY|ShiftMask,             XK_j,            sethfact,            { .f = -0.025                                 } },
  { MODKEY|ShiftMask,             XK_k,            sethfact,            { .f = +0.025                                 } },
- { MODKEY,                       XK_u,            setlayout,           { 0                                           } }, // temporary layout switch
- { MODKEY,                       XK_space,        togglefloating,      { 0                                           } },
+                                                                                                                          //
  { MODKEY,                       XK_a,            setlayout,           { .v = &layouts[0]                            } },
  { MODKEY,                       XK_r,            setlayout,           { .v = &layouts[1]                            } },
  { MODKEY|ShiftMask,             XK_r,            setlayout,           { .v = &layouts[2]                            } },
@@ -369,11 +289,6 @@ static const Key keys[] = {
  { MODKEY,                       XK_w,            setlayout,           { .v = &layouts[10]                           } },
  { MODKEY|ShiftMask,             XK_e,            setlayout,           { .v = &layouts[11]                           } },
  { MODKEY,                       XK_e,            setlayout,           { .v = &layouts[12]                           } },
- { MODKEY|ShiftMask,             XK_Return,       spawn,               { .v = Spawn("st")                            } },
- { MODKEY|ShiftMask,             XK_c,            killclient,          { 0                                           } },
- { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,    { 0                                           } },
- { MODKEY|ShiftMask,             XK_q,            quit,                { 0                                           } },
- { MODKEY|ShiftMask,             XK_p,            quit,                { 1                                           } },
  { MODKEY,                       XK_slash,        spawn,               { .v = SpawnTermiCmd("lazy_open_search_file") } },
 // { MODKEY,                       XK_n,            xxxxx,             {.v = x                                   } },
 // { MODKEY,                       XK_x,            xxxxx,             {.v = x                                   } },
@@ -385,7 +300,6 @@ static const Key keys[] = {
 // { MODKEY|ShiftMask,             XK_g,            xxxxx,             {.v =                                     } },
 // { MODKEY|ShiftMask,             XK_i,            xxxxx,             {.v =                                     } },
 // { MODKEY|ShiftMask,             XK_n,            xxxxx,             {.v = x                                   } },
-// { MODKEY|ShiftMask,             XK_o,            xxxxx,             {.v =                                     } },
 // { MODKEY|ShiftMask,             XK_u,            xxxxx,             {.i =                                     } },
 // { MODKEY|ShiftMask,             XK_w,            xxxxx,             {.v =                                     } },
 // { MODKEY|ShiftMask,             XK_m,            xxxxx,             {.v =                                     } },
