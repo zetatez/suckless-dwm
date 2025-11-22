@@ -54,6 +54,7 @@ static void focusstack(const Arg *arg);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void jump_to_sel(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void killclient_unsel(const Arg *arg);
@@ -64,6 +65,7 @@ static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static void movestack(const Arg *arg);
 static void movewin(const Arg *arg);
+static void next_theme(const Arg *arg);
 static void pointerfocuswin(Client *c);
 static void pop(Client *c);
 static void previewtag(const Arg *arg);
@@ -1192,6 +1194,19 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 #endif
 
 void
+jump_to_sel(const Arg *arg)
+{
+  Client *c = selmon->sel;
+  if (!c) { return; }
+
+  /* 清除 overview 状态 */
+  selmon->isoverview = 0;
+
+  /* 跳转到当前窗口所在的 tag */
+  view(&(Arg){ .ui = c->tags });
+}
+
+void
 keypress(XEvent *e)
 {
   unsigned int i;
@@ -1498,6 +1513,22 @@ movewin(const Arg *arg)
   resize(c, nx, ny, c->w, c->h, 1);
   focus(c);
   pointerfocuswin(c);
+}
+
+void
+next_theme(const Arg *arg)
+{
+  current_theme_idx = (current_theme_idx + 1) % (sizeof(themes)/sizeof(themes[0]));
+
+  /* 更新 drw scheme */
+  for (int i = 0; i < SchemeLast; i++)
+    scheme[i] = drw_scm_create(drw, themes[current_theme_idx][i], 3);
+
+  /* 重绘 bar + arrange */
+  for (Monitor *m = mons; m; m = m->next)
+    drawbar(m);
+
+  arrange(selmon);
 }
 
 void

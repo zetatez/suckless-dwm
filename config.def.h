@@ -1,99 +1,86 @@
 /* See LICENSE file for copyright and license details. */
 
 void
-jump_to_sel(const Arg *arg)
-{
-    Client *c = selmon->sel;
-    if (!c) { return; }
-
-    /* 清除 overview 状态 */
-    selmon->isoverview = 0;
-
-    /* 跳转到当前窗口所在的 tag */
-    view(&(Arg){ .ui = c->tags });
-}
-
-void
 focus_picked_window(const Arg *arg)
 {
-    Monitor *m;
-    Client *c;
-    int pin[2], pout[2];
-    pid_t pid;
-    char buf[512];
-    char sel[512] = {0};
-    XClassHint ch;
+  Monitor *m;
+  Client *c;
+  int pin[2], pout[2];
+  pid_t pid;
+  char buf[512];
+  char sel[512] = {0};
+  XClassHint ch;
 
-    if (pipe(pin) != 0 || pipe(pout) != 0) { return; }
+  if (pipe(pin) != 0 || pipe(pout) != 0) { return; }
 
-    pid = fork();
-    if (pid == 0) {
-        dup2(pin[0], 0);
-        dup2(pout[1], 1);
-        close(pin[1]);
-        close(pout[0]);
-        execlp("dmenu", "dmenu", "-i", "-l", "15", NULL);
-        exit(1);
-    }
-
-    close(pin[0]);
-    close(pout[1]);
-
-    /* 列出所有工作区窗口: 所有 monitor 的所有 clients */
-    for (m = mons; m; m = m->next) {
-        for (c = m->clients; c; c = c->next) {
-            ch.res_class = NULL;
-            ch.res_name = NULL;
-            XGetClassHint(dpy, c->win, &ch);
-
-            snprintf(buf, sizeof(buf),
-                     "[%d] %s - %s\n",
-                     c->tags ? ffs(c->tags) : 0,    /* 显示窗口所在的工作区 tag */
-                     ch.res_class ? ch.res_class : "unknown",
-                     c->name);
-
-            write(pin[1], buf, strlen(buf));
-
-            if (ch.res_class) XFree(ch.res_class);
-            if (ch.res_name) XFree(ch.res_name);
-        }
-    }
-
+  pid = fork();
+  if (pid == 0) {
+    dup2(pin[0], 0);
+    dup2(pout[1], 1);
     close(pin[1]);
-
-    /* 读取 dmenu 输出 */
-    if (read(pout[0], sel, sizeof(sel)) <= 0) { close(pout[0]); return; }
     close(pout[0]);
+    execlp("dmenu", "dmenu", "-i", "-l", "15", NULL);
+    exit(1);
+  }
 
-    sel[strcspn(sel, "\n")] = '\0';
+  close(pin[0]);
+  close(pout[1]);
 
-    /* 再次匹配窗口（所有工作区） */
-    for (m = mons; m; m = m->next) {
-        for (c = m->clients; c; c = c->next) {
-            ch.res_class = NULL;
-            ch.res_name = NULL;
-            XGetClassHint(dpy, c->win, &ch);
+  /* 列出所有工作区窗口: 所有 monitor 的所有 clients */
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      ch.res_class = NULL;
+      ch.res_name = NULL;
+      XGetClassHint(dpy, c->win, &ch);
 
-            snprintf(buf, sizeof(buf), "[%d] %s - %s", c->tags ? ffs(c->tags) : 0, ch.res_class ? ch.res_class : "unknown", c->name);
+      snprintf(buf, sizeof(buf),
+          "[%d] %s - %s\n",
+          c->tags ? ffs(c->tags) : 0,    /* 显示窗口所在的工作区 tag */
+          ch.res_class ? ch.res_class : "unknown",
+          c->name);
 
-            if (strcmp(buf, sel) == 0) {
-                /* 切到对应 monitor */
-                if (m != selmon) { selmon = m; }
+      write(pin[1], buf, strlen(buf));
 
-                /* 切到窗口所在 tag */
-                if (c->tags) { view(&(Arg){ .ui = c->tags }); }
-
-                focus(c);
-                arrange(selmon);
-                if (ch.res_class) XFree(ch.res_class);
-                if (ch.res_name) XFree(ch.res_name);
-                return;
-            }
-
-            if (ch.res_class) XFree(ch.res_class);
-            if (ch.res_name) XFree(ch.res_name);
-        }
+      if (ch.res_class) XFree(ch.res_class);
+      if (ch.res_name) XFree(ch.res_name);
     }
+  }
+
+  close(pin[1]);
+
+  /* 读取 dmenu 输出 */
+  if (read(pout[0], sel, sizeof(sel)) <= 0) { close(pout[0]); return; }
+  close(pout[0]);
+
+  sel[strcspn(sel, "\n")] = '\0';
+
+  /* 再次匹配窗口（所有工作区） */
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      ch.res_class = NULL;
+      ch.res_name = NULL;
+      XGetClassHint(dpy, c->win, &ch);
+
+      snprintf(buf, sizeof(buf), "[%d] %s - %s", c->tags ? ffs(c->tags) : 0, ch.res_class ? ch.res_class : "unknown", c->name);
+
+      if (strcmp(buf, sel) == 0) {
+        /* 切到对应 monitor */
+        if (m != selmon) { selmon = m; }
+
+        /* 切到窗口所在 tag */
+        if (c->tags) { view(&(Arg){ .ui = c->tags }); }
+
+        focus(c);
+        arrange(selmon);
+        if (ch.res_class) XFree(ch.res_class);
+        if (ch.res_name) XFree(ch.res_name);
+        return;
+      }
+
+      if (ch.res_class) XFree(ch.res_class);
+      if (ch.res_name) XFree(ch.res_name);
+    }
+  }
 }
 
 #define SUPKEY  Mod4Mask
@@ -117,21 +104,35 @@ static const int defaultwinpad     = 1;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
 static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=24";
-static const char col_gray1[]      = "#222222";
-static const char col_gray2[]      = "#444444";
-static const char col_gray3[]      = "#bbbbbb";
-static const char col_gray4[]      = "#eeeeee";
-static const char col_cyan[]       = "#023047"; // #005577
-static const char col_magenta[]    = "#ff00ff";
-static const char col_bg[]         = "#0077b6";
-static const char col_fg[]         = "#00b4d8";
-static const char *colors[][3]     = {
-//               fg         bg        border
-// [SchemeNorm] = { col_gray3, col_cyan,  col_gray2 },
-// [SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
-   [SchemeNorm] = { col_bg   , col_cyan, col_gray2 },
-   // [SchemeSel]  = { col_fg   , col_cyan, col_cyan  },
-   [SchemeSel]  = { col_fg   , col_cyan, col_magenta  },
+
+
+static const char *colors[][3] = {
+  [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
+  [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
+};
+static int current_theme_idx = 0;
+static const char *themes[][SchemeLast][3] = {
+  /*                  fg,        bg,        border */
+  { /* ---------------- Theme 0: 原主题 ---------------- */
+    [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
+    [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
+  },
+  { /* ---------------- Theme 1: 桃色 ---------------- */
+    [SchemeNorm] = { "#ffe0e9", "#023047", "#023047" }, // fg, bg, border
+    [SchemeSel]  = { "#ff99cc", "#023047", "#ff3399" },
+  },
+  { /* ---------------- Theme 2: 暗青清爽 ---------------- */
+    [SchemeNorm] = { "#118ab2", "#031b34", "#031b34" },
+    [SchemeSel]  = { "#06d6a0", "#031b34", "#06d6a0" },
+  },
+  { /* ---------------- Theme 3: 暗橙活力 ---------------- */
+    [SchemeNorm] = { "#f4a261", "#2b1400", "#2b1400" },
+    [SchemeSel]  = { "#e76f51", "#2b1400", "#e76f51" },
+  },
+  { /* ---------------- Theme 4: 暗粉柔和 ---------------- */
+    [SchemeNorm] = { "#ffb3c1", "#2a0f1f", "#2a0f1f" },
+    [SchemeSel]  = { "#ff66a3", "#2a0f1f", "#ff66a3" },
+  },
 };
 
 static const char *const autostart[] = {
@@ -243,7 +244,6 @@ static const Key keys[] = {
 { SUPKEY,                       XK_d,            spawn,             {.v = Spawn("toggle_lazydocker")                                 } },
 { SUPKEY,                       XK_e,            spawn,             {.v = Spawn("toggle_mutt")                                       } },
 { SUPKEY,                       XK_f,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_file")                     } },
-// { SUPKEY,                       XK_g,            spawn,             {.v = Spawn("toggle_lazygit")                                    } },
 { SUPKEY,                       XK_g,            spawn_or_focus,    {.v = SpawnOrFocus("launch_chrome", "Google-chrome")             } },
 { SUPKEY,                       XK_i,            spawn,             {.v = Spawn("toggle_flameshot")                                  } },
 { SUPKEY,                       XK_m,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_file_content")             } },
@@ -253,6 +253,8 @@ static const Key keys[] = {
 { SUPKEY,                       XK_q,            spawn,             {.v = Spawn("slock")                                             } },
 { SUPKEY,                       XK_r,            spawn,             {.v = Spawn("toggle_yazi")                                       } },
 { SUPKEY,                       XK_s,            spawn,             {.v = Spawn("search")                                            } },
+{ SUPKEY,                       XK_t,            next_theme,       {0                                                               } },
+
 { SUPKEY,                       XK_u,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_media")                    } },
 { SUPKEY,                       XK_v,            spawn,             {.v = Spawn("note_diary")                                        } },
 { SUPKEY,                       XK_w,            spawn,             {.v = SpawnTermiCmd("lazy_open_search_wiki")                     } },
