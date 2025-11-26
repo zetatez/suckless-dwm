@@ -97,12 +97,6 @@ static void sighup(int unused);
 static void sigterm(int unused);
 static void spawn(const Arg *arg);
 static void spawn_or_focus(const Arg *arg);
-static void scratchpad_hide ();
-static _Bool scratchpad_last_showed_is_killed(void);
-static void scratchpad_remove ();
-static void scratchpad_show ();
-static void scratchpad_show_client (Client * c);
-static void scratchpad_show_first (void);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void takepreview(void);
@@ -110,8 +104,7 @@ static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
 static void toggleoverview(const Arg *arg);
-static void togglescratch(const Arg *arg);
-static void toggle_scratchpad(const Arg *arg);
+static void togglescratchpad(const Arg *arg);
 static void togglesticky(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -186,10 +179,6 @@ static Window root, wmcheckwin;
 static xcb_connection_t *xcon;
 static int winpad = 0;
 
-/* scratchpad */
-# define SCRATCHPAD_MASK (1u << sizeof tags / sizeof * tags)
-static Client * scratchpad_last_showed = NULL;
-
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
@@ -202,10 +191,12 @@ struct Pertag {
   unsigned int curtag, prevtag;
   unsigned int sellts[LENGTH(tags) + 1];
 };
-struct NumTags { char limitexceeded[LENGTH(tags) > 30 ? -1 : 1]; };
-static unsigned int scratchtag = 1 << LENGTH(tags);
+struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 static pid_t *autostart_pids;
 static size_t autostart_len;
+
+/* scratchpad 当前等待处理的 scratchpad class */
+static const char *scratchpad_class_wait = NULL;
 
 /* execute command from autostart array */
 static void
@@ -268,9 +259,8 @@ applyrules(Client *c)
   if (ch.res_name) {
     XFree(ch.res_name);
   }
- 	if (c->tags != SCRATCHPAD_MASK) {
- 		c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
-  }
+
+ 	c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
 }
 
 int
@@ -1313,12 +1303,21 @@ manage(Window w, XWindowAttributes *wa)
   c->y = MAX(c->y, c->mon->wy);
   c->bw = borderpx;
 
-  selmon->tagset[selmon->seltags] &= ~scratchtag;
-  if (!strcmp(c->name, "scratchpad")) {
-    c->mon->tagset[c->mon->seltags] |= c->tags = scratchtag;
-    c->isfloating = True;
-    c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-    c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
+  /* scratchpad 首次出现的自动居中处理 */
+  if (scratchpad_class_wait && strcmp(c->class, scratchpad_class_wait) == 0) {
+
+    // c->tags = 1 << 30;  /* 首次启动不隐藏 */
+    c->isfloating = 1;
+
+    int nw = c->mon->ww * scratchpad_width;
+    int nh = c->mon->wh * scratchpad_height;
+    int nx = c->mon->wx + (c->mon->ww - nw) / 2;
+    int ny = c->mon->wy + (c->mon->wh - nh) / 2;
+
+    resize(c, nx, ny, nw, nh, 0);
+
+    /* 处理完清空 */
+    scratchpad_class_wait = NULL;
   }
 
   wc.border_width = c->bw;
@@ -2211,7 +2210,6 @@ spawn(const Arg *arg)
 	if (arg->v == dmenucmd) {
 		dmenumon[0] = '0' + selmon->num;
   }
-  selmon->tagset[selmon->seltags] &= ~scratchtag;
 	if (fork() == 0) {
 		if (dpy) {
 			close(ConnectionNumber(dpy));
@@ -2258,90 +2256,6 @@ spawn_or_focus(const Arg *arg)
   // spawn(&(Arg){ .v = (const char *[]){ cmd, NULL } });
   spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
 }
-
-static void
-scratchpad_hide ()
-{
-	if (selmon -> sel) {
-		selmon -> sel -> tags = SCRATCHPAD_MASK;
-		focus(NULL);
-		arrange(selmon);
-	}
-}
-
-static _Bool
-scratchpad_last_showed_is_killed (void)
-{
-	_Bool killed = 1;
-	for (Client * c = selmon -> clients; c != NULL; c = c -> next) {
-		if (c == scratchpad_last_showed) {
-			killed = 0;
-			break;
-		}
-	}
-	return killed;
-}
-
-static void
-scratchpad_remove ()
-{
-	if (selmon -> sel && scratchpad_last_showed != NULL && selmon -> sel == scratchpad_last_showed) {
-		scratchpad_last_showed = NULL;
-  }
-}
-
-static void
-scratchpad_show ()
-{
-	if (scratchpad_last_showed == NULL || scratchpad_last_showed_is_killed ()) {
-		scratchpad_show_first ();
-  } else {
-		if (scratchpad_last_showed -> tags != SCRATCHPAD_MASK) {
-			scratchpad_last_showed -> tags = SCRATCHPAD_MASK;
-			focus(NULL);
-			arrange(selmon);
-		} else {
-			_Bool found_current = 0;
-			_Bool found_next = 0;
-			for (Client * c = selmon -> clients; c != NULL; c = c -> next) {
-				if (found_current == 0) {
-					if (c == scratchpad_last_showed) {
-						found_current = 1;
-						continue;
-					}
-				} else {
-					if (c -> tags == SCRATCHPAD_MASK) {
-						found_next = 1;
-						scratchpad_show_client (c);
-						break;
-					}
-				}
-			}
-			if (found_next == 0) { scratchpad_show_first (); }
-		}
-	}
-}
-
-static
-void scratchpad_show_client (Client * c)
-{
-	scratchpad_last_showed = c;
-	c -> tags = selmon->tagset[selmon->seltags];
-	focus(c);
-	arrange(selmon);
-}
-
-static
-void scratchpad_show_first (void)
-{
-	for (Client * c = selmon -> clients; c != NULL; c = c -> next) {
-		if (c -> tags == SCRATCHPAD_MASK) {
-			scratchpad_show_client (c);
-			break;
-		}
-	}
-}
-
 
 void
 tag(const Arg *arg)
@@ -2394,32 +2308,7 @@ togglefloating(const Arg *arg)
 }
 
 void
-togglescratch(const Arg *arg)
-{
-  Client *c;
-  unsigned int found = 0;
-
-  for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next)
-    ;
-
-  if (found) {
-    unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
-    if (newtagset) {
-      selmon->tagset[selmon->seltags] = newtagset;
-      focus(NULL);
-      arrange(selmon);
-    }
-    if (ISVISIBLE(c)) {
-      focus(c);
-      restack(selmon);
-    }
-  } else {
-    spawn(arg);
-  }
-}
-
-void
-toggle_scratchpad(const Arg *arg)
+togglescratchpad(const Arg *arg)
 {
   const char *const *data = arg->v;
   const char *cmd   = data[0];
@@ -2427,26 +2316,38 @@ toggle_scratchpad(const Arg *arg)
 
   Client *c;
 
-  /* 查找窗口 */
   for (c = selmon->clients; c; c = c->next) {
     if (strcmp(c->class, class) == 0) {
 
-      /* 已可见 → 隐藏（移到 scratchpad tag：1<<30） */
+      /* 置浮动 */
+      c->isfloating = 1;
+
+      /* 已可见 -> 隐藏: 移到 scratchpad tag：1<<30 */
       if (ISVISIBLE(c)) {
         c->tags = 1 << 30;
         arrange(selmon);
         return;
       }
 
-      /* 不可见 → 显示（放回当前 tag） */
+      /* 不可见 -> 显示, 放回当前 tag */
       c->tags = selmon->tagset[selmon->seltags];
+
+      /* 居中 + 大小设置 */
+      int nw = selmon->ww * scratchpad_width;
+      int nh = selmon->wh * scratchpad_height;
+      int nx = selmon->wx + (selmon->ww - nw) / 2;
+      int ny = selmon->wy + (selmon->wh - nh) / 2;
+
+      resize(c, nx, ny, nw, nh, 0);
+
       focus(c);
       arrange(selmon);
       return;
     }
   }
 
-  /* 第一次调用：启动 scratchpad */
+  /* 第一次 spawn: 记录 class，等待 manage() 处理 */
+  scratchpad_class_wait = class;
   spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
 }
 
@@ -2565,19 +2466,19 @@ unmanage(Client *c, int destroyed)
   Monitor *m = c->mon;
   XWindowChanges wc;
 
-   if (c->swallowing) {
-     unswallow(c);
-     return;
-   }
+  if (c->swallowing) {
+    unswallow(c);
+    return;
+  }
 
-   Client *s = swallowingclient(c->win);
-   if (s) {
-     free(s->swallowing);
-     s->swallowing = NULL;
-     arrange(m);
-     focus(NULL);
-     return;
-   }
+  Client *s = swallowingclient(c->win);
+  if (s) {
+    free(s->swallowing);
+    s->swallowing = NULL;
+    arrange(m);
+    focus(NULL);
+    return;
+  }
 
   detach(c);
   detachstack(c);
@@ -2592,10 +2493,6 @@ unmanage(Client *c, int destroyed)
     XSync(dpy, False);
     XSetErrorHandler(xerror);
     XUngrabServer(dpy);
-  }
-
- 	if (scratchpad_last_showed == c) {
- 		scratchpad_last_showed = NULL;
   }
 
   free(c);

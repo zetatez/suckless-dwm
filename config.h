@@ -71,7 +71,7 @@ static const Rule rules[] = {
 };
 
 /* stickyicon */
-static const XPoint stickyicon[]    = { {0,0}, {4,0}, {4,8}, {2,6}, {0,8}, {0,0} }; /* stickyicon: represents the icon as an array of vertices */
+static const XPoint stickyicon[]    = { { 0, 0 }, { 4, 0 }, { 4, 8 }, { 2, 6 }, { 0, 8 }, { 0, 0 } }; /* stickyicon: represents the icon as an array of vertices */
 static const XPoint stickyiconbb    = {4,8};	                                      /* stickyicon: defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
 
 /* layout(s) */
@@ -105,7 +105,10 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]                               = { "rofi", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
-static const char *scratchpadcmd[]                          = { "st", "-g", "120x32", "-t", "scratchpad", NULL };
+
+/* scratchpad 大小屏幕比例 */
+static const float scratchpad_width  = 0.75;
+static const float scratchpad_height = 0.60;
 
 static const Key keys[] = {
 /*  modifier                    key              function           argument                                              */
@@ -177,7 +180,8 @@ static const Key keys[] = {
  { SUPKEY,                       XK_x,            spawn,               {.v = Spawn("note_scripts")                          } },
  { SUPKEY,                       XK_y,            spawn,               {.v = Spawn("toggle_show")                           } },
  { SUPKEY,                       XK_z,            spawn,               {.v = Spawn("note_todo")                             } },
- { SUPKEY,                       XK_Escape,       spawn,               {.v = Spawn("toggle_top")                            } },
+ { SUPKEY,                       XK_Escape,       togglescratchpad,    {.v = CmdClass("st -c sp-btop -e btop", "sp-btop")   } },
+
  { SUPKEY,                       XK_Delete,       spawn,               {.v = Spawn("sys_shortcuts")                         } },
  { SUPKEY,                       XK_BackSpace,    spawn,               {.v = Spawn("toggle_passmenu")                       } },
  { SUPKEY,                       XK_backslash,    spawn,               {.v = Spawn("reset_sys_default")                     } },
@@ -232,7 +236,7 @@ static const Key keys[] = {
  { MODKEY,                       XK_semicolon,    spawn,               { .v = SpawnShellCmd("rofi -show run -theme fullscreen-preview -font 'JetBrainsMono Nerd Font 24'") } },
  { MODKEY,                       XK_p,            spawn,               { .v = dmenucmd                               } },
  { MODKEY|ShiftMask,             XK_p,            quit,                { 1                                           } },
- { MODKEY,                       XK_apostrophe,   togglescratch,       { .v = scratchpadcmd                          } },
+ { MODKEY,                       XK_apostrophe,   togglescratchpad,    { .v = CmdClass("st -c sp-st", "sp-st")       } },
  { MODKEY,                       XK_q,            spawn,               { .v = Spawn("slock")                         } },
  { MODKEY|ShiftMask,             XK_q,            quit,                { 0                                           } },
  { MODKEY,                       XK_c,            spawn,               { .v = Spawn("toggle_clipmenu")               } },
@@ -252,9 +256,10 @@ static const Key keys[] = {
  { MODKEY|ShiftMask,             XK_s,            togglesticky,        { 0                                           } },
  { MODKEY,                       XK_space,        togglefloating,      { 0                                           } },
  { MODKEY|ShiftMask,             XK_space,        focusmaster,         { 0                                           } },
- { MODKEY,                       XK_minus,        scratchpad_show,     { 0                                           } },
- { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,     { 0                                           } },
- { MODKEY,                       XK_equal,        scratchpad_remove,   { 0                                           } },
+ // { MODKEY,                       XK_minus,        scratchpad_show,     { 0                                           } },
+ // { MODKEY|ShiftMask,             XK_minus,        scratchpad_hide,     { 0                                           } },
+ // { MODKEY,                       XK_equal,        scratchpad_remove,   { 0                                           } },
+
  { MODKEY,                       XK_bracketleft,  focusmon,            { .i = -1                                     } }, // multi monitors: focus on which one -1
  { MODKEY,                       XK_bracketright, focusmon,            { .i = +1                                     } }, // multi monitors: focus on which one +1
  { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,              { .i = -1                                     } }, // multi monitors: move win to monitor prev
@@ -290,8 +295,6 @@ static const Key keys[] = {
  { MODKEY|ShiftMask,             XK_e,            setlayout,           { .v = &layouts[11]                           } },
  { MODKEY,                       XK_e,            setlayout,           { .v = &layouts[12]                           } },
  { MODKEY,                       XK_slash,        spawn,               { .v = SpawnTermiCmd("lazy_open_search_file") } },
-
- { MODKEY,                       XK_y,            toggle_scratchpad,   { .v = CmdClass("st -c sp-st", "sp-st")       } },
 
 // { MODKEY,                       XK_n,            xxxxx,             {.v = x                                   } },
 // { MODKEY,                       XK_x,            xxxxx,             {.v = x                                   } },
