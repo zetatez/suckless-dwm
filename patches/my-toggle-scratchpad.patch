@@ -1,0 +1,148 @@
+From 3b06560d96f50a6215a6880243a027249f8b02a1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=AF=97=E5=BC=8B?= <zetatez@icloud.com>
+Date: Thu, 27 Nov 2025 02:23:49 +0800
+Subject: [PATCH] cmt: rewrite scratchpad
+
+---
+ config.def.h |  21 +++---
+ dwm.c        | 205 +++++++++++++--------------------------------------
+ 3 files changed, 75 insertions(+), 172 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 927c910..ae191e9 100755
+--- a/config.def.h
++++ b/config.def.h
+@@ -71,7 +71,7 @@ static const Rule rules[] = {
+ };
+ 
+ /* layout(s) */
+@@ -105,7 +105,10 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
+ /* commands */
+ static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
+ static const char *dmenucmd[]                               = { "rofi", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
+
++/* scratchpad 大小屏幕比例 */
++static const float scratchpad_width  = 0.75;
++static const float scratchpad_height = 0.60;
+ 
+ static const Key keys[] = {
+ /*  modifier                    key              function           argument                                              */
+@@ -177,7 +180,8 @@ static const Key keys[] = {
+  { SUPKEY,                       XK_x,            spawn,               {.v = Spawn("note_scripts")                          } },
+  { SUPKEY,                       XK_y,            spawn,               {.v = Spawn("toggle_show")                           } },
+  { SUPKEY,                       XK_z,            spawn,               {.v = Spawn("note_todo")                             } },
++ { SUPKEY,                       XK_Escape,       togglescratchpad,    {.v = CmdClass("st -c sp-btop -e btop", "sp-btop")   } },
+  { SUPKEY,                       XK_Delete,       spawn,               {.v = Spawn("sys_shortcuts")                         } },
+  { SUPKEY,                       XK_BackSpace,    spawn,               {.v = Spawn("toggle_passmenu")                       } },
+  { SUPKEY,                       XK_backslash,    spawn,               {.v = Spawn("reset_sys_default")                     } },
+@@ -232,7 +236,7 @@ static const Key keys[] = {
+  { MODKEY,                       XK_semicolon,    spawn,               { .v = SpawnShellCmd("rofi -show run -theme fullscreen-preview -font 'JetBrainsMono Nerd Font 24'") } },
+  { MODKEY,                       XK_p,            spawn,               { .v = dmenucmd                               } },
+  { MODKEY|ShiftMask,             XK_p,            quit,                { 1                                           } },
++ { MODKEY,                       XK_apostrophe,   togglescratchpad,    { .v = CmdClass("st -c sp-st", "sp-st")       } },
+  { MODKEY,                       XK_q,            spawn,               { .v = Spawn("slock")                         } },
+  { MODKEY|ShiftMask,             XK_q,            quit,                { 0                                           } },
+  { MODKEY,                       XK_c,            spawn,               { .v = Spawn("toggle_clipmenu")               } },
+diff --git a/dwm.c b/dwm.c
+index 2b3e22f..cb929fe 100755
+--- a/dwm.c
++++ b/dwm.c
+@@ -110,8 +104,7 @@ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
+ static void togglefullscreen(const Arg *arg);
+ static void toggleoverview(const Arg *arg);
++static void togglescratchpad(const Arg *arg);
+ static void togglesticky(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ 
+@@ -202,11 +191,13 @@ struct Pertag {
+   unsigned int curtag, prevtag;
+   unsigned int sellts[LENGTH(tags) + 1];
+ };
+ static pid_t *autostart_pids;
+ static size_t autostart_len;
+ 
++/* scratchpad 当前等待处理的 scratchpad class */
++static const char *scratchpad_class_wait = NULL;
+
+ /* execute command from autostart array */
+ static void
+ autostart_exec() {
+@@ -268,9 +259,8 @@ applyrules(Client *c)
+   if (ch.res_name) {
+     XFree(ch.res_name);
+   }
+
++ 	c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
+ }
+ 
+ int
+@@ -1313,12 +1303,21 @@ manage(Window w, XWindowAttributes *wa)
+   c->y = MAX(c->y, c->mon->wy);
+   c->bw = borderpx;
+ 
++  /* scratchpad 首次出现的自动居中处理 */
++  if (scratchpad_class_wait && strcmp(c->class, scratchpad_class_wait) == 0) {
++
++    // c->tags = 1 << 30;  /* 首次启动不隐藏 */
++    c->isfloating = 1;
++
++    int nw = c->mon->ww * scratchpad_width;
++    int nh = c->mon->wh * scratchpad_height;
++    int nx = c->mon->wx + (c->mon->ww - nw) / 2;
++    int ny = c->mon->wy + (c->mon->wh - nh) / 2;
++
++    resize(c, nx, ny, nw, nh, 0);
++
++    /* 处理完清空 */
++    scratchpad_class_wait = NULL;
+   }
+ 
+@@ -2427,26 +2316,38 @@ toggle_scratchpad(const Arg *arg)
++  void
++  togglescratchpad(const Arg *arg)
++  {
++    const char *const *data = arg->v;
++    const char *cmd   = data[0];
++    const char *class = data[1];
++
++    Client *c;
++
++    for (c = selmon->clients; c; c = c->next) {
++      if (strcmp(c->class, class) == 0) {
++
++        /* 置浮动 */
++        c->isfloating = 1;
++
++        /* 已可见 -> 隐藏: 移到 scratchpad tag：1<<30 */
++        if (ISVISIBLE(c)) {
++          c->tags = 1 << 30;
++          arrange(selmon);
++          return;
++        }
++
++        /* 不可见 -> 显示, 放回当前 tag */
++        c->tags = selmon->tagset[selmon->seltags];
++
++        /* 居中 + 大小设置 */
++        int nw = selmon->ww * scratchpad_width;
++        int nh = selmon->wh * scratchpad_height;
++        int nx = selmon->wx + (selmon->ww - nw) / 2;
++        int ny = selmon->wy + (selmon->wh - nh) / 2;
++
++        resize(c, nx, ny, nw, nh, 0);
++
++        focus(c);
++        arrange(selmon);
++        return;
++      }
++    }
++
++    /* 第一次 spawn: 记录 class，等待 manage() 处理 */
++    scratchpad_class_wait = class;
++    spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
++  }
+--
+2.52.0
+
