@@ -27,3 +27,23 @@ func LaunchQutebrowser() {
 func LaunchFileManager() {
 	LaunchApp("thunar ~")()
 }
+
+func LaunchInkscape() {
+	LaunchApp("inkscape")()
+}
+
+func LaunchKrita() {
+	LaunchApp("krita")()
+}
+
+func LaunchObsidian() {
+	LaunchApp("obsidian")()
+}
+
+func LaunchSublime() {
+	LaunchApp("subl")()
+}
+
+func LaunchXournal() {
+	LaunchApp("xournalpp")()
+}

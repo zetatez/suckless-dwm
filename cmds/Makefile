@@ -33,21 +33,27 @@ build: prepare build_shell_cmds
 	go build -o ./bins/sys_shortcuts                             ./cmds/sys_shortcuts/main.go
 	go build -o ./bins/sys_toggle_keyboard_light                 ./cmds/sys_toggle_keyboard_light/main.go
 	go build -o ./bins/sys_wifi_connect                          ./cmds/sys_wifi_connect/main.go
+	go build -o ./bins/daemon                                    ./cmds/daemon/main.go
+	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
+	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
+	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
+	go build -o ./bins/launch_inkscape                           ./cmds/launch_inkscape/main.go
+	go build -o ./bins/launch_krita                              ./cmds/launch_krita/main.go
+	go build -o ./bins/launch_obsidian                           ./cmds/launch_obsidian/main.go
+	go build -o ./bins/launch_sublime                            ./cmds/launch_sublime/main.go
 	go build -o ./bins/toggle_calendar                           ./cmds/toggle_calendar/main.go
 	go build -o ./bins/toggle_calendar_scheduling                ./cmds/toggle_calendar_scheduling/main.go
 	go build -o ./bins/toggle_calendar_scheduling_today          ./cmds/toggle_calendar_scheduling_today/main.go
 	go build -o ./bins/toggle_clipmenu                           ./cmds/toggle_clipmenu/main.go
 	go build -o ./bins/toggle_flameshot                          ./cmds/toggle_flameshot/main.go
-	go build -o ./bins/toggle_inkscape                           ./cmds/toggle_inkscape/main.go
 	go build -o ./bins/toggle_irssi                              ./cmds/toggle_irssi/main.go
 	go build -o ./bins/toggle_julia                              ./cmds/toggle_julia/main.go
-	go build -o ./bins/toggle_krita                              ./cmds/toggle_krita/main.go
 	go build -o ./bins/toggle_lazydocker                         ./cmds/toggle_lazydocker/main.go
 	go build -o ./bins/toggle_lazygit                            ./cmds/toggle_lazygit/main.go
 	go build -o ./bins/toggle_music                              ./cmds/toggle_music/main.go
-	go build -o ./bins/toggle_netease_cloud_music                ./cmds/toggle_netease_cloud_music/main.go
 	go build -o ./bins/toggle_mutt                               ./cmds/toggle_mutt/main.go
-	go build -o ./bins/toggle_obsidian                           ./cmds/toggle_obsidian/main.go
+	go build -o ./bins/toggle_netease_cloud_music                ./cmds/toggle_netease_cloud_music/main.go
+	go build -o ./bins/toggle_xournal                            ./cmds/toggle_xournal/main.go
 	go build -o ./bins/toggle_passmenu                           ./cmds/toggle_passmenu/main.go
 	go build -o ./bins/toggle_python                             ./cmds/toggle_python/main.go
 	go build -o ./bins/toggle_rec_audio                          ./cmds/toggle_rec_audio/main.go
@@ -56,16 +62,10 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_scala                              ./cmds/toggle_scala/main.go
 	go build -o ./bins/toggle_screenkey                          ./cmds/toggle_screenkey/main.go
 	go build -o ./bins/toggle_show                               ./cmds/toggle_show/main.go
-	go build -o ./bins/toggle_sublime                            ./cmds/toggle_sublime/main.go
 	go build -o ./bins/toggle_top                                ./cmds/toggle_top/main.go
 	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
-	go build -o ./bins/toggle_xournal                            ./cmds/toggle_xournal/main.go
 	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
-	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
-	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
-	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
 	go build -o ./bins/wallpaper                                 ./cmds/wallpaper/main.go
-	go build -o ./bins/daemon                                    ./cmds/daemon/main.go
 	chmod +x ./bins/*
 	@echo "Done!"
 
