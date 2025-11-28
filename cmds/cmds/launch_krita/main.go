@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleObsidian()
+	plugins.LaunchKrita()
 }

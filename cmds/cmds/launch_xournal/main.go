@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleInkscape()
+	plugins.LaunchXournal()
 }

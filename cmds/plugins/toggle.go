@@ -40,10 +40,6 @@ func ToggleFlameshot() {
 	utils.Toggle("flameshot gui")
 }
 
-func ToggleInkscape() {
-	utils.Toggle("inkscape")
-}
-
 func ToggleYazi() {
 	utils.Toggle(
 		fmt.Sprintf(
@@ -119,10 +115,6 @@ func ToggleMutt() {
 	)
 }
 
-func ToggleKrita() {
-	utils.Toggle("krita")
-}
-
 func TogglePython() {
 	utils.Toggle(
 		fmt.Sprintf(
@@ -176,14 +168,6 @@ func ToggleScreenKey() {
 	utils.Toggle("screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow")
 }
 
-func ToggleSublime() {
-	utils.Toggle("subl")
-}
-
-func ToggleObsidian() {
-	utils.Toggle("obsidian")
-}
-
 func ToggleTop() {
 	utils.Toggle(
 		fmt.Sprintf(
@@ -199,10 +183,6 @@ func ToggleClipmenu() {
 
 func TogglePassmenu() {
 	utils.Toggle("passmenu")
-}
-
-func ToggleXournal() {
-	utils.Toggle("xournalpp")
 }
 
 func ToggleRecAudio() {

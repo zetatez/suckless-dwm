@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleKrita()
+	plugins.LaunchInkscape()
 }
