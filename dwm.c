@@ -1305,20 +1305,25 @@ manage(Window w, XWindowAttributes *wa)
 
   /* scratchpad 首次出现的自动居中处理 */
   if (scratchpad_class_wait && strcmp(c->class, scratchpad_class_wait) == 0) {
-
     // c->tags = 1 << 30;  /* 首次启动不隐藏 */
     c->isfloating = 1;
-
     int nw = c->mon->ww * scratchpad_width;
     int nh = c->mon->wh * scratchpad_height;
     int nx = c->mon->wx + (c->mon->ww - nw) / 2;
     int ny = c->mon->wy + (c->mon->wh - nh) / 2;
-
     resize(c, nx, ny, nw, nh, 0);
-
     /* 处理完清空 */
     scratchpad_class_wait = NULL;
   }
+
+  /* scratchpad */
+ 	selmon->tagset[selmon->seltags] &= ~(1<<30);
+ 	if (!strcmp(c->name, scratchpad_class)) {
+ 		c->mon->tagset[c->mon->seltags] |= c->tags = 1<<30;
+ 		c->isfloating = 1;
+ 		c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
+ 		c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
+ 	}
 
   wc.border_width = c->bw;
   XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2210,6 +2215,7 @@ spawn(const Arg *arg)
 	if (arg->v == dmenucmd) {
 		dmenumon[0] = '0' + selmon->num;
   }
+ 	selmon->tagset[selmon->seltags] &= ~(1<<30); /* scratchpad */
 	if (fork() == 0) {
 		if (dpy) {
 			close(ConnectionNumber(dpy));

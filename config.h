@@ -106,7 +106,8 @@ static const Layout overviewlayout = { "󰾍",  layout_overview };
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]                               = { "rofi", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
 
-/* scratchpad 大小屏幕比例 */
+/* scratchpad */
+static const char scratchpad_class[] = "scratchpad";
 static const float scratchpad_width  = 0.75;
 static const float scratchpad_height = 0.60;
 
