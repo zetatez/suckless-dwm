@@ -104,7 +104,8 @@ static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
 static void toggleoverview(const Arg *arg);
-static void togglescratchpad(const Arg *arg);
+static void toggle_scratchpad(const Arg *arg);
+static void scratchpad_to_normal(const Arg *arg);
 static void togglesticky(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -2314,7 +2315,7 @@ togglefloating(const Arg *arg)
 }
 
 void
-togglescratchpad(const Arg *arg)
+toggle_scratchpad(const Arg *arg)
 {
   const char *const *data = arg->v;
   const char *cmd   = data[0];
@@ -2355,6 +2356,21 @@ togglescratchpad(const Arg *arg)
   /* 第一次 spawn: 记录 class，等待 manage() 处理 */
   scratchpad_class_wait = class;
   spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
+}
+
+void
+scratchpad_to_normal(const Arg *arg)
+{
+  Client *c = selmon->sel;
+  if (!c) { return; }
+
+  if (c->isfloating == 1) {
+    c->tags = selmon->tagset[selmon->seltags];
+    c->isfloating = 0;
+    arrange(selmon);
+    focus(c);
+    restack(selmon);
+  }
 }
 
 void
