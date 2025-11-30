@@ -10,6 +10,7 @@ var ActionMap = map[string]func(){
 	"format json":                      FormatJson,
 	"format sql":                       FormatSql,
 	"format yaml":                      FormatYaml,
+	"format go":                        FormatGo,
 	"get current datetime":             GetCurrentDatetime,
 	"get current unix sec":             GetCurrentUnixSec,
 	"get host name":                    GetHostName,

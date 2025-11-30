@@ -8,7 +8,7 @@
 #define SpawnTermiCmd(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 2;
+static const unsigned int borderpx = 1;
 static const unsigned int snap     = 0;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
@@ -52,12 +52,7 @@ static const char *themes[][SchemeLast][3] = {
   },
 };
 
-static const char *const autostart[] = {
-  "dwmblocks"        , NULL ,
-  "reset_sys_default", NULL ,
-  "daemon"           , NULL ,
-  NULL,
-};
+static const char *const autostart[] = { "dwmblocks", NULL, "reset_sys_default", NULL, "daemon", NULL, NULL };
 
 /* tagging */
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
@@ -204,7 +199,7 @@ static const Key keys[] = {
 { SUPKEY|ShiftMask,             XK_s,            spawn_or_focus,       {.v = CmdClass("subl", "Sublime_text")                        } },
 { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,       {.v = CmdClass("inkscape", "Inkscape")                        } },
 { SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,       {.v = CmdClass("netease-cloud-music", "netease-cloud-music")  } },
-{ SUPKEY|ShiftMask,             XK_n,            toggle_scratchpad,     {.v = CmdClass("st -c sp-julia -e julia", "sp-julia")         } },
+{ SUPKEY|ShiftMask,             XK_n,            toggle_scratchpad,    {.v = CmdClass("st -c sp-julia -e julia", "sp-julia")         } },
 { SUPKEY|ShiftMask,             XK_o,            spawn_or_focus,       {.v = CmdClass("obsidian", "obsidian")                        } },
 { SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,       {.v = CmdClass("krita", "krita")                              } },
 { SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,       {.v = CmdClass("zoom", "zoom")                                } },

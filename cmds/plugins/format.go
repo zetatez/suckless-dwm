@@ -3,6 +3,7 @@ package plugins
 import (
 	"encoding/json"
 	"fmt"
+	"go/format"
 
 	"golang.design/x/clipboard"
 	"gopkg.in/yaml.v3"
@@ -79,6 +80,28 @@ func FormatYaml() {
 	}
 	utils.Notify(fmt.Sprintf("format success: \n%s", formatedText))
 	changed := clipboard.Write(clipboard.FmtText, formatedText)
+	<-changed
+	utils.Notify("previous clipboard expired")
+}
+
+func FormatGo() {
+	err := clipboard.Init()
+	if err != nil {
+		utils.Notify(err)
+		return
+	}
+	text := clipboard.Read(clipboard.FmtText)
+	if len(text) == 0 {
+		utils.Notify("clipboard empty or not text")
+		return
+	}
+	formatted, err := format.Source(text)
+	if err != nil {
+		utils.Notify(fmt.Errorf("format failed: %w", err))
+		return
+	}
+	utils.Notify(fmt.Sprintf("format success:\n%s", formatted))
+	changed := clipboard.Write(clipboard.FmtText, formatted)
 	<-changed
 	utils.Notify("previous clipboard expired")
 }

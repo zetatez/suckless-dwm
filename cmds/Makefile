@@ -15,6 +15,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/format_json                               ./cmds/format_json/main.go
 	go build -o ./bins/format_sql                                ./cmds/format_sql/main.go
 	go build -o ./bins/format_yaml                               ./cmds/format_yaml/main.go
+	go build -o ./bins/format_go                                 ./cmds/format_go/main.go
 	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
 	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
 	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
