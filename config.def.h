@@ -107,7 +107,7 @@ static const float scratchpad_width  = 0.75;
 static const float scratchpad_height = 0.60;
 
 static const Key keys[] = {
-/*  modifier                    key              function           argument                                              */
+/* modifier                      key              function             argument                                 */
  { SUPKEY,                       XK_F1,           spawn,               {.v = Spawn("sys_volume_toggle")         } },
  { SUPKEY,                       XK_F2,           spawn,               {.v = Spawn("sys_volume_down")           } },
  { SUPKEY,                       XK_F3,           spawn,               {.v = Spawn("sys_volume_up")             } },
