@@ -58,11 +58,12 @@ static const char *const autostart[] = { "dwmblocks", NULL, "reset_sys_default",
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
 static const Rule rules[] = {
-  /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow    monitor */
-  {"float",                  NULL,       NULL,      0,            1,            0,             0,           -1 },
-  {"st",                     NULL,       NULL,      0,            0,            1,             1,           -1 },
-  {"Surf",                   NULL,       NULL,      0,            0,            0,             1,           -1 }, // no swallow for markdown
-//{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,           -1 },
+  /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow     isontop  monitor */
+  {"float",                  NULL,       NULL,      0,            1,            0,             0,            0,       -1 },
+  {"st",                     NULL,       NULL,      0,            0,            1,             1,            0,       -1 },
+  {"Surf",                   NULL,       NULL,      0,            0,            0,             1,            0,       -1 }, // no swallow for markdown
+  {"Onboard",                NULL,       NULL,      0,            1,            0,             0,            1,       -1 },
+//{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
 };
 
 /* stickyicon */

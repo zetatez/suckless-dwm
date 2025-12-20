@@ -235,6 +235,7 @@ applyrules(Client *c)
   XClassHint ch = { NULL, NULL };
 
   c->isfloating = 0;
+  c->isontop = 0;
   c->tags = 0;
   XGetClassHint(dpy, c->win, &ch);
   cls      = ch.res_class ? ch.res_class : broken;
@@ -246,6 +247,7 @@ applyrules(Client *c)
       c->isterminal = r->isterminal;
       c->noswallow  = r->noswallow;
       c->isfloating = r->isfloating;
+      c->isontop = r->isontop;
       c->tags |= r->tags;
       for (m = mons; m && m->num != r->monitor; m = m->next)
         ;
@@ -1813,6 +1815,14 @@ restack(Monitor *m)
       }
     }
   }
+
+  /* raise always-on-top windows last */
+  for (c = m->stack; c; c = c->snext) {
+    if (c->isontop && ISVISIBLE(c)) {
+      XRaiseWindow(dpy, c->win);
+    }
+  }
+
   XSync(dpy, False);
   while (XCheckMaskEvent(dpy, EnterWindowMask, &ev))
     ;
