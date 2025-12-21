@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	plugins.ToggleSublime()
+	plugins.ToggleKeyboard()
 }

@@ -77,6 +77,10 @@ func ToggleLazyGit() {
 	)
 }
 
+func ToggleKeyboard() {
+	utils.Toggle("onboard")
+}
+
 func ToggleMusic() {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
@@ -240,7 +244,7 @@ func ToggleRecWebcam() {
 	}
 }
 
-func ToggleShow() {
+func ToggleRecShow() {
 	switch {
 	case utils.IsRunning("ffplay"):
 		utils.Kill("ffplay")

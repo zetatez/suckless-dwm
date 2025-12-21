@@ -13,8 +13,8 @@ amixer set Speaker   unmute
 amixer set Capture   cap    # cap, nocap
 
 amixer set Master    80%
-amixer set Capture   72%
-amixer set Speaker   72%
+amixer set Capture   64%
+amixer set Speaker   64%
 amixer set Headphone 64%
 
 notify-send 'set master    volume to 80%'

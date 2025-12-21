@@ -33,12 +33,24 @@ func isRunning(name string) bool {
 func main() {
 	procs := []ProcConfig{
 		{
+			Name:    "dwmblocks",
+			Command: "dwmblocks",
+		},
+		{
 			Name:    "picom",
 			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
 		},
 		{
+			Name:    "dust",
+			Command: "dust",
+		},
+		{
 			Name:    "xset",
 			Command: "xset r rate 158 128",
+		},
+		{
+			Name:    "clipmenud",
+			Command: "clipmenud",
 		},
 		{
 			Name:    "hhkb",
