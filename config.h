@@ -191,6 +191,7 @@ static const Key keys[] = {
   // { SUPKEY,                       XK_Home,         spawn,             {.v =                                                         } },
   // { SUPKEY,                       XK_comma,        spawn,             {.v =                                                         } },
 
+  { SUPKEY|ShiftMask,             XK_a,            spawn,                {.v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")   } },
   { SUPKEY|ShiftMask,             XK_b,            spawn,                {.v = Spawn("launch_qutebrowser")                             } },
   { SUPKEY,                       XK_c,            spawn,                {.v = Spawn("note_timeline")                                  } },
   { SUPKEY|ShiftMask,             XK_c,            killclient,           {0                                                            } },
@@ -211,7 +212,6 @@ static const Key keys[] = {
   { SUPKEY|ShiftMask,             XK_period,       spawn,                {.v = Spawn("toggle_rec_screen")                              } },
   { SUPKEY|ShiftMask,             XK_Return,       spawn,                {.v = Spawn("kitty")                                          } },
 
-  // { SUPKEY|ShiftMask,             XK_a,            spawn,             {.v =                                             } },
   // { SUPKEY|ShiftMask,             XK_e,            spawn,             {.v =                                             } },
   // { SUPKEY|ShiftMask,             XK_q,            spawn,             {.v =                                             } },
   // { SUPKEY|ShiftMask,             XK_r,            spawn,             {.v =                                             } },
@@ -368,7 +368,7 @@ static const Button buttons[] = {
   { ClkLtSymbol,          0,              Button2,        setlayout,           {.v = &layouts[8]               } },
   { ClkLtSymbol,          0,              Button3,        setlayout,           {.v = &overviewlayout           } },
   { ClkStatusText,        0,              Button1,        spawn,               {.v = Spawn("toggle_tty_clock") } },
-  { ClkStatusText,        0,              Button2,        spawn,               {.v = Spawn("sys_shortcuts")    } },
+  { ClkStatusText,        0,              Button2,        spawn,               {.v = Spawn("toggle_keyboard")  } },
   { ClkStatusText,        0,              Button3,        spawn,               {.v = Spawn("toggle_calendar")  } },
   { ClkClientWin,         MODKEY,         Button1,        movemouse,           {0                              } },
   { ClkClientWin,         MODKEY,         Button2,        togglefloating,      {0                              } },

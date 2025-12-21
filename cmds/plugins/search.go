@@ -77,6 +77,7 @@ var ActionMap = map[string]func(){
 	"web github":                       OpenUrlWithQutebrowser("https://github.com"),
 	"web map gaode":                    OpenUrlWithQutebrowser("https://ditu.amap.com/"),
 	"web map google":                   OpenUrlWithQutebrowser("https://www.google.com/maps/place/shanghai"),
+	"web mirror sjtu":                  OpenUrlWithQutebrowser("https://ftp.sjtu.edu.cn/"),
 	"web mirror aliyun":                OpenUrlWithQutebrowser("https://developer.aliyun.com/mirror"),
 	"web social douban":                OpenUrlWithQutebrowser("https://www.douban.com/"),
 	"web social instagram":             OpenUrlWithQutebrowser("https://www.instagram.com/explore/"),

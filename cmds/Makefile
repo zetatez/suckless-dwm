@@ -52,6 +52,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_julia                              ./cmds/toggle_julia/main.go
 	go build -o ./bins/toggle_lazydocker                         ./cmds/toggle_lazydocker/main.go
 	go build -o ./bins/toggle_lazygit                            ./cmds/toggle_lazygit/main.go
+	go build -o ./bins/toggle_keyboard                           ./cmds/toggle_keyboard/main.go
 	go build -o ./bins/toggle_music                              ./cmds/toggle_music/main.go
 	go build -o ./bins/toggle_mutt                               ./cmds/toggle_mutt/main.go
 	go build -o ./bins/toggle_netease_cloud_music                ./cmds/toggle_netease_cloud_music/main.go
