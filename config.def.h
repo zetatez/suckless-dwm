@@ -30,29 +30,34 @@ static const char *colors[][3] = {
 static int current_theme_idx = 0;
 static const char *themes[][SchemeLast][3] = {
   /*                  fg,        bg,        border */
-  { /* ---------------- Theme 0: 原主题 ---------------- */
+  { /* ---------------- Theme 0: 原主题 ----------- */
     [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
     [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
   },
-  { /* ---------------- Theme 1: 桃色 ---------------- */
-    [SchemeNorm] = { "#ffe0e9", "#023047", "#023047" }, // fg, bg, border
+  { /* ---------------- Theme 1: 桃色 ------------- */
+    [SchemeNorm] = { "#ffe0e9", "#023047", "#023047" },
     [SchemeSel]  = { "#ff99cc", "#023047", "#ff3399" },
   },
-  { /* ---------------- Theme 2: 暗青清爽 ---------------- */
+  { /* ---------------- Theme 2: 暗青清爽 --------- */
     [SchemeNorm] = { "#118ab2", "#031b34", "#031b34" },
     [SchemeSel]  = { "#06d6a0", "#031b34", "#06d6a0" },
   },
-  { /* ---------------- Theme 3: 暗橙活力 ---------------- */
+  { /* ---------------- Theme 3: 暗橙活力 --------- */
     [SchemeNorm] = { "#f4a261", "#2b1400", "#2b1400" },
     [SchemeSel]  = { "#e76f51", "#2b1400", "#e76f51" },
   },
-  { /* ---------------- Theme 4: 暗粉柔和 ---------------- */
+  { /* ---------------- Theme 4: 暗粉柔和 --------- */
     [SchemeNorm] = { "#ffb3c1", "#2a0f1f", "#2a0f1f" },
     [SchemeSel]  = { "#ff66a3", "#2a0f1f", "#ff66a3" },
   },
 };
 
-static const char *const autostart[] = { "dwmblocks", NULL, "reset_sys_default", NULL, "daemon", NULL, NULL };
+static const char *const autostart[] = {
+  "dwmblocks", NULL,
+  "reset_sys_default", NULL,
+  "daemon", NULL,
+  NULL,
+};
 
 /* tagging */
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
@@ -92,7 +97,7 @@ static const Layout layouts[] = {
   { "M 󱣴"                  , layout_monocle            },
   { "H "                  , layout_hacker             }, // 10
   { "S |"                  , layout_stack_vert         },
-  { "S ―"                  , layout_stack_hori         }, // 12
+  { "S ―"                  , layout_stack_hori         },
   { NULL                   , NULL                      },
 };
 
