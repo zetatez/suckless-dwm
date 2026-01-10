@@ -33,12 +33,24 @@ func isRunning(name string) bool {
 func main() {
 	procs := []ProcConfig{
 		{
+			Name:    "dwmblocks",
+			Command: "dwmblocks",
+		},
+		{
 			Name:    "picom",
 			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
 		},
 		{
 			Name:    "xset",
 			Command: "xset r rate 158 128",
+		},
+		{
+			Name:    "clipmenud",
+			Command: "clipmenud",
+		},
+		{
+			Name:    "dust",
+			Command: "dust",
 		},
 		{
 			Name:    "hhkb",
@@ -52,6 +64,6 @@ func main() {
 				go utils.RunScript("bash", proc.Command)
 			}
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(30 * time.Second)
 	}
 }

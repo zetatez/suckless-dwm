@@ -244,7 +244,7 @@ func ToggleRecWebcam() {
 	}
 }
 
-func ToggleShow() {
+func ToggleRecShow() {
 	switch {
 	case utils.IsRunning("ffplay"):
 		utils.Kill("ffplay")
