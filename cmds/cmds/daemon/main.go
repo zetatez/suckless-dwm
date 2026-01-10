@@ -41,16 +41,16 @@ func main() {
 			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
 		},
 		{
+			Name:    "dust",
+			Command: "dust",
+		},
+		{
 			Name:    "xset",
 			Command: "xset r rate 158 128",
 		},
 		{
 			Name:    "clipmenud",
 			Command: "clipmenud",
-		},
-		{
-			Name:    "dust",
-			Command: "dust",
 		},
 		{
 			Name:    "hhkb",
@@ -64,6 +64,6 @@ func main() {
 				go utils.RunScript("bash", proc.Command)
 			}
 		}
-		time.Sleep(30 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 }
