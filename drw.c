@@ -215,15 +215,15 @@ drw_clr_free(Drw *drw, Clr *c)
 void
 drw_scm_free(Drw *drw, Clr *scm, size_t clrcount)
 {
-  size_t i;
+	size_t i;
 
-  if (!drw || !scm)
-    return;
+	if (!drw || !scm)
+		return;
 
-  for (i = 0; i < clrcount; i++) {
-    drw_clr_free(drw, &scm[i]);
-    free(scm);
-  }
+	for (i = 0; i < clrcount; i++) {
+		drw_clr_free(drw, &scm[i]);
+	}
+	free(scm);
 }
 
 void
