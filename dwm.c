@@ -1049,12 +1049,12 @@ pointerfocuswin(Client *c)
 getatomprop(Client *c, Atom prop)
 {
   int di;
-  unsigned long dl;
+  unsigned long nitems, dl;
   unsigned char *p = NULL;
   Atom da, atom = None;
 
-  if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, XA_ATOM, &da, &di, &dl, &dl, &p) == Success && p) {
-    if (dl > 0) {
+  if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, XA_ATOM, &da, &di, &nitems, &dl, &p) == Success && p) {
+    if (nitems > 0) {
       atom = *(Atom *)p;
     };
     XFree(p);
