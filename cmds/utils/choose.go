@@ -7,8 +7,7 @@ import (
 
 func Choose(prompt string, list []string) (item string, err error) {
 	script := fmt.Sprintf(
-		// "echo '%s'|rofi -show -dmenu -p '%s'",
-		"echo '%s'|dmenu -p '%s'",
+		"echo '%s'|rofi -dmenu -p '%s'",
 		strings.Join(list, "\n"),
 		prompt,
 	)

@@ -226,28 +226,28 @@ func SysWifiConnect() {
 }
 
 func SysShortcuts() {
-	SysShortCuts := map[string]string{
-		"󰒲  suspend":     "systemctl suspend",
-		"  poweroff":    "systemctl poweroff",
-		"ﰇ  reboot":      "systemctl reboot",
-		"󰶐  off-display": "sleep .5; xset dpms force off",
-		"󰷛  slock":       "slock",
+	shortcuts := map[string]string{
+		"- suspend":     "systemctl suspend",
+		"- poweroff":    "systemctl poweroff",
+		"- reboot":      "systemctl reboot",
+		"- off-display": "sleep .5; xset dpms force off",
+		"- slock":       "slock",
 	}
 	list := []string{}
-	for k := range SysShortCuts {
+	for k := range shortcuts {
 		list = append(list, k)
 	}
 	content, err := utils.Choose(": ", list)
 	if err != nil {
 		return
 	}
-	cmd, ok := SysShortCuts[content]
+	cmd, ok := shortcuts[content]
 	if ok {
 		_, _, _ = utils.RunScript("bash", cmd)
 	}
 }
 
-func SysScreen() {
+func SysDisplay() {
 	primaryMonitor := "eDP-1"
 	cmd := "xrandr|grep ' connected'|grep -v 'eDP-1'|awk '{print $1}'"
 	stdout, _, err := utils.RunScript("bash", cmd)
@@ -262,7 +262,7 @@ func SysScreen() {
 	}
 	secondMonitor := stdout
 	cmds := map[string]string{
-		"defualt":                fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
+		"default":                fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
 		"clone":                  fmt.Sprintf("xrandr --output %s --mode 1920x1080", secondMonitor),
 		"primary only":           fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
 		"second  only":           fmt.Sprintf("xrandr --output %s --auto --output %s --off", secondMonitor, primaryMonitor),
