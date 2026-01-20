@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ $# -ne 1 ]; then
   echo "wrong param, expected exact 1 param"
@@ -17,10 +17,10 @@ fd \
   --exclude .cache \
   --exclude .local \
   . "$curdir" \
-|fzf \
+| fzf \
   --prompt="lazy exec search file of dir $curdir>" \
   --preview "lazy -o view -f {}" \
   --select-1 \
   --exit-0 \
   --print0 \
-|xargs -0 -o lazy -o exec -f
+| xargs -0 -o lazy -o exec -f

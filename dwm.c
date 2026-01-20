@@ -1314,16 +1314,15 @@ manage(Window w, XWindowAttributes *wa)
   c->y = MAX(c->y, c->mon->wy);
   c->bw = borderpx;
 
-  /* scratchpad 首次出现的自动居中处理 */
+  /* scratchpad auto-center on first appearance */
   if (scratchpad_class_wait && strcmp(c->class, scratchpad_class_wait) == 0) {
-    // c->tags = 1 << 30;  /* 首次启动不隐藏 */
     c->isfloating = 1;
     int nw = c->mon->ww * scratchpad_width;
     int nh = c->mon->wh * scratchpad_height;
     int nx = c->mon->wx + (c->mon->ww - nw) / 2;
     int ny = c->mon->wy + (c->mon->wh - nh) / 2;
     resize(c, nx, ny, nw, nh, 0);
-    /* 处理完清空 */
+    /* clear after processing */
     scratchpad_class_wait = NULL;
   }
 
@@ -2276,8 +2275,7 @@ spawn_or_focus(const Arg *arg)
     freeclasshints(&ch);
   }
 
-  /* 没找到 -> spawn */
-  // spawn(&(Arg){ .v = (const char *[]){ cmd, NULL } });
+  /* not found -> spawn */
   spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
 }
 
@@ -2339,45 +2337,45 @@ togglefloating(const Arg *arg)
   void
 toggle_scratchpad(const Arg *arg)
 {
-  const char *const *data = arg->v;
-  const char *cmd   = data[0];
-  const char *class = data[1];
+	const char *const *data = arg->v;
+	const char *cmd   = data[0];
+	const char *class = data[1];
 
-  Client *c;
+	Client *c;
 
-  for (c = selmon->clients; c; c = c->next) {
-    if (strcmp(c->class, class) == 0) {
+	for (c = selmon->clients; c; c = c->next) {
+		if (strcmp(c->class, class) == 0) {
 
-      /* 置浮动 */
-      c->isfloating = 1;
+			/* set floating */
+			c->isfloating = 1;
 
-      /* 已可见 -> 隐藏: 移到 scratchpad tag：1<<30 */
-      if (ISVISIBLE(c)) {
-        c->tags = 1 << 30;
-        arrange(selmon);
-        return;
-      }
+			/* visible -> hide: move to scratchpad tag 1<<30 */
+			if (ISVISIBLE(c)) {
+				c->tags = 1 << 30;
+				arrange(selmon);
+				return;
+			}
 
-      /* 不可见 -> 显示, 放回当前 tag */
-      c->tags = selmon->tagset[selmon->seltags];
+			/* invisible -> show, restore to current tag */
+			c->tags = selmon->tagset[selmon->seltags];
 
-      /* 居中 + 大小设置 */
-      int nw = selmon->ww * scratchpad_width;
-      int nh = selmon->wh * scratchpad_height;
-      int nx = selmon->wx + (selmon->ww - nw) / 2;
-      int ny = selmon->wy + (selmon->wh - nh) / 2;
+			/* center and resize */
+			int nw = selmon->ww * scratchpad_width;
+			int nh = selmon->wh * scratchpad_height;
+			int nx = selmon->wx + (selmon->ww - nw) / 2;
+			int ny = selmon->wy + (selmon->wh - nh) / 2;
 
-      resize(c, nx, ny, nw, nh, 0);
+			resize(c, nx, ny, nw, nh, 0);
 
-      focus(c);
-      arrange(selmon);
-      return;
-    }
-  }
+			focus(c);
+			arrange(selmon);
+			return;
+		}
+	}
 
-  /* 第一次 spawn: 记录 class，等待 manage() 处理 */
-  scratchpad_class_wait = class;
-  spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
+	/* first spawn: record class, wait for manage() */
+	scratchpad_class_wait = class;
+	spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
 }
 
   void
@@ -2419,17 +2417,17 @@ toggleoverview(const Arg *arg)
   static uint prevtag = 0;
 
   if (!selmon->isoverview) {
-    /* 进入 overview，记录当前 tagset */
+    /* enter overview, record current tagset */
     prevtag = selmon->tagset[selmon->seltags];
     selmon->isoverview = 1;
 
-    /* 展示所有窗口 */
+    /* show all windows */
     view(&(Arg){ .ui = ~0 });
   } else {
-    /* 退出 overview，恢复原 tag */
+    /* exit overview, restore previous tag */
     selmon->isoverview = 0;
 
-    /* 如果 prevtag 合法就恢复，否则回到 1 号 tag */
+    /* restore prevtag if valid, otherwise go to tag 1 */
     view(&(Arg){ .ui = prevtag ? prevtag : 1 });
   }
 }

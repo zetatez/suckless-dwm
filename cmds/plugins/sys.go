@@ -45,7 +45,7 @@ func SysBlueToothConnect() {
 		utils.Notify("no bluetooth device was found")
 		return
 	}
-	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to'", stdout)
+	cmd = fmt.Sprintf("echo '%s'|rofi -dmenu -p 'connect to'", stdout)
 	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
 		utils.Notify(err)
@@ -78,7 +78,7 @@ func SysBlueToothDisconnect() {
 		return
 	}
 
-	cmd = fmt.Sprintf("echo '%s' | dmenu -p 'disconnect from'", stdout)
+	cmd = fmt.Sprintf("echo '%s' | rofi -dmenu -p 'disconnect from'", stdout)
 	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
 		utils.Notify(err)
@@ -104,23 +104,23 @@ func SysBlueToothDisconnect() {
 func SysBlueToothScanAndConnect() {
 	devices, err := SysBlueToothScan()
 	if err != nil || len(devices) == 0 {
-		utils.Notify("没有发现蓝牙设备")
+		utils.Notify("no bluetooth device found")
 		return
 	}
 
-	cmd := exec.Command("dmenu", "-p", "connect bluetooth")
+	cmd := exec.Command("rofi", "-dmenu", "-p", "connect bluetooth")
 	cmd.Stdin = strings.NewReader(strings.Join(devices, "\n"))
 	out, _ := cmd.Output()
 	choice := strings.TrimSpace(string(out))
 	if choice == "" {
-		utils.Notify("未选择设备")
+		utils.Notify("no device selected")
 		return
 	}
 
 	// parse mac
 	parts := strings.Fields(choice)
 	if len(parts) < 1 {
-		utils.Notify("选择无效")
+		utils.Notify("invalid selection")
 		return
 	}
 	mac := parts[0]
@@ -133,12 +133,12 @@ func SysBlueToothScanAndConnect() {
 	} {
 		_, _, err := utils.RunScript("bash", c)
 		if err != nil {
-			utils.Notify("执行失败: " + c)
+			utils.Notify("command failed: " + c)
 			return
 		}
 	}
 
-	utils.Notify("蓝牙连接成功: " + mac)
+	utils.Notify("bluetooth connected: " + mac)
 }
 
 func SysBlueToothScan() ([]string, error) {
@@ -199,7 +199,7 @@ func SysWifiConnect() {
 		utils.Notify(err)
 		return
 	}
-	cmd = fmt.Sprintf("echo '%s'|dmenu -p 'connect to wifi'", stdout)
+	cmd = fmt.Sprintf("echo '%s'|rofi -dmenu -p 'connect to wifi'", stdout)
 	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
 		utils.Notify(err)
@@ -209,7 +209,7 @@ func SysWifiConnect() {
 	if essid == "" {
 		return
 	}
-	cmd = "dmenu < /dev/null -p 'password'"
+	cmd = "rofi -dmenu < /dev/null -p 'password'"
 	stdout, _, err = utils.RunScript("bash", cmd)
 	if err != nil {
 		utils.Notify(err)
@@ -261,7 +261,7 @@ func SysDisplay() {
 		return
 	}
 	secondMonitor := stdout
-	cmds := map[string]string{
+	displayCmds := map[string]string{
 		"default":                fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
 		"clone":                  fmt.Sprintf("xrandr --output %s --mode 1920x1080", secondMonitor),
 		"primary only":           fmt.Sprintf("xrandr --output %s --auto --output %s --off", primaryMonitor, secondMonitor),
@@ -275,13 +275,13 @@ func SysDisplay() {
 		"roate left  & right-of": fmt.Sprintf("xrandr --output %s --auto --rotate left  --right-of %s --auto", secondMonitor, primaryMonitor),
 		"roate right & right-of": fmt.Sprintf("xrandr --output %s --auto --rotate right --right-of %s --auto", secondMonitor, primaryMonitor),
 	}
-	_, _, err = utils.RunScript("bash", cmds["default"])
+	_, _, err = utils.RunScript("bash", displayCmds["default"])
 	if err != nil {
 		utils.Notify(err)
 		return
 	}
 	list := make([]string, 0)
-	for k := range cmds {
+	for k := range displayCmds {
 		list = append(list, k)
 	}
 	choice, err := utils.Choose("screen strategy: ", list)
@@ -289,7 +289,7 @@ func SysDisplay() {
 		utils.Notify(err)
 		return
 	}
-	cmd, ok := cmds[choice]
+	cmd, ok := displayCmds[choice]
 	if !ok {
 		utils.Notify("wrong choice")
 		return

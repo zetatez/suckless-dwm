@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 amixer set Capture toggle
 notify-send 'micro toggle'

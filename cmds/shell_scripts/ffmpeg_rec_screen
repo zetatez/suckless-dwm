@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 ffmpeg \
   -y \
@@ -6,11 +6,11 @@ ffmpeg \
   -i default \
   -f x11grab \
   -i "$DISPLAY" \
-  -s "$(xdpyinfo|awk '/dimensions/ {print $2}')" \
+  -s "$(xdpyinfo | awk '/dimensions/ {print $2}')" \
   -r 30 \
   -c:a aac \
   -c:v libx264rgb \
   -crf 0 \
   -preset ultrafast \
   -color_range 2 \
-  $HOME/Videos/rec-screen-with-audio-$(date '+%F-%H-%M-%S').mkv
+  "$HOME/Videos/rec-screen-with-audio-$(date '+%F-%H-%M-%S').mkv"

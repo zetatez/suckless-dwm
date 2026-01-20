@@ -1,16 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 mkdir -p ~/share/github/
 cd ~/share/github/
 
-repos=$(fd --type d --hidden -d 1)
-
-for repo in $repos; do
-  {
-    echo "cd $repo && git pull; cd .."
-    cd $repo
-    git pull
-    git-pull-all-branches
-    cd ..
-  }
+for repo in $(fd --type d --hidden -d 1); do
+  cd "$repo"
+  git pull
+  git-pull-all-branches
 done

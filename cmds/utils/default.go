@@ -1,63 +1,46 @@
 package utils
 
+var defaultMap = map[string]map[string]string{
+	"shell": {
+		"linux":  "sh",
+		"darwin": "sh",
+	},
+	"terminal": {
+		"linux":  "st",
+		"darwin": "kitty",
+	},
+	"editor": {
+		"linux":  "nvim",
+		"darwin": "nvim",
+	},
+	"browser": {
+		"linux":  "chrome",
+		"darwin": "chrome",
+	},
+}
+
 func GetOSDefault(objType string) string {
-	ObjTypeMap := map[string]func() string{
-		"shell":    GetOSDefaultShell,
-		"terminal": GetOSDefaultTerminal,
-		"editor":   GetOSDefaultEditor,
-		"browser":  GetOSDefaultBrowser,
+	if m, ok := defaultMap[objType]; ok {
+		if v, ok := m[GetOSType()]; ok {
+			return v
+		}
 	}
-	if fn, ok := ObjTypeMap[objType]; ok {
-		return fn()
-	}
-	Notify("Unsupported object type")
+	Notify("Unsupported: " + objType)
 	return ""
 }
 
 func GetOSDefaultShell() string {
-	OsDefaultShell := map[string]string{
-		OsMap["linux"]: "sh",
-		OsMap["macos"]: "sh",
-	}
-	if shell, ok := OsDefaultShell[GetOSType()]; ok {
-		return shell
-	}
-	Notify("Unsupported OS")
-	return ""
+	return GetOSDefault("shell")
 }
 
 func GetOSDefaultTerminal() string {
-	OsDefaultTerminal := map[string]string{
-		OsMap["linux"]: "st",
-		OsMap["macos"]: "kitty",
-	}
-	if terminal, ok := OsDefaultTerminal[GetOSType()]; ok {
-		return terminal
-	}
-	Notify("Unsupported OS")
-	return ""
+	return GetOSDefault("terminal")
 }
 
 func GetOSDefaultEditor() string {
-	OsDefaultEditor := map[string]string{
-		OsMap["linux"]: "nvim",
-		OsMap["macos"]: "nvim",
-	}
-	if editor, ok := OsDefaultEditor[GetOSType()]; ok {
-		return editor
-	}
-	Notify("Unsupported OS")
-	return ""
+	return GetOSDefault("editor")
 }
 
 func GetOSDefaultBrowser() string {
-	OsDefaultBrowser := map[string]string{
-		OsMap["linux"]: "chrome",
-		OsMap["macos"]: "chrome",
-	}
-	if browser, ok := OsDefaultBrowser[GetOSType()]; ok {
-		return browser
-	}
-	Notify("Unsupported OS")
-	return ""
+	return GetOSDefault("browser")
 }

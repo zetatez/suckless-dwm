@@ -30,23 +30,23 @@ static const char *colors[][3] = {
 static int current_theme_idx = 0;
 static const char *themes[][SchemeLast][3] = {
   /*                  fg,        bg,        border */
-  { /* ---------------- Theme 0: 原主题 ----------- */
+  {
     [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
     [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
   },
-  { /* ---------------- Theme 1: 桃色 ------------- */
+  {
     [SchemeNorm] = { "#ffe0e9", "#023047", "#023047" },
     [SchemeSel]  = { "#ff99cc", "#023047", "#ff3399" },
   },
-  { /* ---------------- Theme 2: 暗青清爽 --------- */
+  {
     [SchemeNorm] = { "#118ab2", "#031b34", "#031b34" },
     [SchemeSel]  = { "#06d6a0", "#031b34", "#06d6a0" },
   },
-  { /* ---------------- Theme 3: 暗橙活力 --------- */
+  {
     [SchemeNorm] = { "#f4a261", "#2b1400", "#2b1400" },
     [SchemeSel]  = { "#e76f51", "#2b1400", "#e76f51" },
   },
-  { /* ---------------- Theme 4: 暗粉柔和 --------- */
+  {
     [SchemeNorm] = { "#ffb3c1", "#2a0f1f", "#2a0f1f" },
     [SchemeSel]  = { "#ff66a3", "#2a0f1f", "#ff66a3" },
   },
@@ -81,7 +81,7 @@ static const int nmaster            = 1;
 static const int maxnmaster         = 16;
 static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
-static const int refreshrate        = 120;  /* refresh rate (per second) for client move/resize */
+static const int refreshrate        = 120;
 
 static const Layout layouts[] = {
   { "W 󰴈"                  , layout_workflow           }, // default
@@ -269,7 +269,7 @@ static const Key keys[] = {
   { MODKEY,                       XK_s,            reset,               {0                                            } },
   { MODKEY|ShiftMask,             XK_s,            togglesticky,        {0                                            } },
   { MODKEY,                       XK_space,        togglefloating,      {0                                            } },
-  { MODKEY|ShiftMask,             XK_space,        focusmaster,         { 0                                           } },
+  { MODKEY|ShiftMask,             XK_space,        focusmaster,         {0                                            } },
   { MODKEY,                       XK_bracketleft,  focusmon,            {.i = -1                                      } }, // multi monitors: focus on which one -1
   { MODKEY,                       XK_bracketright, focusmon,            {.i = +1                                      } }, // multi monitors: focus on which one +1
   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,              {.i = -1                                      } }, // multi monitors: move win to monitor prev

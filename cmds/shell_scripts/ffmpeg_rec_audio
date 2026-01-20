@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 ffmpeg \
   -y \
   -f alsa \
   -i default \
-  $HOME/Videos/rec-audio-$(date '+%F-%H-%M-%S').flac
+  "$HOME/Videos/rec-audio-$(date '+%F-%H-%M-%S').flac"

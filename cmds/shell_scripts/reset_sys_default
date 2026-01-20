@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 notify-send 'reset sys default'
 
@@ -7,7 +7,7 @@ sudo light -S 92
 notify-send 'set light to 92%'
 
 # ---------------------
-# 设置音量和麦克风: 假设主音量在 card 0，麦克风在 card 1，如果不确定可用 `amixer scontrols` 查看
+# set volume and microphone
 amixer set Master    unmute
 amixer set Speaker   unmute
 amixer set Capture   cap    # cap, nocap

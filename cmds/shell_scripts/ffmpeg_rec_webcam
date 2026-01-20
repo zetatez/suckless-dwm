@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 ffmpeg \
   -f pulse \
@@ -7,4 +7,4 @@ ffmpeg \
   -f v4l2 \
   -i /dev/video0 \
   -vcodec libx264 \
-  $HOME/Videos/rec-webcam-$(date '+%F-%H-%M-%S').mkv
+  "$HOME/Videos/rec-webcam-$(date '+%F-%H-%M-%S').mkv"

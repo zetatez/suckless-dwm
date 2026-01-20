@@ -1,8 +1,6 @@
-#!/bin/bash
-
-# git show $(git log --pretty=oneline|fzf --prompt='open>' --preview 'git show {1}' --select-1 --exit-0|awk '{print $1}')
+#!/usr/bin/env bash
 
 git log --pretty=oneline \
-  |fzf --prompt='git show>' --preview 'git show {1}' --select-1 --exit-0 \
-  |awk '{print $1}' \
-  |xargs -o git show
+  | fzf --prompt='git show>' --preview 'git show {1}' --select-1 --exit-0 \
+  | awk '{print $1}' \
+  | xargs -o git show

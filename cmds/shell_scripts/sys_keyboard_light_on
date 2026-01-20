@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 sudo sh -c 'echo 1 > /sys/class/leds/tpacpi::kbd_backlight/brightness'
 
