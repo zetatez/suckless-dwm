@@ -1,6 +1,6 @@
 package utils
 
-var defaultMap = map[string]map[string]string{
+var OsDefaultMap = map[string]map[string]string{
 	"shell": {
 		"linux":  "sh",
 		"darwin": "sh",
@@ -20,7 +20,7 @@ var defaultMap = map[string]map[string]string{
 }
 
 func GetOSDefault(objType string) string {
-	if m, ok := defaultMap[objType]; ok {
+	if m, ok := OsDefaultMap[objType]; ok {
 		if v, ok := m[GetOSType()]; ok {
 			return v
 		}
