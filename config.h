@@ -207,7 +207,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_l,            resizewin,         { .ui = HORINC                                                 } },
 
    { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")   } },
-   { SUPKEY|ShiftMask,             XK_b,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")              } },
+   { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v = SpawnTermiCmd("opencode")                               } },
    { SUPKEY|ShiftMask,             XK_c,            killclient,        { 0                                                            } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")         } },
 // { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v =                                                         } },
