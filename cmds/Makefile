@@ -26,11 +26,9 @@ build: prepare build_shell_cmds
 	go build -o ./bins/launch_qutebrowser                        ./cmds/launch_qutebrowser/main.go
 	go build -o ./bins/launch_sublime                            ./cmds/launch_sublime/main.go
 	go build -o ./bins/launch_xournal                            ./cmds/launch_xournal/main.go
-	go build -o ./bins/note_diary                                ./cmds/note_diary/main.go
-	go build -o ./bins/note_flash_card                           ./cmds/note_flash_card/main.go
-	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
-	go build -o ./bins/note_timeline                             ./cmds/note_timeline/main.go
 	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
+	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
+	go build -o ./bins/note_monthly_work                         ./cmds/note_monthly_work/main.go
 	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
 	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
 	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go

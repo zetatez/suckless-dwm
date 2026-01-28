@@ -208,8 +208,36 @@ func SearchVideosOnline() {
 	wg.Wait()
 }
 
+func NoteToDo() {
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "working")
+	filePath := path.Join(fileDir, "TODO.md")
+	if !utils.IsDirExists(fileDir) {
+		if err := os.Mkdir(fileDir, 0o755); err != nil {
+			utils.Notify(err)
+			return
+		}
+	}
+	if !utils.IsFileExists(filePath) {
+		f, err := os.Create(filePath)
+		if err != nil {
+			utils.Notify(err)
+			return
+		}
+		_, _ = fmt.Fprintf(f, "\n## ToDo\n\n")
+		_ = f.Close()
+	}
+	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
+	if err != nil {
+		utils.Notify(err)
+		return
+	}
+	_, _ = fmt.Fprintf(f, "\n- [ ] %s", time.Now().Format(time.DateTime))
+	_ = f.Close()
+	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
+}
+
 func NoteScripts() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "working")
 	filePath := path.Join(fileDir, "scripts.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -239,37 +267,10 @@ func NoteScripts() {
 	)
 }
 
-func NoteToDo() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian")
-	filePath := path.Join(fileDir, "ToDo.md")
-	if !utils.IsDirExists(fileDir) {
-		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			utils.Notify(err)
-			return
-		}
-	}
-	if !utils.IsFileExists(filePath) {
-		f, err := os.Create(filePath)
-		if err != nil {
-			utils.Notify(err)
-			return
-		}
-		_, _ = fmt.Fprintf(f, "\n## ToDo\n\n")
-		_ = f.Close()
-	}
-	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
-	if err != nil {
-		utils.Notify(err)
-		return
-	}
-	_, _ = fmt.Fprintf(f, "\n- [ ] %s", time.Now().Format(time.DateOnly))
-	_ = f.Close()
-	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
-}
-
-func NoteDiary() {
-	dateStr := time.Now().Format(time.DateOnly)
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "diary")
+func NoteMonthlyWork() {
+	t := time.Now()
+	dateStr := t.Format("2006-01")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "working", "monthly.work")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -283,31 +284,7 @@ func NoteDiary() {
 			utils.Notify(err)
 			return
 		}
-		_, _ = fmt.Fprintf(f, "\n### Diary %s\n\n", dateStr)
-		_ = f.Close()
-	}
-	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
-}
-
-func NoteTimeline() {
-	t := time.Now()
-	dateStr := t.Format(time.DateOnly)
-	datetimeStr := t.Format(time.DateTime)
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "timeline")
-	filePath := path.Join(fileDir, dateStr+".md")
-	if !utils.IsDirExists(fileDir) {
-		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			utils.Notify(err)
-			return
-		}
-	}
-	if !utils.IsFileExists(filePath) {
-		f, err := os.Create(filePath)
-		if err != nil {
-			utils.Notify(err)
-			return
-		}
-		_, _ = fmt.Fprintf(f, "\n## Time Line %s\n\n", dateStr)
+		_, _ = fmt.Fprintf(f, "\n## %s\n\n", dateStr)
 		_ = f.Close()
 	}
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0o755)
@@ -315,30 +292,8 @@ func NoteTimeline() {
 		utils.Notify(err)
 		return
 	}
-	_, _ = fmt.Fprintf(f, "\n### %s\n\n", datetimeStr)
+	_, _ = fmt.Fprintf(f, "\n### %s\n\n", time.Now().Format(time.DateTime))
 	_ = f.Close()
-	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
-}
-
-func NoteFlashCard() {
-	t := time.Now()
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "flash-card")
-	filePath := path.Join(fileDir, t.Format("2006-01-02.15.04.05.000000000")+".md")
-	if !utils.IsDirExists(fileDir) {
-		if err := os.Mkdir(fileDir, 0o755); err != nil {
-			utils.Notify(err)
-			return
-		}
-	}
-	if !utils.IsFileExists(filePath) {
-		f, err := os.Create(filePath)
-		if err != nil {
-			utils.Notify(err)
-			return
-		}
-		_, _ = fmt.Fprintf(f, "### Flash Card %s\n\n", t.Format(time.DateTime))
-		_ = f.Close()
-	}
 	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
