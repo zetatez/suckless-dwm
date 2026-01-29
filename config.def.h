@@ -11,7 +11,7 @@
 
 /* appearance */
 static const unsigned int borderpx = 1;
-static const unsigned int snap     = 16;
+static const unsigned int snap     = 24;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
