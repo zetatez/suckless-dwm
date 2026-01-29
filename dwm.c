@@ -182,7 +182,7 @@ static xcb_connection_t *xcon;
 static int winpad = 0;
 
 /* configuration, allows nested code to access above variables */
-#include "config.h"
+#include "config.def.h"
 
 struct Pertag {
   const Layout *ltidxs[LENGTH(tags) + 1][2];
@@ -1546,11 +1546,15 @@ movewin(const Arg *arg)
   void
 next_theme(const Arg *arg)
 {
-  current_theme_idx = (current_theme_idx + 1) % (sizeof(themes)/sizeof(themes[0]));
+  current_theme_idx = (current_theme_idx + 1) % LENGTH(themes);
 
   /* 更新 drw scheme */
-  for (int i = 0; i < SchemeLast; i++)
+  for (int i = 0; i < SchemeLast; i++) {
+    if (scheme[i]) {
+      drw_scm_free(drw, scheme[i], 3);
+    }
     scheme[i] = drw_scm_create(drw, themes[current_theme_idx][i], 3);
+  }
 
   /* 重绘 bar + arrange */
   for (Monitor *m = mons; m; m = m->next)
