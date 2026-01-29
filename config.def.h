@@ -10,16 +10,16 @@
 #define SpawnTermiCmd(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 1;
+static const unsigned int borderpx = 2;
 static const unsigned int snap     = 16;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
 static const int topbar            = 1;
-static const int barheight         = 15;
+static const int barheight         = 18;
 static const int vertpad           = 0;
 static const int sidepad           = 0;
-static const int defaultwinpad     = 1;
+static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
 static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=24";
@@ -83,7 +83,7 @@ static const int nmaster            = 1;
 static const int maxnmaster         = 16;
 static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
-static const int refreshrate        = 60;
+static const int refreshrate        = 120;
 
 static const Layout layouts[] = {
   { "W 󰴈"                  , layout_workflow           }, // default
@@ -175,7 +175,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                         } },
    { SUPKEY,                       XK_e,            spawn,             { .v = Spawn("toggle_mutt")                               } },
    { SUPKEY,                       XK_f,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file")             } },
-   { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")              } },
+   { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")         } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
    { SUPKEY,                       XK_n,            toggle_scratchpad, { .v = CmdClass("st -c sp-python -e python -i -c 'import os, sys, datetime as dt, re, json, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'", "sp-python") } },
@@ -225,7 +225,7 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_u,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_v,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_w,            spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_x,            spawn,             { .v = CmdClass("xournalpp", "com.github.xournalpp.xournalpp") } },
+   { SUPKEY|ShiftMask,             XK_x,            spawn_or_focus,    { .v = CmdClass("xournalpp", "com.github.xournalpp.xournalpp") } },
 // { SUPKEY|ShiftMask,             XK_y,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,    { .v = CmdClass("zoom", "zoom")                                } },
    { SUPKEY|ShiftMask,             XK_Delete,       spawn,             { .v = SpawnShellCmd("systemctl poweroff")                     } },
@@ -358,4 +358,3 @@ static const Button buttons[] = {
   // { ClkWinTitle,          0,              Button2,        xxxxxxxxx,           {0                           } },
   // { ClkWinTitle,          0,              Button3,        xxxxxxxxx,           {0                           } },
 };
-
