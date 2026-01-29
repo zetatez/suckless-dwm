@@ -10,18 +10,18 @@
 #define SpawnTermiCmd(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 2;
+static const unsigned int borderpx = 1;
 static const unsigned int snap     = 16;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
 static const int topbar            = 1;
-static const int barheight         = 18;
+static const int barheight         = 16;
 static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
-static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=17" };
+static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=16" };
 static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=24";
 
 
