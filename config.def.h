@@ -11,7 +11,7 @@
 
 /* appearance */
 static const unsigned int borderpx = 1;
-static const unsigned int snap     = 0;
+static const unsigned int snap     = 16;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
@@ -83,7 +83,7 @@ static const int nmaster            = 1;
 static const int maxnmaster         = 16;
 static const int resizehints        = 0;
 static const int lockfullscreen     = 0;
-static const int refreshrate        = 120;
+static const int refreshrate        = 60;
 
 static const Layout layouts[] = {
   { "W 󰴈"                  , layout_workflow           }, // default
