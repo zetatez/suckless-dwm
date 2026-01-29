@@ -16,12 +16,12 @@ static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
 static const int topbar            = 1;
-static const int barheight         = 18;
+static const int barheight         = 19;
 static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
-static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=18" };
+static const char *fonts[]         = { "DejaVuSansMono Nerd Font:style=Book:size=19" };
 static const char dmenufont[]      = "DejaVuSansMono Nerd Font:style=Book:size=24";
 
 
