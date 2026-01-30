@@ -37,20 +37,12 @@ static const char *themes[][SchemeLast][3] = {
     [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
   },
   {
-    [SchemeNorm] = { "#ffe0e9", "#023047", "#023047" },
-    [SchemeSel]  = { "#ff99cc", "#023047", "#ff3399" },
-  },
-  {
     [SchemeNorm] = { "#118ab2", "#031b34", "#031b34" },
     [SchemeSel]  = { "#06d6a0", "#031b34", "#06d6a0" },
   },
   {
     [SchemeNorm] = { "#f4a261", "#2b1400", "#2b1400" },
     [SchemeSel]  = { "#e76f51", "#2b1400", "#e76f51" },
-  },
-  {
-    [SchemeNorm] = { "#ffb3c1", "#2a0f1f", "#2a0f1f" },
-    [SchemeSel]  = { "#ff66a3", "#2a0f1f", "#ff66a3" },
   },
 };
 
