@@ -174,6 +174,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")         } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
+
    { SUPKEY,                       XK_n,            toggle_scratchpad, { .v = CmdClass("st -c sp-python -e python -i -c 'import os, sys, datetime as dt, re, json, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'", "sp-python") } },
    { SUPKEY,                       XK_o,            spawn,             { .v = Spawn("handle_copied")                             } },
    { SUPKEY,                       XK_p,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_book")             } },
@@ -225,7 +226,7 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_y,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,    { .v = CmdClass("zoom", "zoom")                                } },
    { SUPKEY|ShiftMask,             XK_Delete,       spawn,             { .v = SpawnShellCmd("systemctl poweroff")                     } },
-   { SUPKEY|ShiftMask,             XK_Return,       spawn,             { .v = Spawn("kitty")                                          } },
+   { SUPKEY|ShiftMask,             XK_Return,       spawn,             { .v = Spawn("st_fzf_dir")                                     } },
    { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             { .v = Spawn("toggle_screenkey")                               } },
    { SUPKEY|ShiftMask,             XK_comma,        spawn,             { .v = Spawn("toggle_rec_audio")                               } },
    { SUPKEY|ShiftMask,             XK_period,       spawn,             { .v = Spawn("toggle_rec_screen")                              } },

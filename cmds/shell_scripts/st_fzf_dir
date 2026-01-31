@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+st -e zsh -lc '
+dir=$(
+  {
+    echo "$HOME"
+    fd -t d . "$HOME" \
+      --exclude .git \
+      --exclude node_modules \
+      --exclude .cache
+  } | fzf --height 40% --reverse --preview "ls -lah {}"
+)
+
+if [[ -n "$dir" ]]; then
+  cd "$dir"
+fi
+
+exec zsh -i
+'
