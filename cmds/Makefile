@@ -26,13 +26,14 @@ build: prepare build_shell_cmds
 	go build -o ./bins/launch_qutebrowser                        ./cmds/launch_qutebrowser/main.go
 	go build -o ./bins/launch_sublime                            ./cmds/launch_sublime/main.go
 	go build -o ./bins/launch_xournal                            ./cmds/launch_xournal/main.go
-	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
-	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
 	go build -o ./bins/note_monthly_work                         ./cmds/note_monthly_work/main.go
+	go build -o ./bins/note_scripts                              ./cmds/note_scripts/main.go
+	go build -o ./bins/note_todo                                 ./cmds/note_todo/main.go
 	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
 	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
 	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
 	go build -o ./bins/search                                    ./cmds/search/main.go
+	go build -o ./bins/snip_fzf                                  ./cmds/snip_fzf/main.go
 	go build -o ./bins/ssh_to                                    ./cmds/ssh_to/main.go
 	go build -o ./bins/sys_bluetooth_connect                     ./cmds/sys_bluetooth_connect/main.go
 	go build -o ./bins/sys_bluetooth_disconnect                  ./cmds/sys_bluetooth_disconnect/main.go
