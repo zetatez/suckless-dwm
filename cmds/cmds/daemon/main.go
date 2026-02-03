@@ -41,8 +41,8 @@ func main() {
 			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
 		},
 		{
-			Name:    "dust",
-			Command: "dust",
+			Name:    "dunst",
+			Command: "dunst",
 		},
 		{
 			Name:    "xset",
