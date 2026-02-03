@@ -3,6 +3,7 @@ package plugins
 import (
 	"cmds/utils"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,40 +18,41 @@ func SnipFzf() error {
 		return fmt.Errorf("snippet dir not found: %s", snipDir)
 	}
 
-	// 创建临时文件保存 fzf 选择结果
-	tmpFile, err := os.CreateTemp("", "snip_fzf_*")
+	readPipe, writePipe, err := os.Pipe()
 	if err != nil {
 		return err
 	}
-	tmpPath := tmpFile.Name()
-	tmpFile.Close()
-	defer os.Remove(tmpPath)
+	defer readPipe.Close()
 
 	// shell 脚本: 选择 snip
 	script := fmt.Sprintf(`
 cd %s || exit 1
-find . -type f | sed 's|^\./||' |
+selected=$(find . -type f | sed 's|^\./||' |
 fzf \
   --prompt="Snip> " \
   --height=100%% \
   --border \
   --preview='bat --style=plain --color=always {} 2>/dev/null || cat {}' \
-  --preview-window=right:60%% \
-> %s
-`, snipDir, tmpPath)
+  --preview-window=right:60%%)
+printf '%%s' "$selected" >&3
+`, snipDir)
 
-	// st 中运行 fzf
-	cmd := exec.Command("st", "-e", "sh", "-c", script)
+	cmd := exec.Command(utils.GetOSDefaultTerminal(), "-e", "sh", "-c", script)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.ExtraFiles = []*os.File{writePipe}
 
-	if err := cmd.Run(); err != nil {
-		// 用户 ESC 退出时，fzf 返回非 0，这里直接忽略
-		return nil
+	if err := cmd.Start(); err != nil {
+		writePipe.Close()
+		return err
+	}
+	writePipe.Close()
+
+	if err := cmd.Wait(); err != nil {
+		return nil // 用户 ESC 退出时，fzf 返回非 0，直接忽略
 	}
 
-	// 读取 fzf 结果
-	data, err := os.ReadFile(tmpPath)
+	data, err := io.ReadAll(readPipe)
 	if err != nil {
 		return err
 	}
@@ -60,13 +62,11 @@ fzf \
 		return nil
 	}
 
-	// 读取 snippet 内容
 	content, err := os.ReadFile(filepath.Join(snipDir, file))
 	if err != nil {
 		return err
 	}
 
-	// 写入剪贴板
 	if err := clipboard.Init(); err != nil {
 		return err
 	}
