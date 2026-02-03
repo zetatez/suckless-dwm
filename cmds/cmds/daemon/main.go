@@ -41,20 +41,20 @@ func main() {
 			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
 		},
 		{
-			Name:    "dunst",
-			Command: "dunst",
-		},
-		{
 			Name:    "xset",
 			Command: "xset r rate 158 128",
 		},
 		{
-			Name:    "clipmenud",
-			Command: "clipmenud",
+			Name:    "dunst",
+			Command: "dunst",
 		},
 		{
 			Name:    "hhkb",
 			Command: "hhkb",
+		},
+		{
+			Name:    "clipmenud",
+			Command: "clipmenud",
 		},
 	}
 

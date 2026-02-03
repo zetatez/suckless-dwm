@@ -4,10 +4,7 @@ st -e zsh -lc '
 dir=$(
   {
     echo "$HOME"
-    fd -t d . "$HOME" \
-      --exclude .git \
-      --exclude node_modules \
-      --exclude .cache
+    fd -t d . "$HOME"
   } | fzf --height 40% --reverse --preview "ls -lah {}"
 )
 

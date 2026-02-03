@@ -17,7 +17,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/format_sql                                ./cmds/format_sql/main.go
 	go build -o ./bins/format_yaml                               ./cmds/format_yaml/main.go
 	go build -o ./bins/handle_copied                             ./cmds/handle_copied/main.go
-	go build -o ./bins/jump_to_code_from_log                     ./cmds/jump_to_code_from_log/main.go
 	go build -o ./bins/launch_chrome                             ./cmds/launch_chrome/main.go
 	go build -o ./bins/launch_file_manager                       ./cmds/launch_file_manager/main.go
 	go build -o ./bins/launch_inkscape                           ./cmds/launch_inkscape/main.go

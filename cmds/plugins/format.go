@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/format"
+	"time"
 
 	"golang.design/x/clipboard"
 	"gopkg.in/yaml.v3"
@@ -30,8 +31,8 @@ func FormatJson() {
 		return
 	}
 	utils.Notify(fmt.Sprintf("format success: \n%s", formatedText))
-	changed := clipboard.Write(clipboard.FmtText, formatedText)
-	<-changed
+	clipboard.Write(clipboard.FmtText, formatedText)
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
@@ -54,8 +55,8 @@ print(sqlparse.format("""%s""", reindent=True, indent=2, keyword_case='lower'))
 	}
 	formatedText := stdout
 	utils.Notify(fmt.Sprintf("format success: \n%s", formatedText))
-	changed := clipboard.Write(clipboard.FmtText, []byte(formatedText))
-	<-changed
+	clipboard.Write(clipboard.FmtText, []byte(formatedText))
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
@@ -79,8 +80,8 @@ func FormatYaml() {
 		return
 	}
 	utils.Notify(fmt.Sprintf("format success: \n%s", formatedText))
-	changed := clipboard.Write(clipboard.FmtText, formatedText)
-	<-changed
+	clipboard.Write(clipboard.FmtText, formatedText)
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
@@ -101,7 +102,7 @@ func FormatGo() {
 		return
 	}
 	utils.Notify(fmt.Sprintf("format success:\n%s", formatted))
-	changed := clipboard.Write(clipboard.FmtText, formatted)
-	<-changed
+	clipboard.Write(clipboard.FmtText, formatted)
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }

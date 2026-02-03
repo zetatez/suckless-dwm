@@ -52,6 +52,7 @@ static const char *themes[][SchemeLast][3] = {
 
 static const char *const autostart[] = {
   "reset_sys_default", NULL,
+  "slock", NULL,
   "daemon", NULL,
   NULL,
 };

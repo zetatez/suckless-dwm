@@ -3,9 +3,13 @@ package plugins
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net"
+	"net/url"
 	"os"
+	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,23 +21,69 @@ import (
 	"golang.design/x/clipboard"
 )
 
-func GetHostName() {
-	err := clipboard.Init()
-	if err != nil {
-		utils.Notify(err)
-		return
+func SnipFzf() error {
+	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
+	if _, err := os.Stat(snipDir); err != nil {
+		return fmt.Errorf("snippet dir not found: %s", snipDir)
 	}
-	cmd := "hostname"
-	stdout, _, err := utils.RunScript("bash", cmd)
+
+	readPipe, writePipe, err := os.Pipe()
 	if err != nil {
-		utils.Notify(err)
-		return
+		return err
 	}
-	content := stdout
-	utils.Notify(fmt.Sprintf("get success: %s", content))
-	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	<-changed
+	defer readPipe.Close()
+
+	// shell 脚本: 选择 snip
+	script := fmt.Sprintf(`
+cd %s || exit 1
+selected=$(find . -type f | sed 's|^\./||' |
+fzf \
+  --prompt="Snip> " \
+  --height=100%% \
+  --border \
+  --preview='bat --style=plain --color=always {} 2>/dev/null || cat {}' \
+  --preview-window=right:60%%)
+printf '%%s' "$selected" >&3
+`, snipDir)
+
+	cmd := exec.Command(utils.GetOSDefaultTerminal(), "-e", "sh", "-c", script)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.ExtraFiles = []*os.File{writePipe}
+
+	if err := cmd.Start(); err != nil {
+		writePipe.Close()
+		return err
+	}
+	writePipe.Close()
+
+	if err := cmd.Wait(); err != nil {
+		return nil // 用户 ESC 退出时，fzf 返回非 0，直接忽略
+	}
+
+	data, err := io.ReadAll(readPipe)
+	if err != nil {
+		return err
+	}
+
+	file := strings.TrimSpace(string(data))
+	if file == "" {
+		return nil
+	}
+
+	content, err := os.ReadFile(filepath.Join(snipDir, file))
+	if err != nil {
+		return err
+	}
+
+	if err := clipboard.Init(); err != nil {
+		return err
+	}
+	utils.Notify(fmt.Sprintf("Snip copied:\n%s", file))
+	clipboard.Write(clipboard.FmtText, content)
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
+	return nil
 }
 
 func GetIPAddress() {
@@ -67,14 +117,14 @@ func GetIPAddress() {
 		if ip.To4() != nil {
 			content := ip.String()
 			utils.Notify(fmt.Sprintf("get success: %s", content))
-			changed := clipboard.Write(clipboard.FmtText, []byte(content))
-			<-changed
+			clipboard.Write(clipboard.FmtText, []byte(content))
+			time.Sleep(30 * time.Second)
 			utils.Notify("previous clipboard expired")
 		}
 	}
 }
 
-func GetCurrentDatetime() {
+func GetCurDatetime() {
 	err := clipboard.Init()
 	if err != nil {
 		utils.Notify(err)
@@ -82,12 +132,12 @@ func GetCurrentDatetime() {
 	}
 	content := time.Now().Format(time.DateTime)
 	utils.Notify(fmt.Sprintf("get success: %s", content))
-	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	<-changed
+	clipboard.Write(clipboard.FmtText, []byte(content))
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
-func GetCurrentUnixSec() {
+func GetCurUnixSec() {
 	err := clipboard.Init()
 	if err != nil {
 		utils.Notify(err)
@@ -95,8 +145,8 @@ func GetCurrentUnixSec() {
 	}
 	content := fmt.Sprintf("%d", time.Now().Unix())
 	utils.Notify(fmt.Sprintf("get success: %s", content))
-	changed := clipboard.Write(clipboard.FmtText, []byte(content))
-	<-changed
+	clipboard.Write(clipboard.FmtText, []byte(content))
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
@@ -115,8 +165,8 @@ func TransformDatetime2UnixSec() {
 	}
 	formatedText := fmt.Sprintf("%d", t.Unix())
 	utils.Notify(fmt.Sprintf("tranfer success: \n%s", formatedText))
-	changed := clipboard.Write(clipboard.FmtText, []byte(formatedText))
-	<-changed
+	clipboard.Write(clipboard.FmtText, []byte(formatedText))
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
@@ -134,8 +184,8 @@ func TransformUnixSec2DateTime() {
 	}
 	datetime := time.Unix(unix, 0).Format(time.DateTime)
 	utils.Notify(fmt.Sprintf("tranfer success: \n%s", datetime))
-	changed := clipboard.Write(clipboard.FmtText, []byte(datetime))
-	<-changed
+	clipboard.Write(clipboard.FmtText, []byte(datetime))
+	time.Sleep(30 * time.Second)
 	utils.Notify("previous clipboard expired")
 }
 
@@ -160,8 +210,9 @@ func LazyOpenSearchFileContent() {
 }
 
 func SearchFromWeb(content string) {
-	url := fmt.Sprintf("https://www.google.com/search?q='%s'", content)
-	OpenUrlWithQutebrowser(url)()
+	q := url.QueryEscape(content)
+	u := "https://www.google.com/search?q=" + q
+	OpenUrlWithQutebrowser(u)()
 }
 
 func SearchBooksOnline() {
@@ -170,18 +221,18 @@ func SearchBooksOnline() {
 		utils.Notify(err)
 		return
 	}
+	q := url.QueryEscape(content)
 	urls := []string{
-		"https://openlibrary.org/search?q='%s'",
-		"https://z-lib.id/s?q='%s'",
+		"https://openlibrary.org/search?q=" + q,
+		"https://z-lib.id/s?q=" + q,
 	}
 	wg := sync.WaitGroup{}
-	for _, urlTpl := range urls {
+	for _, u := range urls {
 		wg.Add(1)
-		go func(urlTpl string) {
+		go func(u string) {
 			defer wg.Done()
-			url := fmt.Sprintf(urlTpl, content)
-			OpenUrlWithQutebrowser(url)()
-		}(urlTpl)
+			OpenUrlWithQutebrowser(u)()
+		}(u)
 	}
 	wg.Wait()
 }
@@ -192,18 +243,18 @@ func SearchVideosOnline() {
 		utils.Notify(err)
 		return
 	}
+	q := url.QueryEscape(content)
 	urls := []string{
-		"https://search.bilibili.com/all?keyword='%s'",
-		"https://www.youtube.com/results?search_query='%s'",
+		"https://search.bilibili.com/all?keyword=" + q,
+		"https://www.youtube.com/results?search_query=" + q,
 	}
 	wg := sync.WaitGroup{}
-	for _, urlTpl := range urls {
+	for _, u := range urls {
 		wg.Add(1)
-		go func(urlTpl string) {
+		go func(u string) {
 			defer wg.Done()
-			url := fmt.Sprintf(urlTpl, content)
-			OpenUrlWithQutebrowser(url)()
-		}(urlTpl)
+			OpenUrlWithQutebrowser(u)()
+		}(u)
 	}
 	wg.Wait()
 }
@@ -298,48 +349,136 @@ func NoteMonthlyWork() {
 }
 
 func HandleCopied() {
-	err := clipboard.Init()
-	if err != nil {
+	if err := clipboard.Init(); err != nil {
 		utils.Notify(err)
 		return
 	}
-	text := clipboard.Read(clipboard.FmtText)
-	content := strings.TrimSpace(string(text))
-	switch {
-	case utils.Exists(content) && utils.IsFile(content):
-		utils.Lazy("open", content)
+
+	text := strings.TrimSpace(string(clipboard.Read(clipboard.FmtText)))
+	if text == "" {
 		return
-	case utils.IsURL(content):
-		url := content
+	}
+
+	// 1) log/stacktrace -> file:line(:col)
+	if file, line, col, ok := extractFirstExistingFileLocation(text); ok {
+		openFileAt(file, line, col)
+		return
+	}
+
+	// 2) direct path
+	if utils.Exists(text) && utils.IsFile(text) {
+		utils.Lazy("open", text)
+		return
+	}
+
+	// 3) markdown link: [x](url)
+	if url, ok := extractMarkdownURL(text); ok {
 		OpenUrlWithQutebrowser(url)()
 		return
-	default:
-		SearchFromWeb(content)
+	}
+
+	// 4) url
+	if utils.IsURL(text) {
+		OpenUrlWithQutebrowser(text)()
+		return
+	}
+
+	// 5) default: web search
+	SearchFromWeb(text)
+}
+
+type fileLocationPattern struct {
+	re   *regexp.Regexp
+	file int
+	line int
+	col  int
+}
+
+var fileLocationPatterns = []fileLocationPattern{
+	// /abs/path/file.ext:123 or /abs/path/file.ext:123:45
+	{re: regexp.MustCompile(`(?m)(/[^:\s]+):(\d+)(?::(\d+))?`), file: 1, line: 2, col: 3},
+	// relative/path/file.ext:123 or relative/path/file.ext:123:45
+	{re: regexp.MustCompile(`(?m)([A-Za-z0-9_./\-~]+\.[A-Za-z0-9]+):(\d+)(?::(\d+))?`), file: 1, line: 2, col: 3},
+	// python: File "...", line 123
+	{re: regexp.MustCompile(`(?m)File\s+"([^"]+)",\s+line\s+(\d+)`), file: 1, line: 2, col: 0},
+	// node: at ... (/path/file.js:12:34)
+	{re: regexp.MustCompile(`(?m)\((/[^:()]+):(\d+):(\d+)\)`), file: 1, line: 2, col: 3},
+	{re: regexp.MustCompile(`(?m)\s+at\s+(/[^:\s]+):(\d+):(\d+)`), file: 1, line: 2, col: 3},
+	// rust: --> /path/file.rs:12:34
+	{re: regexp.MustCompile(`(?m)-->\s+(/[^:\s]+):(\d+):(\d+)`), file: 1, line: 2, col: 3},
+}
+
+func extractFirstExistingFileLocation(text string) (file string, line, col int, ok bool) {
+	for _, p := range fileLocationPatterns {
+		m := p.re.FindStringSubmatch(text)
+		if len(m) == 0 {
+			continue
+		}
+
+		candidate := strings.TrimSpace(m[p.file])
+		candidate = strings.TrimSuffix(candidate, ")")
+		candidate = strings.TrimSuffix(candidate, ":")
+
+		l, err := strconv.Atoi(m[p.line])
+		if err != nil || l <= 0 {
+			continue
+		}
+		c := 0
+		if p.col > 0 && p.col < len(m) {
+			if m[p.col] != "" {
+				if x, err := strconv.Atoi(m[p.col]); err == nil {
+					c = x
+				}
+			}
+		}
+
+		if !filepath.IsAbs(candidate) {
+			if abs, err := filepath.Abs(candidate); err == nil {
+				candidate = abs
+			}
+		}
+
+		if utils.Exists(candidate) {
+			return candidate, l, c, true
+		}
+	}
+	return "", 0, 0, false
+}
+
+func openFileAt(file string, line, col int) {
+	term := utils.GetOSDefaultTerminal()
+	fileQ := shellSingleQuote(file)
+	if col > 0 {
+		cmd := fmt.Sprintf(
+			"%s -e nvim +'%s' %s",
+			term,
+			fmt.Sprintf("call cursor(%d,%d)", line, col),
+			fileQ,
+		)
+		_, _, err := utils.RunScript("bash", cmd)
+		if err != nil {
+			utils.Notify(err)
+		}
+		return
+	}
+
+	cmd := fmt.Sprintf("%s -e nvim +%d %s", term, line, fileQ)
+	_, _, err := utils.RunScript("bash", cmd)
+	if err != nil {
+		utils.Notify(err)
 	}
 }
 
-func JumpToCodeFromLog() {
-	err := clipboard.Init()
-	if err != nil {
-		utils.Notify(err)
-		return
+func shellSingleQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", "'\\''") + "'"
+}
+
+func extractMarkdownURL(text string) (url string, ok bool) {
+	m := regexp.MustCompile(`\[[^\]]*\]\((https?://[^\s)]+)\)`).FindStringSubmatch(strings.TrimSpace(text))
+	if len(m) == 2 {
+		return m[1], true
 	}
-	textbyte := clipboard.Read(clipboard.FmtText)
-	text := string(textbyte)
-	regex := `(?P<filepath>/[^\:]+):(?P<row>\d+)\s+`
-	r := regexp.MustCompile(regex)
-	match := r.FindStringSubmatch(text)
-	if len(match) < 3 {
-		utils.Notify("not match")
-		return
-	}
-	filepath := match[1]
-	row := match[2]
-	_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +%s %s", utils.GetOSDefaultTerminal(), row, filepath))
-	if err != nil {
-		utils.Notify(err)
-		return
-	}
+	return "", false
 }
 
 func SshTo() {
