@@ -10,7 +10,7 @@
 #define SpawnTermiCmd(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 1;
+static const unsigned int borderpx = 2;
 static const unsigned int snap     = 24;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
