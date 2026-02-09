@@ -111,17 +111,17 @@ static const float scratchpad_height = 0.60;
 
 static const Key keys[] = {
    /* modifier                     key                      function   argument                                 */
-   { 0,                    XF86XK_AudioMute,        spawn,     { .v = SpawnShellCmd("pactl set-sink-mute @DEFAULT_SINK@ toggle") } },
-   { 0,                    XF86XK_AudioLowerVolume, spawn,     { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ -5%") } },
-   { 0,                    XF86XK_AudioRaiseVolume, spawn,     { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ +5%") } },
+   { 0,                    XF86XK_AudioMute,        spawn,     { .v = SpawnShellCmd("pactl set-sink-mute @DEFAULT_SINK@ toggle")     } },
+   { 0,                    XF86XK_AudioLowerVolume, spawn,     { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ -5%")      } },
+   { 0,                    XF86XK_AudioRaiseVolume, spawn,     { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ +5%")      } },
    { 0,                    XF86XK_AudioMicMute,     spawn,     { .v = SpawnShellCmd("pactl set-source-mute @DEFAULT_SOURCE@ toggle") } },
-   { 0,                    XF86XK_MonBrightnessDown,spawn,     { .v = SpawnShellCmd("brightnessctl set 5%-") } },
-   { 0,                    XF86XK_MonBrightnessUp,  spawn,     { .v = SpawnShellCmd("brightnessctl set +5%") } },
-   { 0,                    XF86XK_AudioPlay,        spawn,     { .v = SpawnShellCmd("playerctl play-pause") } },
-   { 0,                    XF86XK_AudioPause,       spawn,     { .v = SpawnShellCmd("playerctl play-pause") } },
-   { 0,                    XF86XK_AudioStop,        spawn,     { .v = SpawnShellCmd("playerctl stop") } },
-   { 0,                    XF86XK_AudioPrev,        spawn,     { .v = SpawnShellCmd("playerctl previous") } },
-   { 0,                    XF86XK_AudioNext,        spawn,     { .v = SpawnShellCmd("playerctl next") } },
+   { 0,                    XF86XK_MonBrightnessDown,spawn,     { .v = SpawnShellCmd("brightnessctl set 5%-")                         } },
+   { 0,                    XF86XK_MonBrightnessUp,  spawn,     { .v = SpawnShellCmd("brightnessctl set +5%")                         } },
+   { 0,                    XF86XK_AudioPlay,        spawn,     { .v = SpawnShellCmd("playerctl play-pause")                          } },
+   { 0,                    XF86XK_AudioPause,       spawn,     { .v = SpawnShellCmd("playerctl play-pause")                          } },
+   { 0,                    XF86XK_AudioStop,        spawn,     { .v = SpawnShellCmd("playerctl stop")                                } },
+   { 0,                    XF86XK_AudioPrev,        spawn,     { .v = SpawnShellCmd("playerctl previous")                            } },
+   { 0,                    XF86XK_AudioNext,        spawn,     { .v = SpawnShellCmd("playerctl next")                                } },
 
    { SUPKEY,                       XK_F1,           spawn,             { .v = Spawn("sys_volume_toggle")         } },
    { SUPKEY,                       XK_F2,           spawn,             { .v = Spawn("sys_volume_down")           } },
