@@ -82,19 +82,20 @@ static const int lockfullscreen     = 0;
 static const int refreshrate        = 120;
 
 static const Layout layouts[] = {
-  { "W 󰴈"                  , layout_workflow           }, // default
-  { "F "                  , layout_fib_spiral         },
-  { "F "                  , layout_fib_dwindle        },
-  { "C ⧈"                  , layout_center_free_shape  },
-  { "C ⧅"                  , layout_center_equal_ratio },
-  { "T 󱂫"                  , layout_tile_right         }, // 5
-  { "T 󱂪"                  , layout_tile_left          },
-  { "G 󰝘"                  , layout_grid               },
-  { "G 󱇙"                  , layout_grid_gap           },
-  { "M 󱣴"                  , layout_monocle            },
-  { "H "                  , layout_hacker             }, // 10
-  { "S |"                  , layout_stack_vert         },
-  { "S ―"                  , layout_stack_hori         },
+
+  { "[W] 󰴈"                  , layout_workflow           }, // default
+  { "[F] "                  , layout_fib_spiral         },
+  { "[F] "                  , layout_fib_dwindle        },
+  { "[C] ⧈"                  , layout_center_free_shape  },
+  { "[C] ⧅"                  , layout_center_equal_ratio },
+  { "[T] 󱂫"                  , layout_tile_right         }, // 5
+  { "[T] 󱂪"                  , layout_tile_left          },
+  { "[G] 󰝘"                  , layout_grid               },
+  { "[G] 󱇙"                  , layout_grid_gap           },
+  { "[M] 󱣴"                  , layout_monocle            },
+  { "[H] "                  , layout_hacker             }, // 10
+  { "[S] |"                  , layout_stack_vert         },
+  { "[S] ―"                  , layout_stack_hori         },
   { NULL                   , NULL                      },
 };
 
