@@ -172,7 +172,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                         } },
    { SUPKEY,                       XK_e,            spawn,             { .v = Spawn("toggle_mutt")                               } },
    { SUPKEY,                       XK_f,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file")             } },
-   { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")         } },
+   { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = Spawn("st_dir_fzf_lazygit")                        } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
 
@@ -184,7 +184,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_s,            spawn,             { .v = Spawn("search")                                    } },
    { SUPKEY,                       XK_t,            next_theme,        { 0                                                       } },
    { SUPKEY,                       XK_u,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_media")            } },
-   { SUPKEY,                       XK_v,            spawn,             { .v = SpawnTermiCmd("opencode")                          } },
+   { SUPKEY,                       XK_v,            spawn,             { .v = Spawn("st_dir_fzf_opencode")                       } },
    { SUPKEY,                       XK_w,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_wiki")             } },
    { SUPKEY,                       XK_x,            spawn,             { .v = Spawn("note_scripts")                              } },
    { SUPKEY,                       XK_y,            spawn,             { .v = Spawn("toggle_show")                               } },
@@ -205,7 +205,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_l,            resizewin,         { .ui = HORINC                                                 } },
 
    { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")   } },
-// { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v =                                                         } },
+   { SUPKEY,                       XK_b,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")              } },
    { SUPKEY|ShiftMask,             XK_c,            killclient,        { 0                                                            } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")         } },
 // { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v =                                                         } },
