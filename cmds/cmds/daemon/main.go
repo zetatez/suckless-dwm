@@ -53,6 +53,10 @@ func main() {
 			Command: "hhkb",
 		},
 		{
+			Name:    "onboard",
+			Command: "onboard",
+		},
+		{
 			Name:    "clipmenud",
 			Command: "clipmenud",
 		},
