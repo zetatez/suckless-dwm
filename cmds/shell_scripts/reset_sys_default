@@ -3,7 +3,7 @@
 notify-send 'reset sys default'
 
 # ---------------------
-sudo light -S 92
+sudo light -S 48
 notify-send 'set light to 92%'
 
 # ---------------------
