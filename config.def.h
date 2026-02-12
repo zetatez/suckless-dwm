@@ -172,7 +172,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                         } },
    { SUPKEY,                       XK_e,            spawn,             { .v = Spawn("toggle_mutt")                               } },
    { SUPKEY,                       XK_f,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file")             } },
-   { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = Spawn("st_dir_fzf_lazygit")                        } },
+   { SUPKEY,                       XK_g,            spawn,             { .v = Spawn("st_dir_fzf_lazygit")                        } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
 
