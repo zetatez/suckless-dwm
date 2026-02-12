@@ -6,12 +6,14 @@ dir=$(
     echo "$HOME"
     echo "$HOME/.config"
     fd -t d . "$HOME/share/github"
-  } | fzf --prompt="where to open st>" --height 40% --reverse --preview "ls -lah {}"
+  } | fzf --prompt="where to open opencode>" --height 40% --reverse --preview "ls -lah {}"
 )
 
 if [[ -n "$dir" ]]; then
   cd "$dir"
 fi
+
+opencode
 
 exec zsh -i
 '
