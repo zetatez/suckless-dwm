@@ -99,7 +99,7 @@ static const Layout layouts[] = {
   { NULL                   , NULL                      },
 };
 
-static const Layout overviewlayout = { "󰾍",  layout_overview };
+static const Layout overviewlayout = { "[overview]",  layout_overview };
 
 /* commands */
 static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
