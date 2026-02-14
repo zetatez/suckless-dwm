@@ -86,6 +86,38 @@ printf '%%s' "$selected" >&3
 	return nil
 }
 
+func SnipCreate() error {
+	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
+	if _, err := os.Stat(snipDir); err != nil {
+		if err := os.MkdirAll(snipDir, 0755); err != nil {
+			return fmt.Errorf("failed to create snip dir: %w", err)
+		}
+	}
+
+	name, err := utils.GetInput("Create Snippet: ")
+	if err != nil {
+		return err
+	}
+	if name == "" {
+		return fmt.Errorf("name cannot be empty")
+	}
+
+	filePath := filepath.Join(snipDir, name)
+	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %w", err)
+	}
+	cmd := exec.Command(utils.GetOSDefaultTerminal(), "-e", "vim", filePath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	utils.Notify(fmt.Sprintf("Snip created:\n%s", name))
+	return nil
+}
+
 func GetIPAddress() {
 	interfaceName := "wlan0"
 	iface, err := net.InterfaceByName(interfaceName)
