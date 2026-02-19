@@ -172,7 +172,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                         } },
    { SUPKEY,                       XK_e,            spawn,             { .v = Spawn("toggle_mutt")                               } },
    { SUPKEY,                       XK_f,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file")             } },
-   { SUPKEY,                       XK_g,            spawn,             { .v = Spawn("st_dir_fzf_lazygit")                        } },
+   { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")         } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
 
@@ -205,7 +205,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_l,            resizewin,         { .ui = HORINC                                                 } },
 
    { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")   } },
-   { SUPKEY|ShiftMask,             XK_b,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")              } },
+// { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_c,            killclient,        { 0                                                            } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")         } },
 // { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v =                                                         } },
@@ -349,7 +349,7 @@ static const Button buttons[] = {
    { ClkLtSymbol,          0,              Button3,        setlayout,      { .v = &overviewlayout              } },
 // { ClkStatusText,        0,              Button1,        spawn,          { .v = Spawn("toggle_tty_clock")    } },
 // { ClkStatusText,        0,              Button2,        spawn,          { .v = Spawn("toggle_keyboard")     } },
-// { ClkStatusText,        0,              Button3,        spawn,          { .v = Spawn("toggle_calendar")     } },
+   { ClkStatusText,        0,              Button3,        spawn,          { .v = Spawn("toggle_calendar")     } },
    { ClkClientWin,         MODKEY,         Button1,        movemouse,      { 0                                 } },
    { ClkClientWin,         MODKEY,         Button2,        togglefloating, { 0                                 } },
    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    { 0                                 } },
