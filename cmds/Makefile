@@ -5,7 +5,7 @@ prepare:
 	go mod tidy
 
 build_shell_cmds:
-	cp -f ./shell_scripts/* ./bins/
+	cp -rf ./shell_scripts/* ./bins/
 
 clean:
 	rm -rf bins/*
