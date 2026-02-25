@@ -175,7 +175,7 @@ func ToggleScreenKey() {
 func ToggleTop() {
 	utils.Toggle(
 		fmt.Sprintf(
-			"%s -e btop",
+			"%s -e htop",
 			utils.GetOSDefaultTerminal(),
 		),
 	)
