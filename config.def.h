@@ -69,17 +69,17 @@ static const Rule rules[] = {
 };
 
 /* stickyicon */
-static const XPoint stickyicon[]    = { { 0, 0 }, { 4, 0 }, { 4, 8 }, { 2, 6 }, { 0, 8 }, { 0, 0 } }; /* stickyicon: represents the icon as an array of vertices */
-static const XPoint stickyiconbb    = {4,8};	                                      /* stickyicon: defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
+static const XPoint stickyicon[] = { { 0, 0 }, { 4, 0 }, { 4, 8 }, { 2, 6 }, { 0, 8 }, { 0, 0 } }; /* stickyicon: represents the icon as an array of vertices */
+static const XPoint stickyiconbb = {4,8};	                                      /* stickyicon: defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
 
 /* layout(s) */
-static const float mfact            = 0.50;
-static const float hfact            = 0.50;
-static const int nmaster            = 1;
-static const int maxnmaster         = 16;
-static const int resizehints        = 0;
-static const int lockfullscreen     = 0;
-static const int refreshrate        = 120;
+static const float mfact         = 0.50;
+static const float hfact         = 0.50;
+static const int nmaster         = 1;
+static const int maxnmaster      = 16;
+static const int resizehints     = 0;
+static const int lockfullscreen  = 0;
+static const int refreshrate     = 120;
 
 static const Layout layouts[] = {
 
@@ -102,8 +102,8 @@ static const Layout layouts[] = {
 static const Layout overviewlayout = { "[overview]",  layout_overview };
 
 /* commands */
-static char dmenumon[2]                                     = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]                               = { "rofi", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
+static char dmenumon[2]       = "0"; /* component of dmenucmd, manipulated in spawn() */
+static const char *dmenucmd[] = { "rofi", "-show", "drun", "-theme", "fullscreen-preview", "-font", "JetBrainsMono Nerd Font 24", NULL };
 
 /* scratchpad */
 static const char scratchpad_class[] = "scratchpad";
@@ -111,18 +111,18 @@ static const float scratchpad_width  = 0.75;
 static const float scratchpad_height = 0.60;
 
 static const Key keys[] = {
-   /* modifier                     key                      function   argument                                 */
-   { 0,              XF86XK_AudioMute,              spawn,     { .v = SpawnShellCmd("pactl set-sink-mute @DEFAULT_SINK@ toggle")     } },
-   { 0,              XF86XK_AudioLowerVolume,       spawn,     { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ -5%")      } },
-   { 0,              XF86XK_AudioRaiseVolume,       spawn,     { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ +5%")      } },
-   { 0,              XF86XK_AudioMicMute,           spawn,     { .v = SpawnShellCmd("pactl set-source-mute @DEFAULT_SOURCE@ toggle") } },
-   { 0,              XF86XK_MonBrightnessDown,      spawn,     { .v = SpawnShellCmd("brightnessctl set 5%-")                         } },
-   { 0,              XF86XK_MonBrightnessUp,        spawn,     { .v = SpawnShellCmd("brightnessctl set +5%")                         } },
-   { 0,              XF86XK_AudioPlay,              spawn,     { .v = SpawnShellCmd("playerctl play-pause")                          } },
-   { 0,              XF86XK_AudioPause,             spawn,     { .v = SpawnShellCmd("playerctl play-pause")                          } },
-   { 0,              XF86XK_AudioStop,              spawn,     { .v = SpawnShellCmd("playerctl stop")                                } },
-   { 0,              XF86XK_AudioPrev,              spawn,     { .v = SpawnShellCmd("playerctl previous")                            } },
-   { 0,              XF86XK_AudioNext,              spawn,     { .v = SpawnShellCmd("playerctl next")                                } },
+   /* modifier                     key              function           argument                                 */
+   { 0,                   XF86XK_AudioMute,         spawn,             { .v = SpawnShellCmd("pactl set-sink-mute @DEFAULT_SINK@ toggle")     } },
+   { 0,                   XF86XK_AudioLowerVolume,  spawn,             { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ -5%")      } },
+   { 0,                   XF86XK_AudioRaiseVolume,  spawn,             { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ +5%")      } },
+   { 0,                   XF86XK_AudioMicMute,      spawn,             { .v = SpawnShellCmd("pactl set-source-mute @DEFAULT_SOURCE@ toggle") } },
+   { 0,                   XF86XK_MonBrightnessDown, spawn,             { .v = SpawnShellCmd("brightnessctl set 5%-")                         } },
+   { 0,                   XF86XK_MonBrightnessUp,   spawn,             { .v = SpawnShellCmd("brightnessctl set +5%")                         } },
+   { 0,                   XF86XK_AudioPlay,         spawn,             { .v = SpawnShellCmd("playerctl play-pause")                          } },
+   { 0,                   XF86XK_AudioPause,        spawn,             { .v = SpawnShellCmd("playerctl play-pause")                          } },
+   { 0,                   XF86XK_AudioStop,         spawn,             { .v = SpawnShellCmd("playerctl stop")                                } },
+   { 0,                   XF86XK_AudioPrev,         spawn,             { .v = SpawnShellCmd("playerctl previous")                            } },
+   { 0,                   XF86XK_AudioNext,         spawn,             { .v = SpawnShellCmd("playerctl next")                                } },
 
    { SUPKEY,                       XK_F1,           spawn,             { .v = Spawn("sys_volume_toggle")                             } },
    { SUPKEY,                       XK_F2,           spawn,             { .v = Spawn("sys_volume_down")                               } },
