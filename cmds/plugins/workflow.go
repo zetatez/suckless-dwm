@@ -89,7 +89,7 @@ printf '%%s' "$selected" >&3
 func SnipCreate() error {
 	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
 	if _, err := os.Stat(snipDir); err != nil {
-		if err := os.MkdirAll(snipDir, 0755); err != nil {
+		if err := os.MkdirAll(snipDir, 0o755); err != nil {
 			return fmt.Errorf("failed to create snip dir: %w", err)
 		}
 	}
@@ -103,7 +103,7 @@ func SnipCreate() error {
 	}
 
 	filePath := filepath.Join(snipDir, name)
-	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(filePath), 0o755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 	cmd := exec.Command(utils.GetOSDefaultTerminal(), "-e", "vim", filePath)
@@ -182,7 +182,7 @@ func GetCurUnixSec() {
 	utils.Notify("previous clipboard expired")
 }
 
-func TransformDatetime2UnixSec() {
+func ConversionDatetime2UnixSec() {
 	err := clipboard.Init()
 	if err != nil {
 		utils.Notify(err)
@@ -202,7 +202,7 @@ func TransformDatetime2UnixSec() {
 	utils.Notify("previous clipboard expired")
 }
 
-func TransformUnixSec2DateTime() {
+func ConversionUnixSec2DateTime() {
 	err := clipboard.Init()
 	if err != nil {
 		utils.Notify(err)
@@ -244,7 +244,7 @@ func LazyOpenSearchFileContent() {
 func SearchFromWeb(content string) {
 	q := url.QueryEscape(content)
 	u := "https://www.google.com/search?q=" + q
-	OpenUrlWithQutebrowser(u)()
+	OpenUrlWithChrome(u)()
 }
 
 func SearchBooksOnline() {
@@ -263,7 +263,7 @@ func SearchBooksOnline() {
 		wg.Add(1)
 		go func(u string) {
 			defer wg.Done()
-			OpenUrlWithQutebrowser(u)()
+			OpenUrlWithChrome(u)()
 		}(u)
 	}
 	wg.Wait()
@@ -285,7 +285,7 @@ func SearchVideosOnline() {
 		wg.Add(1)
 		go func(u string) {
 			defer wg.Done()
-			OpenUrlWithQutebrowser(u)()
+			OpenUrlWithChrome(u)()
 		}(u)
 	}
 	wg.Wait()
@@ -405,13 +405,13 @@ func HandleCopied() {
 
 	// 3) markdown link: [x](url)
 	if url, ok := extractMarkdownURL(text); ok {
-		OpenUrlWithQutebrowser(url)()
+		OpenUrlWithChrome(url)()
 		return
 	}
 
 	// 4) url
 	if utils.IsURL(text) {
-		OpenUrlWithQutebrowser(text)()
+		OpenUrlWithChrome(text)()
 		return
 	}
 
@@ -479,7 +479,7 @@ func extractFirstExistingFileLocation(text string) (file string, line, col int, 
 
 func openFileAt(file string, line, col int) {
 	term := utils.GetOSDefaultTerminal()
-	fileQ := shellSingleQuote(file)
+	fileQ := utils.ShellSingleQuote(file)
 	if col > 0 {
 		cmd := fmt.Sprintf(
 			"%s -e nvim +'%s' %s",
@@ -499,10 +499,6 @@ func openFileAt(file string, line, col int) {
 	if err != nil {
 		utils.Notify(err)
 	}
-}
-
-func shellSingleQuote(s string) string {
-	return "'" + strings.ReplaceAll(s, "'", "'\\''") + "'"
 }
 
 func extractMarkdownURL(text string) (url string, ok bool) {

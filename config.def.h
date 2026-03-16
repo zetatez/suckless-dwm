@@ -10,35 +10,40 @@
 #define SpawnTermiCmd(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 2;
+static const unsigned int borderpx = 1;
 static const unsigned int snap     = 24;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
 static const int topbar            = 1;
-static const int barheight         = 16;
+static const int barheight         = 14;
 static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = {
-  "VictorMono Nerd Font:style=Medium:size=16",
-  "Source Han Serif CN:style=Regular:size=16",
+  "VictorMono Nerd Font:style=Medium:size=14",
+  "Source Han Serif CN:style=Regular:size=14",
   "Noto Color Emoji:style=Regular:size=12",
 };
-static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=24";
+static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16";
 
 
 static const char *colors[][3] = {
-  [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
-  [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
+   [SchemeNorm] = { "#666666", "#121212", "#121212" },
+   [SchemeSel]  = { "#888888", "#1f1f1f", "#DC143C" },
 };
 static int current_theme_idx = 0;
 static const char *themes[][SchemeLast][3] = {
   /*                  fg,        bg,        border */
   {
+    [SchemeNorm] = { "#666666", "#121212", "#121212" },
+    [SchemeSel]  = { "#555555", "#1f1f1f", "#333333" },
+  },
+  {
     [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
-    [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
+ // [SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
+    [SchemeSel]  = { "#00b4d8", "#023047", "#DC143C" },
   },
   {
     [SchemeNorm] = { "#118ab2", "#031b34", "#031b34" },
@@ -64,7 +69,6 @@ static const Rule rules[] = {
   {"float",                  NULL,       NULL,      0,            1,            0,             0,            0,       -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,            0,       -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,            0,       -1 }, // no swallow for markdown
-  {"Onboard",                NULL,       NULL,      0,            1,            0,             0,            1,       -1 },
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
 };
 
@@ -112,18 +116,6 @@ static const float scratchpad_height = 0.60;
 
 static const Key keys[] = {
    /* modifier                     key              function           argument                                 */
-   { 0,                   XF86XK_AudioMute,         spawn,             { .v = SpawnShellCmd("pactl set-sink-mute @DEFAULT_SINK@ toggle")     } },
-   { 0,                   XF86XK_AudioLowerVolume,  spawn,             { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ -5%")      } },
-   { 0,                   XF86XK_AudioRaiseVolume,  spawn,             { .v = SpawnShellCmd("pactl set-sink-volume @DEFAULT_SINK@ +5%")      } },
-   { 0,                   XF86XK_AudioMicMute,      spawn,             { .v = SpawnShellCmd("pactl set-source-mute @DEFAULT_SOURCE@ toggle") } },
-   { 0,                   XF86XK_MonBrightnessDown, spawn,             { .v = SpawnShellCmd("brightnessctl set 5%-")                         } },
-   { 0,                   XF86XK_MonBrightnessUp,   spawn,             { .v = SpawnShellCmd("brightnessctl set +5%")                         } },
-   { 0,                   XF86XK_AudioPlay,         spawn,             { .v = SpawnShellCmd("playerctl play-pause")                          } },
-   { 0,                   XF86XK_AudioPause,        spawn,             { .v = SpawnShellCmd("playerctl play-pause")                          } },
-   { 0,                   XF86XK_AudioStop,         spawn,             { .v = SpawnShellCmd("playerctl stop")                                } },
-   { 0,                   XF86XK_AudioPrev,         spawn,             { .v = SpawnShellCmd("playerctl previous")                            } },
-   { 0,                   XF86XK_AudioNext,         spawn,             { .v = SpawnShellCmd("playerctl next")                                } },
-
    { SUPKEY,                       XK_F1,           spawn,             { .v = Spawn("sys_volume_toggle")                             } },
    { SUPKEY,                       XK_F2,           spawn,             { .v = Spawn("sys_volume_down")                               } },
    { SUPKEY,                       XK_F3,           spawn,             { .v = Spawn("sys_volume_up")                                 } },
@@ -137,29 +129,29 @@ static const Key keys[] = {
    { SUPKEY,                       XK_F11,          spawn,             { .v = Spawn("sys_micro_up")                                  } },
    { SUPKEY,                       XK_F12,          spawn,             { .v = Spawn("sys_toggle_keyboard_light")                     } },
 
-   { SUPKEY,                       XK_1,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://chatgpt.com/'")                                              } },
-   { SUPKEY,                       XK_2,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.youtube.com'")                                           } },
-   { SUPKEY,                       XK_3,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://github.com/zetatez'")                                        } },
-   { SUPKEY,                       XK_4,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://mail.google.com/mail'")                                      } },
-   { SUPKEY,                       XK_5,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://translate.google.com/?sl=auto&tl=zh-CN'")                    } },
-   { SUPKEY,                       XK_6,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://web.wechat.com/'")                                           } },
-   { SUPKEY,                       XK_7,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://leetcode.cn/search/?q=%E6%9C%80'")                           } },
-   { SUPKEY,                       XK_8,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'") } },
-   { SUPKEY,                       XK_9,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.bilibili.com/'")                                         } },
-   { SUPKEY,                       XK_0,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")                                      } },
-   { SUPKEY,                       XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://gemini.google.com/app'")                                     } },
+   { SUPKEY,                       XK_1,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://chatgpt.com/'")                                                   } },
+   { SUPKEY,                       XK_2,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.youtube.com'")                                                } },
+   { SUPKEY,                       XK_3,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://github.com/zetatez'")                                             } },
+   { SUPKEY,                       XK_4,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://mail.google.com/mail'")                                           } },
+   { SUPKEY,                       XK_5,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")                         } },
+   { SUPKEY,                       XK_6,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://web.wechat.com/'")                                                } },
+   { SUPKEY,                       XK_7,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")                                } },
+   { SUPKEY,                       XK_8,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'")      } },
+   { SUPKEY,                       XK_9,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.bilibili.com/'")                                              } },
+   { SUPKEY,                       XK_0,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.doubao.com/chat/'")                                           } },
+   { SUPKEY,                       XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://gemini.google.com/app'")                                          } },
 
-   { SUPKEY|ShiftMask,             XK_1,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://chatgpt.com/'")                                                   } },
-   { SUPKEY|ShiftMask,             XK_2,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.youtube.com'")                                                } },
-   { SUPKEY|ShiftMask,             XK_3,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://github.com/zetatez'")                                             } },
-   { SUPKEY|ShiftMask,             XK_4,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://mail.google.com/mail'")                                           } },
-   { SUPKEY|ShiftMask,             XK_5,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")                         } },
-   { SUPKEY|ShiftMask,             XK_6,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://web.wechat.com/'")                                                } },
-   { SUPKEY|ShiftMask,             XK_7,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")                                } },
-   { SUPKEY|ShiftMask,             XK_8,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'")      } },
-   { SUPKEY|ShiftMask,             XK_9,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.bilibili.com/'")                                              } },
-   { SUPKEY|ShiftMask,             XK_0,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.doubao.com/chat/'")                                           } },
-   { SUPKEY|ShiftMask,             XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://gemini.google.com/app'")                                          } },
+   { SUPKEY|ShiftMask,             XK_1,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://chatgpt.com/'")                                              } },
+   { SUPKEY|ShiftMask,             XK_2,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.youtube.com'")                                           } },
+   { SUPKEY|ShiftMask,             XK_3,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://github.com/zetatez'")                                        } },
+   { SUPKEY|ShiftMask,             XK_4,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://mail.google.com/mail'")                                      } },
+   { SUPKEY|ShiftMask,             XK_5,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://translate.google.com/?sl=auto&tl=zh-CN'")                    } },
+   { SUPKEY|ShiftMask,             XK_6,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://web.wechat.com/'")                                           } },
+   { SUPKEY|ShiftMask,             XK_7,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://leetcode.cn/search/?q=%E6%9C%80'")                           } },
+   { SUPKEY|ShiftMask,             XK_8,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'") } },
+   { SUPKEY|ShiftMask,             XK_9,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.bilibili.com/'")                                         } },
+   { SUPKEY|ShiftMask,             XK_0,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")                                      } },
+   { SUPKEY|ShiftMask,             XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://gemini.google.com/app'")                                     } },
 
    { SUPKEY,                       XK_k,            movewin,           { .ui = UP                                                } },
    { SUPKEY,                       XK_j,            movewin,           { .ui = DOWN                                              } },
@@ -171,7 +163,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_c,            spawn,             { .v = Spawn("note_monthly_work")                         } },
    { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                         } },
 // { SUPKEY,                       XK_e,            spawn,             { .v =                                                    } },
-   { SUPKEY,                       XK_f,            togglefullscreen,  { 0                                                       } },
+// { SUPKEY,                       XK_f,            spawn,             { .v =                                                    } },
    { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")         } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
@@ -205,7 +197,7 @@ static const Key keys[] = {
 
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")   } },
 // { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_c,            killclient,        { 0                                                            } },
+// { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")         } },
    { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = Spawn("toggle_mutt")                                    } },
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                            } },
@@ -226,7 +218,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_x,            spawn_or_focus,    { .v = CmdClass("xournalpp", "com.github.xournalpp.xournalpp") } },
 // { SUPKEY|ShiftMask,             XK_y,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,    { .v = CmdClass("zoom", "zoom")                                } },
-   { SUPKEY|ShiftMask,             XK_Delete,       spawn,             { .v = SpawnShellCmd("systemctl poweroff")                     } },
+// { SUPKEY|ShiftMask,             XK_Delete,       spawn,             { .v = SpawnShellCmd("systemctl poweroff")                     } },
 // { SUPKEY|ShiftMask,             XK_Return,       spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             { .v = Spawn("toggle_screenkey")                               } },
    { SUPKEY|ShiftMask,             XK_comma,        spawn,             { .v = Spawn("toggle_rec_audio")                               } },
@@ -344,12 +336,12 @@ static const Button buttons[] = {
    { ClkTagBar,            0,              Button3,        toggleview,     { 0                                 } },
    { ClkTagBar,            MODKEY,         Button1,        tag,            { 0                                 } },
    { ClkTagBar,            MODKEY,         Button3,        toggletag,      { 0                                 } },
-   { ClkLtSymbol,          0,              Button1,        setlayout,      { 0                                 } },
-   { ClkLtSymbol,          0,              Button2,        setlayout,      { .v = &layouts[8]                  } },
-   { ClkLtSymbol,          0,              Button3,        setlayout,      { .v = &overviewlayout              } },
-   { ClkStatusText,        0,              Button1,        spawn,          { .v = Spawn("toggle_tty_clock")    } },
+// { ClkLtSymbol,          0,              Button1,        setlayout,      { 0                                 } }, // set layout float
+// { ClkLtSymbol,          0,              Button2,        setlayout,      { 0                                 } },
+// { ClkLtSymbol,          0,              Button3,        setlayout,      { 0                                 } },
+// { ClkStatusText,        0,              Button1,        spawn,          { .v = Spawn("toggle_tty_clock")    } },
 // { ClkStatusText,        0,              Button2,        spawn,          { .v = Spawn("toggle_keyboard")     } },
-   { ClkStatusText,        0,              Button3,        spawn,          { .v = Spawn("toggle_calendar")     } },
+// { ClkStatusText,        0,              Button3,        spawn,          { .v = Spawn("toggle_calendar")     } },
    { ClkClientWin,         MODKEY,         Button1,        movemouse,      { 0                                 } },
    { ClkClientWin,         MODKEY,         Button2,        togglefloating, { 0                                 } },
    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    { 0                                 } },
