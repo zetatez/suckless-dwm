@@ -19,15 +19,15 @@ func main() {
 		}
 
 		if len(files) == 0 {
-			time.Sleep(30 * time.Second)
+			time.Sleep(60 * time.Second)
 		}
 
-		for _, picture := range files {
-			cmd := exec.Command("feh", "--bg-fill", picture)
+		for _, pic := range files {
+			cmd := exec.Command("feh", "--bg-fill", pic)
 			if err := cmd.Run(); err != nil {
 				fmt.Println("failed to set wallpaper:", err)
 			}
-			time.Sleep(30 * time.Second)
+			time.Sleep(60 * time.Second)
 		}
 	}
 }

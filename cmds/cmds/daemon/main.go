@@ -56,6 +56,10 @@ func main() {
 			Name:    "clipmenud",
 			Command: "clipmenud",
 		},
+		{
+			Name:    "sys_wallpaper",
+			Command: "sys_wallpaper",
+		},
 	}
 
 	for {
