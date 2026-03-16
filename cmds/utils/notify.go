@@ -1,6 +1,17 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+func appleScriptQuote(s string) string {
+	// AppleScript string literal uses double quotes.
+	esc := strings.ReplaceAll(s, "\\", "\\\\")
+	esc = strings.ReplaceAll(esc, "\"", "\\\"")
+	return "\"" + esc + "\""
+}
 
 func Notify(msg ...any) {
 	message := fmt.Sprint(msg...)
@@ -8,10 +19,15 @@ func Notify(msg ...any) {
 
 	switch osType {
 	case "linux":
-		RunScript("bash", fmt.Sprintf("notify-send '%s'", message))
+		_ = exec.Command("notify-send", message).Run()
 	case "darwin":
-		RunScript("bash", fmt.Sprintf(`osascript -e 'display notification "%s" with title "%s"'`, message, "msg"))
+		cmd := fmt.Sprintf(
+			"display notification %s with title %s",
+			appleScriptQuote(message),
+			appleScriptQuote("msg"),
+		)
+		_ = exec.Command("osascript", "-e", cmd).Run()
 	default:
-		fmt.Println("Unsupported OS, exiting...")
+		fmt.Println(message)
 	}
 }

@@ -479,7 +479,7 @@ func extractFirstExistingFileLocation(text string) (file string, line, col int, 
 
 func openFileAt(file string, line, col int) {
 	term := utils.GetOSDefaultTerminal()
-	fileQ := shellSingleQuote(file)
+	fileQ := utils.ShellSingleQuote(file)
 	if col > 0 {
 		cmd := fmt.Sprintf(
 			"%s -e nvim +'%s' %s",
@@ -500,11 +500,6 @@ func openFileAt(file string, line, col int) {
 		utils.Notify(err)
 	}
 }
-
-func shellSingleQuote(s string) string {
-	return "'" + strings.ReplaceAll(s, "'", "'\\''") + "'"
-}
-
 func extractMarkdownURL(text string) (url string, ok bool) {
 	m := regexp.MustCompile(`\[[^\]]*\]\((https?://[^\s)]+)\)`).FindStringSubmatch(strings.TrimSpace(text))
 	if len(m) == 2 {

@@ -11,7 +11,7 @@ import (
 func Lazy(option string, filepath string) {
 	switch option {
 	case "view", "open", "exec", "copy", "rename", "delete":
-		RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSDefaultTerminal(), option, filepath))
+		RunScript("bash", fmt.Sprintf("%s -e lazy -o %s -f %s &", GetOSDefaultTerminal(), ShellSingleQuote(option), ShellSingleQuote(filepath)))
 	default:
 		return
 	}
