@@ -488,7 +488,7 @@ buttonpress(XEvent *e)
       }
     } else if (ev->x < x + TEXTW(selmon->ltsymbol)) {
       click = ClkLtSymbol;
-    } else if (ev->x > selmon->ww - (int)TEXTW(stext)) {
+    } else if (ev->x > selmon->ww - (int)TEXTW(stext) + lrpad - 2) {
       click = ClkStatusText;
     } else {
       click = ClkWinTitle;
