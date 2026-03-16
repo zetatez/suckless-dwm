@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -43,11 +44,18 @@ func GetCurrentUser() (string, error) {
 
 func Exists(path string) bool {
 	_, err := os.Stat(path)
-	return err == nil
+	if err == nil {
+		return true
+	}
+	return !errors.Is(err, os.ErrNotExist)
 }
 
 func IsFile(path string) (isFile bool) {
-	return !IsDir(path)
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return !info.IsDir()
 }
 
 func IsDir(path string) bool {
@@ -59,17 +67,11 @@ func IsDir(path string) bool {
 }
 
 func IsDirExists(path string) (exist bool) {
-	if Exists(path) && IsDir(path) {
-		return true
-	}
-	return false
+	return IsDir(path)
 }
 
 func IsFileExists(path string) (exist bool) {
-	if Exists(path) && !IsDir(path) {
-		return true
-	}
-	return false
+	return IsFile(path)
 }
 
 func MkdirAll(path string) error {
@@ -96,26 +98,13 @@ func IsRunning(proc string) (isrunning bool) {
 		return false
 	}
 	for _, p := range procs {
-		name, err := p.Name()
-		if err != nil {
-			continue
-		}
 		if p.Pid == int32(curpid) {
 			continue
 		}
-		if name == proc {
+		if name, err := p.Name(); err == nil && name == proc {
 			return true
 		}
-	}
-	for _, p := range procs {
-		cmdline, err := p.Cmdline()
-		if err != nil {
-			continue
-		}
-		if p.Pid == int32(curpid) {
-			continue
-		}
-		if strings.Contains(cmdline, proc) {
+		if cmdline, err := p.Cmdline(); err == nil && strings.Contains(cmdline, proc) {
 			return true
 		}
 	}
@@ -129,28 +118,23 @@ func Kill(proc string) {
 	if err != nil {
 		return
 	}
+	killed := map[int32]struct{}{}
 	for _, p := range procs {
-		name, err := p.Name()
-		if err != nil {
-			continue
-		}
 		if p.Pid == int32(curpid) {
 			continue
 		}
-		if name == proc {
-			p.Kill()
-		}
-	}
-	for _, p := range procs {
-		cmdline, err := p.Cmdline()
-		if err != nil {
+		if _, ok := killed[p.Pid]; ok {
 			continue
 		}
-		if p.Pid == int32(curpid) {
+		if name, err := p.Name(); err == nil && name == proc {
+			_ = p.Kill()
+			killed[p.Pid] = struct{}{}
 			continue
 		}
-		if strings.Contains(cmdline, proc) {
-			p.Kill()
+		if cmdline, err := p.Cmdline(); err == nil && strings.Contains(cmdline, proc) {
+			_ = p.Kill()
+			killed[p.Pid] = struct{}{}
+			continue
 		}
 	}
 }

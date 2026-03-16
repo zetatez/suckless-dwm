@@ -227,23 +227,30 @@ func SysWifiConnect() {
 
 func SysShortcuts() {
 	shortcuts := map[string]string{
-		"- suspend":     "systemctl suspend",
-		"- poweroff":    "systemctl poweroff",
-		"- reboot":      "systemctl reboot",
-		"- off-display": "sleep .5; xset dpms force off",
-		"- slock":       "slock",
+		"suspend":     "systemctl suspend",
+		"poweroff":    "systemctl poweroff",
+		"reboot":      "systemctl reboot",
+		"off-display": "sleep .5; xset dpms force off",
+		"slock":       "slock",
 	}
-	list := []string{}
+	list := make([]string, 0)
 	for k := range shortcuts {
 		list = append(list, k)
 	}
 	content, err := utils.Choose(": ", list)
 	if err != nil {
+		utils.Notify(err)
 		return
 	}
 	cmd, ok := shortcuts[content]
-	if ok {
-		_, _, _ = utils.RunScript("bash", cmd)
+	if !ok {
+		utils.Notify(err)
+		return
+	}
+	_, _, err = utils.RunScript("bash", cmd)
+	if err != nil {
+		utils.Notify(err)
+		return
 	}
 }
 

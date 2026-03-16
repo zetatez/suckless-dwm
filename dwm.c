@@ -2270,7 +2270,7 @@ spawn(const Arg *arg)
   static void
 spawn_or_focus(const Arg *arg)
 {
-  const char *const *data = arg->v;  // ← 完美匹配宏类型
+  const char *const *data = arg->v;
   const char *cmd   = data[0];
   const char *class = data[1];
 
@@ -3491,7 +3491,7 @@ layout_tile_right(Monitor *m)
       }
     } else {
       h = (m->wh - ty - winpad_offset) / (n - i);
-      resize(c, m->wx + mw, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw, h - 2 * c->bw, False);
+      resize(c, m->wx + mw, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
@@ -3518,13 +3518,13 @@ layout_tile_left(Monitor *m)
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
       h = (m->wh - my - winpad_offset) / (MIN(n, m->nmaster) - i);
-      resize(c, m->wx + m->ww - mw, m->wy + my + winpad_offset, mw - 2 * c->bw, h - 2 * c->bw, False);
+      resize(c, m->wx + m->ww - mw, m->wy + my + winpad_offset, mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
       }
     } else {
       h = (m->wh - ty - winpad_offset) / (n - i);
-      resize(c, m->wx, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw, h - 2 * c->bw, False);
+      resize(c, m->wx, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
@@ -3562,7 +3562,7 @@ layout_stack_hori(Monitor *m)
       resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
-      resize(c, tx, ty + winpad_offset, m->ww - 2 * c->bw, th - 2 * c->bw, False);
+      resize(c, tx, ty + winpad_offset, m->ww - 2 * c->bw - 2, th - 2 * c->bw, False);
       if (th != m->wh - winpad_offset) {
         ty += HEIGHT(c);
       }
@@ -3602,7 +3602,7 @@ layout_stack_vert(Monitor *m)
       mx += WIDTH(c);
     } else {
       h = m->wh - winpad_offset - mh;
-      resize(c, tx, ty + winpad_offset, tw - 2 * c->bw, h - 2 * c->bw, False);
+      resize(c, tx, ty + winpad_offset, tw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (tw != m->ww) {
         tx += WIDTH(c);
       }
@@ -3901,9 +3901,9 @@ layout_workflow(Monitor *m)
           cx = m->wx;
           cy = m->wy + (m->wh - ch) / 2;
         } else {
-          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          cw = m->ww * (1 - m->mfact) - 2*c->bw - c->bw - 1;
           ch = m->wh - 2*c->bw;
-          cx = m->wx + m->ww - cw;
+          cx = m->wx + m->ww * m->mfact;
           cy = m->wy + (m->wh - ch) / 2;
         }
         resize(c, cx, cy, cw, ch, False);
@@ -3917,12 +3917,12 @@ layout_workflow(Monitor *m)
           cx = m->wx;
           cy = m->wy + (m->wh - ch) / 2;
         } else if (i == 1) { // RightTop
-          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          cw = m->ww * (1 - m->mfact) - 2*c->bw - c->bw - 1;
           ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
         } else { // RightBottom
-          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          cw = m->ww * (1 - m->mfact) - 2*c->bw - c->bw - 1;
           ch = m->wh * m->hfact - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy + m->wh * (1-m->hfact);
@@ -3938,7 +3938,7 @@ layout_workflow(Monitor *m)
           cx = m->wx;
           cy = m->wy;
         } else if (i == 1) { // TopRight
-          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          cw = m->ww * (1 - m->mfact) - 2*c->bw - c->bw - 1;
           ch = m->wh * (1-m->hfact) - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy;
@@ -3948,7 +3948,7 @@ layout_workflow(Monitor *m)
           cx = m->wx;
           cy = m->wy + m->wh * (1-m->hfact);
         } else {  // BottomRight
-          cw = m->ww * (1 - m->mfact) - 2*c->bw;
+          cw = m->ww * (1 - m->mfact) - 2*c->bw - c->bw - 1;
           ch = m->wh * m->hfact - 2*c->bw;
           cx = m->wx + m->ww * m->mfact;
           cy = m->wy + m->wh * (1-m->hfact);

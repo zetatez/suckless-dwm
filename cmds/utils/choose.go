@@ -6,11 +6,8 @@ import (
 )
 
 func Choose(prompt string, list []string) (item string, err error) {
-	script := fmt.Sprintf(
-		"echo '%s'|rofi -dmenu -p '%s'",
-		strings.Join(list, "\n"),
-		prompt,
-	)
+	content := strings.Join(list, "\n")
+	script := fmt.Sprintf("printf %s | rofi -dmenu -p %s", ShellSingleQuote(content), ShellSingleQuote(prompt))
 	stdout, _, err := RunScript("bash", script)
 	if err != nil {
 		return "", err

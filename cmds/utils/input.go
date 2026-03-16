@@ -6,10 +6,7 @@ import (
 )
 
 func GetInput(prompt string) (input string, err error) {
-	script := fmt.Sprintf(
-		"rofi -dmenu < /dev/null -p '%s'",
-		prompt,
-	)
+	script := fmt.Sprintf("rofi -dmenu < /dev/null -p %s", ShellSingleQuote(prompt))
 	stdout, _, err := RunScript("bash", script)
 	if err != nil {
 		return "", err
