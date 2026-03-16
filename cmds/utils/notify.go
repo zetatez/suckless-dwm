@@ -3,15 +3,7 @@ package utils
 import (
 	"fmt"
 	"os/exec"
-	"strings"
 )
-
-func appleScriptQuote(s string) string {
-	// AppleScript string literal uses double quotes.
-	esc := strings.ReplaceAll(s, "\\", "\\\\")
-	esc = strings.ReplaceAll(esc, "\"", "\\\"")
-	return "\"" + esc + "\""
-}
 
 func Notify(msg ...any) {
 	message := fmt.Sprint(msg...)
