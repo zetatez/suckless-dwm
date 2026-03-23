@@ -94,21 +94,17 @@ The number row opens curated URLs in qutebrowser; holding `Shift` launches the s
  | `SUP+b`           | `launch_qutebrowser`            | Focus or start qutebrowser                              |
  | `SUP+c`           | `note_monthly_work`             | Append to the monthly work log                          |
  | `SUP+d`           | `toggle_lazydocker`             | Show or hide lazydocker                                 |
- | `SUP+e`           | `toggle_mutt`                   | Toggle the terminal mail client                         |
- | `SUP+f`           | `lazy_open_search_file`         | Search files from a terminal prompt                     |
- | `SUP+g`           | `st_dir_fzf_lazygit`            | Jump into lazygit via fzf                               |
+ | `SUP+f`           | `togglefullscreen`              | Toggle fullscreen for the focused client                |
+ | `SUP+g`           | `launch_chrome`                 | Focus or start Google Chrome                            |
  | `SUP+i`           | `toggle_flameshot`              | Toggle Flameshot screenshot UI                          |
  | `SUP+m`           | `lazy_open_search_file_content` | Search file contents                                    |
  | `SUP+n`           | Scratchpad (Python)             | Toggle the `sp-python` scratchpad terminal              |
  | `SUP+o`           | `handle_copied`                 | Process clipboard content                               |
- | `SUP+p`           | `lazy_open_search_book`         | Search in the book library                              |
+ | `SUP+p`           | `lazy_open_search_file`         | Search files from a terminal prompt                     |
  | `SUP+q`           | `slock`                         | Lock the screen                                         |
  | `SUP+r`           | `toggle_yazi`                   | Show or hide the `yazi` TUI file manager                |
  | `SUP+s`           | `search`                        | Invoke the custom search interface                      |
  | `SUP+t`           | `next_theme`                    | Cycle through the configured color themes               |
- | `SUP+u`           | `lazy_open_search_media`        | Search media assets                                     |
- | `SUP+v`           | `st_dir_fzf_opencode`           | Open the OpenCode workspace selector                    |
- | `SUP+w`           | `lazy_open_search_wiki`         | Search the wiki knowledge base                          |
  | `SUP+x`           | `note_scripts`                  | Jump to the scripts notebook                            |
  | `SUP+y`           | `toggle_show`                   | Toggle on-screen widgets for streaming/presentation     |
  | `SUP+z`           | `note_todo`                     | Open the todo capture note                              |
@@ -120,8 +116,8 @@ The number row opens curated URLs in qutebrowser; holding `Shift` launches the s
  | `SUP+Escape`      | `toggle_top`                    | Toggle the system monitor overlay                       |
  | `SUP+'`           | `toggle_tty_clock`              | Show or hide the fullscreen terminal clock              |
  | `SUP+\`           | `reset_sys_default`             | Reset desktop defaults                                  |
- | `SUP+[` / `SUP+]` | `toggle_calendar_scheduling(*)` | Show the weekly or today view of the calendar scheduler |
- | `SUP+.`           | `jump_to_code_from_log`         | Jump from log output to source code                     |
+ | `SUP+[`           | `toggle_calendar_scheduling`    | Show the weekly calendar scheduling view                |
+ | `SUP+]`           | `toggle_calendar_scheduling_today` | Show today's calendar scheduling view                |
 
 ### Super Layer – Floating Window Controls
 
@@ -135,10 +131,9 @@ The number row opens curated URLs in qutebrowser; holding `Shift` launches the s
 
  | Key                | Action                                          |
  | ---                | ---                                             |
- | `SUP+Shift+a`      | Launch `gamescope` in Steam Big Picture mode    |
- | `SUP+Shift+b`      | Launch or focus Google Chrome                   |
  | `SUP+Shift+c`      | Kill the focused client                         |
  | `SUP+Shift+d`      | Launch/focus DingTalk                           |
+ | `SUP+Shift+e`      | Toggle the terminal mail client                 |
  | `SUP+Shift+f`      | Launch/focus Feishu                             |
  | `SUP+Shift+i`      | Launch/focus Inkscape                           |
  | `SUP+Shift+m`      | Launch/focus NetEase Cloud Music                |
@@ -149,7 +144,6 @@ The number row opens curated URLs in qutebrowser; holding `Shift` launches the s
  | `SUP+Shift+x`      | Launch/focus Xournal++                          |
  | `SUP+Shift+z`      | Launch/focus Zoom                               |
  | `SUP+Shift+Delete` | Immediately power off via `systemctl poweroff`  |
- | `SUP+Shift+Return` | Open an fzf-powered `st` session (`st_dir_fzf`) |
  | `SUP+Shift+'`      | Toggle Screenkey overlay                        |
  | `SUP+Shift+,`      | Toggle audio recording                          |
  | `SUP+Shift+.`      | Toggle screen recording                         |
@@ -194,7 +188,7 @@ The number row opens curated URLs in qutebrowser; holding `Shift` launches the s
  | `MOD+g` / `MOD+Shift+g` | Grid / grid with gaps                  |
  | `MOD+m`                 | Monocle                                |
  | `MOD+w`                 | Hacker layout                          |
- | `MOD+e` / `MOD+Shift+e` | Stack horizontal / stack vertical      |
+| `MOD+e` / `MOD+Shift+e` | Stack horizontal / stack vertical      |
 
 ### Alt Layer – Window & Stack Management
 
@@ -233,8 +227,6 @@ The number row opens curated URLs in qutebrowser; holding `Shift` launches the s
  | Tag bar                    | Left click            | View the clicked tag                                         |
  | Tag bar                    | Right click           | Toggle the tag visibility                                    |
  | Tag bar (`MOD` held)       | Left / right          | Assign the focused client to the tag / toggle tag assignment |
- | Layout symbol              | Left / middle         | Cycle layouts / jump directly to grid-gap layout             |
- | Layout symbol              | Right                 | Activate the overview layout                                 |
  | Client window (`MOD` held) | Left / middle / right | Move / toggle floating / resize the client                   |
 
 This list mirrors the current `keys[]` and `buttons[]` definitions; update it whenever `config.def.h` changes so the README stays authoritative.
