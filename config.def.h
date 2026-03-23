@@ -171,7 +171,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_c,            spawn,             { .v = Spawn("note_monthly_work")                         } },
    { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                         } },
 // { SUPKEY,                       XK_e,            spawn,             { .v =                                                    } },
-   { SUPKEY,                       XK_f,            togglefullscreen,  { 0                                                       } },
+// { SUPKEY,                       XK_f,            spawn,             { .v =                                                    } },
    { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")         } },
    { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                          } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")     } },
@@ -205,7 +205,7 @@ static const Key keys[] = {
 
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")   } },
 // { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_c,            killclient,        { 0                                                            } },
+// { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")         } },
    { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = Spawn("toggle_mutt")                                    } },
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                            } },
