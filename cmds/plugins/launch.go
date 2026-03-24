@@ -37,7 +37,9 @@ func LaunchKrita() {
 }
 
 func LaunchObsidian() {
-	LaunchApp("obsidian")()
+	LaunchApp(
+		fmt.Sprintf("obsidian --proxy-server=%s", ProxyServer),
+	)()
 }
 
 func LaunchSublime() {
