@@ -32,7 +32,7 @@ static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16"
 static const char *colors[][3] = {
   [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
 //[SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
-  [SchemeSel]  = { "#00b4d8", "#023047", "#FFBF00" },
+  [SchemeSel]  = { "#00b4d8", "#023047", "#32CD32" },
 };
 static int current_theme_idx = 0;
 static const char *themes[][SchemeLast][3] = {
