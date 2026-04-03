@@ -10,7 +10,7 @@
 #define SpawnTermiCmd(cmd)     (const char *[]){"st", "-e", "/bin/sh", "-c", cmd, NULL}
 
 /* appearance */
-static const unsigned int borderpx = 3;
+static const unsigned int borderpx = 1;
 static const unsigned int snap     = 24;
 static const int scalepreview      = 3;
 static const int previewbar        = 1;
@@ -32,7 +32,7 @@ static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16"
 static const char *colors[][3] = {
   [SchemeNorm] = { "#0077b6", "#023047", "#023047" },
 //[SchemeSel]  = { "#00b4d8", "#023047", "#00b4d8" },
-  [SchemeSel]  = { "#00b4d8", "#023047", "#32CD32" },
+  [SchemeSel]  = { "#00b4d8", "#023047", "#DC143C" },
 };
 static int current_theme_idx = 0;
 static const char *themes[][SchemeLast][3] = {
