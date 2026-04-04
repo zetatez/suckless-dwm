@@ -3524,7 +3524,7 @@ layout_tile_left(Monitor *m)
       }
     } else {
       h = (m->wh - ty - winpad_offset) / (n - i);
-      resize(c, m->wx, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw, h - 2 * c->bw, False);
+      resize(c, m->wx, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
       }
