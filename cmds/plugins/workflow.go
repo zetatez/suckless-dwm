@@ -292,7 +292,7 @@ func SearchVideosOnline() {
 }
 
 func NoteToDo() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "working")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes")
 	filePath := path.Join(fileDir, "TODO.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -320,7 +320,7 @@ func NoteToDo() {
 }
 
 func NoteScripts() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "working")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes")
 	filePath := path.Join(fileDir, "scripts.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -353,7 +353,7 @@ func NoteScripts() {
 func NoteMonthlyWork() {
 	t := time.Now()
 	dateStr := t.Format("2006-01")
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "working", "monthly.work")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes", "monthly.work")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
