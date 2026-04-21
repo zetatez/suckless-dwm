@@ -16,15 +16,15 @@ static const int scalepreview      = 3;
 static const int previewbar        = 1;
 static const int showbar           = 1;
 static const int topbar            = 1;
-static const int barheight         = 12;
+static const int barheight         = 14;
 static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = {
-  "VictorMono Nerd Font:style=Medium:size=12",
-  "Source Han Serif CN:style=Regular:size=12",
-  "Noto Color Emoji:style=Regular:size=12",
+  "VictorMono Nerd Font:style=Medium:size=14",
+  "Source Han Serif CN:style=Regular:size=14",
+  "Noto Color Emoji:style=Regular:size=14",
 };
 static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16";
 
