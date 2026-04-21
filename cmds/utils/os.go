@@ -50,7 +50,7 @@ func Exists(path string) bool {
 	return !errors.Is(err, os.ErrNotExist)
 }
 
-func IsFile(path string) (isFile bool) {
+func IsFile(path string) bool {
 	info, err := os.Stat(path)
 	if err != nil {
 		return false
@@ -66,11 +66,11 @@ func IsDir(path string) bool {
 	return info.IsDir()
 }
 
-func IsDirExists(path string) (exist bool) {
+func IsDirExists(path string) bool {
 	return IsDir(path)
 }
 
-func IsFileExists(path string) (exist bool) {
+func IsFileExists(path string) bool {
 	return IsFile(path)
 }
 
@@ -90,51 +90,40 @@ func GetPID() int {
 	return os.Getpid()
 }
 
-func IsRunning(proc string) (isrunning bool) {
+func findProcessesByName(proc string) ([]*process.Process, error) {
 	curpid := os.Getpid()
 	proc = strings.ReplaceAll(strings.ReplaceAll(proc, "'", ""), `"`, "")
 	procs, err := process.Processes()
 	if err != nil {
-		return false
+		return nil, err
 	}
+	var result []*process.Process
 	for _, p := range procs {
 		if p.Pid == int32(curpid) {
 			continue
 		}
 		if name, err := p.Name(); err == nil && name == proc {
-			return true
+			result = append(result, p)
+			continue
 		}
 		if cmdline, err := p.Cmdline(); err == nil && strings.Contains(cmdline, proc) {
-			return true
+			result = append(result, p)
 		}
 	}
-	return false
+	return result, nil
+}
+
+func IsRunning(proc string) bool {
+	procs, err := findProcessesByName(proc)
+	return err == nil && len(procs) > 0
 }
 
 func Kill(proc string) {
-	curpid := os.Getpid()
-	proc = strings.ReplaceAll(strings.ReplaceAll(proc, "'", ""), `"`, "")
-	procs, err := process.Processes()
+	procs, err := findProcessesByName(proc)
 	if err != nil {
 		return
 	}
-	killed := map[int32]struct{}{}
 	for _, p := range procs {
-		if p.Pid == int32(curpid) {
-			continue
-		}
-		if _, ok := killed[p.Pid]; ok {
-			continue
-		}
-		if name, err := p.Name(); err == nil && name == proc {
-			_ = p.Kill()
-			killed[p.Pid] = struct{}{}
-			continue
-		}
-		if cmdline, err := p.Cmdline(); err == nil && strings.Contains(cmdline, proc) {
-			_ = p.Kill()
-			killed[p.Pid] = struct{}{}
-			continue
-		}
+		_ = p.Kill()
 	}
 }

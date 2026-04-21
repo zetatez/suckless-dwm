@@ -58,7 +58,6 @@ static void jump_to_sel(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void killclient_unsel(const Arg *arg);
-static void killclient_unsel(const Arg *arg);
 static void freeclasshints(XClassHint *ch);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -3294,7 +3293,7 @@ layout_monocle(Monitor *m)
   void
 layout_center_free_shape(Monitor *m)
 {
-  unsigned int n, i;
+  unsigned int n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3304,22 +3303,22 @@ layout_center_free_shape(Monitor *m)
 
   if (n > 0) { snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n); }
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  for (c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
     resize(
-        c,
-        m->ww / 2 - (m->ww * m->mfact) / 2,
-        m->wy + m->wh / 2 - (m->wh * m->hfact) / 2,
-        m->ww * m->mfact - 2*c->bw,
-        m->wh * m->hfact - 2*c->bw,
-        False
-        );
+      c,
+      m->ww / 2 - (m->ww * m->mfact) / 2,
+      m->wy + m->wh / 2 - (m->wh * m->hfact) / 2,
+      m->ww * m->mfact - 2*c->bw,
+      m->wh * m->hfact - 2*c->bw,
+      False
+    );
   }
 }
 
   void
 layout_center_equal_ratio(Monitor *m)
 {
-  unsigned int n, i;
+  unsigned int n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3329,7 +3328,7 @@ layout_center_equal_ratio(Monitor *m)
 
   if (n > 0) { snprintf(m->ltsymbol, sizeof m->ltsymbol, "%s %d", selmon->lt[selmon->sellt]->symbol, n); }
 
-  for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+  for (c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
     resize(
         c,
         m->ww/2 - (m->ww*m->hfact)/2,

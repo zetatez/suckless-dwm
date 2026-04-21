@@ -2,9 +2,12 @@ package plugins
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
@@ -22,7 +25,7 @@ import (
 )
 
 func SnipFzf() error {
-	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
+	snipDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", ".snippets")
 	if _, err := os.Stat(snipDir); err != nil {
 		return fmt.Errorf("snippet dir not found: %s", snipDir)
 	}
@@ -87,7 +90,7 @@ printf '%%s' "$selected" >&3
 }
 
 func SnipCreate() error {
-	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
+	snipDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", ".snippets")
 	if _, err := os.Stat(snipDir); err != nil {
 		if err := os.MkdirAll(snipDir, 0o755); err != nil {
 			return fmt.Errorf("failed to create snip dir: %w", err)
@@ -292,7 +295,7 @@ func SearchVideosOnline() {
 }
 
 func NoteToDo() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "working", "logbook")
 	filePath := path.Join(fileDir, "TODO.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -320,7 +323,7 @@ func NoteToDo() {
 }
 
 func NoteScripts() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "working", "logbook")
 	filePath := path.Join(fileDir, "scripts.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -351,9 +354,8 @@ func NoteScripts() {
 }
 
 func NoteMonthlyWork() {
-	t := time.Now()
-	dateStr := t.Format("2006-01")
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes", "monthly.work")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "working", "logbook")
+	dateStr := time.Now().Format("2006-01")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -380,7 +382,7 @@ func NoteMonthlyWork() {
 	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
-func HandleCopied() {
+func HandleClipboard() {
 	if err := clipboard.Init(); err != nil {
 		utils.Notify(err)
 		return
@@ -392,7 +394,7 @@ func HandleCopied() {
 	}
 
 	// 1) log/stacktrace -> file:line(:col)
-	if file, line, col, ok := extractFirstExistingFileLocation(text); ok {
+	if file, line, col, ok := extractFileLocation(text); ok {
 		openFileAt(file, line, col)
 		return
 	}
@@ -419,6 +421,17 @@ func HandleCopied() {
 	SearchFromWeb(text)
 }
 
+func escapeJSONString(text string) string {
+	b, err := json.Marshal(text)
+	if err != nil {
+		return text
+	}
+	if len(b) >= 2 {
+		return string(b[1 : len(b)-1])
+	}
+	return text
+}
+
 type fileLocationPattern struct {
 	re   *regexp.Regexp
 	file int
@@ -440,7 +453,7 @@ var fileLocationPatterns = []fileLocationPattern{
 	{re: regexp.MustCompile(`(?m)-->\s+(/[^:\s]+):(\d+):(\d+)`), file: 1, line: 2, col: 3},
 }
 
-func extractFirstExistingFileLocation(text string) (file string, line, col int, ok bool) {
+func extractFileLocation(text string) (file string, line, col int, ok bool) {
 	for _, p := range fileLocationPatterns {
 		m := p.re.FindStringSubmatch(text)
 		if len(m) == 0 {
@@ -480,21 +493,10 @@ func extractFirstExistingFileLocation(text string) (file string, line, col int, 
 func openFileAt(file string, line, col int) {
 	term := utils.GetOSDefaultTerminal()
 	fileQ := utils.ShellSingleQuote(file)
-	if col > 0 {
-		cmd := fmt.Sprintf(
-			"%s -e nvim +'%s' %s",
-			term,
-			fmt.Sprintf("call cursor(%d,%d)", line, col),
-			fileQ,
-		)
-		_, _, err := utils.RunScript("bash", cmd)
-		if err != nil {
-			utils.Notify(err)
-		}
-		return
-	}
-
 	cmd := fmt.Sprintf("%s -e nvim +%d %s", term, line, fileQ)
+	if col > 0 {
+		cmd = fmt.Sprintf("%s -e nvim +'%s' %s", term, fmt.Sprintf("call cursor(%d,%d)", line, col), fileQ)
+	}
 	_, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
 		utils.Notify(err)
@@ -507,6 +509,181 @@ func extractMarkdownURL(text string) (url string, ok bool) {
 		return m[1], true
 	}
 	return "", false
+}
+
+func SendClipboardToFeishuRobot() {
+	if err := clipboard.Init(); err != nil {
+		return
+	}
+	text := strings.TrimSpace(string(clipboard.Read(clipboard.FmtText)))
+	if text == "" {
+		return
+	}
+	sendTextToFeishu(text)
+}
+
+func sendTextToFeishu(text string) {
+	appID := strings.TrimSpace(utils.GetEnv("FEISHU_APP_ID", ""))
+	appSecret := strings.TrimSpace(utils.GetEnv("FEISHU_APP_SECRET", ""))
+	chatID := strings.TrimSpace(utils.GetEnv("FEISHU_CHAT_ID", ""))
+	if appID == "" || appSecret == "" || chatID == "" {
+		return
+	}
+
+	token, err := getFeishuTenantAccessToken(appID, appSecret)
+	if err != nil {
+		return
+	}
+
+	payload := map[string]string{
+		"msg_type": "text",
+		"content":  fmt.Sprintf(`{"text":"%s"}`, escapeJSONString(text)),
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
+		bytes.NewReader(body),
+	)
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("User-Agent", "suckless-dwm/cmds")
+	req.Header.Set("X-Request-Id", fmt.Sprintf("%d", time.Now().UnixNano()))
+
+	q := req.URL.Query()
+	q.Set("receive_id_type", "chat_id")
+	req.URL.RawQuery = q.Encode()
+
+	var sendPayload struct {
+		ReceiveID string `json:"receive_id"`
+		MsgType   string `json:"msg_type"`
+		Content   string `json:"content"`
+	}
+	if err = json.Unmarshal(body, &sendPayload); err != nil {
+		return
+	}
+	sendPayload.ReceiveID = chatID
+	body, err = json.Marshal(sendPayload)
+	if err != nil {
+		return
+	}
+	req.Body = io.NopCloser(bytes.NewReader(body))
+	req.ContentLength = int64(len(body))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return
+	}
+}
+
+func SendClipboardToFeishuRobotForLeetCode() {
+	if err := clipboard.Init(); err != nil {
+		return
+	}
+	text := strings.TrimSpace(string(clipboard.Read(clipboard.FmtText)))
+	if text == "" {
+		return
+	}
+	text = fmt.Sprintf(
+		`你是一名顶级算法工程师，正在参加技术面试。
+请像候选人一样完整展示你的思考过程, 避免冗长无意义推理，解决以下算法问题。
+
+要求：
+
+1. 题目理解
+   - 用简洁语言总结题意
+   - 明确输入、输出、约束条件
+   - 指出关键点与边界情况
+
+2. 问题分析
+   - 分析问题, 给出核心思路: 怎么做才是最有解？给出思路, 清晰解释核心思想
+	 - 给出最优解算法范式: 如 动态规划/分治/回溯/贪婪/图论/滑动窗口/双指针/哈希表/单调栈/排序/图论/等
+   - 分析算法复杂度
+		- 时间复杂度
+		- 空间复杂度
+
+4. Golang 实现(必须)
+   - 高质量代码
+   - 避免冗余变量
+   - 注意边界处理
+
+6. 测试用例
+   - 至少 2 个(正常 + 边界)
+
+题目:
+%s
+`,
+		text,
+	)
+	sendTextToFeishu(text)
+}
+
+func getFeishuTenantAccessToken(appID, appSecret string) (string, error) {
+	payload := map[string]string{
+		"app_id":     appID,
+		"app_secret": appSecret,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+		bytes.NewReader(body),
+	)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "suckless-dwm/cmds")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return "", fmt.Errorf("get feishu token failed: %s %s", resp.Status, strings.TrimSpace(string(respBody)))
+	}
+
+	var result struct {
+		Code              int    `json:"code"`
+		Msg               string `json:"msg"`
+		TenantAccessToken string `json:"tenant_access_token"`
+	}
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return "", err
+	}
+	if result.Code != 0 {
+		return "", fmt.Errorf("get feishu token failed: %s", result.Msg)
+	}
+	if result.TenantAccessToken == "" {
+		return "", fmt.Errorf("get feishu token failed: empty token")
+	}
+
+	return result.TenantAccessToken, nil
 }
 
 func SshTo() {
