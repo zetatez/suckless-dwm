@@ -392,7 +392,7 @@ func HandleCopied() {
 	}
 
 	// 1) log/stacktrace -> file:line(:col)
-	if file, line, col, ok := extractFirstExistingFileLocation(text); ok {
+	if file, line, col, ok := extractFileLocation(text); ok {
 		openFileAt(file, line, col)
 		return
 	}
@@ -440,7 +440,7 @@ var fileLocationPatterns = []fileLocationPattern{
 	{re: regexp.MustCompile(`(?m)-->\s+(/[^:\s]+):(\d+):(\d+)`), file: 1, line: 2, col: 3},
 }
 
-func extractFirstExistingFileLocation(text string) (file string, line, col int, ok bool) {
+func extractFileLocation(text string) (file string, line, col int, ok bool) {
 	for _, p := range fileLocationPatterns {
 		m := p.re.FindStringSubmatch(text)
 		if len(m) == 0 {
@@ -480,21 +480,10 @@ func extractFirstExistingFileLocation(text string) (file string, line, col int, 
 func openFileAt(file string, line, col int) {
 	term := utils.GetOSDefaultTerminal()
 	fileQ := utils.ShellSingleQuote(file)
-	if col > 0 {
-		cmd := fmt.Sprintf(
-			"%s -e nvim +'%s' %s",
-			term,
-			fmt.Sprintf("call cursor(%d,%d)", line, col),
-			fileQ,
-		)
-		_, _, err := utils.RunScript("bash", cmd)
-		if err != nil {
-			utils.Notify(err)
-		}
-		return
-	}
-
 	cmd := fmt.Sprintf("%s -e nvim +%d %s", term, line, fileQ)
+	if col > 0 {
+		cmd = fmt.Sprintf("%s -e nvim +'%s' %s", term, fmt.Sprintf("call cursor(%d,%d)", line, col), fileQ)
+	}
 	_, _, err := utils.RunScript("bash", cmd)
 	if err != nil {
 		utils.Notify(err)
