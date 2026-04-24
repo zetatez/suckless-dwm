@@ -31,10 +31,10 @@ build: prepare build_shell_cmds
 	go build -o ./bins/open_url_as_app                           ./cmds/open_url_as_app/main.go
 	go build -o ./bins/open_url_with_chrome                      ./cmds/open_url_with_chrome/main.go
 	go build -o ./bins/open_url_with_qutebrowser                 ./cmds/open_url_with_qutebrowser/main.go
-	go build -o ./bins/search                                    ./cmds/search/main.go
 	go build -o ./bins/snip_fzf                                  ./cmds/snip_fzf/main.go
 	go build -o ./bins/snip_create                               ./cmds/snip_create/main.go
 	go build -o ./bins/ssh_to                                    ./cmds/ssh_to/main.go
+	go build -o ./bins/send_clipboard_to_feishu_robot            ./cmds/send_clipboard_to_feishu_robot/main.go
 	go build -o ./bins/sys_bluetooth_connect                     ./cmds/sys_bluetooth_connect/main.go
 	go build -o ./bins/sys_bluetooth_disconnect                  ./cmds/sys_bluetooth_disconnect/main.go
 	go build -o ./bins/sys_bluetooth_scan_and_connect            ./cmds/sys_bluetooth_scan_and_connect/main.go
@@ -67,6 +67,7 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_top                                ./cmds/toggle_top/main.go
 	go build -o ./bins/toggle_tty_clock                          ./cmds/toggle_tty_clock/main.go
 	go build -o ./bins/toggle_yazi                               ./cmds/toggle_yazi/main.go
+	go build -o ./bins/search                                    ./cmds/search/main.go
 	chmod +x ./bins/*
 	@echo "Done!"
 

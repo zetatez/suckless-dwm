@@ -2,9 +2,12 @@ package plugins
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
@@ -380,7 +383,7 @@ func NoteMonthlyWork() {
 	_, _, _ = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +$ '%s'", utils.GetOSDefaultTerminal(), filePath))
 }
 
-func HandleCopied() {
+func HandleClipboard() {
 	if err := clipboard.Init(); err != nil {
 		utils.Notify(err)
 		return
@@ -417,6 +420,17 @@ func HandleCopied() {
 
 	// 5) default: web search
 	SearchFromWeb(text)
+}
+
+func escapeJSONString(text string) string {
+	b, err := json.Marshal(text)
+	if err != nil {
+		return text
+	}
+	if len(b) >= 2 {
+		return string(b[1 : len(b)-1])
+	}
+	return text
 }
 
 type fileLocationPattern struct {
@@ -496,6 +510,190 @@ func extractMarkdownURL(text string) (url string, ok bool) {
 		return m[1], true
 	}
 	return "", false
+}
+
+func SendClipboardToFeishuRobot() {
+	if err := clipboard.Init(); err != nil {
+		// utils.Notify(err)
+		return
+	}
+
+	text := strings.TrimSpace(string(clipboard.Read(clipboard.FmtText)))
+	if text == "" {
+		// utils.Notify("clipboard empty or not text")
+		return
+	}
+
+	appID := strings.TrimSpace(utils.GetEnv("FEISHU_APP_ID", ""))
+	appSecret := strings.TrimSpace(utils.GetEnv("FEISHU_APP_SECRET", ""))
+	chatID := strings.TrimSpace(utils.GetEnv("FEISHU_CHAT_ID", ""))
+	if appID == "" {
+		// utils.Notify("FEISHU_APP_ID not set")
+		return
+	}
+	if appSecret == "" {
+		// utils.Notify("FEISHU_APP_SECRET not set")
+		return
+	}
+	if chatID == "" {
+		// utils.Notify("FEISHU_CHAT_ID not set")
+		return
+	}
+
+	token, err := getFeishuTenantAccessToken(appID, appSecret)
+	if err != nil {
+		// utils.Notify(err)
+		return
+	}
+
+	text = fmt.Sprintf(
+		`你是一名顶级算法工程师，正在参加技术面试。
+请像候选人一样完整展示你的思考过程, 避免冗长无意义推理，解决以下算法问题。
+
+要求：
+
+1. 题目理解
+   - 用简洁语言总结题意
+   - 明确输入、输出、约束条件
+   - 指出关键点与边界情况
+
+2. 问题分析
+   - 分析问题, 给出核心思路: 怎么做才是最有解？给出思路, 清晰解释核心思想
+	 - 给出最优解算法范式: 如 动态规划/分治/回溯/贪婪/图论/滑动窗口/双指针/哈希表/单调栈/排序/图论/等
+   - 分析算法复杂度
+		- 时间复杂度
+		- 空间复杂度
+
+4. Golang 实现(必须)
+   - 高质量代码
+   - 避免冗余变量
+   - 注意边界处理
+
+6. 测试用例
+   - 至少 2 个(正常 + 边界)
+
+题目:
+%s
+		`,
+		text,
+	)
+
+	payload := map[string]string{
+		"msg_type": "text",
+		"content":  fmt.Sprintf(`{"text":"%s"}`, escapeJSONString(text)),
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		utils.Notify(err)
+		return
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
+		bytes.NewReader(body),
+	)
+	if err != nil {
+		// utils.Notify(err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("User-Agent", "suckless-dwm/cmds")
+	req.Header.Set("X-Request-Id", fmt.Sprintf("%d", time.Now().UnixNano()))
+
+	q := req.URL.Query()
+	q.Set("receive_id_type", "chat_id")
+	req.URL.RawQuery = q.Encode()
+
+	var sendPayload struct {
+		ReceiveID string `json:"receive_id"`
+		MsgType   string `json:"msg_type"`
+		Content   string `json:"content"`
+	}
+	if err = json.Unmarshal(body, &sendPayload); err != nil {
+		// utils.Notify(err)
+		return
+	}
+	sendPayload.ReceiveID = chatID
+	body, err = json.Marshal(sendPayload)
+	if err != nil {
+		// utils.Notify(err)
+		return
+	}
+	req.Body = io.NopCloser(bytes.NewReader(body))
+	req.ContentLength = int64(len(body))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		// utils.Notify(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		// respBody, _ := io.ReadAll(resp.Body)
+		// utils.Notify(fmt.Sprintf("send feishu failed: %s %s", resp.Status, strings.TrimSpace(string(respBody))))
+		return
+	}
+
+	// utils.Notify("send feishu success")
+}
+
+func getFeishuTenantAccessToken(appID, appSecret string) (string, error) {
+	payload := map[string]string{
+		"app_id":     appID,
+		"app_secret": appSecret,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+		bytes.NewReader(body),
+	)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "suckless-dwm/cmds")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return "", fmt.Errorf("get feishu token failed: %s %s", resp.Status, strings.TrimSpace(string(respBody)))
+	}
+
+	var result struct {
+		Code              int    `json:"code"`
+		Msg               string `json:"msg"`
+		TenantAccessToken string `json:"tenant_access_token"`
+	}
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return "", err
+	}
+	if result.Code != 0 {
+		return "", fmt.Errorf("get feishu token failed: %s", result.Msg)
+	}
+	if result.TenantAccessToken == "" {
+		return "", fmt.Errorf("get feishu token failed: empty token")
+	}
+
+	return result.TenantAccessToken, nil
 }
 
 func SshTo() {

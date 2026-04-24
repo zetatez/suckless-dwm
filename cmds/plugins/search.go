@@ -7,7 +7,7 @@ import (
 )
 
 var ActionMap = map[string]func(){
-	"handle copied":                    HandleCopied,
+	"handle clipboard":                 HandleClipboard,
 	"format json":                      FormatJson,
 	"format sql":                       FormatSql,
 	"format yaml":                      FormatYaml,
@@ -15,6 +15,7 @@ var ActionMap = map[string]func(){
 	"get cur datetime":                 GetCurDatetime,
 	"get cur unix sec":                 GetCurUnixSec,
 	"get ip address":                   GetIPAddress,
+	"send clipboard to feishu robot":   SendClipboardToFeishuRobot,
 	"note script":                      NoteScripts,
 	"note todo":                        NoteToDo,
 	"note monthly work":                NoteMonthlyWork,
