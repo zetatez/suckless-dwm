@@ -513,35 +513,25 @@ func extractMarkdownURL(text string) (url string, ok bool) {
 
 func SendClipboardToFeishuRobot() {
 	if err := clipboard.Init(); err != nil {
-		// utils.Notify(err)
 		return
 	}
-
 	text := strings.TrimSpace(string(clipboard.Read(clipboard.FmtText)))
 	if text == "" {
-		// utils.Notify("clipboard empty or not text")
 		return
 	}
+	sendTextToFeishu(text)
+}
 
+func sendTextToFeishu(text string) {
 	appID := strings.TrimSpace(utils.GetEnv("FEISHU_APP_ID", ""))
 	appSecret := strings.TrimSpace(utils.GetEnv("FEISHU_APP_SECRET", ""))
 	chatID := strings.TrimSpace(utils.GetEnv("FEISHU_CHAT_ID", ""))
-	if appID == "" {
-		// utils.Notify("FEISHU_APP_ID not set")
-		return
-	}
-	if appSecret == "" {
-		// utils.Notify("FEISHU_APP_SECRET not set")
-		return
-	}
-	if chatID == "" {
-		// utils.Notify("FEISHU_CHAT_ID not set")
+	if appID == "" || appSecret == "" || chatID == "" {
 		return
 	}
 
 	token, err := getFeishuTenantAccessToken(appID, appSecret)
 	if err != nil {
-		// utils.Notify(err)
 		return
 	}
 
@@ -552,7 +542,6 @@ func SendClipboardToFeishuRobot() {
 
 	body, err := json.Marshal(payload)
 	if err != nil {
-		// utils.Notify(err)
 		return
 	}
 
@@ -562,7 +551,6 @@ func SendClipboardToFeishuRobot() {
 		bytes.NewReader(body),
 	)
 	if err != nil {
-		// utils.Notify(err)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -580,13 +568,11 @@ func SendClipboardToFeishuRobot() {
 		Content   string `json:"content"`
 	}
 	if err = json.Unmarshal(body, &sendPayload); err != nil {
-		// utils.Notify(err)
 		return
 	}
 	sendPayload.ReceiveID = chatID
 	body, err = json.Marshal(sendPayload)
 	if err != nil {
-		// utils.Notify(err)
 		return
 	}
 	req.Body = io.NopCloser(bytes.NewReader(body))
@@ -594,32 +580,23 @@ func SendClipboardToFeishuRobot() {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		// utils.Notify(err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		// respBody, _ := io.ReadAll(resp.Body)
-		// utils.Notify(fmt.Sprintf("send feishu failed: %s %s", resp.Status, strings.TrimSpace(string(respBody))))
 		return
 	}
-
-	// utils.Notify("send feishu success")
 }
 
 func SendClipboardToFeishuRobotForLeetCode() {
 	if err := clipboard.Init(); err != nil {
-		// utils.Notify(err)
 		return
 	}
-
 	text := strings.TrimSpace(string(clipboard.Read(clipboard.FmtText)))
 	if text == "" {
-		// utils.Notify("clipboard empty or not text")
 		return
 	}
-
 	text = fmt.Sprintf(
 		`你是一名顶级算法工程师，正在参加技术面试。
 请像候选人一样完整展示你的思考过程, 避免冗长无意义推理，解决以下算法问题。
@@ -648,93 +625,10 @@ func SendClipboardToFeishuRobotForLeetCode() {
 
 题目:
 %s
-		`,
+`,
 		text,
 	)
-
-	appID := strings.TrimSpace(utils.GetEnv("FEISHU_APP_ID", ""))
-	appSecret := strings.TrimSpace(utils.GetEnv("FEISHU_APP_SECRET", ""))
-	chatID := strings.TrimSpace(utils.GetEnv("FEISHU_CHAT_ID", ""))
-	if appID == "" {
-		// utils.Notify("FEISHU_APP_ID not set")
-		return
-	}
-	if appSecret == "" {
-		// utils.Notify("FEISHU_APP_SECRET not set")
-		return
-	}
-	if chatID == "" {
-		// utils.Notify("FEISHU_CHAT_ID not set")
-		return
-	}
-
-	token, err := getFeishuTenantAccessToken(appID, appSecret)
-	if err != nil {
-		// utils.Notify(err)
-		return
-	}
-
-	payload := map[string]string{
-		"msg_type": "text",
-		"content":  fmt.Sprintf(`{"text":"%s"}`, escapeJSONString(text)),
-	}
-
-	body, err := json.Marshal(payload)
-	if err != nil {
-		// utils.Notify(err)
-		return
-	}
-
-	req, err := http.NewRequest(
-		http.MethodPost,
-		"https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
-		bytes.NewReader(body),
-	)
-	if err != nil {
-		// utils.Notify(err)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("User-Agent", "suckless-dwm/cmds")
-	req.Header.Set("X-Request-Id", fmt.Sprintf("%d", time.Now().UnixNano()))
-
-	q := req.URL.Query()
-	q.Set("receive_id_type", "chat_id")
-	req.URL.RawQuery = q.Encode()
-
-	var sendPayload struct {
-		ReceiveID string `json:"receive_id"`
-		MsgType   string `json:"msg_type"`
-		Content   string `json:"content"`
-	}
-	if err = json.Unmarshal(body, &sendPayload); err != nil {
-		// utils.Notify(err)
-		return
-	}
-	sendPayload.ReceiveID = chatID
-	body, err = json.Marshal(sendPayload)
-	if err != nil {
-		// utils.Notify(err)
-		return
-	}
-	req.Body = io.NopCloser(bytes.NewReader(body))
-	req.ContentLength = int64(len(body))
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		// utils.Notify(err)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		// respBody, _ := io.ReadAll(resp.Body)
-		// utils.Notify(fmt.Sprintf("send feishu failed: %s %s", resp.Status, strings.TrimSpace(string(respBody))))
-		return
-	}
-
-	// utils.Notify("send feishu success")
+	sendTextToFeishu(text)
 }
 
 func getFeishuTenantAccessToken(appID, appSecret string) (string, error) {

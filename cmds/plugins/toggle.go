@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"sync"
 	"time"
 
 	"cmds/utils"
@@ -82,28 +81,8 @@ func ToggleKeyboard() {
 }
 
 func ToggleMusic() {
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		utils.Toggle(
-			fmt.Sprintf(
-				"%s -e cava",
-				utils.GetOSDefaultTerminal(),
-			),
-		)
-	}()
-	time.Sleep(10 * time.Millisecond)
-	go func() {
-		defer wg.Done()
-		utils.Toggle(
-			fmt.Sprintf(
-				"%s -e ncmpcpp",
-				utils.GetOSDefaultTerminal(),
-			),
-		)
-	}()
-	wg.Wait()
+	go utils.Toggle(fmt.Sprintf("%s -e cava", utils.GetOSDefaultTerminal()))
+	go utils.Toggle(fmt.Sprintf("%s -e ncmpcpp", utils.GetOSDefaultTerminal()))
 }
 
 func ToggleNeteaseCloudMusic() {
