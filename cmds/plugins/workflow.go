@@ -25,7 +25,7 @@ import (
 )
 
 func SnipFzf() error {
-	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
+	snipDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", ".snippets")
 	if _, err := os.Stat(snipDir); err != nil {
 		return fmt.Errorf("snippet dir not found: %s", snipDir)
 	}
@@ -90,7 +90,7 @@ printf '%%s' "$selected" >&3
 }
 
 func SnipCreate() error {
-	snipDir := os.ExpandEnv("$HOME/share/github/obsidian/.snippets")
+	snipDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", ".snippets")
 	if _, err := os.Stat(snipDir); err != nil {
 		if err := os.MkdirAll(snipDir, 0o755); err != nil {
 			return fmt.Errorf("failed to create snip dir: %w", err)
@@ -295,7 +295,7 @@ func SearchVideosOnline() {
 }
 
 func NoteToDo() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "working", "logbook")
 	filePath := path.Join(fileDir, "TODO.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -323,7 +323,7 @@ func NoteToDo() {
 }
 
 func NoteScripts() {
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "working", "logbook")
 	filePath := path.Join(fileDir, "scripts.md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
@@ -354,9 +354,8 @@ func NoteScripts() {
 }
 
 func NoteMonthlyWork() {
-	t := time.Now()
-	dateStr := t.Format("2006-01")
-	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "obsidian", "notes", "monthly.work")
+	fileDir := path.Join(os.Getenv("HOME"), GithubPath, "working", "logbook")
+	dateStr := time.Now().Format("2006-01")
 	filePath := path.Join(fileDir, dateStr+".md")
 	if !utils.IsDirExists(fileDir) {
 		if err := os.Mkdir(fileDir, 0o755); err != nil {
