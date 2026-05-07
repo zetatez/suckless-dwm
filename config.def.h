@@ -29,12 +29,12 @@ static const char *fonts[]         = {
 static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16";
 
 static const char *colors[][3] = {
+  /*               fg,        bg,        border */
   [SchemeNorm] = { "#118ab2", "#121212", "#121212" },
   [SchemeSel]  = { "#C0C0C0", "#121212", "#0077b6" },
 };
 static int current_theme_idx = 0;
 static const char *themes[][SchemeLast][3] = {
-  /*                  fg,        bg,        border */
   {
     [SchemeNorm] = { "#666666", "#121212", "#121212" },
     [SchemeSel]  = { "#333333", "#121212", "#333333" },
@@ -63,6 +63,7 @@ static const Rule rules[] = {
   {"float",                  NULL,       NULL,      0,            1,            0,             0,            0,       -1 },
   {"st",                     NULL,       NULL,      0,            0,            1,             1,            0,       -1 },
   {"Surf",                   NULL,       NULL,      0,            0,            0,             1,            0,       -1 }, // no swallow for markdown
+  {"vimb",                   NULL,       NULL,      0,            0,            0,             1,            0,       -1 }, // no swallow for markdown
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
 };
 
