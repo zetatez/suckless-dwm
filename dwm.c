@@ -58,7 +58,6 @@ static void jump_to_sel(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void killclient_unsel(const Arg *arg);
-static void killclient_unsel(const Arg *arg);
 static void freeclasshints(XClassHint *ch);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
