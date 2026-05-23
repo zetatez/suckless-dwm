@@ -375,11 +375,13 @@ arrange(Monitor *m)
 arrangemon(Monitor *m)
 {
   if (m->isoverview) {
-    strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol);
+    strncpy(m->ltsymbol, overviewlayout.symbol, sizeof m->ltsymbol - 1);
+    m->ltsymbol[sizeof m->ltsymbol - 1] = '\0';
     overviewlayout.arrange(m);
     return;
   }
-  strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+  strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol - 1);
+  m->ltsymbol[sizeof m->ltsymbol - 1] = '\0';
   if (m->lt[m->sellt]->arrange) {
     m->lt[m->sellt]->arrange(m);
   }
@@ -723,7 +725,8 @@ createmon(void)
   m->lt[1] = &layouts[1 % LENGTH(layouts)];
   m->tagmap = ecalloc(LENGTH(tags), sizeof(Pixmap));
   m->isoverview = 0;
-  strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+  strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol - 1);
+  m->ltsymbol[sizeof m->ltsymbol - 1] = '\0';
   m->pertag = ecalloc(1, sizeof(Pertag));
   m->pertag->curtag = m->pertag->prevtag = 1;
 
@@ -1109,8 +1112,10 @@ gettextprop(Window w, Atom atom, char *text, unsigned int size)
 
   if (name.encoding == XA_STRING) {
     strncpy(text, (char *)name.value, size - 1);
+    text[size - 1] = '\0';
   } else if (XmbTextPropertyToTextList(dpy, &name, &list, &n) >= Success && n > 0 && *list) {
     strncpy(text, *list, size - 1);
+    text[size - 1] = '\0';
     XFreeStringList(list);
   }
 
@@ -1288,9 +1293,11 @@ manage(Window w, XWindowAttributes *wa)
   if (XGetClassHint(dpy, c->win, &ch)) {
     if (ch.res_class) {
       strncpy(c->class, ch.res_class, sizeof(c->class) - 1);
+      c->class[sizeof(c->class) - 1] = '\0';
     }
     if (ch.res_name) {
       strncpy(c->instance, ch.res_name, sizeof(c->instance) - 1);
+      c->instance[sizeof(c->instance) - 1] = '\0';
     }
     freeclasshints(&ch);
   }
@@ -1991,7 +1998,8 @@ setlayout(const Arg *arg)
   if (arg && arg->v) {
     selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
   }
-  strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
+  strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol - 1);
+  selmon->ltsymbol[sizeof selmon->ltsymbol - 1] = '\0';
   if (selmon->sel) {
     arrange(selmon);
   } else {
