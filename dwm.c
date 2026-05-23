@@ -181,7 +181,7 @@ static xcb_connection_t *xcon;
 static int winpad = 0;
 
 /* configuration, allows nested code to access above variables */
-#include "config.def.h"
+#include "config.h"
 
 struct Pertag {
   const Layout *ltidxs[LENGTH(tags) + 1][2];
