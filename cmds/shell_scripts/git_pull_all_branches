@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-git branch -r | grep -v "\->" | sed 's/\// /' | awk '{print "git branch --track " $2 " " $1 "/" $2}' | sh

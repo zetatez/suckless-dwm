@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-open_url_as_app --url='https://chatgpt.com/'

@@ -22,11 +22,9 @@ static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = {
-  "VictorMono Nerd Font:style=Medium:size=14",
-  "Source Han Serif CN:style=Regular:size=14",
-  "Noto Color Emoji:style=Regular:size=14",
+  "DejaVuSansM Nerd Font Mono:style=Regular:size=14",
 };
-static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16";
+static const char dmenufont[]      = "DejaVuSansM Nerd Font Mono:style=Regular:size=16";
 
 static const char *colors[][3] = {
   /*               fg,        bg,        border */
@@ -50,8 +48,7 @@ static const char *themes[][SchemeLast][3] = {
 };
 
 static const char *const autostart[] = {
-  "reset_sys_default", NULL,
-  "daemon", NULL,
+  "sys-reset", NULL,
   NULL,
 };
 
@@ -64,11 +61,12 @@ static const Rule rules[] = {
   {"st",                     NULL,       NULL,      0,            0,            1,             1,            0,       -1 },
   {"vimb",                   NULL,       NULL,      0,            0,            0,             1,            0,       -1 }, // no swallow for markdown
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
+//{"Cc-switch",              NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
 };
 
 /* stickyicon */
 static const XPoint stickyicon[] = { { 0, 0 }, { 4, 0 }, { 4, 8 }, { 2, 6 }, { 0, 8 }, { 0, 0 } }; /* stickyicon: represents the icon as an array of vertices */
-static const XPoint stickyiconbb = {4,8};	                                      /* stickyicon: defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
+static const XPoint stickyiconbb = {4,8};	                                                         /* stickyicon: defines the bottom right corner of the polygon's bounding box (speeds up scaling) */
 
 /* layout(s) */
 static const float mfact         = 0.50;
@@ -80,7 +78,6 @@ static const int lockfullscreen  = 0;
 static const int refreshrate     = 120;
 
 static const Layout layouts[] = {
-
   { "[W] 󰴈"                  , layout_workflow           }, // default
   { "[F] "                  , layout_fib_spiral         },
   { "[F] "                  , layout_fib_dwindle        },
@@ -110,80 +107,91 @@ static const float scratchpad_height = 0.60;
 
 static const Key keys[] = {
    /* modifier                     key              function           argument                                 */
-   { SUPKEY,                       XK_F1,           spawn,             { .v = Spawn("sys_volume_toggle")                             } },
-   { SUPKEY,                       XK_F2,           spawn,             { .v = Spawn("sys_volume_down")                               } },
-   { SUPKEY,                       XK_F3,           spawn,             { .v = Spawn("sys_volume_up")                                 } },
-   { SUPKEY,                       XK_F4,           spawn,             { .v = Spawn("sys_micro_toggle")                              } },
-   { SUPKEY,                       XK_F5,           spawn,             { .v = Spawn("sys_display_light_down")                        } },
-   { SUPKEY,                       XK_F6,           spawn,             { .v = Spawn("sys_display_light_up")                          } },
-   { SUPKEY,                       XK_F7,           spawn,             { .v = Spawn("sys_display")                                   } },
-   { SUPKEY,                       XK_F8,           spawn,             { .v = Spawn("sys_wifi_connect")                              } },
-   { SUPKEY,                       XK_F9,           spawn,             { .v = Spawn("sys_bluetooth_connect")                         } },
-   { SUPKEY,                       XK_F10,          spawn,             { .v = Spawn("sys_micro_down")                                } },
-   { SUPKEY,                       XK_F11,          spawn,             { .v = Spawn("sys_micro_up")                                  } },
-   { SUPKEY,                       XK_F12,          spawn,             { .v = Spawn("sys_toggle_keyboard_light")                     } },
+   { SUPKEY,                       XK_F1,           spawn,             { .v = SpawnShellCmd("sys-volume-toggle")                             } },
+   { SUPKEY,                       XK_F2,           spawn,             { .v = SpawnShellCmd("sys-volume-down")                               } },
+   { SUPKEY,                       XK_F3,           spawn,             { .v = SpawnShellCmd("sys-volume-up")                                 } },
+   { SUPKEY,                       XK_F4,           spawn,             { .v = SpawnShellCmd("sys-micro-toggle")                              } },
+   { SUPKEY,                       XK_F5,           spawn,             { .v = SpawnShellCmd("sys-display-light-down")                        } },
+   { SUPKEY,                       XK_F6,           spawn,             { .v = SpawnShellCmd("sys-display-light-up")                          } },
+   { SUPKEY,                       XK_F7,           spawn,             { .v = SpawnShellCmd("sys-display")                                   } },
+   { SUPKEY,                       XK_F8,           spawn,             { .v = SpawnShellCmd("sys-wifi-connect")                              } },
+   { SUPKEY,                       XK_F9,           spawn,             { .v = SpawnShellCmd("sys-bluetooth-connect")                         } },
+   { SUPKEY,                       XK_F10,          spawn,             { .v = SpawnShellCmd("sys-micro-down")                                } },
+   { SUPKEY,                       XK_F11,          spawn,             { .v = SpawnShellCmd("sys-micro-up")                                  } },
+   { SUPKEY,                       XK_F12,          spawn,             { .v = SpawnShellCmd("sys-keyboard-light")                            } },
 
-   { SUPKEY,                       XK_1,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://chatgpt.com/'")                                                   } },
-   { SUPKEY,                       XK_2,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.youtube.com'")                                                } },
-   { SUPKEY,                       XK_3,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://github.com/zetatez'")                                             } },
-   { SUPKEY,                       XK_4,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://mail.google.com/mail'")                                           } },
-   { SUPKEY,                       XK_5,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://translate.google.com/?sl=auto&tl=zh-CN'")                         } },
-   { SUPKEY,                       XK_6,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://web.wechat.com/'")                                                } },
-   { SUPKEY,                       XK_7,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://leetcode.cn/search/?q=%E6%9C%80'")                                } },
-   { SUPKEY,                       XK_8,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'")      } },
-   { SUPKEY,                       XK_9,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.bilibili.com/'")                                              } },
-   { SUPKEY,                       XK_0,            spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://www.doubao.com/chat/'")                                           } },
-   { SUPKEY,                       XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_with_chrome --url='https://gemini.google.com/app'")                                          } },
+   { SUPKEY,                       XK_1,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://gemini.google.com/app'")                                     } },
+   { SUPKEY,                       XK_2,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://github.com/zetatez'")                                        } },
+   { SUPKEY,                       XK_3,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://mail.google.com/mail'")                                      } },
+   { SUPKEY,                       XK_4,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://translate.google.com/?sl=auto&tl=zh-CN'")                    } },
+   { SUPKEY,                       XK_5,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'") } },
+   { SUPKEY,                       XK_6,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://web.wechat.com/'")                                           } },
+   { SUPKEY,                       XK_7,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://www.youtube.com'")                                           } },
+   { SUPKEY,                       XK_8,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://www.bilibili.com/'")                                         } },
+   { SUPKEY,                       XK_9,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://leetcode.cn/search/?q=%E6%9C%80'")                           } },
+   { SUPKEY,                       XK_0,            spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://www.doubao.com/chat/'")                                      } },
+   { SUPKEY,                       XK_slash,        spawn,             { .v = SpawnShellCmd("open-url-chrome 'https://gemini.google.com/app'")                                     } },
 
-   { SUPKEY|ShiftMask,             XK_1,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://chatgpt.com/'")                                              } },
-   { SUPKEY|ShiftMask,             XK_2,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.youtube.com'")                                           } },
-   { SUPKEY|ShiftMask,             XK_3,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://github.com/zetatez'")                                        } },
-   { SUPKEY|ShiftMask,             XK_4,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://mail.google.com/mail'")                                      } },
-   { SUPKEY|ShiftMask,             XK_5,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://translate.google.com/?sl=auto&tl=zh-CN'")                    } },
-   { SUPKEY|ShiftMask,             XK_6,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://web.wechat.com/'")                                           } },
-   { SUPKEY|ShiftMask,             XK_7,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://leetcode.cn/search/?q=%E6%9C%80'")                           } },
-   { SUPKEY|ShiftMask,             XK_8,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'") } },
-   { SUPKEY|ShiftMask,             XK_9,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.bilibili.com/'")                                         } },
-   { SUPKEY|ShiftMask,             XK_0,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")                                      } },
-   { SUPKEY|ShiftMask,             XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://gemini.google.com/app'")                                     } },
+   { SUPKEY|ShiftMask,             XK_1,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://gemini.google.com/app'")                                              } },
+   { SUPKEY|ShiftMask,             XK_2,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://github.com/zetatez'")                                        } },
+   { SUPKEY|ShiftMask,             XK_3,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://mail.google.com/mail'")                                      } },
+   { SUPKEY|ShiftMask,             XK_4,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://translate.google.com/?sl=auto&tl=zh-CN'")                    } },
+   { SUPKEY|ShiftMask,             XK_5,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'") } },
+   { SUPKEY|ShiftMask,             XK_6,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://web.wechat.com/'")                                           } },
+   { SUPKEY|ShiftMask,             XK_7,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://www.youtube.com'")                                           } },
+   { SUPKEY|ShiftMask,             XK_8,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://www.bilibili.com/'")                                         } },
+   { SUPKEY|ShiftMask,             XK_9,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://leetcode.cn/search/?q=%E6%9C%80'")                           } },
+   { SUPKEY|ShiftMask,             XK_0,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://www.doubao.com/chat/'")                                      } },
+   { SUPKEY|ShiftMask,             XK_slash,        spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://gemini.google.com/app'")                                     } },
+
+   // { SUPKEY|ShiftMask,             XK_1,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://chatgpt.com/'")          } },
+   // { SUPKEY|ShiftMask,             XK_2,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_3,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_4,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_5,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_6,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_7,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_8,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_9,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_0,            spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://www.doubao.com/chat/'")  } },
+   // { SUPKEY|ShiftMask,             XK_slash,        spawn,             { .v = SpawnShellCmd("open_url_as_app --url='https://gemini.google.com/app'") } },
 
    { SUPKEY,                       XK_k,            movewin,           { .ui = UP                                                     } },
    { SUPKEY,                       XK_j,            movewin,           { .ui = DOWN                                                   } },
    { SUPKEY,                       XK_h,            movewin,           { .ui = LEFT                                                   } },
    { SUPKEY,                       XK_l,            movewin,           { .ui = RIGHT                                                  } },
 
-   { SUPKEY,                       XK_a,            spawn,             { .v = Spawn("launch_file_manager")                            } },
-   { SUPKEY,                       XK_b,            spawn,             { .v = Spawn("launch_qutebrowser")                             } },
-// { SUPKEY,                       XK_b,            spawn_or_focus,    { .v = CmdClass("launch_qutebrowser", "qutebrowser")           } },
-   { SUPKEY,                       XK_c,            spawn,             { .v = Spawn("note_monthly_work")                              } },
-   { SUPKEY,                       XK_d,            spawn,             { .v = Spawn("toggle_lazydocker")                              } },
+   { SUPKEY,                       XK_a,            spawn,             { .v = SpawnShellCmd("launch thunar")                          } },
+   { SUPKEY,                       XK_b,            spawn,             { .v = SpawnShellCmd("launch qutebrowser")                     } },
+   { SUPKEY,                       XK_c,            spawn,             { .v = SpawnShellCmd("note monthly-work")                      } },
+   { SUPKEY,                       XK_d,            spawn,             { .v = SpawnShellCmd("toggle lazydocker")                      } },
 // { SUPKEY,                       XK_e,            spawn,             { .v =                                                         } },
 // { SUPKEY,                       XK_f,            spawn,             { .v =                                                         } },
-   { SUPKEY,                       XK_g,            spawn,             { .v = Spawn("launch_chrome")                                  } },
-// { SUPKEY,                       XK_g,            spawn_or_focus,    { .v = CmdClass("launch_chrome", "Google-chrome")              } },
-   { SUPKEY,                       XK_i,            spawn,             { .v = Spawn("toggle_flameshot")                               } },
-   { SUPKEY,                       XK_m,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file_content")          } },
+   { SUPKEY,                       XK_g,            spawn,             { .v = SpawnShellCmd("launch chrome")                          } },
+   { SUPKEY,                       XK_i,            spawn,             { .v = SpawnShellCmd("toggle flameshot")                       } },
+   { SUPKEY,                       XK_m,            spawn,             { .v = SpawnShellCmd("file-search-content")                    } }, // ???
    { SUPKEY,                       XK_n,            toggle_scratchpad, { .v = CmdClass("st -c sp-python -e python -i -c 'import os, sys, datetime as dt, re, json, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'", "sp-python") } },
-   { SUPKEY,                       XK_o,            spawn,             { .v = Spawn("handle_clipboard")                               } },
-   { SUPKEY,                       XK_p,            spawn,             { .v = SpawnTermiCmd("lazy_open_search_file")                  } },
+   { SUPKEY,                       XK_o,            spawn,             { .v = SpawnShellCmd("handle-clipboard")                       } },
+   { SUPKEY,                       XK_p,            spawn,             { .v = SpawnShellCmd("file-search")                            } },
    { SUPKEY,                       XK_q,            spawn,             { .v = Spawn("slock")                                          } },
-   { SUPKEY,                       XK_r,            spawn,             { .v = Spawn("toggle_yazi")                                    } },
+   { SUPKEY,                       XK_r,            spawn,             { .v = SpawnShellCmd("toggle yazi")                            } },
    { SUPKEY,                       XK_s,            spawn,             { .v = Spawn("search")                                         } },
    { SUPKEY,                       XK_t,            next_theme,        { 0                                                            } },
 // { SUPKEY,                       XK_u,            spawn,             { .v =                                                         } },
 // { SUPKEY,                       XK_v,            spawn,             { .v =                                                         } },
-   { SUPKEY,                       XK_w,            spawn,             { .v = Spawn("send_clipboard_to_feishu_robot_for_leetcode")    } },
-   { SUPKEY,                       XK_x,            spawn,             { .v = Spawn("note_scripts")                                   } },
-   { SUPKEY,                       XK_y,            spawn,             { .v = Spawn("toggle_show")                                    } },
-   { SUPKEY,                       XK_z,            spawn,             { .v = Spawn("note_todo")                                      } },
+   { SUPKEY,                       XK_w,            spawn,             { .v = SpawnShellCmd("feishu-send")                            } },
+   { SUPKEY,                       XK_x,            spawn,             { .v = SpawnShellCmd("note scripts")                           } },
+   { SUPKEY,                       XK_y,            spawn,             { .v = SpawnShellCmd("toggle rec-show")                        } },
+   { SUPKEY,                       XK_z,            spawn,             { .v = SpawnShellCmd("note todo")                              } },
 
-   { SUPKEY,                       XK_BackSpace,    spawn,             { .v = Spawn("toggle_passmenu")                                } },
-   { SUPKEY,                       XK_Delete,       spawn,             { .v = Spawn("sys_shortcuts")                                  } },
-   { SUPKEY,                       XK_Escape,       spawn,             { .v = Spawn("toggle_top")                                     } },
-   { SUPKEY,                       XK_apostrophe,   spawn,             { .v = Spawn("toggle_tty_clock")                               } },
-   { SUPKEY,                       XK_backslash,    spawn,             { .v = Spawn("reset_sys_default")                              } },
-   { SUPKEY,                       XK_bracketleft,  spawn,             { .v = Spawn("toggle_calendar_scheduling")                     } },
-   { SUPKEY,                       XK_bracketright, spawn,             { .v = Spawn("toggle_calendar_scheduling_today")               } },
+   { SUPKEY,                       XK_BackSpace,    spawn,             { .v = SpawnShellCmd("toggle passmenu")                        } },
+   { SUPKEY,                       XK_Delete,       spawn,             { .v = SpawnShellCmd("sys-shortcuts")                          } },
+   { SUPKEY,                       XK_Escape,       spawn,             { .v = SpawnShellCmd("toggle htop")                            } },
+   { SUPKEY,                       XK_apostrophe,   spawn,             { .v = SpawnShellCmd("toggle tty-clock")                       } },
+   { SUPKEY,                       XK_backslash,    spawn,             { .v = SpawnShellCmd("sys-reset")                              } }, // ???
+   { SUPKEY,                       XK_bracketleft,  spawn,             { .v = SpawnShellCmd("toggle calendar")                        } },
+   { SUPKEY,                       XK_bracketright, spawn,             { .v = SpawnShellCmd("toggle calendar-scheduling-today")       } },
+// { SUPKEY,                       XK_comma,        spawn,             { .v =                                                         } },
 // { SUPKEY,                       XK_period,       spawn,             { .v =                                                         } },
 
    { SUPKEY|ShiftMask,             XK_k,            resizewin,         { .ui = VECINC                                                 } },
@@ -195,14 +203,14 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")         } },
-   { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = Spawn("toggle_mutt")                                    } },
+   { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = SpawnShellCmd("toggle mutt")                            } },
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                            } },
 // { SUPKEY|ShiftMask,             XK_g,            spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    { .v = CmdClass("inkscape", "Inkscape")                        } },
+// { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    { .v = CmdClass("inkscape", "Inkscape")                        } },
    { SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,    { .v = CmdClass("netease-cloud-music", "netease-cloud-music")  } },
    { SUPKEY|ShiftMask,             XK_n,            toggle_scratchpad, { .v = CmdClass("st -c sp-julia -e julia", "sp-julia")         } },
    { SUPKEY|ShiftMask,             XK_o,            spawn_or_focus,    { .v = CmdClass("obsidian", "obsidian")                        } },
-   { SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,    { .v = CmdClass("krita", "krita")                              } },
+// { SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,    { .v = CmdClass("krita", "krita")                              } },
 // { SUPKEY|ShiftMask,             XK_q,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_r,            spawn,             { .v =                                                         } },
 
@@ -210,27 +218,27 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_t,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_u,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_v,            spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_w,            spawn,             { .v = Spawn("send_clipboard_to_feishu_robot")                 } },
+   { SUPKEY|ShiftMask,             XK_w,            spawn,             { .v = SpawnShellCmd("feishu-send")                            } },
    { SUPKEY|ShiftMask,             XK_x,            spawn_or_focus,    { .v = CmdClass("xournalpp", "com.github.xournalpp.xournalpp") } },
 // { SUPKEY|ShiftMask,             XK_y,            spawn,             { .v =                                                         } },
    { SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,    { .v = CmdClass("zoom", "zoom")                                } },
 // { SUPKEY|ShiftMask,             XK_Delete,       spawn,             { .v = SpawnShellCmd("systemctl poweroff")                     } },
 // { SUPKEY|ShiftMask,             XK_Return,       spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             { .v = Spawn("toggle_screenkey")                               } },
-   { SUPKEY|ShiftMask,             XK_comma,        spawn,             { .v = Spawn("toggle_rec_audio")                               } },
-   { SUPKEY|ShiftMask,             XK_period,       spawn,             { .v = Spawn("toggle_rec_screen")                              } },
+   { SUPKEY|ShiftMask,             XK_apostrophe,   spawn,             { .v = SpawnShellCmd("toggle screenkey")                       } },
+   { SUPKEY|ShiftMask,             XK_comma,        spawn,             { .v = SpawnShellCmd("toggle rec-audio")                       } },
+   { SUPKEY|ShiftMask,             XK_period,       spawn,             { .v = SpawnShellCmd("toggle rec-screen")                      } },
 
   // MODKEY, etc
    { MODKEY,                       XK_Return,       zoom,                 { 0                                            } },
    { MODKEY,                       XK_Tab,          view,                 { 0                                            } },
    { MODKEY,                       XK_apostrophe,   toggle_scratchpad,    { .v = CmdClass("st -c sp-st", "sp-st")        } },
    { MODKEY,                       XK_semicolon,    spawn,                { .v = SpawnShellCmd("rofi -show run -theme fullscreen-preview -font 'JetBrainsMono Nerd Font 24'") } },
-   { MODKEY,                       XK_slash,        spawn,                { .v = Spawn("snip_fzf")                       } },
-   { MODKEY|ShiftMask,             XK_slash,        spawn,                { .v = Spawn("snip_create")                    } },
+   { MODKEY,                       XK_slash,        spawn,                { .v = SpawnShellCmd("snip-fzf")               } }, // ???
+   { MODKEY|ShiftMask,             XK_slash,        spawn,                { .v = SpawnShellCmd("snip-create")            } }, // ???
 // { MODKEY,                       XK_space,        togglefloating,       { 0                                            } },
 // { MODKEY,                       XK_space,        togglefullscreen,     { 0                                            } },
    { MODKEY,                       XK_b,            togglebar,            { 0                                            } },
-   { MODKEY,                       XK_c,            spawn,                { .v = Spawn("toggle_clipmenu")                } },
+   { MODKEY,                       XK_c,            spawn,                { .v = SpawnShellCmd("toggle clipmenu")        } },
    { MODKEY,                       XK_f,            togglefullscreen,     { 0                                            } },
    { MODKEY,                       XK_o,            toggleoverview,       { 0                                            } },
    { MODKEY,                       XK_p,            spawn,                { .v = dmenucmd                                } },
@@ -330,20 +338,20 @@ static const Key keys[] = {
 // Button5:
 static const Button buttons[] = {
   /* click                event mask      button          function             argument */
-   { ClkTagBar,            0,              Button1,        view,           { 0                                 } },
-   { ClkTagBar,            0,              Button3,        toggleview,     { 0                                 } },
-   { ClkTagBar,            MODKEY,         Button1,        tag,            { 0                                 } },
-   { ClkTagBar,            MODKEY,         Button3,        toggletag,      { 0                                 } },
-// { ClkLtSymbol,          0,              Button1,        setlayout,      { 0                                 } }, // set layout float
-// { ClkLtSymbol,          0,              Button2,        setlayout,      { 0                                 } },
-// { ClkLtSymbol,          0,              Button3,        setlayout,      { 0                                 } },
-// { ClkStatusText,        0,              Button1,        spawn,          { .v = Spawn("toggle_tty_clock")    } },
-// { ClkStatusText,        0,              Button2,        spawn,          { .v = Spawn("toggle_keyboard")     } },
-// { ClkStatusText,        0,              Button3,        spawn,          { .v = Spawn("toggle_calendar")     } },
-   { ClkClientWin,         MODKEY,         Button1,        movemouse,      { 0                                 } },
-   { ClkClientWin,         MODKEY,         Button2,        togglefloating, { 0                                 } },
-   { ClkClientWin,         MODKEY,         Button3,        resizemouse,    { 0                                 } },
-// { ClkWinTitle,          0,              Button1,        xxxxxxxxx,      { 0                                 } },
-// { ClkWinTitle,          0,              Button2,        xxxxxxxxx,      { 0                                 } },
-// { ClkWinTitle,          0,              Button3,        xxxxxxxxx,      { 0                                 } },
+{ ClkTagBar,            0,              Button1,        view,           { 0                                         } },
+{ ClkTagBar,            0,              Button3,        toggleview,     { 0                                         } },
+{ ClkTagBar,            MODKEY,         Button1,        tag,            { 0                                         } },
+{ ClkTagBar,            MODKEY,         Button3,        toggletag,      { 0                                         } },
+// { ClkLtSymbol,          0,              Button1,        setlayout,      { 0                                      } }, // set layout float
+// { ClkLtSymbol,          0,              Button2,        setlayout,      { 0                                      } },
+// { ClkLtSymbol,          0,              Button3,        setlayout,      { 0                                      } },
+// { ClkStatusText,        0,              Button1,        spawn,          { .v = SpawnShellCmd("toggle tty_clock") } },
+// { ClkStatusText,        0,              Button2,        spawn,          { .v = SpawnShellCmd("toggle keyboard")  } },
+// { ClkStatusText,        0,              Button3,        spawn,          { .v = SpawnShellCmd("toggle calendar")  } },
+{ ClkClientWin,         MODKEY,         Button1,        movemouse,      { 0                                         } },
+{ ClkClientWin,         MODKEY,         Button2,        togglefloating, { 0                                         } },
+{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    { 0                                         } },
+// { ClkWinTitle,          0,              Button1,        xxxxxxxxx,      { 0                                      } },
+// { ClkWinTitle,          0,              Button2,        xxxxxxxxx,      { 0                                      } },
+// { ClkWinTitle,          0,              Button3,        xxxxxxxxx,      { 0                                      } },
 };

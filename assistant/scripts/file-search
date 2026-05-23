@@ -1,0 +1,4 @@
+#!/bin/bash
+
+curl -s -X POST http://127.0.0.1:4321/api/svr/file-search \
+  -u "admin:AAaa00__"

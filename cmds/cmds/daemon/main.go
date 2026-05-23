@@ -1,12 +1,13 @@
 package main
 
 import (
-	"cmds/utils"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"cmds/utils"
 )
 
 type ProcConfig struct {
@@ -37,10 +38,6 @@ func main() {
 			Command: "dwmblocks",
 		},
 		{
-			Name:    "picom",
-			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
-		},
-		{
 			Name:    "xset",
 			Command: "xset r rate 158 128",
 		},
@@ -49,17 +46,21 @@ func main() {
 			Command: "dunst",
 		},
 		{
-			Name:    "hhkb",
-			Command: "hhkb",
+			Name:    "picom",
+			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
 		},
-		{
-			Name:    "clipmenud",
-			Command: "clipmenud",
-		},
-		{
-			Name:    "sys_wallpaper",
-			Command: "sys_wallpaper",
-		},
+		// {
+		// 	Name:    "sys_wallpaper",
+		// 	Command: "sys_wallpaper",
+		// },
+		// {
+		// 	Name:    "hhkb",
+		// 	Command: "hhkb",
+		// },
+		// {
+		// 	Name:    "clipmenud",
+		// 	Command: "clipmenud",
+		// },
 	}
 
 	for {

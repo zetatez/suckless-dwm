@@ -1,0 +1,645 @@
+basePath: /
+definitions:
+  assistant_pkg_response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  internal_app_modules_svc.DatetimeConvertRequest:
+    properties:
+      from:
+        type: string
+      to:
+        type: string
+    required:
+    - from
+    - to
+    type: object
+  internal_app_modules_svc.FormatRequest:
+    properties:
+      language:
+        type: string
+    required:
+    - language
+    type: object
+  internal_app_modules_svc.LaunchRequest:
+    properties:
+      command:
+        type: string
+    required:
+    - command
+    type: object
+  internal_app_modules_svc.NoteRequest:
+    properties:
+      type:
+        type: string
+    required:
+    - type
+    type: object
+  internal_app_modules_svc.ToggleRequest:
+    properties:
+      process:
+        type: string
+    required:
+    - process
+    type: object
+host: 127.0.0.1:9876
+info:
+  contact: {}
+  description: Example Swagger setup for Golang Gin.
+  title: Assistant API
+  version: "1.0"
+paths:
+  /api/health:
+    get:
+      description: 检查服务健康状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+        "500":
+          description: 服务不健康
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 健康检查
+      tags:
+      - 健康检查
+  /api/svr/convert-datetime:
+    post:
+      consumes:
+      - application/json
+      description: 从剪贴板读取时间字符串，转换后写回剪贴板
+      parameters:
+      - description: 转换格式
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_app_modules_svc.DatetimeConvertRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 时间格式转换
+      tags:
+      - 工具
+  /api/svr/feishu-send:
+    post:
+      description: 从剪贴板读取内容并发送到飞书机器人
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 发送飞书消息
+      tags:
+      - 通信
+  /api/svr/file-open-images:
+    post:
+      description: 用 sxiv 打开目录下所有图片
+      parameters:
+      - description: 目录路径(默认当前目录)
+        in: query
+        name: dir
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 打开图片
+      tags:
+      - 文件
+  /api/svr/file-search:
+    post:
+      description: 触发 fzf 全盘文件搜索并打开
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 文件搜索
+      tags:
+      - 文件
+  /api/svr/file-search-book:
+    post:
+      description: 触发 fzf 搜索电子书(pdf/epub/djvu)
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 电子书搜索
+      tags:
+      - 文件
+  /api/svr/file-search-content:
+    post:
+      description: 触发 rg+fzf 文件内容搜索
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 文件内容搜索
+      tags:
+      - 文件
+  /api/svr/file-search-media:
+    post:
+      description: 触发 fzf 搜索图片/音频/视频文件
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 媒体文件搜索
+      tags:
+      - 文件
+  /api/svr/file-search-wiki:
+    post:
+      description: 触发 fzf 搜索 Markdown 笔记文件
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: Wiki 搜索
+      tags:
+      - 文件
+  /api/svr/format:
+    post:
+      consumes:
+      - application/json
+      description: 从剪贴板读取代码，格式化后写回剪贴板(json/yaml/sql/go)
+      parameters:
+      - description: 语言类型
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_app_modules_svc.FormatRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 格式化代码
+      tags:
+      - 工具
+  /api/svr/get-cur-unix-sec:
+    get:
+      description: 获取当前 Unix 时间戳并写入剪贴板
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 获取当前 Unix 时间戳
+      tags:
+      - 工具
+  /api/svr/get-datetime:
+    get:
+      description: 获取当前日期时间并写入剪贴板
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 获取当前时间
+      tags:
+      - 工具
+  /api/svr/get-ip:
+    get:
+      description: 获取网卡 IP 地址并写入剪贴板
+      parameters:
+      - description: 网卡名称(默认 wlan0)
+        in: query
+        name: interface
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 获取 IP 地址
+      tags:
+      - 网络
+  /api/svr/handle-clipboard:
+    post:
+      description: '从剪贴板读取内容，自动判断: 文件路径、URL 或搜索'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 智能剪贴板
+      tags:
+      - 工具
+  /api/svr/launch:
+    post:
+      consumes:
+      - application/json
+      description: 启动指定应用
+      parameters:
+      - description: 启动命令
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_app_modules_svc.LaunchRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 启动应用
+      tags:
+      - 进程
+  /api/svr/note:
+    post:
+      consumes:
+      - application/json
+      description: 写入 header 后用 nvim 打开编辑
+      parameters:
+      - description: 笔记类型(todo/scripts/monthly_work)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_app_modules_svc.NoteRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 笔记
+      tags:
+      - 工具
+  /api/svr/open-url:
+    post:
+      consumes:
+      - application/json
+      description: 用指定浏览器打开 URL(支持 chrome/qutebrowser)
+      parameters:
+      - description: 浏览器和URL
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 打开 URL
+      tags:
+      - 网络
+  /api/svr/open-url-as-app:
+    post:
+      consumes:
+      - application/json
+      description: 用浏览器应用模式打开 URL(chrome-app/qutebrowser)
+      parameters:
+      - description: 浏览器和URL
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 应用模式打开 URL
+      tags:
+      - 网络
+  /api/svr/search:
+    post:
+      description: rofi 列出所有可用命令并执行
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 搜索并执行动作
+      tags:
+      - 工具
+  /api/svr/search-books-online:
+    post:
+      consumes:
+      - application/json
+      description: 同时打开 openlibrary 和 z-lib 的图书搜索结果
+      parameters:
+      - description: 搜索关键词
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 图书搜索
+      tags:
+      - 搜索
+  /api/svr/search-videos-online:
+    post:
+      consumes:
+      - application/json
+      description: 同时打开 Bilibili 和 YouTube 的视频搜索结果
+      parameters:
+      - description: 搜索关键词
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 视频搜索
+      tags:
+      - 搜索
+  /api/svr/search-web:
+    post:
+      consumes:
+      - application/json
+      description: 用 Chrome 打开 Google 搜索结果
+      parameters:
+      - description: 搜索关键词
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 网页搜索
+      tags:
+      - 搜索
+  /api/svr/snip-create:
+    post:
+      description: rofi 输入名称, nvim 编辑内容
+      parameters:
+      - description: snip 名称
+        in: query
+        name: name
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 创建 snip
+      tags:
+      - 工具
+  /api/svr/snip-fzf:
+    post:
+      description: fzf 选择 snip 文件, 复制内容到剪贴板
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 选择并复制 snip
+      tags:
+      - 工具
+  /api/svr/sys-bluetooth-connect:
+    post:
+      description: 触发 rofi 选择已配对设备并连接
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 蓝牙连接
+      tags:
+      - 蓝牙
+  /api/svr/sys-bluetooth-disconnect:
+    post:
+      description: 触发 rofi 选择已连接设备并断开
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 蓝牙断开
+      tags:
+      - 蓝牙
+  /api/svr/sys-bluetooth-scan-connect:
+    post:
+      description: 扫描附近设备后 rofi 选择并连接
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 蓝牙扫描并连接
+      tags:
+      - 蓝牙
+  /api/svr/sys-display:
+    post:
+      description: 触发 rofi 选择显示器布局
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 显示器布局
+      tags:
+      - 系统
+  /api/svr/sys-display-light-down:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 屏幕亮度-
+      tags:
+      - 系统
+  /api/svr/sys-display-light-up:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 屏幕亮度+
+      tags:
+      - 系统
+  /api/svr/sys-keyboard-light:
+    post:
+      description: 切换 ThinkPad 键盘背光
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 键盘背光
+      tags:
+      - 系统
+  /api/svr/sys-kill:
+    post:
+      description: 触发 fzf 交互式进程管理和杀死
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 进程管理器
+      tags:
+      - 系统
+  /api/svr/sys-micro-down:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 麦克风-
+      tags:
+      - 系统
+  /api/svr/sys-micro-toggle:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 麦克风开关
+      tags:
+      - 系统
+  /api/svr/sys-micro-up:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 麦克风+
+      tags:
+      - 系统
+  /api/svr/sys-open-terminal:
+    post:
+      description: 触发 fzf 选择目录并打开终端
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 打开终端
+      tags:
+      - 系统
+  /api/svr/sys-reset:
+    post:
+      description: 重置亮度/音量/麦克风/键盘速率到默认值
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 系统重置
+      tags:
+      - 系统
+  /api/svr/sys-shortcut:
+    post:
+      description: 触发 rofi 电源菜单(suspend/poweroff/reboot/off-display/slock)
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 电源操作菜单
+      tags:
+      - 系统
+  /api/svr/sys-ssh-connect:
+    post:
+      description: 触发 rofi 选择 SSH 主机并输入密码后连接
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: SSH 连接
+      tags:
+      - 网络
+  /api/svr/sys-volume-down:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 音量-
+      tags:
+      - 系统
+  /api/svr/sys-volume-toggle:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 静音切换
+      tags:
+      - 系统
+  /api/svr/sys-volume-up:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 音量+
+      tags:
+      - 系统
+  /api/svr/sys-wifi-connect:
+    post:
+      description: 触发 rofi 选择 WiFi 并输入密码后连接
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: WiFi 连接
+      tags:
+      - 网络
+  /api/svr/toggle:
+    post:
+      consumes:
+      - application/json
+      description: 如果进程运行则杀死，否则启动
+      parameters:
+      - description: 进程名
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_app_modules_svc.ToggleRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/assistant_pkg_response.Response'
+      summary: 切换进程
+      tags:
+      - 进程
+schemes:
+- http
+swagger: "2.0"

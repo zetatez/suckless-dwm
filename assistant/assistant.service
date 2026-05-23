@@ -1,0 +1,14 @@
+[Unit]
+Description=Assistant API Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/assistant/assistant
+WorkingDirectory=%h/.config/assistant
+Restart=on-failure
+RestartSec=5
+Environment=DISPLAY=:0
+
+[Install]
+WantedBy=default.target

@@ -63,7 +63,6 @@ build: prepare build_shell_cmds
 	go build -o ./bins/toggle_rec_screen                            ./cmds/toggle_rec_screen/main.go
 	go build -o ./bins/toggle_rec_show                              ./cmds/toggle_rec_show/main.go
 	go build -o ./bins/toggle_rec_webcam                            ./cmds/toggle_rec_webcam/main.go
-	go build -o ./bins/toggle_scala                                 ./cmds/toggle_scala/main.go
 	go build -o ./bins/toggle_screenkey                             ./cmds/toggle_screenkey/main.go
 	go build -o ./bins/toggle_top                                   ./cmds/toggle_top/main.go
 	go build -o ./bins/toggle_tty_clock                             ./cmds/toggle_tty_clock/main.go

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "usage: note.sh <todo|scripts|monthly_work>"
+  exit 1
+fi
+
+curl -s -X POST http://127.0.0.1:4321/api/svr/note \
+  -u "admin:AAaa00__" \
+  -H "Content-Type: application/json" \
+  -d "{\"type\":\"$1\"}"

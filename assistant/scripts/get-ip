@@ -1,0 +1,4 @@
+#!/bin/bash
+
+curl -s -X GET http://127.0.0.1:4321/api/svr/get-ip \
+  -u "admin:AAaa00__"

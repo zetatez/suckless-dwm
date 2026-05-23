@@ -108,16 +108,6 @@ func TogglePython() {
 	)
 }
 
-func ToggleScala() {
-	utils.Toggle(
-		fmt.Sprintf(
-			"st -t %s -c %s -e scala",
-			WinClassScratchPad,
-			WinClassScratchPad,
-		),
-	)
-}
-
 func ToggleTTYClock() {
 	utils.Toggle(
 		fmt.Sprintf(

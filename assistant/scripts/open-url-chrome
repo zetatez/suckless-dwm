@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "usage: open-url-chrome.sh <url>"
+  exit 1
+fi
+
+curl -s -X POST http://127.0.0.1:4321/api/svr/open-url \
+  -u "admin:AAaa00__" \
+  -H "Content-Type: application/json" \
+  -d @- <<ENDJSON
+{
+  "browser": "chrome",
+  "url": "$1"
+}
+ENDJSON

@@ -1,7 +1,6 @@
 package plugins
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -686,43 +685,35 @@ func getFeishuTenantAccessToken(appID, appSecret string) (string, error) {
 	return result.TenantAccessToken, nil
 }
 
+type SshEntry struct {
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Desc     string `json:"desc"`
+}
+
 func SshTo() {
-	mysshListFilePath := path.Join(os.Getenv("HOME"), ".ssh/my.ssh.list")
+	mysshListFilePath := path.Join(os.Getenv("HOME"), ".ssh/my.ssh.json")
 	if !utils.IsFileExists(mysshListFilePath) {
 		f, err := os.Create(mysshListFilePath)
 		if err != nil {
 			utils.Notify(err)
 			return
 		}
+		_, _ = f.WriteString("{}")
 		_ = f.Close()
 	}
 
-	// read from to ~/.ssh/my.ssh.list
+	// read from ~/.ssh/my.ssh.json
 	b, err := os.ReadFile(mysshListFilePath)
 	if err != nil {
 		utils.Notify(err)
 		return
 	}
-	mySshList := []map[string]string{}
-	slice1 := strings.Split(string(b), "\n")
-	for _, x := range slice1 {
-		x = strings.TrimSpace(x)
-		slice2 := regexp.MustCompile(`[ \r\t\s]+`).Split(x, -1)
-		if len(slice2) < 3 {
-			continue
-		}
-		host := strings.TrimSpace(slice2[0])
-		user := strings.TrimSpace(slice2[1])
-		password := strings.TrimSpace(slice2[2])
-		slice3 := strings.Split(x, "#")
-		if len(slice3) != 2 {
-			continue
-		}
-		desc := strings.TrimSpace(slice3[1])
-		mySshList = append(
-			mySshList,
-			map[string]string{"host": host, "user": user, "password": password, "desc": desc},
-		)
+	mySshList := map[string]SshEntry{}
+	if err := json.Unmarshal(b, &mySshList); err != nil {
+		utils.Notify(err)
+		return
 	}
 
 	// read from ~/.ssh/known_hosts
@@ -735,7 +726,7 @@ func SshTo() {
 	// prompt
 	promptList := []string{}
 	for _, x := range mySshList {
-		promptList = append(promptList, fmt.Sprintf("%-20s %-20s %-20s # %s", x["host"], x["user"], x["password"], x["desc"]))
+		promptList = append(promptList, fmt.Sprintf("%-20s %-20s # %s", x.Host, x.User, x.Desc))
 	}
 	for host := range knownHosts {
 		promptList = append(promptList, fmt.Sprintf("%-20s", knownHosts[host]))
@@ -751,11 +742,15 @@ func SshTo() {
 	slice := regexp.MustCompile(`[ \r\t\s]+`).Split(chioce, -1)
 
 	switch {
-	case len(slice) > 3:
+	case len(slice) > 1:
 		host := strings.TrimSpace(slice[0])
 		user := strings.TrimSpace(slice[1])
-		password := strings.TrimSpace(slice[2])
-		err = utils.SSH(host, 22, user, password)
+		entry, ok := mySshList[user+"@"+host]
+		if !ok {
+			utils.Notify(fmt.Errorf("entry not found: %s@%s", user, host))
+			return
+		}
+		err = utils.SSH(host, 22, entry.User, entry.Password)
 		if err != nil {
 			utils.Notify(err)
 			return
@@ -785,18 +780,18 @@ func SshTo() {
 			return
 		}
 
-		// append to ~/.ssh/my.ssh.list
-		file, err := os.OpenFile(
-			mysshListFilePath,
-			os.O_CREATE|os.O_WRONLY|os.O_APPEND,
-			0o666,
-		)
+		// append to ~/.ssh/my.ssh.json
+		mySshList[user+"@"+host] = SshEntry{
+			Host: host, User: user, Password: password, Desc: desc,
+		}
+		b, err = json.MarshalIndent(mySshList, "", "  ")
 		if err != nil {
 			utils.Notify(err)
+			return
 		}
-		defer file.Close()
-		writer := bufio.NewWriter(file)
-		_, _ = fmt.Fprintf(writer, "%-20s %-20s %-20s # %s\r\n", host, user, password, desc)
-		_ = writer.Flush()
+		if err = os.WriteFile(mysshListFilePath, b, 0o666); err != nil {
+			utils.Notify(err)
+			return
+		}
 	}
 }
