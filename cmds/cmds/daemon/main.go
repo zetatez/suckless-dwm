@@ -1,12 +1,13 @@
 package main
 
 import (
-	"cmds/utils"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"cmds/utils"
 )
 
 type ProcConfig struct {
@@ -48,18 +49,18 @@ func main() {
 			Name:    "dunst",
 			Command: "dunst",
 		},
-		{
-			Name:    "hhkb",
-			Command: "hhkb",
-		},
-		{
-			Name:    "clipmenud",
-			Command: "clipmenud",
-		},
-		{
-			Name:    "sys_wallpaper",
-			Command: "sys_wallpaper",
-		},
+		// {
+		// 	Name:    "sys_wallpaper",
+		// 	Command: "sys_wallpaper",
+		// },
+		// {
+		// 	Name:    "hhkb",
+		// 	Command: "hhkb",
+		// },
+		// {
+		// 	Name:    "clipmenud",
+		// 	Command: "clipmenud",
+		// },
 	}
 
 	for {
