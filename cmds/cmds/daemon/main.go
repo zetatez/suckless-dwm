@@ -38,10 +38,6 @@ func main() {
 			Command: "dwmblocks",
 		},
 		{
-			Name:    "picom",
-			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
-		},
-		{
 			Name:    "xset",
 			Command: "xset r rate 158 128",
 		},
@@ -49,6 +45,10 @@ func main() {
 			Name:    "dunst",
 			Command: "dunst",
 		},
+		// {
+		// 	Name:    "picom",
+		// 	Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
+		// },
 		// {
 		// 	Name:    "sys_wallpaper",
 		// 	Command: "sys_wallpaper",
