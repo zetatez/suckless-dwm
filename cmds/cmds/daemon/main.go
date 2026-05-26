@@ -45,10 +45,10 @@ func main() {
 			Name:    "dunst",
 			Command: "dunst",
 		},
-		// {
-		// 	Name:    "picom",
-		// 	Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
-		// },
+		{
+			Name:    "picom",
+			Command: "picom --config " + os.Getenv("HOME") + "/.config/picom/picom.conf &",
+		},
 		// {
 		// 	Name:    "sys_wallpaper",
 		// 	Command: "sys_wallpaper",
