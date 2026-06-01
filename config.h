@@ -64,6 +64,7 @@ static const Rule rules[] = {
   {"st",                     NULL,       NULL,      0,            0,            1,             1,            0,       -1 },
   {"vimb",                   NULL,       NULL,      0,            0,            0,             1,            0,       -1 }, // no swallow for markdown
 //{"netease-cloud-music",    NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
+//{"Cc-switch",              NULL,       NULL,      1<<8,         0,            0,             0,            0,       -1 },
 };
 
 /* stickyicon */
@@ -80,7 +81,6 @@ static const int lockfullscreen  = 0;
 static const int refreshrate     = 120;
 
 static const Layout layouts[] = {
-
   { "[W] 󰴈"                  , layout_workflow           }, // default
   { "[F] "                  , layout_fib_spiral         },
   { "[F] "                  , layout_fib_dwindle        },
@@ -196,6 +196,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_backslash,    spawn,             { .v = Spawn("reset_sys_default")                              } },
    { SUPKEY,                       XK_bracketleft,  spawn,             { .v = Spawn("toggle_calendar_scheduling")                     } },
    { SUPKEY,                       XK_bracketright, spawn,             { .v = Spawn("toggle_calendar_scheduling_today")               } },
+// { SUPKEY,                       XK_comma,        spawn,             { .v =                                                         } },
 // { SUPKEY,                       XK_period,       spawn,             { .v =                                                         } },
 
    { SUPKEY|ShiftMask,             XK_k,            resizewin,         { .ui = VECINC                                                 } },
@@ -210,11 +211,11 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = Spawn("toggle_mutt")                                    } },
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                            } },
 // { SUPKEY|ShiftMask,             XK_g,            spawn,             { .v =                                                         } },
-   { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    { .v = CmdClass("inkscape", "Inkscape")                        } },
+// { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    { .v = CmdClass("inkscape", "Inkscape")                        } },
    { SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,    { .v = CmdClass("netease-cloud-music", "netease-cloud-music")  } },
    { SUPKEY|ShiftMask,             XK_n,            toggle_scratchpad, { .v = CmdClass("st -c sp-julia -e julia", "sp-julia")         } },
    { SUPKEY|ShiftMask,             XK_o,            spawn_or_focus,    { .v = CmdClass("obsidian", "obsidian")                        } },
-   { SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,    { .v = CmdClass("krita", "krita")                              } },
+// { SUPKEY|ShiftMask,             XK_p,            spawn_or_focus,    { .v = CmdClass("krita", "krita")                              } },
 // { SUPKEY|ShiftMask,             XK_q,            spawn,             { .v =                                                         } },
 // { SUPKEY|ShiftMask,             XK_r,            spawn,             { .v =                                                         } },
 
