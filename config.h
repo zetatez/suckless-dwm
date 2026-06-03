@@ -22,11 +22,9 @@ static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = {
-  "VictorMono Nerd Font:style=Medium:size=14",
-  "Source Han Serif CN:style=Regular:size=14",
-  "Noto Color Emoji:style=Regular:size=14",
+  "DejaVuSansM Nerd Font Mono:style=Regular:size=14",
 };
-static const char dmenufont[]      = "VictorMono Nerd Font:style=Medium:size=16";
+static const char dmenufont[]      = "DejaVuSansM Nerd Font Mono:style=Regular:size=16";
 
 static const char *colors[][3] = {
   /*               fg,        bg,        border */
