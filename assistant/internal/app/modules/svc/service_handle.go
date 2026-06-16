@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"assistant/internal/bootstrap/psl"
 )
 
 var fileLocationPatterns = []struct {
@@ -81,8 +83,19 @@ func (s *Service) HandleClipboard() (string, error) {
 		return "", fmt.Errorf("clipboard is empty")
 	}
 
+	// URLs are detected first so that https://host:443/foo isn't matched by
+	// the "file:line:col" extractor below.
+	if isURL(text) {
+		err := s.OpenURL("chrome", text)
+		return fmt.Sprintf("opened URL: %s", text), err
+	}
+	if url, ok := s.extractMarkdownURL(text); ok {
+		err := s.OpenURL("chrome", url)
+		return fmt.Sprintf("opened URL: %s", url), err
+	}
+
 	if file, line, col, ok := s.extractFileLocation(text); ok {
-		term := "st"
+		term := psl.GetConfig().Svc.DefaultTerminal
 		cmd := fmt.Sprintf("%s -e nvim +%d %s", term, line, file)
 		if col > 0 {
 			cmd = fmt.Sprintf("%s -e nvim +'%s' %s", term, fmt.Sprintf("call cursor(%d,%d)", line, col), file)
@@ -92,18 +105,9 @@ func (s *Service) HandleClipboard() (string, error) {
 	}
 
 	if s.existsAndIsFile(text) {
-		err := startScript("bash", fmt.Sprintf("st -e yazi '%s'", text))
+		term := psl.GetConfig().Svc.DefaultTerminal
+		err := startScript("bash", fmt.Sprintf("%s -e yazi '%s'", term, text))
 		return fmt.Sprintf("opened file: %s", text), err
-	}
-
-	if url, ok := s.extractMarkdownURL(text); ok {
-		err := s.OpenURL("chrome", url)
-		return fmt.Sprintf("opened URL: %s", url), err
-	}
-
-	if isURL(text) {
-		err := s.OpenURL("chrome", text)
-		return fmt.Sprintf("opened URL: %s", text), err
 	}
 
 	err = s.SearchWeb(text)

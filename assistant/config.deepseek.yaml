@@ -1,0 +1,63 @@
+app:
+  name: assistant
+  host: 127.0.0.1
+  port: 4321
+  interface: ""
+
+auth:
+  username: admin
+  password: AAaa00__
+
+log:
+  level: info
+  filename: ~/.config/assistant/logs/assistant.log
+  max_size_mb: 8
+  max_backups: 7
+  max_age_days: 7
+  compress: true
+  format: text
+  console: true
+
+llm:
+  provider: deepseek
+  api_key: "${DEEPSEEK_API_KEY}"
+  base_url: https://api.deepseek.com
+  model: deepseek-v4-pro
+  timeout: 300
+  max_tokens: 8192
+  temperature: 0.3
+
+channels:
+  feishu:
+    app_id: "${FEISHU_APP_ID}"
+    app_secret: "${FEISHU_APP_SECRET}"
+    chat_id: "${FEISHU_CHAT_ID}"
+
+background:
+  enabled: true
+  procs:
+    - name: fcitx5
+      command: fcitx5 -d
+      precursor: dwm
+    - name: picom
+      command: picom --config ~/.config/picom/picom.conf
+      precursor: dwm
+    - name: xset
+      command: xset r rate 158 128
+      precursor: dwm
+    - name: dunst
+      command: dunst
+      precursor: dwm
+    - name: clipmenud
+      command: clipmenud
+      precursor: dwm
+
+svc:
+  vpn_proxy: "socks5://127.0.0.1:7891"
+  default_monitor: "eDP-1"
+  dir_wallpaper: "~/Pictures/wallpapers"
+  dir_working_logbook: "~/git/working/logbook"
+  path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
+  terminal_default: "st"
+  path_ssh_secret: "~/.ssh/my.ssh.json"
+

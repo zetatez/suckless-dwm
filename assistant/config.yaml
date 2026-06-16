@@ -1,7 +1,8 @@
 app:
   name: assistant
+  host: 127.0.0.1
   port: 4321
-  interface: wlan0
+  interface: ""
 
 auth:
   username: admin
@@ -10,9 +11,9 @@ auth:
 log:
   level: debug
   filename: ~/.config/assistant/logs/assistant.log
-  max_size_mb: 16
+  max_size_mb: 8
   max_backups: 7
-  max_age_days: 14
+  max_age_days: 7
   compress: true
   format: text
   console: true
@@ -20,11 +21,11 @@ log:
 llm:
   provider: minimax
   api_key: "${MINIMAX_API_KEY}"
-  base_url: https://api.minimaxi.com
-  model: MiniMax-M2.5
-  timeout: 60
-  max_tokens: 4096
-  temperature: 0.2
+  base_url: https://api.minimaxi.com/v1
+  model: MiniMax-M3
+  timeout: 300
+  max_tokens: 196608
+  temperature: 0.3
 
 channels:
   feishu:
@@ -35,14 +36,21 @@ channels:
 background:
   enabled: true
   procs:
+    - name: fcitx5
+      command: fcitx5 -d
+      precursor: dwm
     - name: picom
       command: picom --config ~/.config/picom/picom.conf
+      precursor: dwm
     - name: xset
       command: xset r rate 158 128
+      precursor: dwm
     - name: dunst
       command: dunst
+      precursor: dwm
     - name: clipmenud
       command: clipmenud
+      precursor: dwm
 
 svc:
   vpn_proxy: "socks5://127.0.0.1:7891"

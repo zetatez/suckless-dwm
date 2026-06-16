@@ -8,4 +8,8 @@ fi
 curl -s -X POST http://127.0.0.1:4321/api/svr/launch \
   -u "admin:AAaa00__" \
   -H "Content-Type: application/json" \
-  -d "{\"command\":\"$1\"}"
+  -d @- <<ENDJSON
+{
+  "command": "$1"
+}
+ENDJSON

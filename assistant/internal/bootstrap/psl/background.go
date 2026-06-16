@@ -1,72 +1,73 @@
 package psl
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
-	"sync"
 	"time"
 )
 
-var (
-	backgroundOnce sync.Once
-	wallpaperOnce  sync.Once
-)
-
-func StartBackgroundTasks() {
+func StartBackgroundTasks(ctx context.Context) {
 	cfg := GetConfig()
 	if cfg.Background.Enabled {
-		startDaemon(cfg.Background.Procs)
+		startDaemon(ctx, cfg.Background.Procs)
 	}
-	startWallpaper()
+	startWallpaper(ctx)
 }
 
-func startDaemon(procs []BackgroundProc) {
-	backgroundOnce.Do(func() {
-		go func() {
-			for {
-				for _, p := range procs {
-					if !isRunning(p.Name) {
-						cmd := exec.Command("bash", "-c", p.Command+" &")
-						cmd.Start()
-						go cmd.Wait()
+func startDaemon(ctx context.Context, procs []BackgroundProc) {
+	go func() {
+		for {
+			for _, p := range procs {
+				if !isRunning(p.Name) {
+					if p.Precursor != "" && !isRunning(p.Precursor) {
+						continue
 					}
+					cmd := exec.CommandContext(ctx, "bash", "-c", p.Command+" &")
+					if err := cmd.Start(); err != nil {
+						GetLogger().WithError(err).WithField("proc", p.Name).Warn("start proc failed")
+						continue
+					}
+					go func() { _ = cmd.Wait() }()
 				}
-				time.Sleep(3 * time.Second)
 			}
-		}()
-	})
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(3 * time.Second):
+			}
+		}
+	}()
 }
 
-func startWallpaper() {
-	wallpaperOnce.Do(func() {
-		go func() {
-			dir := GetConfig().Svc.DirWallpaper
-			if strings.HasPrefix(dir, "~/") {
-				home, _ := os.UserHomeDir()
-				dir = filepath.Join(home, dir[2:])
-			}
-			for {
-				files, err := filepath.Glob(filepath.Join(dir, "*.JPG"))
-				if err != nil || len(files) == 0 {
-					time.Sleep(60 * time.Second)
-					continue
+func startWallpaper(ctx context.Context) {
+	go func() {
+		dir := GetConfig().Svc.DirWallpaper
+		for {
+			files, _ := filepath.Glob(filepath.Join(dir, "*.JPG"))
+			for _, pic := range files {
+				select {
+				case <-ctx.Done():
+					return
+				default:
 				}
-				for _, pic := range files {
-					_, _, _ = func() (string, string, error) {
-						cmd := exec.Command("bash", "-c", fmt.Sprintf("feh --bg-fill '%s'", pic))
-						var o, e strings.Builder
-						cmd.Stdout, cmd.Stderr = &o, &e
-						err := cmd.Run()
-						return o.String(), e.String(), err
-					}()
-					time.Sleep(60 * time.Second)
+				cmd := exec.CommandContext(ctx, "bash", "-c", fmt.Sprintf("feh --bg-fill '%s'", pic))
+				_ = cmd.Run()
+				select {
+				case <-ctx.Done():
+					return
+				case <-time.After(60 * time.Second):
 				}
 			}
-		}()
-	})
+			// Empty dir (or dir missing) — wait before scanning again.
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(60 * time.Second):
+			}
+		}
+	}()
 }
 
 func isRunning(name string) bool {

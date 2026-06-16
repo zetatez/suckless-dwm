@@ -15,8 +15,22 @@ type DatetimeConvertRequest struct {
 
 type ToggleRequest struct {
 	Process string `json:"process" binding:"required"`
+	Match   string `json:"match" binding:"required"`
 }
 
 type LaunchRequest struct {
 	Command string `json:"command" binding:"required"`
+}
+
+type QueryRequest struct {
+	Query string `json:"query" binding:"required"`
+}
+
+type OpenURLRequest struct {
+	Browser string `json:"browser"`
+	URL     string `json:"url" binding:"required"`
+}
+
+type DirRequest struct {
+	Dir string `json:"dir"`
 }

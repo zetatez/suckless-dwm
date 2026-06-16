@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-amixer set Capture 5%-
-notify-send 'micro -5%'

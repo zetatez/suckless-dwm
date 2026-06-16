@@ -60,3 +60,11 @@ func WithSystemPrompt(system string) Option {
 		r.Messages = append([]Message{{Role: RoleSystem, Content: system}}, r.Messages...)
 	}
 }
+
+func WithImageBase64(img string) Option {
+	return func(r *ChatRequest) {
+		if len(r.Messages) > 0 {
+			r.Messages[len(r.Messages)-1].ImageBase64 = img
+		}
+	}
+}

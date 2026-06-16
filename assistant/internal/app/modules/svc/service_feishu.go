@@ -11,9 +11,10 @@ import (
 	"assistant/internal/bootstrap/psl"
 )
 
-func (s *Service) FeishuSend() error {
+func (s *Service) SendToFeishu() error {
 	text, err := s.readClipboard()
 	if err != nil {
+		s.logger.WithError(err).Warn("feishu: read clipboard failed")
 		return fmt.Errorf("read clipboard: %w", err)
 	}
 	text = strings.TrimSpace(text)
@@ -29,8 +30,13 @@ func (s *Service) FeishuSend() error {
 		return fmt.Errorf("missing feishu config: app_id, app_secret, chat_id")
 	}
 
+	return s.sendToFeishuText(appID, appSecret, chatID, text)
+}
+
+func (s *Service) sendToFeishuText(appID, appSecret, chatID, text string) error {
 	token, err := s.getFeishuToken(appID, appSecret)
 	if err != nil {
+		s.logger.WithError(err).Warn("feishu: get token failed")
 		return fmt.Errorf("get feishu token: %w", err)
 	}
 
@@ -54,9 +60,7 @@ func (s *Service) FeishuSend() error {
 		return fmt.Errorf("marshal payload: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost,
-		"https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
-		bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id", bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
 	}
@@ -66,11 +70,33 @@ func (s *Service) FeishuSend() error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		s.logger.WithError(err).Warn("feishu: HTTP request failed")
 		return fmt.Errorf("send request: %w", err)
 	}
 	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(io.LimitReader(resp.Body, 8192))
+	if err != nil {
+		return fmt.Errorf("read feishu response: %w", err)
+	}
 	if resp.StatusCode >= http.StatusMultipleChoices {
-		return fmt.Errorf("feishu API returned status %d", resp.StatusCode)
+		s.logger.WithFields(map[string]interface{}{
+			"status": resp.StatusCode,
+			"body":   strings.TrimSpace(string(respBody)),
+		}).Warn("feishu: API returned non-2xx")
+		return fmt.Errorf("feishu API returned status %d: %s", resp.StatusCode, strings.TrimSpace(string(respBody)))
+	}
+
+	var result struct {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+	if err := json.Unmarshal(respBody, &result); err == nil && result.Code != 0 {
+		s.logger.WithFields(map[string]interface{}{
+			"code": result.Code,
+			"msg":  result.Msg,
+		}).Warn("feishu: business error")
+		return fmt.Errorf("feishu API error code=%d: %s", result.Code, result.Msg)
 	}
 	return nil
 }
@@ -107,6 +133,7 @@ func (s *Service) getFeishuToken(appID, appSecret string) (string, error) {
 		Code              int    `json:"code"`
 		Msg               string `json:"msg"`
 		TenantAccessToken string `json:"tenant_access_token"`
+		Expire            int    `json:"expire"`
 	}
 	if err := json.Unmarshal(respBody, &result); err != nil {
 		return "", err

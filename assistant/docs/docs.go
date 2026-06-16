@@ -72,7 +72,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/svr/feishu-send": {
+        "/api/svr/send-to-feishu": {
             "post": {
                 "description": "从剪贴板读取内容并发送到飞书机器人",
                 "tags": [
@@ -754,23 +754,6 @@ const docTemplate = `{
                     "系统"
                 ],
                 "summary": "麦克风+",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/svr/sys-open-terminal": {
-            "post": {
-                "description": "触发 fzf 选择目录并打开终端",
-                "tags": [
-                    "系统"
-                ],
-                "summary": "打开终端",
                 "responses": {
                     "200": {
                         "description": "OK",

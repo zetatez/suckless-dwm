@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"runtime/debug"
 	"time"
 
 	"assistant/internal/app/module"
@@ -19,7 +20,15 @@ func Run(ctx context.Context) error {
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Recovery())
+	r.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
+		logger.WithFields(map[string]interface{}{
+			"error":  err,
+			"stack":  string(debug.Stack()),
+			"path":   c.Request.URL.Path,
+			"method": c.Request.Method,
+		}).Error("panic recovered")
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}))
 
 	modules := []module.Module{
 		health.NewHealthModule(),
@@ -39,7 +48,8 @@ func Run(ctx context.Context) error {
 		}
 	}
 
-	addr := fmt.Sprintf(":%d", psl.GetConfig().App.Port)
+	cfg := psl.GetConfig().App
+	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	logger.WithFields(map[string]interface{}{"address": addr}).Info("server running")
 
 	srv := &http.Server{Addr: addr, Handler: r}

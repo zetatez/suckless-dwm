@@ -66,14 +66,6 @@ func startScript(lang, script string) error {
 
 var clipboardOnce sync.Once
 
-func expandHome(p string) string {
-	if strings.HasPrefix(p, "~/") {
-		home, _ := os.UserHomeDir()
-		return path.Join(home, p[2:])
-	}
-	return p
-}
-
 func initClipboard() error {
 	var err error
 	clipboardOnce.Do(func() {
@@ -83,7 +75,10 @@ func initClipboard() error {
 }
 
 func (s *Service) notify(msg string) {
-	_ = exec.Command("notify-send", msg).Run()
+	cmd := exec.Command("notify-send", msg)
+	// CombinedOutput absorbs stdout/stderr so the child never blocks on a
+	// closed pipe and notify-send's own errors don't propagate.
+	_, _ = cmd.CombinedOutput()
 }
 
 func (s *Service) readClipboard() (string, error) {
@@ -94,20 +89,54 @@ func (s *Service) readClipboard() (string, error) {
 	return string(data), nil
 }
 
-func (s *Service) writeClipboard(content string) {
+func (s *Service) writeClipboard(content string) error {
 	if err := initClipboard(); err != nil {
-		s.logger.Warnf("init clipboard: %v", err)
-		return
+		return fmt.Errorf("init clipboard: %w", err)
 	}
 	clipboard.Write(clipboard.FmtText, []byte(content))
+	return nil
+}
+
+// pushClipboard writes content to the clipboard, surfaces a notification, and
+// returns a copy of the value for the HTTP response. Callers that need to
+// surface a clipboard failure to the client should inspect the returned
+// error; fire-and-forget callers should use copyToClipboardWithNotify.
+func (s *Service) pushClipboard(value, summary string) (string, error) {
+	if err := s.writeClipboard(value); err != nil {
+		s.logger.WithError(err).Warn("write clipboard failed")
+		return value, err
+	}
+	s.notify(summary)
+	return value, nil
+}
+
+// copyToClipboardWithNotify is the fire-and-forget variant of pushClipboard:
+// any clipboard error is logged and swallowed, since these callers return
+// their own values regardless of clipboard state.
+func (s *Service) copyToClipboardWithNotify(value, summary string) {
+	if err := s.writeClipboard(value); err != nil {
+		s.logger.WithError(err).Warn("write clipboard failed")
+		return
+	}
+	s.notify(summary)
+}
+
+// rofiPrompt opens rofi with the given prompt and returns the trimmed result.
+// An empty string is returned if the user dismisses the dialog.
+func (s *Service) rofiPrompt(prompt string) (string, error) {
+	out, _, err := runScript("bash", fmt.Sprintf("printf '' | rofi -dmenu -p '%s'", prompt))
+	return strings.TrimSpace(out), err
 }
 
 func (s *Service) isRunning(proc string) bool {
-	return exec.Command("pgrep", "-f", proc).Run() == nil
+	return exec.Command("pgrep", proc).Run() == nil
 }
 
-func (s *Service) killProcess(proc string) {
-	_ = exec.Command("pkill", "-f", proc).Run()
+func (s *Service) killProcess(proc string) error {
+	if proc == "" {
+		return fmt.Errorf("proc cannot be empty")
+	}
+	return exec.Command("pkill", proc).Run()
 }
 
 func (s *Service) screenSize() (int, int) {
@@ -134,118 +163,107 @@ func (s *Service) geoForTerminal(xr, yr float64, w, h int) string {
 	return fmt.Sprintf("%dx%d+%d+%d", w, h, x, y)
 }
 
-var toggleCommands = map[string]string{
-	"flameshot":                 "flameshot gui",
-	"screenkey":                 "screenkey --key-mode keysyms --opacity 0 -s small --font-color yellow",
-	"clipmenu":                  "sh -c clipmenu",
-	"passmenu":                  "passmenu",
-	"netease-cloud-music":       "netease-cloud-music",
-	"htop":                      "st -e htop",
-	"yazi":                      "st -e yazi",
-	"julia":                     "st -t scratchpad -c scratchpad -e julia",
-	"lazydocker":                "st -e lazydocker",
-	"lazygit":                   "st -e lazygit",
-	"ncmpcpp":                   "st -e ncmpcpp",
-	"cava":                      "st -e cava",
-	"mutt":                      "st -e mutt",
-	"irssi":                     "st -e irssi",
-	"newsboat":                  "st -e newsboat",
-	"python":                    "st -t scratchpad -c scratchpad -e python -i -c 'import os, sys, datetime, re, json, collections, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt; print(dir())'",
-	"tty-clock":                 "st -g $GEO -t float -c float -e tty-clock -s",
-	"calendar":                  "st -g $GEO -t float -c float -e nvim +':Calendar -view=month'",
-	"calendar-scheduling-today": "st -g $GEO -t float -c float -e nvim +':Calendar -view=day'",
+func (s *Service) Launch(command string) error {
+	return startScript("bash", command)
 }
 
-func (s *Service) Toggle(proc string) string {
-	switch {
-	case proc == "music":
-		return s.toggleMusic()
-	case strings.HasPrefix(proc, "rec-"):
-		return s.toggleRecording(proc)
+func (s *Service) Toggle(cmd, match string) (string, error) {
+	if match == "" {
+		return "", fmt.Errorf("match cannot be empty")
 	}
-
-	cmd := proc
-	if c, ok := toggleCommands[proc]; ok {
-		cmd = c
-	}
-	if strings.Contains(cmd, "$GEO") {
-		switch proc {
-		case "tty-clock":
-			cmd = strings.ReplaceAll(cmd, "$GEO", s.geoForTerminal(0.72, 0.04, 53, 8))
-		case "calendar":
-			cmd = strings.ReplaceAll(cmd, "$GEO", s.geoForTerminal(0.84, 0.04, 24, 12))
-		case "calendar-scheduling-today":
-			cmd = strings.ReplaceAll(cmd, "$GEO", s.geoForTerminal(0.80, 0.05, 36, 32))
-		}
-	}
-	if strings.HasPrefix(cmd, "st ") {
-		cmd = psl.GetConfig().Svc.DefaultTerminal + cmd[2:]
-	}
-
-	match := cmd
-	switch proc {
-	case "tty-clock", "calendar", "calendar-scheduling-today":
-		if i := strings.Index(cmd, " -e "); i >= 0 {
-			match = strings.TrimSpace(cmd[i+4:])
-		}
-	}
+	s.logger.Info(fmt.Sprintf("toggle %s", cmd))
 	if s.isRunning(match) {
-		s.killProcess(match)
-		return "killed"
+		s.logger.Info("running")
+		if err := s.killProcess(match); err != nil {
+			s.logger.Info("killed")
+			return "", fmt.Errorf("kill %s: %w", match, err)
+		}
+		return "killed", nil
 	}
-	if proc == "flameshot" {
-		_, _, _ = runScript("bash", "systemctl --user start xdg-desktop-portal xdg-desktop-portal-gtk 2>/dev/null || true")
+	if err := startScript("bash", cmd); err != nil {
+		return "", fmt.Errorf("launch %s: %w", cmd, err)
 	}
-	_ = startScript("bash", cmd)
-	return "launched"
+	return "launched", nil
 }
 
-func (s *Service) toggleMusic() string {
+func (s *Service) ToggleTTYClock() (string, error) {
+	term := psl.GetConfig().Svc.DefaultTerminal
+	geo := s.geoForTerminal(0.72, 0.04, 53, 8)
+	cmd := fmt.Sprintf("%s -g %s -t float -c float -e tty-clock -s", term, geo)
+	return s.Toggle(cmd, "tty-clock")
+}
+
+func (s *Service) ToggleMusic() (string, error) {
 	if s.isRunning("ncmpcpp") || s.isRunning("cava") {
-		s.killProcess("ncmpcpp")
-		s.killProcess("cava")
-		return "killed"
+		if err := s.killProcess("ncmpcpp"); err != nil {
+			return "", fmt.Errorf("kill ncmpcpp: %w", err)
+		}
+		if err := s.killProcess("cava"); err != nil {
+			return "", fmt.Errorf("kill cava: %w", err)
+		}
+		return "killed", nil
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	_ = startScript("bash", fmt.Sprintf("%s -e ncmpcpp", term))
-	_ = startScript("bash", fmt.Sprintf("%s -e cava", term))
-	return "launched"
+	if err := startScript("bash", fmt.Sprintf("%s -e ncmpcpp", term)); err != nil {
+		return "", fmt.Errorf("launch ncmpcpp: %w", err)
+	}
+	if err := startScript("bash", fmt.Sprintf("%s -e cava", term)); err != nil {
+		return "", fmt.Errorf("launch cava: %w", err)
+	}
+	return "launched", nil
 }
 
-func (s *Service) toggleRecording(proc string) string {
-	if proc == "rec-show" {
-		if s.isRunning("ffplay") {
-			s.killProcess("ffplay")
-			return "killed"
-		}
-		term := psl.GetConfig().Svc.DefaultTerminal
-		_ = startScript("bash", fmt.Sprintf("%s -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0", term))
-		return "launched"
-	}
+func (s *Service) ToggleRecShow() (string, error) {
+	term := psl.GetConfig().Svc.DefaultTerminal
+	cmd := fmt.Sprintf("%s -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0", term)
+	return s.Toggle(cmd, "ffplay")
+}
 
+func (s *Service) ToggleRecAudio() (string, error) {
 	if s.isRunning("ffmpeg") {
-		s.killProcess("ffmpeg")
-		return "killed"
+		if err := s.killProcess("ffmpeg"); err != nil {
+			return "", fmt.Errorf("kill ffmpeg: %w", err)
+		}
+		return "killed", nil
 	}
-
 	homeDir, _ := os.UserHomeDir()
 	now := time.Now().Format("2006-01-02-15-04-05")
 	term := psl.GetConfig().Svc.DefaultTerminal
 	scratch := fmt.Sprintf("%s -t scratchpad -c scratchpad -e", term)
-	filename := fmt.Sprintf("Videos/rec-%s-%s", strings.TrimPrefix(proc, "rec-"), now)
-
-	switch proc {
-	case "rec-audio":
-		_ = startScript("bash", fmt.Sprintf("%s ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", scratch, path.Join(homeDir, filename+".flac")))
-	case "rec-screen":
-		w, h := s.screenSize()
-		_ = startScript("bash", fmt.Sprintf("%s ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", scratch, w, h, os.Getenv("DISPLAY"), path.Join(homeDir, filename+".mkv")))
-	case "rec-webcam":
-		_ = startScript("bash", fmt.Sprintf("%s ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", scratch, path.Join(homeDir, filename+".mp4")))
-	}
-	return "launched"
+	filename := path.Join(homeDir, fmt.Sprintf("Videos/rec-audio-%s.flac", now))
+	cmd := fmt.Sprintf("%s ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", scratch, filename)
+	return s.Toggle(cmd, "ffmpeg")
 }
 
-func (s *Service) Launch(command string) error {
-	return startScript("bash", command)
+func (s *Service) ToggleRecScreen() (string, error) {
+	if s.isRunning("ffmpeg") {
+		if err := s.killProcess("ffmpeg"); err != nil {
+			return "", fmt.Errorf("kill ffmpeg: %w", err)
+		}
+		return "killed", nil
+	}
+	homeDir, _ := os.UserHomeDir()
+	now := time.Now().Format("2006-01-02-15-04-05")
+	term := psl.GetConfig().Svc.DefaultTerminal
+	scratch := fmt.Sprintf("%s -t scratchpad -c scratchpad -e", term)
+	filename := path.Join(homeDir, fmt.Sprintf("Videos/rec-screen-%s.mkv", now))
+	w, h := s.screenSize()
+	cmd := fmt.Sprintf("%s ffmpeg -y -s '%dx%d' -r 60 -f x11grab -i %s -f alsa -i default -c:v libx264rgb -crf 0 -preset ultrafast -color_range 2 -c:a aac %s", scratch, w, h, os.Getenv("DISPLAY"), filename)
+	return s.Toggle(cmd, "ffmpeg")
+}
+
+func (s *Service) ToggleRecWebcam() (string, error) {
+	if s.isRunning("ffmpeg") {
+		if err := s.killProcess("ffmpeg"); err != nil {
+			return "", fmt.Errorf("kill ffmpeg: %w", err)
+		}
+		return "killed", nil
+	}
+	homeDir, _ := os.UserHomeDir()
+	now := time.Now().Format("2006-01-02-15-04-05")
+	term := psl.GetConfig().Svc.DefaultTerminal
+	scratch := fmt.Sprintf("%s -t scratchpad -c scratchpad -e", term)
+	filename := path.Join(homeDir, fmt.Sprintf("Videos/rec-webcam-%s.mp4", now))
+	cmd := fmt.Sprintf("%s ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", scratch, filename)
+	return s.Toggle(cmd, "ffmpeg")
 }
