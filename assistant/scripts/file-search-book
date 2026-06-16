@@ -1,4 +1,12 @@
 #!/bin/bash
 
+dir="${1:-}"
+
 curl -s -X POST http://127.0.0.1:4321/api/svr/file-search-book \
-  -u "admin:AAaa00__"
+  -u "admin:AAaa00__" \
+  -H "Content-Type: application/json" \
+  -d @- <<ENDJSON
+{
+  "dir": "$dir"
+}
+ENDJSON

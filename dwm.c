@@ -99,6 +99,7 @@ static void spawn_or_focus(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void takepreview(void);
+static void toggle(const Arg *arg);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
@@ -2253,6 +2254,36 @@ spawn_or_focus(const Arg *arg)
   }
 
   /* not found -> spawn */
+  spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
+}
+
+  void
+toggle(const Arg *arg)
+{
+  const char *const *data = arg->v;
+  const char *cmd   = data[0];
+  const char *class = data[1];
+
+  Client *c;
+  Monitor *m;
+
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      if (strcmp(c->class, class) == 0) {
+        if (!sendevent(c, wmatom[WMDelete])) {
+          XGrabServer(dpy);
+          XSetErrorHandler(xerrordummy);
+          XSetCloseDownMode(dpy, DestroyAll);
+          XKillClient(dpy, c->win);
+          XSync(dpy, False);
+          XSetErrorHandler(xerror);
+          XUngrabServer(dpy);
+        }
+        return;
+      }
+    }
+  }
+
   spawn(&(Arg){ .v = (const char *[]){ "/bin/sh", "-c", cmd, NULL } });
 }
 

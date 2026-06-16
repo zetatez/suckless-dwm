@@ -12,9 +12,10 @@ import (
 	"assistant/pkg/llm"
 )
 
-type minimaxContentBlock struct {
+type messageContent struct {
+	Type     string `json:"type"`
 	Text     string `json:"text,omitempty"`
-	ImageURL string `json:"image_url,omitempty"`
+	ImageURL any    `json:"image_url,omitempty"`
 }
 
 type Client struct {
@@ -35,12 +36,13 @@ func New(cfg llm.Config) (llm.Client, error) {
 
 	baseURL := cfg.BaseURL
 	if baseURL == "" {
-		baseURL = "https://api.minimax.chat/v1"
+		baseURL = "https://api.minimaxi.com/v1"
 	}
+	baseURL = strings.TrimRight(baseURL, "/")
 
 	model := cfg.Model
 	if model == "" {
-		model = "abab6.5s-chat"
+		model = "MiniMax-M2.7"
 	}
 
 	return &Client{
@@ -52,25 +54,25 @@ func New(cfg llm.Config) (llm.Client, error) {
 }
 
 func (c *Client) Provider() string { return "minimax" }
-
-func (c *Client) Model() string { return c.model }
+func (c *Client) Model() string    { return c.model }
 
 func (c *Client) Capabilities() llm.Capabilities {
-	return llm.Capabilities{Supported: llm.CapabilityChat | llm.CapabilityStream}
+	return llm.Capabilities{Supported: llm.CapabilityChat | llm.CapabilityStream | llm.CapabilityVision}
 }
 
 func (c *Client) Chat(ctx context.Context, req llm.ChatRequest) (*llm.ChatResponse, error) {
 	messages := convertMessages(req.Messages)
 
 	payload := map[string]any{
-		"model":              c.getModel(req.Model),
-		"messages":           messages,
-		"temperature":        req.Temperature,
-		"tokens_to_generate": 4096,
+		"model":       c.getModel(req.Model),
+		"messages":    messages,
+		"temperature": req.Temperature,
 	}
-
 	if req.MaxTokens > 0 {
-		payload["tokens_to_generate"] = req.MaxTokens
+		payload["max_tokens"] = req.MaxTokens
+	}
+	if req.TopP > 0 {
+		payload["top_p"] = req.TopP
 	}
 
 	headers := map[string]string{
@@ -78,37 +80,46 @@ func (c *Client) Chat(ctx context.Context, req llm.ChatRequest) (*llm.ChatRespon
 		"Content-Type":  "application/json",
 	}
 
-	resp, err := c.client.Do(ctx, "POST", "/v1/text/chatcompletion_v2", payload, headers)
+	resp, err := c.client.Do(ctx, "POST", "/chat/completions", payload, headers)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 65536))
+	if err != nil {
+		return nil, fmt.Errorf("read response: %w", err)
+	}
+
 	var raw struct {
 		Choices []struct {
 			Message struct {
-				Content string `json:"content"`
-				Role    string `json:"role"`
+				Content          string         `json:"content"`
+				Role             string         `json:"role"`
+				ReasoningContent string         `json:"reasoning_content,omitempty"`
+				ReasoningDetails []any          `json:"reasoning_details,omitempty"`
+				ToolCalls        []llm.ToolCall `json:"tool_calls,omitempty"`
 			} `json:"message"`
-			FinishReason string `json:"finish_reason"`
+			FinishReason *string `json:"finish_reason"`
 		} `json:"choices"`
-		Usage struct {
-			TotalTokens      int `json:"total_tokens"`
-			PromptTokens     int `json:"prompt_tokens"`
-			CompletionTokens int `json:"completion_tokens"`
-		} `json:"usage"`
-		Error struct {
-			Code    int    `json:"status_code"`
-			Message string `json:"status_msg"`
-		} `json:"base_resp"`
+		Usage llm.TokenUsage `json:"usage"`
+		Error *struct {
+			Message string `json:"message"`
+			Type    string `json:"type"`
+			Code    string `json:"code"`
+		} `json:"error,omitempty"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
-		return nil, err
+	if err := json.Unmarshal(body, &raw); err != nil {
+		snprintf := len(body)
+		if snprintf > 2000 {
+			snprintf = 2000
+		}
+		return nil, fmt.Errorf("unmarshal response: %w\nbody: %s", err, string(body[:snprintf]))
 	}
 
-	if raw.Error.Code != 0 {
-		return nil, &llm.ProviderError{Code: fmt.Sprintf("%d", raw.Error.Code), Message: raw.Error.Message}
+	if raw.Error != nil && raw.Error.Message != "" {
+		return nil, &llm.ProviderError{Code: raw.Error.Code, Message: raw.Error.Message}
 	}
 
 	if len(raw.Choices) == 0 {
@@ -116,26 +127,27 @@ func (c *Client) Chat(ctx context.Context, req llm.ChatRequest) (*llm.ChatRespon
 	}
 
 	return &llm.ChatResponse{
-		Content: raw.Choices[0].Message.Content,
-		Role:    llm.Role(raw.Choices[0].Message.Role),
-		Usage: llm.TokenUsage{
-			TotalTokens:      raw.Usage.TotalTokens,
-			PromptTokens:     raw.Usage.PromptTokens,
-			CompletionTokens: raw.Usage.CompletionTokens,
-		},
+		Content:   raw.Choices[0].Message.Content,
+		Role:      llm.Role(raw.Choices[0].Message.Role),
+		ToolCalls: raw.Choices[0].Message.ToolCalls,
+		Usage:     raw.Usage,
 	}, nil
 }
 
 func (c *Client) StreamChat(ctx context.Context, req llm.ChatRequest, cb llm.StreamCallback) error {
+	messages := convertMessages(req.Messages)
+
 	payload := map[string]any{
-		"model":              c.getModel(req.Model),
-		"messages":           req.Messages,
-		"temperature":        req.Temperature,
-		"tokens_to_generate": 4096,
-		"stream":             true,
+		"model":       c.getModel(req.Model),
+		"messages":    messages,
+		"temperature": req.Temperature,
+		"stream":      true,
 	}
 	if req.MaxTokens > 0 {
-		payload["tokens_to_generate"] = req.MaxTokens
+		payload["max_tokens"] = req.MaxTokens
+	}
+	if req.TopP > 0 {
+		payload["top_p"] = req.TopP
 	}
 
 	headers := map[string]string{
@@ -149,7 +161,7 @@ func (c *Client) StreamChat(ctx context.Context, req llm.ChatRequest, cb llm.Str
 		return err
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/v1/text/chatcompletion_v2", bytes.NewReader(reqBody))
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/chat/completions", bytes.NewReader(reqBody))
 	if err != nil {
 		return err
 	}
@@ -176,42 +188,37 @@ func (c *Client) StreamChat(ctx context.Context, req llm.ChatRequest, cb llm.Str
 		var raw struct {
 			Choices []struct {
 				Delta struct {
-					Content string `json:"content"`
-					Role    string `json:"role"`
+					Content          string         `json:"content"`
+					Role             llm.Role       `json:"role"`
+					ToolCalls        []llm.ToolCall `json:"tool_calls,omitempty"`
+					ReasoningContent string         `json:"reasoning_content,omitempty"`
 				} `json:"delta"`
-				Message struct {
-					Content string `json:"content"`
-					Role    string `json:"role"`
-				} `json:"message"`
 				FinishReason *string `json:"finish_reason"`
 			} `json:"choices"`
-			Usage llm.TokenUsage `json:"usage"`
-			Error struct {
-				Code    int    `json:"code"`
+			Usage llm.TokenUsage `json:"usage,omitempty"`
+			Error *struct {
 				Message string `json:"message"`
-			} `json:"base_resp"`
+				Type    string `json:"type"`
+				Code    string `json:"code"`
+			} `json:"error,omitempty"`
 		}
 
 		if err := json.Unmarshal([]byte(data), &raw); err != nil {
 			return err
 		}
-		if raw.Error.Code != 0 && raw.Error.Message != "" {
-			return &llm.ProviderError{Code: fmt.Sprintf("%d", raw.Error.Code), Message: raw.Error.Message}
+		if raw.Error != nil && raw.Error.Message != "" {
+			return &llm.ProviderError{Code: raw.Error.Code, Message: raw.Error.Message}
 		}
 		if len(raw.Choices) == 0 {
 			return nil
 		}
 
-		content := raw.Choices[0].Delta.Content
-		role := raw.Choices[0].Delta.Role
-		if content == "" {
-			content = raw.Choices[0].Message.Content
-		}
-		if role == "" {
-			role = raw.Choices[0].Message.Role
-		}
-
-		cb(llm.ChatResponse{Content: content, Role: llm.Role(role), Usage: raw.Usage})
+		cb(llm.ChatResponse{
+			Content:   raw.Choices[0].Delta.Content,
+			Role:      raw.Choices[0].Delta.Role,
+			ToolCalls: raw.Choices[0].Delta.ToolCalls,
+			Usage:     raw.Usage,
+		})
 
 		if raw.Choices[0].FinishReason != nil && *raw.Choices[0].FinishReason != "" {
 			return io.EOF
@@ -236,45 +243,22 @@ func (c *Client) getModel(model string) string {
 
 func convertMessages(msgs []llm.Message) []map[string]any {
 	result := make([]map[string]any, 0, len(msgs))
-	var systemPrompt string
-
 	for _, m := range msgs {
-		if m.Role == llm.RoleSystem {
-			systemPrompt += m.Content + "\n\n"
-			continue
-		}
-
-		role := "user"
-		if m.Role == llm.RoleAI {
-			role = "assistant"
-		}
-
 		if m.ImageBase64 != "" {
-			content := []minimaxContentBlock{
-				{Text: m.Content},
-				{ImageURL: "data:image/jpeg;base64," + m.ImageBase64},
+			content := []messageContent{
+				{Type: "text", Text: m.Content},
+				{Type: "image_url", ImageURL: map[string]any{"url": "data:image/jpeg;base64," + m.ImageBase64}},
 			}
 			result = append(result, map[string]any{
-				"role":    role,
+				"role":    string(m.Role),
 				"content": content,
 			})
 		} else {
 			result = append(result, map[string]any{
-				"role":    role,
+				"role":    string(m.Role),
 				"content": m.Content,
 			})
 		}
 	}
-
-	if systemPrompt != "" && len(result) > 0 {
-		firstMsg := result[0]
-		if blocks, ok := firstMsg["content"].([]minimaxContentBlock); ok {
-			blocks[0].Text = systemPrompt + blocks[0].Text
-			firstMsg["content"] = blocks
-		} else if text, ok := firstMsg["content"].(string); ok {
-			firstMsg["content"] = systemPrompt + text
-		}
-	}
-
 	return result
 }

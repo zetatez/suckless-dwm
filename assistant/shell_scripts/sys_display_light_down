@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-sudo light -N 1
-sudo light -U 1
-notify-send 'light -1%'

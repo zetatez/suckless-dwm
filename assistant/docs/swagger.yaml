@@ -90,7 +90,7 @@ paths:
       summary: 时间格式转换
       tags:
       - 工具
-  /api/svr/feishu-send:
+  /api/svr/send-to-feishu:
     post:
       description: 从剪贴板读取内容并发送到飞书机器人
       responses:
@@ -533,17 +533,6 @@ paths:
           schema:
             $ref: '#/definitions/assistant_pkg_response.Response'
       summary: 麦克风+
-      tags:
-      - 系统
-  /api/svr/sys-open-terminal:
-    post:
-      description: 触发 fzf 选择目录并打开终端
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
-      summary: 打开终端
       tags:
       - 系统
   /api/svr/sys-reset:

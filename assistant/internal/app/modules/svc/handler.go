@@ -1,8 +1,11 @@
 package svc
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 
+	"assistant/internal/bootstrap/psl"
 	"assistant/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -16,10 +19,21 @@ func NewHandler(svc *Service) *Handler {
 	return &Handler{svc: svc}
 }
 
+func newDebugID() string {
+	var b [4]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		return "00000000"
+	}
+	return hex.EncodeToString(b[:])
+}
+
 func (h *Handler) trigger(c *gin.Context, name string, fn func() error) {
 	if err := fn(); err != nil {
-		h.svc.notify(fmt.Sprintf("%s failed: %v", name, err))
-		response.ErrWithInternal(c, response.CodeServerError, name+" failed", err)
+		debugID := newDebugID()
+		h.svc.notify(fmt.Sprintf("%s failed [%s]: %v", name, debugID, err))
+		c.Header("X-Debug-Id", debugID)
+		c.Header("X-Error", err.Error())
+		response.ErrWithInternal(c, response.CodeServerError, fmt.Sprintf("%s failed (debug=%s)", name, debugID), err)
 		return
 	}
 	response.Ok(c, gin.H{"status": "done"})
@@ -30,11 +44,19 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	r.POST("/format", h.Format)
 	r.POST("/note", h.Note)
 	r.GET("/get-datetime", h.GetDatetime)
-	r.GET("/get-cur-unix-sec", h.GetCurUnixSec)
+	r.GET("/get-cur-unix-sec", h.GetUnixSec)
 	r.POST("/convert-datetime", h.ConvertDatetime)
 	r.GET("/get-ip", h.GetIP)
-	r.POST("/feishu-send", h.FeishuSend)
+	r.POST("/send-to-feishu", h.SendToFeishu)
+	r.POST("/solve-leetcode", h.SolveLeetCode)
+	r.POST("/solve-leetcode-screenshot", h.SolveLeetCodeScreenshot)
 	r.POST("/toggle", h.Toggle)
+	r.POST("/toggle-tty-clock", h.ToggleTTYClock)
+	r.POST("/toggle-music", h.ToggleMusic)
+	r.POST("/toggle-rec-show", h.ToggleRecShow)
+	r.POST("/toggle-rec-audio", h.ToggleRecAudio)
+	r.POST("/toggle-rec-screen", h.ToggleRecScreen)
+	r.POST("/toggle-rec-webcam", h.ToggleRecWebcam)
 	r.POST("/launch", h.Launch)
 	r.POST("/search-web", h.SearchWeb)
 	r.POST("/search-books-online", h.SearchBooksOnline)
@@ -59,16 +81,18 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	r.POST("/sys-display-light-down", h.SysDisplayLightDown)
 	r.POST("/sys-reset", h.SysReset)
 	r.POST("/sys-kill", h.SysKill)
-	r.POST("/sys-open-terminal", h.SysOpenTerminal)
 	r.POST("/file-search", h.FileSearch)
 	r.POST("/file-search-content", h.FileSearchContent)
 	r.POST("/file-search-book", h.FileSearchBook)
 	r.POST("/file-search-media", h.FileSearchMedia)
 	r.POST("/file-search-wiki", h.FileSearchWiki)
-	r.POST("/file-open-images", h.FileOpenImages)
+	r.POST("/file-search-exec", h.FileSearchExec)
+	r.POST("/open-images", h.OpenImages)
 	r.POST("/snip-fzf", h.SnipFzf)
 	r.POST("/snip-create", h.SnipCreate)
 	r.POST("/search", h.Search)
+	r.POST("/translate-clipboard", h.TranslateClipboard)
+	r.POST("/git-log-show", h.GitLogShow)
 }
 
 // Power godoc
@@ -134,14 +158,14 @@ func (h *Handler) GetDatetime(c *gin.Context) {
 	response.Ok(c, h.svc.GetDatetime())
 }
 
-// GetCurUnixSec godoc
+// GetUnixSec godoc
 // @Summary 获取当前 Unix 时间戳
 // @Description 获取当前 Unix 时间戳并写入剪贴板
 // @Tags 工具
 // @Success 200 {object} response.Response
 // @Router /api/svr/get-cur-unix-sec [get]
-func (h *Handler) GetCurUnixSec(c *gin.Context) {
-	response.Ok(c, gin.H{"unix": h.svc.GetCurUnixSec()})
+func (h *Handler) GetUnixSec(c *gin.Context) {
+	response.Ok(c, gin.H{"unix": h.svc.GetUnixSec()})
 }
 
 // ConvertDatetime godoc
@@ -171,27 +195,67 @@ func (h *Handler) ConvertDatetime(c *gin.Context) {
 // @Summary 获取 IP 地址
 // @Description 获取网卡 IP 地址并写入剪贴板
 // @Tags 网络
-// @Param interface query string false "网卡名称(默认 wlan0)"
 // @Success 200 {object} response.Response
 // @Router /api/svr/get-ip [get]
 func (h *Handler) GetIP(c *gin.Context) {
-	iface := c.DefaultQuery("interface", "")
-	ips, err := h.svc.GetIP(iface)
+	ips, err := h.svc.GetIP()
 	if err != nil {
 		h.svc.notify(fmt.Sprintf("get ip failed: %v", err))
 		response.ErrWithInternal(c, response.CodeServerError, "get IP failed", err)
 		return
 	}
-	response.Ok(c, gin.H{"interface": iface, "ips": ips})
+	response.Ok(c, gin.H{"ips": ips})
 }
 
-// FeishuSend godoc
+// SendToFeishu godoc
 // @Summary 发送飞书消息
 // @Description 从剪贴板读取内容并发送到飞书机器人
 // @Tags 通信
 // @Success 200 {object} response.Response
-// @Router /api/svr/feishu-send [post]
-func (h *Handler) FeishuSend(c *gin.Context) { h.trigger(c, "feishu", h.svc.FeishuSend) }
+// @Router /api/svr/send-to-feishu [post]
+func (h *Handler) SendToFeishu(c *gin.Context) {
+	if err := h.svc.SendToFeishu(); err != nil {
+		debugID := newDebugID()
+		psl.GetLogger().WithError(err).WithField("debug_id", debugID).Error("feishu send failed")
+		c.Header("X-Debug-Id", debugID)
+		c.Header("X-Error", err.Error())
+		response.ErrWithInternal(c, response.CodeServerError, "feishu send failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"status": "done"})
+}
+
+// SolveLeetCode godoc
+// @Summary LeetCode 解题
+// @Description 从剪贴板读取算法题, 调用大模型生成完整 Go 代码(含算法思想、复杂度、测试用例), 结果写回剪贴板
+// @Tags AI
+// @Success 200 {object} response.Response
+// @Router /api/svr/solve-leetcode [post]
+func (h *Handler) SolveLeetCode(c *gin.Context) {
+	if err := h.svc.SolveLeetCode(); err != nil {
+		h.svc.notify(fmt.Sprintf("X"))
+		psl.GetLogger().WithError(err).Error("solve leetcode failed")
+		response.ErrWithInternal(c, response.CodeServerError, "solve leetcode failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"status": "done"})
+}
+
+// SolveLeetCodeScreenshot godoc
+// @Summary LeetCode 截图解题
+// @Description 截图当前屏幕, 调用大模型生成完整 Go 代码(含算法思想、复杂度、测试用例), 结果写回剪贴板
+// @Tags AI
+// @Success 200 {object} response.Response
+// @Router /api/svr/solve-leetcode-screenshot [post]
+func (h *Handler) SolveLeetCodeScreenshot(c *gin.Context) {
+	if err := h.svc.SolveLeetCodeScreenshot(); err != nil {
+		h.svc.notify(fmt.Sprintf("X"))
+		psl.GetLogger().WithError(err).Error("solve leetcode with screenshot failed")
+		response.ErrWithInternal(c, response.CodeServerError, "solve leetcode failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"status": "done"})
+}
 
 // Toggle godoc
 // @Summary 切换进程
@@ -207,7 +271,70 @@ func (h *Handler) Toggle(c *gin.Context) {
 		response.Err(c, response.CodeInvalidParams, "process is required")
 		return
 	}
-	response.Ok(c, gin.H{"process": req.Process, "status": h.svc.Toggle(req.Process)})
+
+	status, err := h.svc.Toggle(req.Process, req.Match)
+	if err != nil {
+		h.svc.notify(fmt.Sprintf("toggle %s failed: %v", req.Process, err))
+		response.ErrWithInternal(c, response.CodeServerError, "toggle failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"process": req.Process, "status": status})
+}
+
+func (h *Handler) toggleResp(c *gin.Context, name string, fn func() (string, error)) {
+	status, err := fn()
+	if err != nil {
+		h.svc.notify(fmt.Sprintf("%s failed: %v", name, err))
+		response.ErrWithInternal(c, response.CodeServerError, "toggle failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"process": name, "status": status})
+}
+
+// ToggleTTYClock godoc
+// @Summary 切换 tty-clock
+// @Tags 进程
+// @Success 200 {object} response.Response
+// @Router /api/svr/toggle-tty-clock [post]
+func (h *Handler) ToggleTTYClock(c *gin.Context) { h.toggleResp(c, "tty-clock", h.svc.ToggleTTYClock) }
+
+// ToggleMusic godoc
+// @Summary 切换音乐
+// @Tags 进程
+// @Success 200 {object} response.Response
+// @Router /api/svr/toggle-music [post]
+func (h *Handler) ToggleMusic(c *gin.Context) { h.toggleResp(c, "music", h.svc.ToggleMusic) }
+
+// ToggleRecShow godoc
+// @Summary 切换摄像头预览
+// @Tags 进程
+// @Success 200 {object} response.Response
+// @Router /api/svr/toggle-rec-show [post]
+func (h *Handler) ToggleRecShow(c *gin.Context) { h.toggleResp(c, "rec-show", h.svc.ToggleRecShow) }
+
+// ToggleRecAudio godoc
+// @Summary 切换录音
+// @Tags 进程
+// @Success 200 {object} response.Response
+// @Router /api/svr/toggle-rec-audio [post]
+func (h *Handler) ToggleRecAudio(c *gin.Context) { h.toggleResp(c, "rec-audio", h.svc.ToggleRecAudio) }
+
+// ToggleRecScreen godoc
+// @Summary 切换录屏
+// @Tags 进程
+// @Success 200 {object} response.Response
+// @Router /api/svr/toggle-rec-screen [post]
+func (h *Handler) ToggleRecScreen(c *gin.Context) {
+	h.toggleResp(c, "rec-screen", h.svc.ToggleRecScreen)
+}
+
+// ToggleRecWebcam godoc
+// @Summary 切换摄像头录制
+// @Tags 进程
+// @Success 200 {object} response.Response
+// @Router /api/svr/toggle-rec-webcam [post]
+func (h *Handler) ToggleRecWebcam(c *gin.Context) {
+	h.toggleResp(c, "rec-webcam", h.svc.ToggleRecWebcam)
 }
 
 // Launch godoc
@@ -237,13 +364,11 @@ func (h *Handler) Launch(c *gin.Context) {
 // @Description 用 Chrome 打开 Google 搜索结果
 // @Tags 搜索
 // @Accept json
-// @Param body body object true "搜索关键词"
+// @Param body body QueryRequest true "搜索关键词"
 // @Success 200 {object} response.Response
 // @Router /api/svr/search-web [post]
 func (h *Handler) SearchWeb(c *gin.Context) {
-	var req struct {
-		Query string `json:"query" binding:"required"`
-	}
+	var req QueryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Err(c, response.CodeInvalidParams, "query is required")
 		return
@@ -261,13 +386,11 @@ func (h *Handler) SearchWeb(c *gin.Context) {
 // @Description 同时打开 openlibrary 和 z-lib 的图书搜索结果
 // @Tags 搜索
 // @Accept json
-// @Param body body object true "搜索关键词"
+// @Param body body QueryRequest true "搜索关键词"
 // @Success 200 {object} response.Response
 // @Router /api/svr/search-books-online [post]
 func (h *Handler) SearchBooksOnline(c *gin.Context) {
-	var req struct {
-		Query string `json:"query" binding:"required"`
-	}
+	var req QueryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Err(c, response.CodeInvalidParams, "query is required")
 		return
@@ -285,13 +408,11 @@ func (h *Handler) SearchBooksOnline(c *gin.Context) {
 // @Description 同时打开 Bilibili 和 YouTube 的视频搜索结果
 // @Tags 搜索
 // @Accept json
-// @Param body body object true "搜索关键词"
+// @Param body body QueryRequest true "搜索关键词"
 // @Success 200 {object} response.Response
 // @Router /api/svr/search-videos-online [post]
 func (h *Handler) SearchVideosOnline(c *gin.Context) {
-	var req struct {
-		Query string `json:"query" binding:"required"`
-	}
+	var req QueryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Err(c, response.CodeInvalidParams, "query is required")
 		return
@@ -371,14 +492,11 @@ func (h *Handler) SysKeyboardLight(c *gin.Context) {
 // @Description 用指定浏览器打开 URL(支持 chrome/qutebrowser)
 // @Tags 网络
 // @Accept json
-// @Param body body object true "浏览器和URL"
+// @Param body body OpenURLRequest true "浏览器和URL"
 // @Success 200 {object} response.Response
 // @Router /api/svr/open-url [post]
 func (h *Handler) OpenURL(c *gin.Context) {
-	var req struct {
-		Browser string `json:"browser"`
-		URL     string `json:"url" binding:"required"`
-	}
+	var req OpenURLRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Err(c, response.CodeInvalidParams, "url is required")
 		return
@@ -400,14 +518,11 @@ func (h *Handler) OpenURL(c *gin.Context) {
 // @Description 用浏览器应用模式打开 URL(chrome-app/qutebrowser)
 // @Tags 网络
 // @Accept json
-// @Param body body object true "浏览器和URL"
+// @Param body body OpenURLRequest true "浏览器和URL"
 // @Success 200 {object} response.Response
 // @Router /api/svr/open-url-as-app [post]
 func (h *Handler) OpenURLAsApp(c *gin.Context) {
-	var req struct {
-		Browser string `json:"browser"`
-		URL     string `json:"url" binding:"required"`
-	}
+	var req OpenURLRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Err(c, response.CodeInvalidParams, "url is required")
 		return
@@ -525,74 +640,107 @@ func (h *Handler) SysReset(c *gin.Context) { h.trigger(c, "sys reset", h.svc.Sys
 // @Router /api/svr/sys-kill [post]
 func (h *Handler) SysKill(c *gin.Context) { h.trigger(c, "sys kill", h.svc.SysKill) }
 
-// SysOpenTerminal godoc
-// @Summary 打开终端
-// @Description 触发 fzf 选择目录并打开终端
-// @Tags 系统
-// @Success 200 {object} response.Response
-// @Router /api/svr/sys-open-terminal [post]
-func (h *Handler) SysOpenTerminal(c *gin.Context) {
-	h.trigger(c, "open terminal", h.svc.SysOpenTerminal)
-}
-
 // FileSearch godoc
 // @Summary 文件搜索
-// @Description 触发 fzf 全盘文件搜索并打开
+// @Description 触发 fzf 文件搜索并打开; dir 留空时默认 $HOME
 // @Tags 文件
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
 // @Success 200 {object} response.Response
 // @Router /api/svr/file-search [post]
-func (h *Handler) FileSearch(c *gin.Context) { h.trigger(c, "file search", h.svc.FileSearch) }
+func (h *Handler) FileSearch(c *gin.Context) {
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	h.trigger(c, "file search", func() error { return h.svc.FileSearch(req.Dir) })
+}
 
 // FileSearchContent godoc
 // @Summary 文件内容搜索
-// @Description 触发 rg+fzf 文件内容搜索
+// @Description 触发 rg+fzf 文件内容搜索; dir 留空时默认 $HOME
 // @Tags 文件
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
 // @Success 200 {object} response.Response
 // @Router /api/svr/file-search-content [post]
 func (h *Handler) FileSearchContent(c *gin.Context) {
-	h.trigger(c, "file search content", h.svc.FileSearchContent)
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	h.trigger(c, "file search content", func() error { return h.svc.FileSearchContent(req.Dir) })
 }
 
 // FileSearchBook godoc
 // @Summary 电子书搜索
-// @Description 触发 fzf 搜索电子书(pdf/epub/djvu)
+// @Description 触发 fzf 搜索电子书(pdf/epub/djvu); dir 留空时默认 $HOME
 // @Tags 文件
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
 // @Success 200 {object} response.Response
 // @Router /api/svr/file-search-book [post]
 func (h *Handler) FileSearchBook(c *gin.Context) {
-	h.trigger(c, "file search book", h.svc.FileSearchBook)
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	h.trigger(c, "file search book", func() error { return h.svc.FileSearchBook(req.Dir) })
 }
 
 // FileSearchMedia godoc
 // @Summary 媒体文件搜索
-// @Description 触发 fzf 搜索图片/音频/视频文件
+// @Description 触发 fzf 搜索图片/音频/视频文件; dir 留空时默认 $HOME
 // @Tags 文件
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
 // @Success 200 {object} response.Response
 // @Router /api/svr/file-search-media [post]
 func (h *Handler) FileSearchMedia(c *gin.Context) {
-	h.trigger(c, "file search media", h.svc.FileSearchMedia)
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	h.trigger(c, "file search media", func() error { return h.svc.FileSearchMedia(req.Dir) })
 }
 
 // FileSearchWiki godoc
 // @Summary Wiki 搜索
-// @Description 触发 fzf 搜索 Markdown 笔记文件
+// @Description 触发 fzf 搜索 Markdown 笔记文件; dir 留空时默认 $HOME
 // @Tags 文件
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
 // @Success 200 {object} response.Response
 // @Router /api/svr/file-search-wiki [post]
 func (h *Handler) FileSearchWiki(c *gin.Context) {
-	h.trigger(c, "file search wiki", h.svc.FileSearchWiki)
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	h.trigger(c, "file search wiki", func() error { return h.svc.FileSearchWiki(req.Dir) })
 }
 
-// FileOpenImages godoc
-// @Summary 打开图片
-// @Description 用 sxiv 打开目录下所有图片
+// FileSearchExec godoc
+// @Summary 目录下可执行文件搜索
+// @Description 在指定目录下搜可执行脚本 (sh/py/jl) 并通过 fzf 选中执行; dir 留空时默认 $HOME
 // @Tags 文件
-// @Param dir query string false "目录路径(默认当前目录)"
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
 // @Success 200 {object} response.Response
-// @Router /api/svr/file-open-images [post]
-func (h *Handler) FileOpenImages(c *gin.Context) {
-	dir := c.DefaultQuery("dir", ".")
-	if err := h.svc.FileOpenImages(dir); err != nil {
+// @Router /api/svr/file-search-exec [post]
+func (h *Handler) FileSearchExec(c *gin.Context) {
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	if err := h.svc.FileSearchExec(req.Dir); err != nil {
+		h.svc.notify(fmt.Sprintf("file exec search failed: %v", err))
+		response.ErrWithInternal(c, response.CodeServerError, "file exec search failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"dir": req.Dir, "status": "done"})
+}
+
+// OpenImages godoc
+// @Summary 打开图片
+// @Description 用 sxiv 打开目录下所有图片; dir 留空时默认 $HOME
+// @Tags 文件
+// @Accept json
+// @Param body body DirRequest true "dir: 目录路径(空表示 $HOME)"
+// @Success 200 {object} response.Response
+// @Router /api/svr/open-images [post]
+func (h *Handler) OpenImages(c *gin.Context) {
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	if err := h.svc.OpenImages(req.Dir); err != nil {
 		h.svc.notify(fmt.Sprintf("open images failed: %v", err))
 		response.ErrWithInternal(c, response.CodeServerError, "open images failed", err)
 		return
@@ -645,4 +793,34 @@ func (h *Handler) Search(c *gin.Context) {
 		return
 	}
 	response.Ok(c, gin.H{"status": "done"})
+}
+
+// TranslateClipboard godoc
+// @Summary 翻译剪贴板内容
+// @Description 自动检测语言并翻译剪贴板内容，结果写入剪贴板
+// @Tags 工具
+// @Success 200 {object} response.Response
+// @Router /api/svr/translate-clipboard [post]
+func (h *Handler) TranslateClipboard(c *gin.Context) {
+	result, err := h.svc.TranslateClipboard()
+	if err != nil {
+		h.svc.notify(fmt.Sprintf("translate failed: %v", err))
+		response.ErrWithInternal(c, response.CodeServerError, "translate failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"translated": result})
+}
+
+// GitLogShow godoc
+// @Summary Git log + show
+// @Description fzf 选择 commit 查看完整信息(message, author, date, diff); dir 留空时默认 ~/.config
+// @Tags 开发
+// @Accept json
+// @Param body body DirRequest true "dir: 仓库目录路径(空表示当前目录)"
+// @Success 200 {object} response.Response
+// @Router /api/svr/git-log-show [post]
+func (h *Handler) GitLogShow(c *gin.Context) {
+	var req DirRequest
+	_ = c.ShouldBindJSON(&req)
+	h.trigger(c, "git log show", func() error { return h.svc.GitLogShow(req.Dir) })
 }

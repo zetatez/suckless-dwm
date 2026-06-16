@@ -5,10 +5,11 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/opt/assistant/assistant
-WorkingDirectory=%h/.config/assistant
-Restart=on-failure
+WorkingDirectory=/home/shiyi/.config/assistant
+Restart=always
 RestartSec=5
 Environment=DISPLAY=:0
+EnvironmentFile=%h/.config/assistant/.env
 
 [Install]
 WantedBy=default.target

@@ -3,4 +3,8 @@
 curl -s -X POST http://127.0.0.1:4321/api/svr/search-books-online \
   -u "admin:AAaa00__" \
   -H "Content-Type: application/json" \
-  -d '{"query":"go programming"}'
+  -d @- <<ENDJSON
+{
+  "query": "go programming"
+}
+ENDJSON

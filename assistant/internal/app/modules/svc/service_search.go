@@ -2,44 +2,55 @@ package svc
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"sort"
 	"strings"
 )
 
+func (s *Service) Search() error {
+	names := make([]string, 0, len(searchActions))
+	for name := range searchActions {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	list := strings.Join(names, "\n")
+	tmpf := path.Join(os.TempDir(), "assistant-search-actions")
+	if err := os.WriteFile(tmpf, []byte(list), 0o644); err != nil {
+		return fmt.Errorf("write action list: %w", err)
+	}
+	out, _, err := runScript("bash", fmt.Sprintf("rofi -dmenu -p 'search' < %s", tmpf))
+	_ = os.Remove(tmpf)
+	if err != nil || strings.TrimSpace(out) == "" {
+		return nil
+	}
+	return s.runAction(strings.TrimSpace(out))
+}
+
+func (s *Service) runAction(action string) error {
+	if fn, ok := searchActions[action]; ok {
+		return fn(s)
+	}
+	url := "https://www.google.com/search?q=" + strings.ReplaceAll(action, " ", "+")
+	return s.OpenURL("chrome", url)
+}
+
 var searchActions = map[string]func(*Service) error{
-	"handle clipboard":               func(s *Service) error { _, err := s.HandleClipboard(); return err },
-	"format json":                    func(s *Service) error { _, err := s.Format("json"); return err },
-	"format sql":                     func(s *Service) error { _, err := s.Format("sql"); return err },
-	"format yaml":                    func(s *Service) error { _, err := s.Format("yaml"); return err },
-	"format go":                      func(s *Service) error { _, err := s.Format("go"); return err },
-	"get cur datetime":               func(s *Service) error { s.GetDatetime(); return nil },
-	"get cur unix sec":               func(s *Service) error { s.GetCurUnixSec(); return nil },
-	"get ip address":                 func(s *Service) error { _, err := s.GetIP(""); return err },
-	"send clipboard to feishu robot": func(s *Service) error { return s.FeishuSend() },
-	"note script":                    func(s *Service) error { return s.Note("scripts") },
-	"note todo":                      func(s *Service) error { return s.Note("todo") },
-	"note monthly work":              func(s *Service) error { return s.Note("monthly_work") },
-	"ssh to":                         func(s *Service) error { return s.SysSSHConnect() },
-	"search books online": func(s *Service) error {
-		q, _, _ := runScript("bash", `printf '' | rofi -dmenu -p 'search books'`)
-		if strings.TrimSpace(q) == "" {
-			return nil
-		}
-		return s.SearchBooksOnline(strings.TrimSpace(q))
-	},
-	"search videos online": func(s *Service) error {
-		q, _, _ := runScript("bash", `printf '' | rofi -dmenu -p 'search videos'`)
-		if strings.TrimSpace(q) == "" {
-			return nil
-		}
-		return s.SearchVideosOnline(strings.TrimSpace(q))
-	},
-	"search from web": func(s *Service) error {
-		q, _, _ := runScript("bash", `printf '' | rofi -dmenu -p 'search web'`)
-		if strings.TrimSpace(q) == "" {
-			return nil
-		}
-		return s.SearchWeb(strings.TrimSpace(q))
-	},
+	"handle clipboard":                func(s *Service) error { _, err := s.HandleClipboard(); return err },
+	"format json":                     func(s *Service) error { _, err := s.Format("json"); return err },
+	"format sql":                      func(s *Service) error { _, err := s.Format("sql"); return err },
+	"format yaml":                     func(s *Service) error { _, err := s.Format("yaml"); return err },
+	"format go":                       func(s *Service) error { _, err := s.Format("go"); return err },
+	"get cur datetime":                func(s *Service) error { s.GetDatetime(); return nil },
+	"get cur unix sec":                func(s *Service) error { s.GetUnixSec(); return nil },
+	"get ip address":                  func(s *Service) error { _, err := s.GetIP(); return err },
+	"send clipboard to feishu robot":  func(s *Service) error { return s.SendToFeishu() },
+	"solve leetcode":                  func(s *Service) error { return s.SolveLeetCode() },
+	"solve leetcode with screenshot":  func(s *Service) error { return s.SolveLeetCodeScreenshot() },
+	"note script":                     func(s *Service) error { return s.Note("scripts") },
+	"note todo":                       func(s *Service) error { return s.Note("todo") },
+	"note monthly work":               func(s *Service) error { return s.Note("monthly_work") },
+	"ssh to":                          func(s *Service) error { return s.SysSSHConnect() },
 	"sys bluetooth connect":           func(s *Service) error { return s.SysBluetoothConnect() },
 	"sys bluetooth disconnect":        func(s *Service) error { return s.SysBluetoothDisconnect() },
 	"sys bluetooth scan and connect":  func(s *Service) error { return s.SysBluetoothScanConnect() },
@@ -56,19 +67,32 @@ var searchActions = map[string]func(*Service) error{
 	"launch xournal":                  func(s *Service) error { return s.Launch("xournalpp") },
 	"snip fzf":                        func(s *Service) error { return s.SnipFzf() },
 	"snip create":                     func(s *Service) error { return s.SnipCreate("") },
-	"file search":                     func(s *Service) error { return s.FileSearch() },
-	"file search content":             func(s *Service) error { return s.FileSearchContent() },
-	"file search book":                func(s *Service) error { return s.FileSearchBook() },
-	"file search media":               func(s *Service) error { return s.FileSearchMedia() },
-	"file search wiki":                func(s *Service) error { return s.FileSearchWiki() },
-}
-
-func (s *Service) runAction(action string) error {
-	if fn, ok := searchActions[action]; ok {
-		return fn(s)
-	}
-	if strings.HasPrefix(action, "toggle ") {
-		return fmt.Errorf("use toggle.sh with process name: %s", strings.TrimPrefix(action, "toggle "))
-	}
-	return fmt.Errorf("unknown action: %s", action)
+	"file search":                     func(s *Service) error { return s.FileSearch("") },
+	"file search content":             func(s *Service) error { return s.FileSearchContent("") },
+	"file search book":                func(s *Service) error { return s.FileSearchBook("") },
+	"file search media":               func(s *Service) error { return s.FileSearchMedia("") },
+	"file search wiki":                func(s *Service) error { return s.FileSearchWiki("") },
+	"translate clipboard":             func(s *Service) error { _, err := s.TranslateClipboard(); return err },
+	"git log show":                    func(s *Service) error { return s.GitLogShow("") },
+	"search books online": func(s *Service) error {
+		q, err := s.rofiPrompt("search books")
+		if err != nil || q == "" {
+			return err
+		}
+		return s.SearchBooksOnline(q)
+	},
+	"search videos online": func(s *Service) error {
+		q, err := s.rofiPrompt("search videos")
+		if err != nil || q == "" {
+			return err
+		}
+		return s.SearchVideosOnline(q)
+	},
+	"search from web": func(s *Service) error {
+		q, err := s.rofiPrompt("search web")
+		if err != nil || q == "" {
+			return err
+		}
+		return s.SearchWeb(q)
+	},
 }

@@ -6,22 +6,23 @@ import (
 )
 
 var (
-	cleanupCancelFuncs []context.CancelFunc
-	cleanupMu          sync.Mutex
+	cleanupFuncs []func(context.Context)
+	cleanupMu    sync.Mutex
 )
 
-func registerCleanup(cancel context.CancelFunc) {
+func RegisterCleanup(fn func(context.Context)) {
 	cleanupMu.Lock()
 	defer cleanupMu.Unlock()
-	cleanupCancelFuncs = append(cleanupCancelFuncs, cancel)
+	cleanupFuncs = append(cleanupFuncs, fn)
 }
 
-func ShutdownAll() {
+func ShutdownAll(ctx context.Context) {
 	cleanupMu.Lock()
-	defer cleanupMu.Unlock()
+	funcs := cleanupFuncs
+	cleanupFuncs = nil
+	cleanupMu.Unlock()
 
-	for _, cancel := range cleanupCancelFuncs {
-		cancel()
+	for _, fn := range funcs {
+		fn(ctx)
 	}
-	cleanupCancelFuncs = nil
 }
