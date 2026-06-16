@@ -29,7 +29,6 @@ static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
-static void autostart_exec(void);
 static void buttonpress(XEvent *e);
 static void checkotherwm(void);
 static void cleanup(void);
@@ -193,36 +192,8 @@ struct Pertag {
   unsigned int sellts[LENGTH(tags) + 1];
 };
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
-static pid_t *autostart_pids;
-static size_t autostart_len;
-
 /* scratchpad 当前等待处理的 scratchpad class */
 static const char *scratchpad_class_wait = NULL;
-
-/* execute command from autostart array */
-static void
-autostart_exec() {
-  const char *const *p;
-  size_t i = 0;
-
-  for (p = autostart; *p; autostart_len++, p++) {
-    while (*++p)
-      ;
-  }
-
-  autostart_pids = malloc(autostart_len * sizeof(pid_t));
-  for (p = autostart; *p; i++, p++) {
-    if ((autostart_pids[i] = fork()) == 0) {
-      setsid();
-      execvp(*p, (char *const *)p);
-      fprintf(stderr, "dwm: execvp %s\n", *p);
-      perror(" failed");
-      _exit(EXIT_FAILURE);
-    }
-    while (*++p)
-      ;
-  }
-}
 
 /* function implementations */
   void
@@ -1688,15 +1659,6 @@ propertynotify(XEvent *e)
   void
 quit(const Arg *arg)
 {
-  size_t i;
-
-  for (i = 0; i < autostart_len; i++) {
-    if (0 < autostart_pids[i]) {
-      kill(autostart_pids[i], SIGTERM);
-      waitpid(autostart_pids[i], NULL, 0);
-    }
-  }
-
   if(arg->i) {
     restart = 1;
   }
@@ -3984,7 +3946,6 @@ main(int argc, char *argv[])
   }
 
   checkotherwm();
-  autostart_exec();
   setup();
 
 #ifdef __OpenBSD__

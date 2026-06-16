@@ -47,11 +47,6 @@ static const char *themes[][SchemeLast][3] = {
   },
 };
 
-static const char *const autostart[] = {
-  "sys-reset", NULL,
-  NULL,
-};
-
 /* tagging */
 static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
 
