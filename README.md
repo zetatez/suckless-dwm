@@ -44,18 +44,6 @@ and (re)compiling the source code.
 
 `SUPKEY` maps to `Mod4Mask` (Super/Win) and `MODKEY` maps to `Mod1Mask` (Alt). All shortcuts below are defined in `config.def.h` and rely on those two modifiers unless noted.
 
-### Hardware Media Keys (no modifier)
-
-| Key                                             | Action                                    |
-| ---                                             | ---                                       |
-| `XF86AudioMute`                                 | Toggle speaker mute via `pactl`           |
-| `XF86AudioLowerVolume` / `XF86AudioRaiseVolume` | Adjust sink volume by ±5%                 |
-| `XF86AudioMicMute`                              | Toggle microphone mute                    |
-| `XF86MonBrightnessDown` / `XF86MonBrightnessUp` | Adjust display brightness by ±5%          |
-| `XF86AudioPlay` / `XF86AudioPause`              | Toggle media playback through `playerctl` |
-| `XF86AudioStop`                                 | Stop playback via `playerctl stop`        |
-| `XF86AudioPrev` / `XF86AudioNext`               | Previous/next track through `playerctl`   |
-
 ### Super Layer – Function Row
 
 | Key            | Action                                                  |
@@ -75,50 +63,54 @@ The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding 
 
 | Key     | Destination                           |
 | ---     | ---                                   |
-| `SUP+1` | ChatGPT                               |
-| `SUP+2` | YouTube                               |
-| `SUP+3` | GitHub profile (`github.com/zetatez`) |
-| `SUP+4` | Gmail                                 |
-| `SUP+5` | Google Translate                      |
+| `SUP+1` | Google Gemini                         |
+| `SUP+2` | GitHub profile (`github.com/zetatez`) |
+| `SUP+3` | Gmail                                 |
+| `SUP+4` | Google Translate                      |
+| `SUP+5` | CCTV5 stream                          |
 | `SUP+6` | Web WeChat                            |
-| `SUP+7` | LeetCode CN search                    |
-| `SUP+8` | CCTV5 stream                          |
-| `SUP+9` | Bilibili                              |
+| `SUP+7` | YouTube                               |
+| `SUP+8` | Bilibili                              |
+| `SUP+9` | LeetCode CN search                    |
 | `SUP+0` | Doubao chat                           |
-| `SUP+/` | Google Gemini                         |
+| `SUP+/` | Toggle opencode                       |
+
+> `SUP+Shift+1..0` opens the same URLs in qutebrowser instead of Chrome.
 
 ### Super Layer – Launchers & Toggles
 
-| Key     | Command                                       | Purpose                                             |
-| ---     | ---                                           | ---                                                 |
-| `SUP+a` | `launch_file_manager`                         | Open the default file manager                       |
-| `SUP+b` | `launch_qutebrowser`                          | Focus or start qutebrowser                          |
-| `SUP+c` | `note_monthly_work`                           | Append to the monthly work log                      |
-| `SUP+d` | `toggle_lazydocker`                           | Show or hide lazydocker                             |
-| `SUP+g` | `launch_chrome`                               | Focus or start Google Chrome                        |
-| `SUP+i` | `toggle_flameshot`                            | Toggle Flameshot screenshot UI                      |
-| `SUP+m` | `lazy_open_search_file_content`               | Search file contents                                |
-| `SUP+n` | Scratchpad (Python)                           | Toggle the `sp-python` scratchpad terminal          |
-| `SUP+o` | `handle_clipboard`                            | Process clipboard content                           |
-| `SUP+p` | `lazy_open_search_file`                       | Search files from a terminal prompt                 |
-| `SUP+q` | `slock`                                       | Lock the screen                                     |
-| `SUP+r` | `toggle_yazi`                                 | Show or hide the `yazi` TUI file manager            |
-| `SUP+s` | `search`                                      | Invoke the custom search interface                  |
-| `SUP+t` | `next_theme`                                  | Cycle through the configured color themes           |
-| `SUP+w` | `send_clipboard_to_feishu_robot_for_leetcode` | Send clipboard to Feishu LeetCode robot             |
-| `SUP+x` | `note_scripts`                                | Jump to the scripts notebook                        |
-| `SUP+y` | `toggle_show`                                 | Toggle on-screen widgets for streaming/presentation |
-| `SUP+z` | `note_todo`                                   | Open the todo capture note                          |
+| Key     | Command                    | Purpose                                   |
+| ---     | ---                        | ---                                       |
+| `SUP+a` | `thunar`                   | Open the file manager                     |
+| `SUP+b` | `qutebrowser`              | Launch qutebrowser                        |
+| `SUP+c` | `note monthly-work`        | Append to the monthly work log            |
+| `SUP+d` | `lazydocker` (toggle)      | Show or hide lazydocker                   |
+| `SUP+g` | `chrome`                   | Launch Google Chrome                      |
+| `SUP+i` | `flameshot gui` (toggle)   | Toggle Flameshot screenshot UI            |
+| `SUP+m` | `file-search-content`      | Search file contents                      |
+| `SUP+n` | Python scratchpad (toggle) | Toggle the Python scratchpad terminal     |
+| `SUP+o` | `handle-clipboard`         | Process clipboard content                 |
+| `SUP+p` | `file-search`              | Search files from a terminal prompt       |
+| `SUP+q` | `slock`                    | Lock the screen                           |
+| `SUP+r` | `yazi` (toggle)            | Show or hide the `yazi` TUI file manager  |
+| `SUP+s` | `search`                   | Invoke the custom search interface        |
+| `SUP+t` | `next_theme`               | Cycle through the configured color themes |
+| `SUP+u` | `solve-leetcode`           | Solve LeetCode problems                   |
+| `SUP+v` | `send-to-feishu`           | Send content to Feishu                    |
+| `SUP+w` | `sys-kill`                 | Kill windows/processes                    |
+| `SUP+x` | `note scripts`             | Jump to the scripts notebook              |
+| `SUP+y` | `toggle-rec-show`          | Toggle recording/show overlay             |
+| `SUP+z` | `note todo`                | Open the todo capture note                |
 
 | Key             | Command                            | Purpose                                    |
 | ---             | ---                                | ---                                        |
-| `SUP+Backspace` | `toggle_passmenu`                  | Display the password picker                |
-| `SUP+Delete`    | `sys_shortcuts`                    | Show the global shortcut helper            |
-| `SUP+Escape`    | `toggle_top`                       | Toggle the system monitor overlay          |
-| `SUP+'`         | `toggle_tty_clock`                 | Show or hide the fullscreen terminal clock |
-| `SUP+\`         | `reset_sys_default`                | Reset desktop defaults                     |
-| `SUP+[`         | `toggle_calendar_scheduling`       | Show the weekly calendar scheduling view   |
-| `SUP+]`         | `toggle_calendar_scheduling_today` | Show today's calendar scheduling view      |
+| `SUP+Backspace` | `passmenu`                         | Display the password picker                |
+| `SUP+Delete`    | `sys-shortcut`                     | Show the global shortcut helper            |
+| `SUP+Escape`    | `htop` (toggle)                    | Toggle the system monitor overlay          |
+| `SUP+'`         | `toggle-tty-clock`                 | Show or hide the fullscreen terminal clock |
+| `SUP+\`         | `sys-reset`                        | Reset desktop defaults                     |
+| `SUP+[`         | `nvim +Calendar -view=month`       | Show the weekly calendar scheduling view   |
+| `SUP+]`         | `nvim +Calendar -view=day`         | Show today's calendar scheduling view      |
 
 ### Super Layer – Floating Window Controls
 
@@ -130,34 +122,34 @@ The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding 
 
 ### Super Layer – Shifted Shortcuts
 
-| Key           | Action                                   |
-| ---           | ---                                      |
-| `SUP+Shift+1` | Open ChatGPT as app                      |
-| `SUP+Shift+2` | Open YouTube as app                      |
-| `SUP+Shift+3` | Open GitHub as app                       |
-| `SUP+Shift+4` | Open Gmail as app                        |
-| `SUP+Shift+5` | Open Google Translate as app             |
-| `SUP+Shift+6` | Open Web WeChat as app                   |
-| `SUP+Shift+7` | Open LeetCode as app                     |
-| `SUP+Shift+8` | Open CCTV5 as app                        |
-| `SUP+Shift+9` | Open Bilibili as app                     |
-| `SUP+Shift+0` | Open Doubao as app                       |
-| `SUP+Shift+/` | Open Google Gemini as app                |
-| `SUP+Shift+d` | Launch/focus DingTalk                    |
-| `SUP+Shift+e` | Toggle the terminal mail client (mutt)   |
-| `SUP+Shift+f` | Launch/focus Feishu                      |
-| `SUP+Shift+i` | Launch/focus Inkscape                    |
-| `SUP+Shift+m` | Launch/focus NetEase Cloud Music         |
-| `SUP+Shift+n` | Toggle the Julia scratchpad (`sp-julia`) |
-| `SUP+Shift+o` | Launch/focus Obsidian                    |
-| `SUP+Shift+p` | Launch/focus Krita                       |
-| `SUP+Shift+s` | Launch/focus Sublime Text                |
-| `SUP+Shift+w` | Send clipboard to Feishu robot           |
-| `SUP+Shift+x` | Launch/focus Xournal++                   |
-| `SUP+Shift+z` | Launch/focus Zoom                        |
-| `SUP+Shift+'` | Toggle Screenkey overlay                 |
-| `SUP+Shift+,` | Toggle audio recording                   |
-| `SUP+Shift+.` | Toggle screen recording                  |
+| Key           | Action                                 |
+| ---           | ---                                    |
+| `SUP+Shift+1` | Open Google Gemini in qutebrowser      |
+| `SUP+Shift+2` | Open GitHub in qutebrowser             |
+| `SUP+Shift+3` | Open Gmail in qutebrowser              |
+| `SUP+Shift+4` | Open Google Translate in qutebrowser   |
+| `SUP+Shift+5` | Open CCTV5 in qutebrowser              |
+| `SUP+Shift+6` | Open Web WeChat in qutebrowser         |
+| `SUP+Shift+7` | Open YouTube in qutebrowser            |
+| `SUP+Shift+8` | Open Bilibili in qutebrowser           |
+| `SUP+Shift+9` | Open LeetCode in qutebrowser           |
+| `SUP+Shift+0` | Open Doubao in qutebrowser             |
+| `SUP+Shift+/` | Toggle opencode                        |
+| `SUP+Shift+d` | Launch/focus DingTalk                  |
+| `SUP+Shift+e` | Toggle the terminal mail client (mutt) |
+| `SUP+Shift+f` | Launch/focus Feishu                    |
+| `SUP+Shift+i` | Launch/focus Inkscape                  |
+| `SUP+Shift+m` | Launch/focus NetEase Cloud Music       |
+| `SUP+Shift+n` | Toggle the Julia scratchpad            |
+| `SUP+Shift+o` | Launch/focus Obsidian                  |
+| `SUP+Shift+s` | Launch/focus Sublime Text              |
+| `SUP+Shift+u` | Solve LeetCode screenshot              |
+| `SUP+Shift+w` | Send to Feishu                         |
+| `SUP+Shift+x` | Launch/focus Xournal++                 |
+| `SUP+Shift+z` | Launch/focus Zoom                      |
+| `SUP+Shift+'` | Toggle Screenkey overlay               |
+| `SUP+Shift+,` | Toggle audio recording                 |
+| `SUP+Shift+.` | Toggle screen recording                |
 
 ### Alt Layer – Core Controls
 
