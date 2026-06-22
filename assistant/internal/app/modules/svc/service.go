@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"assistant/internal/bootstrap/psl"
+	"assistant/pkg/dwmblocknotify"
 
 	"github.com/sirupsen/logrus"
 	"golang.design/x/clipboard"
@@ -74,13 +75,6 @@ func initClipboard() error {
 	return err
 }
 
-func (s *Service) notify(msg string) {
-	cmd := exec.Command("notify-send", msg)
-	// CombinedOutput absorbs stdout/stderr so the child never blocks on a
-	// closed pipe and notify-send's own errors don't propagate.
-	_, _ = cmd.CombinedOutput()
-}
-
 func (s *Service) readClipboard() (string, error) {
 	if err := initClipboard(); err != nil {
 		return "", fmt.Errorf("init clipboard: %w", err)
@@ -106,7 +100,7 @@ func (s *Service) pushClipboard(value, summary string) (string, error) {
 		s.logger.WithError(err).Warn("write clipboard failed")
 		return value, err
 	}
-	s.notify(summary)
+	dwmblocknotify.PUT(summary, 2*time.Second)
 	return value, nil
 }
 
@@ -118,7 +112,7 @@ func (s *Service) copyToClipboardWithNotify(value, summary string) {
 		s.logger.WithError(err).Warn("write clipboard failed")
 		return
 	}
-	s.notify(summary)
+	dwmblocknotify.PUT(summary, 2*time.Second)
 }
 
 // rofiPrompt opens rofi with the given prompt and returns the trimmed result.

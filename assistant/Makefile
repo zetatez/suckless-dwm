@@ -1,4 +1,4 @@
-.PHONY: build run dev install clean fmt
+.PHONY: build run dev install clean fmt swag
 
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o assistant ./cmd/assistant/
@@ -9,7 +9,7 @@ run: build
 dev:
 	go run ./cmd/assistant --config config.yaml
 
-install: build
+install: swag build
 	systemctl --user disable --now assistant 2>/dev/null || true
 	sudo cp assistant /opt/assistant/assistant
 	rm assistant
@@ -31,3 +31,7 @@ clean:
 
 fmt:
 	go fmt ./... && go vet ./...
+
+swag:
+	swag init -g ./cmd/assistant/main.go --output docs/
+	@echo "Swagger Addr: http://127.0.0.1:4321/swagger/index.html"

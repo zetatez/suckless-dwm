@@ -4,8 +4,10 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"assistant/internal/bootstrap/psl"
+	"assistant/pkg/dwmblocknotify"
 	"assistant/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +32,7 @@ func newDebugID() string {
 func (h *Handler) trigger(c *gin.Context, name string, fn func() error) {
 	if err := fn(); err != nil {
 		debugID := newDebugID()
-		h.svc.notify(fmt.Sprintf("%s failed [%s]: %v", name, debugID, err))
+		dwmblocknotify.PUT(fmt.Sprintf("%s failed [%s]: %v", name, debugID, err), 3*time.Second)
 		c.Header("X-Debug-Id", debugID)
 		c.Header("X-Error", err.Error())
 		response.ErrWithInternal(c, response.CodeServerError, fmt.Sprintf("%s failed (debug=%s)", name, debugID), err)
@@ -93,6 +95,7 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	r.POST("/search", h.Search)
 	r.POST("/translate-clipboard", h.TranslateClipboard)
 	r.POST("/git-log-show", h.GitLogShow)
+	r.POST("/screenshot", h.Screenshot)
 }
 
 // Power godoc
@@ -119,7 +122,7 @@ func (h *Handler) Format(c *gin.Context) {
 	}
 	result, err := h.svc.Format(req.Language)
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("format failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("format failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "format failed", err)
 		return
 	}
@@ -141,7 +144,7 @@ func (h *Handler) Note(c *gin.Context) {
 		return
 	}
 	if err := h.svc.Note(req.Type); err != nil {
-		h.svc.notify(fmt.Sprintf("note failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("note failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "note failed", err)
 		return
 	}
@@ -184,7 +187,7 @@ func (h *Handler) ConvertDatetime(c *gin.Context) {
 	}
 	result, err := h.svc.ConvertDatetime(req.From, req.To)
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("convert failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("convert failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "convert failed", err)
 		return
 	}
@@ -200,7 +203,7 @@ func (h *Handler) ConvertDatetime(c *gin.Context) {
 func (h *Handler) GetIP(c *gin.Context) {
 	ips, err := h.svc.GetIP()
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("get ip failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("get ip failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "get IP failed", err)
 		return
 	}
@@ -233,7 +236,7 @@ func (h *Handler) SendToFeishu(c *gin.Context) {
 // @Router /api/svr/solve-leetcode [post]
 func (h *Handler) SolveLeetCode(c *gin.Context) {
 	if err := h.svc.SolveLeetCode(); err != nil {
-		h.svc.notify(fmt.Sprintf("X"))
+		dwmblocknotify.PUT(fmt.Sprintf("Err: %v", err), 3*time.Second)
 		psl.GetLogger().WithError(err).Error("solve leetcode failed")
 		response.ErrWithInternal(c, response.CodeServerError, "solve leetcode failed", err)
 		return
@@ -249,7 +252,7 @@ func (h *Handler) SolveLeetCode(c *gin.Context) {
 // @Router /api/svr/solve-leetcode-screenshot [post]
 func (h *Handler) SolveLeetCodeScreenshot(c *gin.Context) {
 	if err := h.svc.SolveLeetCodeScreenshot(); err != nil {
-		h.svc.notify(fmt.Sprintf("X"))
+		dwmblocknotify.PUT(fmt.Sprintf("Err: %v", err), 3*time.Second)
 		psl.GetLogger().WithError(err).Error("solve leetcode with screenshot failed")
 		response.ErrWithInternal(c, response.CodeServerError, "solve leetcode failed", err)
 		return
@@ -274,7 +277,7 @@ func (h *Handler) Toggle(c *gin.Context) {
 
 	status, err := h.svc.Toggle(req.Process, req.Match)
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("toggle %s failed: %v", req.Process, err))
+		dwmblocknotify.PUT(fmt.Sprintf("toggle %s failed: %v", req.Process, err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "toggle failed", err)
 		return
 	}
@@ -284,7 +287,7 @@ func (h *Handler) Toggle(c *gin.Context) {
 func (h *Handler) toggleResp(c *gin.Context, name string, fn func() (string, error)) {
 	status, err := fn()
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("%s failed: %v", name, err))
+		dwmblocknotify.PUT(fmt.Sprintf("%s failed: %v", name, err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "toggle failed", err)
 		return
 	}
@@ -352,7 +355,7 @@ func (h *Handler) Launch(c *gin.Context) {
 		return
 	}
 	if err := h.svc.Launch(req.Command); err != nil {
-		h.svc.notify(fmt.Sprintf("launch failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("launch failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "launch failed", err)
 		return
 	}
@@ -374,7 +377,7 @@ func (h *Handler) SearchWeb(c *gin.Context) {
 		return
 	}
 	if err := h.svc.SearchWeb(req.Query); err != nil {
-		h.svc.notify(fmt.Sprintf("search failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("search failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "search failed", err)
 		return
 	}
@@ -396,7 +399,7 @@ func (h *Handler) SearchBooksOnline(c *gin.Context) {
 		return
 	}
 	if err := h.svc.SearchBooksOnline(req.Query); err != nil {
-		h.svc.notify(fmt.Sprintf("search books failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("search books failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "search books failed", err)
 		return
 	}
@@ -418,7 +421,7 @@ func (h *Handler) SearchVideosOnline(c *gin.Context) {
 		return
 	}
 	if err := h.svc.SearchVideosOnline(req.Query); err != nil {
-		h.svc.notify(fmt.Sprintf("search videos failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("search videos failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "search videos failed", err)
 		return
 	}
@@ -480,7 +483,7 @@ func (h *Handler) SysDisplay(c *gin.Context) { h.trigger(c, "display", h.svc.Sys
 func (h *Handler) SysKeyboardLight(c *gin.Context) {
 	val, err := h.svc.SysKeyboardLight()
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("keyboard light failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("keyboard light failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "toggle keyboard light failed", err)
 		return
 	}
@@ -506,7 +509,7 @@ func (h *Handler) OpenURL(c *gin.Context) {
 		browser = "chrome"
 	}
 	if err := h.svc.OpenURL(browser, req.URL); err != nil {
-		h.svc.notify(fmt.Sprintf("open url failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("open url failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "open url failed", err)
 		return
 	}
@@ -531,7 +534,7 @@ func (h *Handler) OpenURLAsApp(c *gin.Context) {
 		req.Browser = "chrome"
 	}
 	if err := h.svc.OpenURLAsApp(req.Browser, req.URL); err != nil {
-		h.svc.notify(fmt.Sprintf("open url as app failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("open url as app failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "open url as app failed", err)
 		return
 	}
@@ -555,7 +558,7 @@ func (h *Handler) SysSSHConnect(c *gin.Context) { h.trigger(c, "ssh", h.svc.SysS
 func (h *Handler) HandleClipboard(c *gin.Context) {
 	action, err := h.svc.HandleClipboard()
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("clipboard handle failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("clipboard handle failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "handle clipboard failed", err)
 		return
 	}
@@ -722,7 +725,7 @@ func (h *Handler) FileSearchExec(c *gin.Context) {
 	var req DirRequest
 	_ = c.ShouldBindJSON(&req)
 	if err := h.svc.FileSearchExec(req.Dir); err != nil {
-		h.svc.notify(fmt.Sprintf("file exec search failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("file exec search failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "file exec search failed", err)
 		return
 	}
@@ -741,7 +744,7 @@ func (h *Handler) OpenImages(c *gin.Context) {
 	var req DirRequest
 	_ = c.ShouldBindJSON(&req)
 	if err := h.svc.OpenImages(req.Dir); err != nil {
-		h.svc.notify(fmt.Sprintf("open images failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("open images failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "open images failed", err)
 		return
 	}
@@ -756,7 +759,7 @@ func (h *Handler) OpenImages(c *gin.Context) {
 // @Router /api/svr/snip-fzf [post]
 func (h *Handler) SnipFzf(c *gin.Context) {
 	if err := h.svc.SnipFzf(); err != nil {
-		h.svc.notify(fmt.Sprintf("snip fzf failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("snip fzf failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "snip fzf failed", err)
 		return
 	}
@@ -773,7 +776,7 @@ func (h *Handler) SnipFzf(c *gin.Context) {
 func (h *Handler) SnipCreate(c *gin.Context) {
 	name := c.Query("name")
 	if err := h.svc.SnipCreate(name); err != nil {
-		h.svc.notify(fmt.Sprintf("snip create failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("snip create failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "snip create failed", err)
 		return
 	}
@@ -788,7 +791,7 @@ func (h *Handler) SnipCreate(c *gin.Context) {
 // @Router /api/svr/search [post]
 func (h *Handler) Search(c *gin.Context) {
 	if err := h.svc.Search(); err != nil {
-		h.svc.notify(fmt.Sprintf("search failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("search failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "search failed", err)
 		return
 	}
@@ -804,7 +807,7 @@ func (h *Handler) Search(c *gin.Context) {
 func (h *Handler) TranslateClipboard(c *gin.Context) {
 	result, err := h.svc.TranslateClipboard()
 	if err != nil {
-		h.svc.notify(fmt.Sprintf("translate failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("translate failed: %v", err), 3*time.Second)
 		response.ErrWithInternal(c, response.CodeServerError, "translate failed", err)
 		return
 	}
@@ -823,4 +826,20 @@ func (h *Handler) GitLogShow(c *gin.Context) {
 	var req DirRequest
 	_ = c.ShouldBindJSON(&req)
 	h.trigger(c, "git log show", func() error { return h.svc.GitLogShow(req.Dir) })
+}
+
+// Screenshot godoc
+// @Summary 截图
+// @Description 使用 flameshot 截取整个屏幕，保存到 ~/Pictures/screenshots/ 目录
+// @Tags 工具
+// @Success 200 {object} response.Response
+// @Router /api/svr/screenshot [post]
+func (h *Handler) Screenshot(c *gin.Context) {
+	path, err := h.svc.Screenshot()
+	if err != nil {
+		dwmblocknotify.PUT(fmt.Sprintf("screenshot failed: %v", err), 3*time.Second)
+		response.ErrWithInternal(c, response.CodeServerError, "screenshot failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"path": path})
 }

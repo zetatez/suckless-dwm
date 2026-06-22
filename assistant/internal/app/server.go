@@ -7,12 +7,18 @@ import (
 	"runtime/debug"
 	"time"
 
+	_ "assistant/docs"
 	"assistant/internal/app/module"
+	"assistant/internal/app/modules/filebrowser"
 	"assistant/internal/app/modules/health"
+	"assistant/internal/app/modules/kindle"
+	"assistant/internal/app/modules/llmproxy"
 	"assistant/internal/app/modules/svc"
 	"assistant/internal/bootstrap/psl"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Run(ctx context.Context) error {
@@ -33,20 +39,28 @@ func Run(ctx context.Context) error {
 	modules := []module.Module{
 		health.NewHealthModule(),
 		svc.NewModule(),
+		filebrowser.NewModule(),
+		llmproxy.NewModule(),
+		kindle.NewModule(),
 	}
 
 	api := r.Group("/api")
-	{
-		for _, m := range modules {
-			logger.WithFields(map[string]interface{}{"module": m.Name(), "prefix": "/api/" + m.Name()}).Info("registering module")
-			group := api.Group("/" + m.Name())
-			moduleMiddleware := m.Middleware()
-			if len(moduleMiddleware) > 0 {
-				group.Use(moduleMiddleware...)
-			}
-			m.Register(group)
-		}
+	ui := r.Group("/ui")
+	for _, m := range modules {
+		logger.WithFields(map[string]interface{}{"module": m.Name()}).Info("registering module")
+
+		// API at /api/<name>/...
+		apiGroup := api.Group("/" + m.Name())
+		apiGroup.Use(m.Middleware()...)
+		m.Register(apiGroup)
+
+		// UI at /ui/<name>
+		uiGroup := ui.Group("/" + m.Name())
+		uiGroup.Use(m.Middleware()...)
+		m.RegisterUI(uiGroup)
 	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	cfg := psl.GetConfig().App
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)

@@ -6,6 +6,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"assistant/pkg/dwmblocknotify"
+	"assistant/pkg/news"
 )
 
 func StartBackgroundTasks(ctx context.Context) {
@@ -14,10 +17,13 @@ func StartBackgroundTasks(ctx context.Context) {
 		startDaemon(ctx, cfg.Background.Procs)
 	}
 	startWallpaper(ctx)
+	// startNewsNotify(ctx)
 }
 
 func startDaemon(ctx context.Context, procs []BackgroundProc) {
 	go func() {
+		ticker := time.NewTicker(3 * time.Second)
+		defer ticker.Stop()
 		for {
 			for _, p := range procs {
 				if !isRunning(p.Name) {
@@ -35,15 +41,21 @@ func startDaemon(ctx context.Context, procs []BackgroundProc) {
 			select {
 			case <-ctx.Done():
 				return
-			case <-time.After(3 * time.Second):
+			case <-ticker.C:
 			}
 		}
 	}()
 }
 
+func isRunning(name string) bool {
+	return exec.Command("pgrep", "-x", name).Run() == nil
+}
+
 func startWallpaper(ctx context.Context) {
 	go func() {
 		dir := GetConfig().Svc.DirWallpaper
+		ticker := time.NewTicker(60 * time.Second)
+		defer ticker.Stop()
 		for {
 			files, _ := filepath.Glob(filepath.Join(dir, "*.JPG"))
 			for _, pic := range files {
@@ -57,19 +69,56 @@ func startWallpaper(ctx context.Context) {
 				select {
 				case <-ctx.Done():
 					return
-				case <-time.After(60 * time.Second):
+				case <-ticker.C:
 				}
 			}
-			// Empty dir (or dir missing) — wait before scanning again.
 			select {
 			case <-ctx.Done():
 				return
-			case <-time.After(60 * time.Second):
+			case <-ticker.C:
 			}
 		}
 	}()
 }
 
-func isRunning(name string) bool {
-	return exec.Command("pgrep", "-x", name).Run() == nil
+func startNewsNotify(ctx context.Context) {
+	go func() {
+		collector := news.New()
+		items, err := collector.Fetch(ctx, "top-news", 20)
+		if err != nil {
+			GetLogger().WithError(err).Warn("fetch news failed")
+		}
+
+		fetchTicker := time.NewTicker(time.Minute * 30)
+		defer fetchTicker.Stop()
+		sendTicker := time.NewTicker(16 * time.Second)
+		defer sendTicker.Stop()
+		idx := 0
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-fetchTicker.C:
+				newsItems, err := collector.Fetch(ctx, "top-news", 20)
+				if err != nil {
+					GetLogger().WithError(err).Warn("fetch news failed")
+					continue
+				}
+				items = newsItems
+				idx = 0
+			case <-sendTicker.C:
+				if len(items) == 0 {
+					continue
+				}
+				item := items[idx]
+				msg := item.Title
+				// if item.Source != "" {
+				// 	msg = item.Source + " | " + msg
+				// }
+				dwmblocknotify.POST(msg, 3*time.Second)
+				idx = (idx + 1) % len(items)
+			}
+		}
+	}()
 }

@@ -8,6 +8,7 @@ import (
 	"unicode"
 
 	"assistant/internal/bootstrap/psl"
+	"assistant/pkg/dwmblocknotify"
 	"assistant/pkg/llm"
 	"assistant/pkg/smartapi"
 )
@@ -29,7 +30,7 @@ func (s *Service) TranslateClipboard() (string, error) {
 		return "", fmt.Errorf("clipboard is empty")
 	}
 
-	s.notify("translating...")
+	dwmblocknotify.PUT("translating...", 2*time.Second)
 
 	cfg := psl.GetConfig().LLM
 	client, err := llm.NewClient(cfg.Provider, llm.Config{

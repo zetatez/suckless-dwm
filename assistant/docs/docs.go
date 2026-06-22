@@ -15,6 +15,339 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/filebrowser/copy": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "复制文件/目录到目标目录",
+                "parameters": [
+                    {
+                        "description": "{paths, dest}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/delete": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "删除文件/目录",
+                "parameters": [
+                    {
+                        "description": "{paths}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/download": {
+            "get": {
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "下载文件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "相对 root 的文件路径",
+                        "name": "path",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/filebrowser/download-tgz": {
+            "get": {
+                "description": "将指定路径列表(文件或目录)打包为 tar.gz 下载",
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "下载选中文件/目录为 tar.gz",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "路径(可重复 path=a\u0026path=b)",
+                        "name": "paths",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/filebrowser/list": {
+            "get": {
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "列出目录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "相对 root 的路径(空=root)",
+                        "name": "path",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/filebrowser/mkdir": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "创建目录",
+                "parameters": [
+                    {
+                        "description": "{path}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/move": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "移动文件/目录到目标目录",
+                "parameters": [
+                    {
+                        "description": "{paths, dest}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/raw": {
+            "get": {
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "在线预览文件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "相对 root 的文件路径",
+                        "name": "path",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1=生成缩略图(仅图片)",
+                        "name": "thumb",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/filebrowser/rename": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "重命名文件/目录",
+                "parameters": [
+                    {
+                        "description": "{path, new_name}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/touch": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "创建空文件（不覆盖）",
+                "parameters": [
+                    {
+                        "description": "{path}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/trash": {
+            "get": {
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "列出回收站",
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/trash/delete": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "从回收站永久删除",
+                "parameters": [
+                    {
+                        "description": "{trash_names}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/trash/restore": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "从回收站恢复",
+                "parameters": [
+                    {
+                        "description": "{trash_names}",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/filebrowser/upload": {
+            "post": {
+                "description": "multipart/form-data 上传; 字段 file 为文件(可多个), path 为目标目录(相对 root, 空=root)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "文件浏览"
+                ],
+                "summary": "上传文件(不覆盖，支持多文件)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "目标目录(相对 root)",
+                        "name": "path",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "文件(可多个)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/health": {
             "get": {
                 "description": "检查服务健康状态",
@@ -29,13 +362,84 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "500": {
                         "description": "服务不健康",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/llm/v1/chat/completions": {
+            "post": {
+                "tags": [
+                    "LLM代理"
+                ],
+                "summary": "聊天补全(自动路由到可用供应商)",
+                "parameters": [
+                    {
+                        "description": "请求体",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/llmproxy.proxyChatRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/llm/v1/models": {
+            "get": {
+                "tags": [
+                    "LLM代理"
+                ],
+                "summary": "列出可用模型",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/llm/v1/models/{model}": {
+            "get": {
+                "tags": [
+                    "LLM代理"
+                ],
+                "summary": "查询模型详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "模型ID",
+                        "name": "model",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -58,7 +462,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_app_modules_svc.DatetimeConvertRequest"
+                            "$ref": "#/definitions/svc.DatetimeConvertRequest"
                         }
                     }
                 ],
@@ -66,49 +470,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/svr/send-to-feishu": {
-            "post": {
-                "description": "从剪贴板读取内容并发送到飞书机器人",
-                "tags": [
-                    "通信"
-                ],
-                "summary": "发送飞书消息",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/svr/file-open-images": {
-            "post": {
-                "description": "用 sxiv 打开目录下所有图片",
-                "tags": [
-                    "文件"
-                ],
-                "summary": "打开图片",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "目录路径(默认当前目录)",
-                        "name": "dir",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -116,16 +478,30 @@ const docTemplate = `{
         },
         "/api/svr/file-search": {
             "post": {
-                "description": "触发 fzf 全盘文件搜索并打开",
+                "description": "触发 fzf 文件搜索并打开; dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
                 "tags": [
                     "文件"
                 ],
                 "summary": "文件搜索",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -133,16 +509,30 @@ const docTemplate = `{
         },
         "/api/svr/file-search-book": {
             "post": {
-                "description": "触发 fzf 搜索电子书(pdf/epub/djvu)",
+                "description": "触发 fzf 搜索电子书(pdf/epub/djvu); dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
                 "tags": [
                     "文件"
                 ],
                 "summary": "电子书搜索",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -150,16 +540,61 @@ const docTemplate = `{
         },
         "/api/svr/file-search-content": {
             "post": {
-                "description": "触发 rg+fzf 文件内容搜索",
+                "description": "触发 rg+fzf 文件内容搜索; dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
                 "tags": [
                     "文件"
                 ],
                 "summary": "文件内容搜索",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/file-search-exec": {
+            "post": {
+                "description": "在指定目录下搜可执行脚本 (sh/py/jl) 并通过 fzf 选中执行; dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件"
+                ],
+                "summary": "目录下可执行文件搜索",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -167,16 +602,30 @@ const docTemplate = `{
         },
         "/api/svr/file-search-media": {
             "post": {
-                "description": "触发 fzf 搜索图片/音频/视频文件",
+                "description": "触发 fzf 搜索图片/音频/视频文件; dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
                 "tags": [
                     "文件"
                 ],
                 "summary": "媒体文件搜索",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -184,16 +633,30 @@ const docTemplate = `{
         },
         "/api/svr/file-search-wiki": {
             "post": {
-                "description": "触发 fzf 搜索 Markdown 笔记文件",
+                "description": "触发 fzf 搜索 Markdown 笔记文件; dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
                 "tags": [
                     "文件"
                 ],
                 "summary": "Wiki 搜索",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -216,7 +679,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_app_modules_svc.FormatRequest"
+                            "$ref": "#/definitions/svc.FormatRequest"
                         }
                     }
                 ],
@@ -224,7 +687,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -241,7 +704,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -258,7 +721,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -271,19 +734,42 @@ const docTemplate = `{
                     "网络"
                 ],
                 "summary": "获取 IP 地址",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/git-log-show": {
+            "post": {
+                "description": "fzf 选择 commit 查看完整信息(message, author, date, diff); dir 留空时默认 ~/.config",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "开发"
+                ],
+                "summary": "Git log + show",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "网卡名称(默认 wlan0)",
-                        "name": "interface",
-                        "in": "query"
+                        "description": "dir: 仓库目录路径(空表示当前目录)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -300,7 +786,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -323,7 +809,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_app_modules_svc.LaunchRequest"
+                            "$ref": "#/definitions/svc.LaunchRequest"
                         }
                     }
                 ],
@@ -331,7 +817,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -354,7 +840,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_app_modules_svc.NoteRequest"
+                            "$ref": "#/definitions/svc.NoteRequest"
                         }
                     }
                 ],
@@ -362,7 +848,38 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/open-images": {
+            "post": {
+                "description": "用 sxiv 打开目录下所有图片; dir 留空时默认 $HOME",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件"
+                ],
+                "summary": "打开图片",
+                "parameters": [
+                    {
+                        "description": "dir: 目录路径(空表示 $HOME)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/svc.DirRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -385,7 +902,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/svc.OpenURLRequest"
                         }
                     }
                 ],
@@ -393,7 +910,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -416,7 +933,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/svc.OpenURLRequest"
                         }
                     }
                 ],
@@ -424,7 +941,24 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/screenshot": {
+            "post": {
+                "description": "使用 flameshot 截取整个屏幕，保存到 ~/Pictures/screenshots/ 目录",
+                "tags": [
+                    "工具"
+                ],
+                "summary": "截图",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -441,7 +975,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -464,7 +998,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/svc.QueryRequest"
                         }
                     }
                 ],
@@ -472,7 +1006,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -495,7 +1029,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/svc.QueryRequest"
                         }
                     }
                 ],
@@ -503,7 +1037,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -526,7 +1060,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/svc.QueryRequest"
                         }
                     }
                 ],
@@ -534,7 +1068,24 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/send-to-feishu": {
+            "post": {
+                "description": "从剪贴板读取内容并发送到飞书机器人",
+                "tags": [
+                    "通信"
+                ],
+                "summary": "发送飞书消息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -559,7 +1110,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -576,7 +1127,41 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/solve-leetcode": {
+            "post": {
+                "description": "从剪贴板读取算法题, 调用大模型生成完整 Go 代码(含算法思想、复杂度、测试用例), 结果写回剪贴板",
+                "tags": [
+                    "AI"
+                ],
+                "summary": "LeetCode 解题",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/solve-leetcode-screenshot": {
+            "post": {
+                "description": "截图当前屏幕, 调用大模型生成完整 Go 代码(含算法思想、复杂度、测试用例), 结果写回剪贴板",
+                "tags": [
+                    "AI"
+                ],
+                "summary": "LeetCode 截图解题",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -593,7 +1178,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -610,7 +1195,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -627,7 +1212,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -644,7 +1229,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -660,7 +1245,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -676,7 +1261,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -693,7 +1278,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -710,7 +1295,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -726,7 +1311,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -742,7 +1327,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -758,7 +1343,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -775,7 +1360,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -792,7 +1377,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -809,7 +1394,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -825,7 +1410,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -841,7 +1426,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -857,7 +1442,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -874,7 +1459,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -897,7 +1482,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_app_modules_svc.ToggleRequest"
+                            "$ref": "#/definitions/svc.ToggleRequest"
                         }
                     }
                 ],
@@ -905,7 +1490,120 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/assistant_pkg_response.Response"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/toggle-music": {
+            "post": {
+                "tags": [
+                    "进程"
+                ],
+                "summary": "切换音乐",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/toggle-rec-audio": {
+            "post": {
+                "tags": [
+                    "进程"
+                ],
+                "summary": "切换录音",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/toggle-rec-screen": {
+            "post": {
+                "tags": [
+                    "进程"
+                ],
+                "summary": "切换录屏",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/toggle-rec-show": {
+            "post": {
+                "tags": [
+                    "进程"
+                ],
+                "summary": "切换摄像头预览",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/toggle-rec-webcam": {
+            "post": {
+                "tags": [
+                    "进程"
+                ],
+                "summary": "切换摄像头录制",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/toggle-tty-clock": {
+            "post": {
+                "tags": [
+                    "进程"
+                ],
+                "summary": "切换 tty-clock",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/svr/translate-clipboard": {
+            "post": {
+                "description": "自动检测语言并翻译剪贴板内容，结果写入剪贴板",
+                "tags": [
+                    "工具"
+                ],
+                "summary": "翻译剪贴板内容",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -913,7 +1611,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "assistant_pkg_response.Response": {
+        "llmproxy.proxyChatRequest": {
+            "type": "object",
+            "properties": {
+                "messages": {
+                    "type": "array",
+                    "items": {}
+                },
+                "model": {
+                    "type": "string"
+                },
+                "stream": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.Response": {
             "type": "object",
             "properties": {
                 "code": {
@@ -925,7 +1638,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_app_modules_svc.DatetimeConvertRequest": {
+        "svc.DatetimeConvertRequest": {
             "type": "object",
             "required": [
                 "from",
@@ -940,7 +1653,15 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_app_modules_svc.FormatRequest": {
+        "svc.DirRequest": {
+            "type": "object",
+            "properties": {
+                "dir": {
+                    "type": "string"
+                }
+            }
+        },
+        "svc.FormatRequest": {
             "type": "object",
             "required": [
                 "language"
@@ -951,7 +1672,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_app_modules_svc.LaunchRequest": {
+        "svc.LaunchRequest": {
             "type": "object",
             "required": [
                 "command"
@@ -962,7 +1683,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_app_modules_svc.NoteRequest": {
+        "svc.NoteRequest": {
             "type": "object",
             "required": [
                 "type"
@@ -973,12 +1694,41 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_app_modules_svc.ToggleRequest": {
+        "svc.OpenURLRequest": {
             "type": "object",
             "required": [
+                "url"
+            ],
+            "properties": {
+                "browser": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "svc.QueryRequest": {
+            "type": "object",
+            "required": [
+                "query"
+            ],
+            "properties": {
+                "query": {
+                    "type": "string"
+                }
+            }
+        },
+        "svc.ToggleRequest": {
+            "type": "object",
+            "required": [
+                "match",
                 "process"
             ],
             "properties": {
+                "match": {
+                    "type": "string"
+                },
                 "process": {
                     "type": "string"
                 }
@@ -990,11 +1740,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "127.0.0.1:9876",
+	Host:             "127.0.0.1:4321",
 	BasePath:         "/",
 	Schemes:          []string{"http"},
 	Title:            "Assistant API",
-	Description:      "Example Swagger setup for Golang Gin.",
+	Description:      "Assistant backend service API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

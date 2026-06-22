@@ -14,13 +14,15 @@ static const unsigned int borderpx = 2;
 static const unsigned int snap     = 24;
 static const int showbar           = 1;
 static const int topbar            = 1;
-static const int barheight         = 14;
+static const int barheight         = 18;
 static const int vertpad           = 0;
 static const int sidepad           = 0;
 static const int defaultwinpad     = 0;
 static const int swallowfloating   = 1;
 static const char *fonts[]         = {
   "DejaVuSansM Nerd Font Mono:style=Regular:size=14",
+  "Noto Sans Mono CJK SC:style=Regular:size=14",
+  "Noto Sans CJK SC:style=Regular:size=14",
 };
 static const char dmenufont[]      = "DejaVuSansM Nerd Font Mono:style=Regular:size=16";
 
@@ -134,7 +136,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_8,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://www.bilibili.com/'")                                         } },
    { SUPKEY|ShiftMask,             XK_9,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://leetcode.cn/search/?q=%E6%9C%80'")                           } },
    { SUPKEY|ShiftMask,             XK_0,            spawn,             { .v = SpawnShellCmd("open-url-qutebrowser 'https://www.doubao.com/chat/'")                                      } },
-   { SUPKEY|ShiftMask,             XK_slash,        toggle,            { .v = CmdClass("st -c cls-opencode -e opencode ~/git/test/go", "cls-opencode")                                  } },
+   { SUPKEY|ShiftMask,             XK_slash,        spawn,             { .v = SpawnShellCmd("open-url-freq")                                                                            } },
 
    { SUPKEY,                       XK_k,            movewin,           { .ui = UP                                                                   } },
    { SUPKEY,                       XK_j,            movewin,           { .ui = DOWN                                                                 } },
@@ -180,7 +182,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_l,            resizewin,         { .ui = HORINC                                                               } },
 
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")                 } },
-// { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v =                                                                       } },
+   { SUPKEY|ShiftMask,             XK_b,            spawn_or_focus,    { .v = CmdClass("chrome", "Google-chrome")                                   } },
 // { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                                       } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")                       } },
    { SUPKEY|ShiftMask,             XK_e,            toggle,            { .v = CmdClass("st -c cls-mutt mutt", "cls-mutt")                           } },
@@ -236,14 +238,14 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_u,            setlayout,            { 0                                            } }, // temporary layout switch
    { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,     { 0                                            } },
 
-   { MODKEY,                       XK_bracketleft,  focusmon,             { .i = -1                                      } }, // multi monitors: focus on which one -1
-   { MODKEY,                       XK_bracketright, focusmon,             { .i = +1                                      } }, // multi monitors: focus on which one +1
-   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,               { .i = -1                                      } }, // multi monitors: move win to monitor prev
-   { MODKEY|ShiftMask,             XK_bracketright, tagmon,               { .i = +1                                      } }, // multi monitors: move win to monitor next
+   { MODKEY,                       XK_bracketleft,  focusmon,             { .i = -1                                      } }, // multi monitors: focus on monitor prev
+   { MODKEY,                       XK_bracketright, focusmon,             { .i = +1                                      } }, // multi monitors: focus on monitor next
+   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,               { .i = -1                                      } }, // multi monitors: move tag to monitor prev
+   { MODKEY|ShiftMask,             XK_bracketright, tagmon,               { .i = +1                                      } }, // multi monitors: move tag to monitor next
    { MODKEY,                       XK_d,            incnmaster,           { .i = -1                                      } },
    { MODKEY,                       XK_i,            incnmaster,           { .i = +1                                      } },
-   { MODKEY,                       XK_h,            movestack,            { .i = -1                                      } },
-   { MODKEY,                       XK_l,            movestack,            { .i = +1                                      } },
+   { MODKEY|ControlMask,           XK_h,            movestack,            { .i = -1                                      } },
+   { MODKEY|ControlMask,           XK_l,            movestack,            { .i = +1                                      } },
    { MODKEY,                       XK_comma,        cyclelayout,          { .i = -1                                      } }, // useless
    { MODKEY,                       XK_period,       cyclelayout,          { .i = +1                                      } }, // useless
    { MODKEY|ShiftMask,             XK_comma,        shiftview,            { .i = -1                                      } },
@@ -288,33 +290,33 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_8,            tag,               {.ui = 1 << 7 } },
    { MODKEY|ShiftMask,             XK_9,            tag,               {.ui = 1 << 8 } },
    { MODKEY|ShiftMask,             XK_0,            tag,               {.ui = ~0     } }, // stick to all tags
-   { MODKEY|ControlMask,           XK_1,            toggleview,         {.ui = 1 << 0 } }, // toggle view of tag 1
-   { MODKEY|ControlMask,           XK_2,            toggleview,         {.ui = 1 << 1 } },
-   { MODKEY|ControlMask,           XK_3,            toggleview,         {.ui = 1 << 2 } },
-   { MODKEY|ControlMask,           XK_4,            toggleview,         {.ui = 1 << 3 } },
-   { MODKEY|ControlMask,           XK_5,            toggleview,         {.ui = 1 << 4 } },
-   { MODKEY|ControlMask,           XK_6,            toggleview,         {.ui = 1 << 5 } },
-   { MODKEY|ControlMask,           XK_7,            toggleview,         {.ui = 1 << 6 } },
-   { MODKEY|ControlMask,           XK_8,            toggleview,         {.ui = 1 << 7 } },
-   { MODKEY|ControlMask,           XK_9,            toggleview,         {.ui = 1 << 8 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_1,            toggletag,          {.ui = 1 << 0 } }, // toggle tag of focused window
-   { MODKEY|ShiftMask|ControlMask,  XK_2,            toggletag,          {.ui = 1 << 1 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_3,            toggletag,          {.ui = 1 << 2 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_4,            toggletag,          {.ui = 1 << 3 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_5,            toggletag,          {.ui = 1 << 4 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_6,            toggletag,          {.ui = 1 << 5 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_7,            toggletag,          {.ui = 1 << 6 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_8,            toggletag,          {.ui = 1 << 7 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_9,            toggletag,          {.ui = 1 << 8 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_1,            toggleview,        {.ui = 1 << 0 } }, // toggle view of tag 1
-   { MODKEY|ShiftMask|ControlMask,  XK_2,            toggleview,        {.ui = 1 << 1 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_3,            toggleview,        {.ui = 1 << 2 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_4,            toggleview,        {.ui = 1 << 3 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_5,            toggleview,        {.ui = 1 << 4 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_6,            toggleview,        {.ui = 1 << 5 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_7,            toggleview,        {.ui = 1 << 6 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_8,            toggleview,        {.ui = 1 << 7 } },
-   { MODKEY|ShiftMask|ControlMask,  XK_9,            toggleview,        {.ui = 1 << 8 } },
+   { MODKEY|ControlMask,           XK_1,            toggleview,        {.ui = 1 << 0 } }, // toggle view of tag 1
+   { MODKEY|ControlMask,           XK_2,            toggleview,        {.ui = 1 << 1 } },
+   { MODKEY|ControlMask,           XK_3,            toggleview,        {.ui = 1 << 2 } },
+   { MODKEY|ControlMask,           XK_4,            toggleview,        {.ui = 1 << 3 } },
+   { MODKEY|ControlMask,           XK_5,            toggleview,        {.ui = 1 << 4 } },
+   { MODKEY|ControlMask,           XK_6,            toggleview,        {.ui = 1 << 5 } },
+   { MODKEY|ControlMask,           XK_7,            toggleview,        {.ui = 1 << 6 } },
+   { MODKEY|ControlMask,           XK_8,            toggleview,        {.ui = 1 << 7 } },
+   { MODKEY|ControlMask,           XK_9,            toggleview,        {.ui = 1 << 8 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_1,            toggletag,        {.ui = 1 << 0 } }, // toggle tag of focused window
+   { MODKEY|ShiftMask|ControlMask,  XK_2,            toggletag,        {.ui = 1 << 1 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_3,            toggletag,        {.ui = 1 << 2 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_4,            toggletag,        {.ui = 1 << 3 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_5,            toggletag,        {.ui = 1 << 4 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_6,            toggletag,        {.ui = 1 << 5 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_7,            toggletag,        {.ui = 1 << 6 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_8,            toggletag,        {.ui = 1 << 7 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_9,            toggletag,        {.ui = 1 << 8 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_1,            toggleview,       {.ui = 1 << 0 } }, // toggle view of tag 1
+   { MODKEY|ShiftMask|ControlMask,  XK_2,            toggleview,       {.ui = 1 << 1 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_3,            toggleview,       {.ui = 1 << 2 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_4,            toggleview,       {.ui = 1 << 3 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_5,            toggleview,       {.ui = 1 << 4 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_6,            toggleview,       {.ui = 1 << 5 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_7,            toggleview,       {.ui = 1 << 6 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_8,            toggleview,       {.ui = 1 << 7 } },
+   { MODKEY|ShiftMask|ControlMask,  XK_9,            toggleview,       {.ui = 1 << 8 } },
 };
 
 /* button definitions */

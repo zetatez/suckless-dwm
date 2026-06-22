@@ -58,13 +58,22 @@ func loadConfig() (*Config, error) {
 }
 
 type Config struct {
-	App        AppConfig        `mapstructure:"app"`
-	Auth       AuthConfig       `mapstructure:"auth"`
-	Log        xlog.LogConfig   `mapstructure:"log"`
-	LLM        LLMConfig        `mapstructure:"llm"`
-	Svc        SvcConfig        `mapstructure:"svc"`
-	Channels   ChannelsConfig   `mapstructure:"channels"`
-	Background BackgroundConfig `mapstructure:"background"`
+	App         AppConfig         `mapstructure:"app"`
+	Auth        AuthConfig        `mapstructure:"auth"`
+	Log         xlog.LogConfig    `mapstructure:"log"`
+	LLM         LLMConfig         `mapstructure:"llm"`
+	LLMProxy    LLMProxyConfig    `mapstructure:"llm_proxy"`
+	Svc         SvcConfig         `mapstructure:"svc"`
+	Channels    ChannelsConfig    `mapstructure:"channels"`
+	Background  BackgroundConfig  `mapstructure:"background"`
+	FileBrowser FileBrowserConfig `mapstructure:"filebrowser"`
+}
+
+type FileBrowserConfig struct {
+	Root   string   `mapstructure:"root"`
+	Allow  []string `mapstructure:"allow"`
+	Deny   []string `mapstructure:"deny"`
+	Public []string `mapstructure:"public"`
 }
 
 type AppConfig struct {
@@ -90,6 +99,21 @@ type LLMConfig struct {
 	Temperature float32           `mapstructure:"temperature"`
 }
 
+type LLMProxyConfig struct {
+	MiddleModel   string           `mapstructure:"middle_model"`
+	ProbeInterval int              `mapstructure:"probe_interval"`
+	AuthToken     string           `mapstructure:"auth_token"`
+	Providers     []ProviderConfig `mapstructure:"providers"`
+}
+
+type ProviderConfig struct {
+	Name     string   `mapstructure:"name"`
+	BaseURL  string   `mapstructure:"base_url"`
+	APIKey   string   `mapstructure:"api_key"`
+	Models   []string `mapstructure:"models"`
+	PlanType string   `mapstructure:"plan_type"` // "fixed" or "payg"
+}
+
 type SvcConfig struct {
 	ProxyServer            string `mapstructure:"vpn_proxy"`
 	PrimaryMonitor         string `mapstructure:"default_monitor"`
@@ -98,6 +122,7 @@ type SvcConfig struct {
 	KeyboardBrightnessPath string `mapstructure:"path_keyboard_brightness"`
 	SSHSecretFile          string `mapstructure:"path_ssh_secret"`
 	DefaultTerminal        string `mapstructure:"terminal_default"`
+	SnipDir                string `mapstructure:"dir_snip"`
 }
 
 type ChannelsConfig struct {
@@ -137,6 +162,12 @@ func (c *Config) applyDefaults() {
 	if c.LLM.MaxTokens == 0 {
 		c.LLM.MaxTokens = 4096
 	}
+	if c.LLMProxy.ProbeInterval == 0 {
+		c.LLMProxy.ProbeInterval = 30
+	}
+	if c.LLMProxy.MiddleModel == "" {
+		c.LLMProxy.MiddleModel = "assistant"
+	}
 	if c.Svc.PrimaryMonitor == "" {
 		c.Svc.PrimaryMonitor = "eDP-1"
 	}
@@ -151,6 +182,16 @@ func (c *Config) applyDefaults() {
 	}
 	if c.Svc.DefaultTerminal == "" {
 		c.Svc.DefaultTerminal = "st"
+	}
+	if c.Svc.SnipDir == "" {
+		c.Svc.SnipDir = "~/git/obsidian/.snippets"
+	}
+	if c.FileBrowser.Root == "" {
+		home, _ := os.UserHomeDir()
+		c.FileBrowser.Root = home
+	}
+	if len(c.FileBrowser.Deny) == 0 {
+		c.FileBrowser.Deny = []string{".ssh", ".gnupg", ".config/assistant"}
 	}
 	if len(c.Background.Procs) == 0 {
 		home, _ := os.UserHomeDir()
@@ -170,6 +211,8 @@ func (c *Config) expandPaths() error {
 		&c.Svc.WorkingLogbookDir,
 		&c.Svc.SSHSecretFile,
 		&c.Svc.KeyboardBrightnessPath,
+		&c.Svc.SnipDir,
+		&c.FileBrowser.Root,
 	} {
 		*p = expandHomePath(*p, home)
 	}
@@ -209,6 +252,9 @@ func (c *Config) resolveEnv() {
 	expand(&c.Channels.Feishu.AppID)
 	expand(&c.Channels.Feishu.AppSecret)
 	expand(&c.Channels.Feishu.ChatID)
+	for i := range c.LLMProxy.Providers {
+		expand(&c.LLMProxy.Providers[i].APIKey)
+	}
 }
 
 func expandEnvPH(s string, envPH *regexp.Regexp) string {

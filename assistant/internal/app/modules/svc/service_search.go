@@ -47,6 +47,7 @@ var searchActions = map[string]func(*Service) error{
 	"send clipboard to feishu robot":  func(s *Service) error { return s.SendToFeishu() },
 	"solve leetcode":                  func(s *Service) error { return s.SolveLeetCode() },
 	"solve leetcode with screenshot":  func(s *Service) error { return s.SolveLeetCodeScreenshot() },
+	"screenshot":                      func(s *Service) error { _, err := s.Screenshot(); return err },
 	"note script":                     func(s *Service) error { return s.Note("scripts") },
 	"note todo":                       func(s *Service) error { return s.Note("todo") },
 	"note monthly work":               func(s *Service) error { return s.Note("monthly_work") },

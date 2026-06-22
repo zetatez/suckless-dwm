@@ -8,6 +8,7 @@ import (
 	"assistant/internal/app"
 	"assistant/internal/bootstrap/psl"
 
+	_ "assistant/pkg/llm/providers/ark"
 	_ "assistant/pkg/llm/providers/deepseek"
 	_ "assistant/pkg/llm/providers/gemini"
 	_ "assistant/pkg/llm/providers/glm"

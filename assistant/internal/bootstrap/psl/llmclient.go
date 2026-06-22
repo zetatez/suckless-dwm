@@ -29,7 +29,7 @@ func InitLLMClient() error {
 			Temperature: cfg.Temperature,
 		})
 		if llmErr != nil {
-			llmErr = errorf("create LLM client: %w", llmErr)
+			llmErr = fmt.Errorf("create LLM client: %w", llmErr)
 		}
 	})
 	return llmErr
@@ -42,13 +42,3 @@ func RegisterCleanupLLM() {
 		}
 	})
 }
-
-func errorf(format string, a ...interface{}) error {
-	return &errorString{fmt.Sprintf(format, a...)}
-}
-
-type errorString struct {
-	s string
-}
-
-func (e *errorString) Error() string { return e.s }

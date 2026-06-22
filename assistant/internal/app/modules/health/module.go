@@ -22,6 +22,8 @@ func (m *HealthModule) Register(r *gin.RouterGroup) {
 	m.handler.Register(r)
 }
 
+func (m *HealthModule) RegisterUI(r *gin.RouterGroup) {} // no UI
+
 func (m *HealthModule) Middleware() []gin.HandlerFunc {
 	return module.BaseMiddleware()
 }

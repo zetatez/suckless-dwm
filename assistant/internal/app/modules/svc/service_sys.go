@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"assistant/internal/bootstrap/psl"
+	"assistant/pkg/dwmblocknotify"
 )
 
 func (s *Service) SysShortcut() error {
@@ -70,7 +71,7 @@ func (s *Service) SysDisplay() error {
 	}
 	out, _, err := runScript("bash", fmt.Sprintf(`printf '%%s\n' %s | rofi -dmenu -p 'screen strategy'`, strings.Join(list, " ")))
 	if err != nil {
-		s.notify(fmt.Sprintf("display: rofi failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("display: rofi failed: %v", err), 3*time.Second)
 		s.runDisplayFallback(displayCmds["default"], cfg.DirWallpaper)
 		return nil
 	}
@@ -81,7 +82,7 @@ func (s *Service) SysDisplay() error {
 
 	cmd, ok := displayCmds[layout]
 	if !ok {
-		s.notify(fmt.Sprintf("display: unknown layout %q, falling back", layout))
+		dwmblocknotify.PUT(fmt.Sprintf("display: unknown layout %q, falling back", layout), 3*time.Second)
 		s.runDisplayFallback(displayCmds["default"], cfg.DirWallpaper)
 		return nil
 	}
@@ -91,7 +92,7 @@ func (s *Service) SysDisplay() error {
 	}
 
 	if _, _, err := runScript("bash", fmt.Sprintf("feh --bg-fill %s", cfg.DirWallpaper)); err != nil {
-		s.notify(fmt.Sprintf("display: feh wallpaper failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("display: feh wallpaper failed: %v", err), 3*time.Second)
 	}
 	return nil
 }
@@ -102,10 +103,10 @@ func (s *Service) SysDisplay() error {
 // the fallback also failed.
 func (s *Service) runDisplayFallback(xrandrCmd, wallpaperDir string) {
 	if _, _, err := runScript("bash", xrandrCmd); err != nil {
-		s.notify(fmt.Sprintf("display fallback: xrandr failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("display fallback: xrandr failed: %v", err), 3*time.Second)
 	}
 	if _, _, err := runScript("bash", fmt.Sprintf("feh --bg-fill %s", wallpaperDir)); err != nil {
-		s.notify(fmt.Sprintf("display fallback: feh failed: %v", err))
+		dwmblocknotify.PUT(fmt.Sprintf("display fallback: feh failed: %v", err), 3*time.Second)
 	}
 }
 
@@ -130,7 +131,7 @@ func (s *Service) SysKeyboardLight() (string, error) {
 func (s *Service) SysVolumeUp() error {
 	_, _, err := runScript("bash", "amixer set Master unmute && amixer set Master 5%+")
 	if err == nil {
-		s.notify("vol +5%")
+		dwmblocknotify.PUT("vol +5%", 1*time.Second)
 	}
 	return err
 }
@@ -138,7 +139,7 @@ func (s *Service) SysVolumeUp() error {
 func (s *Service) SysVolumeDown() error {
 	_, _, err := runScript("bash", "amixer set Master unmute && amixer set Master 5%-")
 	if err == nil {
-		s.notify("vol -5%")
+		dwmblocknotify.PUT("vol -5%", 1*time.Second)
 	}
 	return err
 }
@@ -146,7 +147,7 @@ func (s *Service) SysVolumeDown() error {
 func (s *Service) SysVolumeToggle() error {
 	_, _, err := runScript("bash", "amixer set Master toggle")
 	if err == nil {
-		s.notify("vol toggle")
+		dwmblocknotify.PUT("vol toggle", 1*time.Second)
 	}
 	return err
 }
@@ -154,7 +155,7 @@ func (s *Service) SysVolumeToggle() error {
 func (s *Service) SysMicroUp() error {
 	_, _, err := runScript("bash", "amixer set Capture 5%+")
 	if err == nil {
-		s.notify("micro +5%")
+		dwmblocknotify.PUT("micro +5%", 1*time.Second)
 	}
 	return err
 }
@@ -162,7 +163,7 @@ func (s *Service) SysMicroUp() error {
 func (s *Service) SysMicroDown() error {
 	_, _, err := runScript("bash", "amixer set Capture 5%-")
 	if err == nil {
-		s.notify("micro -5%")
+		dwmblocknotify.PUT("micro -5%", 1*time.Second)
 	}
 	return err
 }
@@ -170,7 +171,7 @@ func (s *Service) SysMicroDown() error {
 func (s *Service) SysMicroToggle() error {
 	_, _, err := runScript("bash", "amixer set Capture toggle")
 	if err == nil {
-		s.notify("micro toggle")
+		dwmblocknotify.PUT("micro toggle", 1*time.Second)
 	}
 	return err
 }
@@ -178,7 +179,7 @@ func (s *Service) SysMicroToggle() error {
 func (s *Service) SysDisplayLightUp() error {
 	_, _, err := runScript("bash", "sudo light -A 1")
 	if err == nil {
-		s.notify("light +1%")
+		dwmblocknotify.PUT("light +1%", 1*time.Second)
 	}
 	return err
 }
@@ -186,33 +187,49 @@ func (s *Service) SysDisplayLightUp() error {
 func (s *Service) SysDisplayLightDown() error {
 	_, _, err := runScript("bash", "sudo light -N 1 && sudo light -U 1")
 	if err == nil {
-		s.notify("light -1%")
+		dwmblocknotify.PUT("light -1%", 1*time.Second)
 	}
 	return err
 }
 
 func (s *Service) SysReset() error {
-	s.notify("reset sys default")
-	steps := []struct {
-		cmd string
-		msg string
-	}{
-		{"sudo light -S 48", "set light to 48%"},
-		{"amixer set Master unmute", "amixer set Master unmute"},
-		{"amixer set Speaker unmute", "amixer set Speaker unmute"},
-		{"amixer set Capture cap", "amixer set Capture cap"},
-		{"amixer set Master 80%", "set master volume to 80%"},
-		{"amixer set Capture 64%", "set capture volume to 64%"},
-		{"amixer set Speaker 64%", "set speaker volume to 64%"},
-		{"amixer set Headphone 64%", "set headphone volume to 64%"},
-		{"xset r rate 158 128", "set keyboard rate to 158 128"},
+	dwmblocknotify.PUT("reset sys default", 1*time.Second)
+
+	out, _, _ := runScript("bash", "amixer scontrols")
+	hasCtl := func(name string) bool {
+		return strings.Contains(out, fmt.Sprintf("'%s'", name))
 	}
 
-	for _, step := range steps {
-		if _, _, err := runScript("bash", step.cmd); err != nil {
-			s.notify(fmt.Sprintf("%s failed: %v", step.cmd, err))
+	type step struct{ cmd, msg string }
+	steps := []step{{"sudo light -S 48", "set light to 48%"}}
+	if hasCtl("Master") {
+		steps = append(steps,
+			step{"amixer set Master unmute", "amixer set Master unmute"},
+			step{"amixer set Master 80%", "set master volume to 80%"},
+		)
+	}
+	if hasCtl("Speaker") {
+		steps = append(steps,
+			step{"amixer set Speaker unmute", "amixer set Speaker unmute"},
+			step{"amixer set Speaker 64%", "set speaker volume to 64%"},
+		)
+	}
+	if hasCtl("Capture") {
+		steps = append(steps,
+			step{"amixer set Capture cap", "amixer set Capture cap"},
+			step{"amixer set Capture 64%", "set capture volume to 64%"},
+		)
+	}
+	if hasCtl("Headphone") {
+		steps = append(steps, step{"amixer set Headphone 64%", "set headphone volume to 64%"})
+	}
+	steps = append(steps, step{"xset r rate 158 128", "set keyboard rate to 158 128"})
+
+	for _, st := range steps {
+		if _, _, err := runScript("bash", st.cmd); err != nil {
+			dwmblocknotify.PUT(fmt.Sprintf("%s failed: %v", st.cmd, err), 3*time.Second)
 		} else {
-			s.notify(step.msg)
+			dwmblocknotify.PUT(st.msg, 1*time.Second)
 		}
 	}
 
