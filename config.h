@@ -236,14 +236,14 @@ static const Key keys[] = {
    { MODKEY|ShiftMask,             XK_u,            setlayout,            { 0                                            } }, // temporary layout switch
    { MODKEY|ShiftMask|ControlMask, XK_c,            killclient_unsel,     { 0                                            } },
 
-   { MODKEY,                       XK_bracketleft,  focusmon,             { .i = -1                                      } }, // multi monitors: focus on which one -1
-   { MODKEY,                       XK_bracketright, focusmon,             { .i = +1                                      } }, // multi monitors: focus on which one +1
-   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,               { .i = -1                                      } }, // multi monitors: move win to monitor prev
-   { MODKEY|ShiftMask,             XK_bracketright, tagmon,               { .i = +1                                      } }, // multi monitors: move win to monitor next
+   { MODKEY,                       XK_bracketleft,  focusmon,             { .i = -1                                      } }, // multi monitors: focus on monitor prev
+   { MODKEY,                       XK_bracketright, focusmon,             { .i = +1                                      } }, // multi monitors: focus on monitor next
+   { MODKEY|ShiftMask,             XK_bracketleft,  tagmon,               { .i = -1                                      } }, // multi monitors: move tag to monitor prev
+   { MODKEY|ShiftMask,             XK_bracketright, tagmon,               { .i = +1                                      } }, // multi monitors: move tag to monitor next
    { MODKEY,                       XK_d,            incnmaster,           { .i = -1                                      } },
    { MODKEY,                       XK_i,            incnmaster,           { .i = +1                                      } },
-   { MODKEY,                       XK_h,            movestack,            { .i = -1                                      } },
-   { MODKEY,                       XK_l,            movestack,            { .i = +1                                      } },
+   { MODKEY|ControlMask,           XK_h,            movestack,            { .i = -1                                      } },
+   { MODKEY|ControlMask,           XK_l,            movestack,            { .i = +1                                      } },
    { MODKEY,                       XK_comma,        cyclelayout,          { .i = -1                                      } }, // useless
    { MODKEY,                       XK_period,       cyclelayout,          { .i = +1                                      } }, // useless
    { MODKEY|ShiftMask,             XK_comma,        shiftview,            { .i = -1                                      } },
