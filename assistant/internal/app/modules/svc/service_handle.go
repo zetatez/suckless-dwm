@@ -28,6 +28,13 @@ var fileLocationPatterns = []fileLocationPattern{
 		func(s string) string { return s },
 	}, // ~/path
 	{
+		regexp.MustCompile(`(?m)(/[A-Za-z0-9_./\-+]+)`),
+		1,
+		0,
+		0,
+		func(s string) string { return s },
+	}, // /path
+	{
 		regexp.MustCompile(`(?m)(/[^:\s]+):(\d+)(?::(\d+))?`),
 		1,
 		2,
