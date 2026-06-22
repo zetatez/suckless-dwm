@@ -21,12 +21,12 @@ type fileLocationPattern struct {
 
 var fileLocationPatterns = []fileLocationPattern{
 	{
-		regexp.MustCompile(`(?m)(~[A-Za-z0-9_./\-.~]+)`),
+		regexp.MustCompile(`(?m)(/[^:\s]+):(\d+)(?::(\d+))?`),
 		1,
-		0,
-		0,
-		func(s string) string { return s },
-	}, // ~/path
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // /path:line:col
 	{
 		regexp.MustCompile(`(?m)(/[A-Za-z0-9_./\-+]+)`),
 		1,
@@ -35,12 +35,12 @@ var fileLocationPatterns = []fileLocationPattern{
 		func(s string) string { return s },
 	}, // /path
 	{
-		regexp.MustCompile(`(?m)(/[^:\s]+):(\d+)(?::(\d+))?`),
+		regexp.MustCompile(`(?m)(~[A-Za-z0-9_./\-.~]+)`),
 		1,
-		2,
-		3,
-		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
-	}, // /path:line:col
+		0,
+		0,
+		func(s string) string { return s },
+	}, // ~/path
 	{
 		regexp.MustCompile(`(?m)\s+at\s+(/[^:\s]+):(\d+):(\d+)`),
 		1,
