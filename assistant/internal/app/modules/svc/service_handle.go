@@ -28,13 +28,6 @@ var fileLocationPatterns = []fileLocationPattern{
 		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
 	}, // /path:line:col
 	{
-		regexp.MustCompile(`(?m)(/[A-Za-z0-9_./\-+]+)`),
-		1,
-		0,
-		0,
-		func(s string) string { return s },
-	}, // /path
-	{
 		regexp.MustCompile(`(?m)(~[A-Za-z0-9_./\-.~]+)`),
 		1,
 		0,
@@ -134,17 +127,6 @@ func (s *Service) extractURL(text string) (string, bool) {
 	return "", false
 }
 
-func (s *Service) isAbsFileAndExist(text string) bool {
-	if strings.HasPrefix(text, "~") {
-		text = filepath.Join(os.Getenv("HOME"), text[1:])
-	}
-	if !filepath.IsAbs(text) {
-		return false
-	}
-	_, err := os.Stat(text)
-	return err == nil
-}
-
 func (s *Service) HandleClipboard() (string, error) {
 	text, err := s.readClipboard()
 	if err != nil {
@@ -161,11 +143,6 @@ func (s *Service) HandleClipboard() (string, error) {
 	}
 
 	term := psl.GetConfig().Svc.DefaultTerminal
-
-	if s.isAbsFileAndExist(text) {
-		_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim %s", term, text))
-		return fmt.Sprintf("opened %s", text), err
-	}
 
 	if file, line, col, ok := s.extractFileLocation(text); ok {
 		var vimcmd string
