@@ -11,66 +11,131 @@ import (
 	"assistant/internal/bootstrap/psl"
 )
 
-var fileLocationPatterns = []struct {
-	re   *regexp.Regexp
-	file int
-	line int
-	col  int
-}{
-	{regexp.MustCompile(`(?m)(/[^:\s]+):(\d+)(?::(\d+))?`), 1, 2, 3},
-	{regexp.MustCompile(`(?m)([A-Za-z0-9_./\-~]+\.[A-Za-z0-9]+):(\d+)(?::(\d+))?`), 1, 2, 3},
-	{regexp.MustCompile(`(?m)File\s+"([^"]+)",\s+line\s+(\d+)`), 1, 2, 0},
-	{regexp.MustCompile(`(?m)\((/[^:()]+):(\d+):(\d+)\)`), 1, 2, 3},
-	{regexp.MustCompile(`(?m)\s+at\s+(/[^:\s]+):(\d+):(\d+)`), 1, 2, 3},
-	{regexp.MustCompile(`(?m)-->\s+(/[^:\s]+):(\d+):(\d+)`), 1, 2, 3},
+type fileLocationPattern struct {
+	re       *regexp.Regexp
+	fileIdx  int
+	lineIdx  int
+	colIdx   int
+	trimTail func(string) string
 }
 
-func (s *Service) extractFileLocation(text string) (file string, line, col int, ok bool) {
+var fileLocationPatterns = []fileLocationPattern{
+	{
+		regexp.MustCompile(`(?m)(~[A-Za-z0-9_./\-.~]+)`),
+		1,
+		0,
+		0,
+		func(s string) string { return s },
+	}, // ~/path
+	{
+		regexp.MustCompile(`(?m)(/[^:\s]+):(\d+)(?::(\d+))?`),
+		1,
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // /path:line:col
+	{
+		regexp.MustCompile(`(?m)\s+at\s+(/[^:\s]+):(\d+):(\d+)`),
+		1,
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // at /path:line:col
+	{
+		regexp.MustCompile(`(?m)File\s+"([^"]+)",\s+line\s+(\d+)`),
+		1,
+		2,
+		0,
+		func(s string) string { return s },
+	}, // File "path", line N
+	{
+		regexp.MustCompile(`(?m)-->\s+(/[^:\s]+):(\d+):(\d+)`),
+		1,
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // --> /path:line:col
+	{
+		regexp.MustCompile(`(?m)\((/[^:()]+):(\d+):(\d+)\)`),
+		1,
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // (path:line:col)
+	{
+		regexp.MustCompile(`(?m)(~[^:\s]+):(\d+)(?::(\d+))?`),
+		1,
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // ~/path:line:col
+	{
+		regexp.MustCompile(`(?m)([A-Za-z0-9_./\-~]+\.[A-Za-z0-9]+):(\d+)(?::(\d+))?`),
+		1,
+		2,
+		3,
+		func(s string) string { return strings.TrimRight(strings.TrimRight(s, ")"), ":") },
+	}, // file:line:col
+}
+
+func (s *Service) extractFileLocation(text string) (file string, line int, col int, ok bool) {
 	for _, p := range fileLocationPatterns {
 		m := p.re.FindStringSubmatch(text)
 		if len(m) == 0 {
 			continue
 		}
-		candidate := strings.TrimSpace(m[p.file])
-		candidate = strings.TrimSuffix(candidate, ")")
-		candidate = strings.TrimSuffix(candidate, ":")
-		l, err := strconv.Atoi(m[p.line])
-		if err != nil || l <= 0 {
+
+		candidate := p.trimTail(strings.TrimSpace(m[p.fileIdx]))
+
+		if v, _ := strconv.Atoi(m[p.lineIdx]); v > 0 {
+			line = v
+		}
+		if p.colIdx > 0 {
+			if v, _ := strconv.Atoi(m[p.colIdx]); v >= 0 {
+				col = v
+			}
+		}
+
+		if strings.HasPrefix(candidate, "~") {
+			candidate = filepath.Join(os.Getenv("HOME"), candidate[1:])
+		}
+
+		if filepath.IsAbs(candidate) {
+			if _, err := os.Stat(candidate); err == nil {
+				return candidate, line, col, true
+			}
 			continue
 		}
-		c := 0
-		if p.col > 0 && p.col < len(m) && m[p.col] != "" {
-			if x, e := strconv.Atoi(m[p.col]); e == nil {
-				c = x
-			}
+
+		if abs, err := filepath.Abs(candidate); err == nil {
+			candidate = abs
+		} else if out, _, err := runScript("bash", fmt.Sprintf("fd -H -1 -f '%s'", candidate)); err == nil && out != "" {
+			candidate = strings.TrimSpace(out)
 		}
-		if !filepath.IsAbs(candidate) {
-			if abs, e := filepath.Abs(candidate); e == nil {
-				candidate = abs
-			}
-		}
-		if _, e := os.Stat(candidate); e == nil {
-			return candidate, l, c, true
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate, line, col, true
 		}
 	}
 	return "", 0, 0, false
 }
 
-func (s *Service) extractMarkdownURL(text string) (string, bool) {
-	m := regexp.MustCompile(`\[[^\]]*\]\((https?://[^\s)]+)\)`).FindStringSubmatch(strings.TrimSpace(text))
-	if len(m) == 2 {
-		return m[1], true
+func (s *Service) extractURL(text string) (string, bool) {
+	m := regexp.MustCompile(`https?://[^\s)]+`).FindString(strings.TrimSpace(text))
+	if m != "" {
+		return m, true
 	}
 	return "", false
 }
 
-func isURL(text string) bool {
-	return strings.HasPrefix(text, "http://") || strings.HasPrefix(text, "https://")
-}
-
-func (s *Service) existsAndIsFile(p string) bool {
-	info, err := os.Stat(p)
-	return err == nil && !info.IsDir()
+func (s *Service) isAbsFileAndExist(text string) bool {
+	if strings.HasPrefix(text, "~") {
+		text = filepath.Join(os.Getenv("HOME"), text[1:])
+	}
+	if !filepath.IsAbs(text) {
+		return false
+	}
+	_, err := os.Stat(text)
+	return err == nil
 }
 
 func (s *Service) HandleClipboard() (string, error) {
@@ -83,31 +148,31 @@ func (s *Service) HandleClipboard() (string, error) {
 		return "", fmt.Errorf("clipboard is empty")
 	}
 
-	// URLs are detected first so that https://host:443/foo isn't matched by
-	// the "file:line:col" extractor below.
-	if isURL(text) {
-		err := s.OpenURL("chrome", text)
-		return fmt.Sprintf("opened URL: %s", text), err
-	}
-	if url, ok := s.extractMarkdownURL(text); ok {
-		err := s.OpenURL("chrome", url)
+	if url, ok := s.extractURL(text); ok {
+		err = s.OpenURL("chrome", url)
 		return fmt.Sprintf("opened URL: %s", url), err
 	}
 
-	if file, line, col, ok := s.extractFileLocation(text); ok {
-		term := psl.GetConfig().Svc.DefaultTerminal
-		cmd := fmt.Sprintf("%s -e nvim +%d %s", term, line, file)
-		if col > 0 {
-			cmd = fmt.Sprintf("%s -e nvim +'%s' %s", term, fmt.Sprintf("call cursor(%d,%d)", line, col), file)
-		}
-		_, _, err := runScript("bash", cmd)
-		return fmt.Sprintf("opened %s:%d:%d", file, line, col), err
+	term := psl.GetConfig().Svc.DefaultTerminal
+
+	if s.isAbsFileAndExist(text) {
+		_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim %s", term, text))
+		return fmt.Sprintf("opened %s", text), err
 	}
 
-	if s.existsAndIsFile(text) {
-		term := psl.GetConfig().Svc.DefaultTerminal
-		err := startScript("bash", fmt.Sprintf("%s -e yazi '%s'", term, text))
-		return fmt.Sprintf("opened file: %s", text), err
+	if file, line, col, ok := s.extractFileLocation(text); ok {
+		var vimcmd string
+		switch {
+		case line > 0 && col > 0:
+			vimcmd = fmt.Sprintf("call cursor(%d,%d)", line, col)
+			_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim +'%s' %s", term, vimcmd, file))
+		case line > 0:
+			_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim +%d %s", term, line, file))
+		default:
+			_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim %s", term, file))
+		}
+		msg := fmt.Sprintf("opened %s", file)
+		return msg, err
 	}
 
 	err = s.SearchWeb(text)
