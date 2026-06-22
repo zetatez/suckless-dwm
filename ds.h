@@ -17,7 +17,6 @@
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <xcb/res.h>
-#include <Imlib2.h>
 
 #ifdef XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -102,9 +101,6 @@ typedef struct {
 typedef struct Pertag Pertag;
 
 struct Monitor {
- 	int previewshow;
- 	Window tagwin;
- 	Pixmap *tagmap;
   char ltsymbol[16];
   float mfact;
   float hfact;
