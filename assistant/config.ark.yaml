@@ -19,12 +19,12 @@ log:
   console: true
 
 llm:
-  provider: minimax
-  api_key: "${MINIMAX_API_KEY}"
-  base_url: https://api.minimaxi.com/v1
-  model: MiniMax-M3
+  provider: ark
+  api_key: "${ARK_API_KEY}"
+  base_url: https://ark.cn-beijing.volces.com/api/coding/v3
+  model: minimax-m3
   timeout: 300
-  max_tokens: 196608
+  max_tokens: 131072
   temperature: 0.3
 
 channels:
