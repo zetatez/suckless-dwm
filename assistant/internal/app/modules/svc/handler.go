@@ -93,6 +93,7 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	r.POST("/search", h.Search)
 	r.POST("/translate-clipboard", h.TranslateClipboard)
 	r.POST("/git-log-show", h.GitLogShow)
+	r.POST("/screenshot", h.Screenshot)
 }
 
 // Power godoc
@@ -823,4 +824,20 @@ func (h *Handler) GitLogShow(c *gin.Context) {
 	var req DirRequest
 	_ = c.ShouldBindJSON(&req)
 	h.trigger(c, "git log show", func() error { return h.svc.GitLogShow(req.Dir) })
+}
+
+// Screenshot godoc
+// @Summary 截图
+// @Description 使用 flameshot 截取整个屏幕，保存到 ~/Pictures/screenshots/ 目录
+// @Tags 工具
+// @Success 200 {object} response.Response
+// @Router /api/svr/screenshot [post]
+func (h *Handler) Screenshot(c *gin.Context) {
+	path, err := h.svc.Screenshot()
+	if err != nil {
+		h.svc.notify(fmt.Sprintf("screenshot failed: %v", err))
+		response.ErrWithInternal(c, response.CodeServerError, "screenshot failed", err)
+		return
+	}
+	response.Ok(c, gin.H{"path": path})
 }
