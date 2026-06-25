@@ -59,5 +59,6 @@ svc:
   dir_working_logbook: "~/git/working/logbook"
   path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
   terminal_default: "st"
+  dir_snip: "~/git/obsidian/.snippets"
   path_ssh_secret: "~/.ssh/my.ssh.json"
 

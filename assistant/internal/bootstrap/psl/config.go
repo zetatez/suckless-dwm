@@ -98,6 +98,7 @@ type SvcConfig struct {
 	KeyboardBrightnessPath string `mapstructure:"path_keyboard_brightness"`
 	SSHSecretFile          string `mapstructure:"path_ssh_secret"`
 	DefaultTerminal        string `mapstructure:"terminal_default"`
+	SnipDir                string `mapstructure:"dir_snip"`
 }
 
 type ChannelsConfig struct {
@@ -152,6 +153,9 @@ func (c *Config) applyDefaults() {
 	if c.Svc.DefaultTerminal == "" {
 		c.Svc.DefaultTerminal = "st"
 	}
+	if c.Svc.SnipDir == "" {
+		c.Svc.SnipDir = "~/git/obsidian/.snippets"
+	}
 	if len(c.Background.Procs) == 0 {
 		home, _ := os.UserHomeDir()
 		c.Background.Procs = []BackgroundProc{
@@ -170,6 +174,7 @@ func (c *Config) expandPaths() error {
 		&c.Svc.WorkingLogbookDir,
 		&c.Svc.SSHSecretFile,
 		&c.Svc.KeyboardBrightnessPath,
+		&c.Svc.SnipDir,
 	} {
 		*p = expandHomePath(*p, home)
 	}

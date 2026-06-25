@@ -11,8 +11,7 @@ import (
 )
 
 func (s *Service) SnipFzf() error {
-	homeDir, _ := os.UserHomeDir()
-	snipDir := path.Join(homeDir, "git/obsidian/.snippets")
+	snipDir := psl.GetConfig().Svc.SnipDir
 	if _, err := os.Stat(snipDir); err != nil {
 		return fmt.Errorf("snippet dir not found: %s", snipDir)
 	}
@@ -25,7 +24,7 @@ cd %s && selected=$(
   find . -type f | sed "s|^\./||" |
   fzf --prompt="Snip> " --height=100%% --border \
       --preview="bat --style=plain --color=always {} 2>/dev/null || cat {}" \
-      --preview-window=right:60%%)
+      --preview-window=right:60%%
 ) && [ -n "$selected" ] && printf "%%s" "$selected" > %s
 `
 	script := fmt.Sprintf(tmpl, snipDir, tmpf)
@@ -34,7 +33,7 @@ cd %s && selected=$(
 		return fmt.Errorf("launch fzf: %w", err)
 	}
 
-	<-time.After(200 * time.Millisecond)
+	<-time.After(300 * time.Millisecond)
 	data, err := os.ReadFile(tmpf)
 	if err != nil || len(data) == 0 {
 		return nil
@@ -56,8 +55,7 @@ cd %s && selected=$(
 }
 
 func (s *Service) SnipCreate(name string) error {
-	homeDir, _ := os.UserHomeDir()
-	snipDir := path.Join(homeDir, "git/obsidian/.snippets")
+	snipDir := psl.GetConfig().Svc.SnipDir
 	if err := os.MkdirAll(snipDir, 0o755); err != nil {
 		return fmt.Errorf("create snippet dir: %w", err)
 	}
