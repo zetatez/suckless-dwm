@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"embed"
 	"errors"
+	"fmt"
 	"image"
 	_ "image/gif"
 	"image/jpeg"
@@ -39,6 +40,8 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	r.GET("/download", h.Download)
 	r.GET("/raw", h.Raw)
 	r.POST("/upload", h.Upload)
+	r.POST("/download-tgz", h.DownloadTarGz)
+	r.GET("/download-tgz", h.DownloadTarGz)
 	r.GET("/ui", h.UI)
 	r.GET("", h.UI)
 }
@@ -190,6 +193,67 @@ func (h *Handler) thumb(c *gin.Context) {
 	thumbCache.Set(key, data)
 	c.Header("Cache-Control", "public, max-age=86400")
 	c.Data(http.StatusOK, "image/jpeg", data)
+}
+
+// DownloadTarGz godoc
+// @Summary 下载选中文件/目录为 tar.gz
+// @Description 将指定路径列表(文件或目录)打包为 tar.gz 下载
+// @Tags 文件浏览
+// @Accept json
+// @Param paths query string false "路径(可重复 path=a&path=b)"
+// @Success 200 {file} binary
+// @Router /api/files/download-tgz [post]
+func (h *Handler) DownloadTarGz(c *gin.Context) {
+	var req struct {
+		Paths []string `json:"paths"`
+	}
+	if c.Request.Method == "GET" {
+		req.Paths = c.QueryArray("path")
+	} else {
+		if err := c.ShouldBindJSON(&req); err != nil {
+			response.Err(c, response.CodeInvalidParams, err.Error())
+			return
+		}
+	}
+	if len(req.Paths) == 0 {
+		response.Err(c, response.CodeInvalidParams, "paths is required")
+		return
+	}
+	tgzPath, err := h.svc.CreateTarGz(req.Paths)
+	if mapErr(c, err) {
+		return
+	}
+	defer os.Remove(tgzPath)
+	fname := tgzFilename(req.Paths)
+	data, err := os.ReadFile(tgzPath)
+	if err != nil {
+		response.ErrWithInternal(c, response.CodeServerError, "read failed", err)
+		return
+	}
+	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, fname))
+	c.Data(http.StatusOK, "application/gzip", data)
+}
+
+func tgzFilename(paths []string) string {
+	if len(paths) == 1 {
+		base := filepath.Base(paths[0])
+		if base == "" || base == "." {
+			return "download.tar.gz"
+		}
+		return base + ".tar.gz"
+	}
+	// 多个文件：找共同父目录名
+	parent := filepath.Dir(paths[0])
+	for _, p := range paths[1:] {
+		if filepath.Dir(p) != parent {
+			return "download.tar.gz"
+		}
+	}
+	base := filepath.Base(parent)
+	if base == "" || base == "." || base == "/" {
+		return "download.tar.gz"
+	}
+	return base + ".tar.gz"
 }
 
 // Upload godoc

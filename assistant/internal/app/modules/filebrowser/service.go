@@ -1,8 +1,11 @@
 package filebrowser
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,6 +20,7 @@ var (
 	ErrTooLarge    = errors.New("file too large")
 	ErrExists      = errors.New("file already exists")
 	ErrBadName     = errors.New("invalid filename")
+	ErrEmpty       = errors.New("no files to download")
 )
 
 const (
@@ -307,4 +311,88 @@ func (s *Service) CreateUploadFile(dirRel, name string) (*os.File, string, error
 		return nil, "", err
 	}
 	return f, finalRel, nil
+}
+
+// CreateTarGz 将指定路径列表(文件或目录)打包为 tar.gz，返回临时文件路径。
+// 调用方负责在读取后删除该文件。目录会递归添加其下所有文件。
+func (s *Service) CreateTarGz(paths []string) (string, error) {
+	entries := make(map[string]string) // archivePath → absPath
+	for _, rel := range paths {
+		abs, normRel, err := s.resolve(rel)
+		if err != nil {
+			continue
+		}
+		if err := s.collectTarEntries(abs, normRel, entries); err != nil {
+			continue
+		}
+	}
+	if len(entries) == 0 {
+		return "", ErrEmpty
+	}
+
+	tmp, err := os.CreateTemp("", "assistant-download-*.tar.gz")
+	if err != nil {
+		return "", err
+	}
+	defer tmp.Close()
+
+	gw := gzip.NewWriter(tmp)
+	tw := tar.NewWriter(gw)
+
+	for arcPath, abs := range entries {
+		f, err := os.Open(abs)
+		if err != nil {
+			continue
+		}
+		info, _ := f.Stat()
+		hdr, err := tar.FileInfoHeader(info, "")
+		if err != nil {
+			f.Close()
+			continue
+		}
+		hdr.Name = arcPath
+		if err := tw.WriteHeader(hdr); err != nil {
+			f.Close()
+			continue
+		}
+		io.Copy(tw, f)
+		f.Close()
+	}
+	if err := tw.Close(); err != nil {
+		os.Remove(tmp.Name())
+		return "", err
+	}
+	if err := gw.Close(); err != nil {
+		os.Remove(tmp.Name())
+		return "", err
+	}
+	return tmp.Name(), nil
+}
+
+// collectTarEntries 递归收集文件路径，供 CreateTarGz 使用。
+func (s *Service) collectTarEntries(abs, rel string, entries map[string]string) error {
+	cfg := psl.GetConfig().FileBrowser
+	info, err := os.Stat(abs)
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() {
+		if isAllowed(rel, cfg.Allow, cfg.Deny) {
+			entries[rel] = abs
+		}
+		return nil
+	}
+	dirents, err := os.ReadDir(abs)
+	if err != nil {
+		return err
+	}
+	for _, de := range dirents {
+		childAbs := filepath.Join(abs, de.Name())
+		childRel := filepath.Join(rel, de.Name())
+		if !isAllowed(childRel, cfg.Allow, cfg.Deny) {
+			continue
+		}
+		s.collectTarEntries(childAbs, childRel, entries)
+	}
+	return nil
 }
