@@ -5,10 +5,11 @@
 <title>Files</title>
 <style>
   body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: #111; color: #ddd; }
-  header { padding: 10px 16px; background: #1c1c1c; border-bottom: 1px solid #333; position: sticky; top: 0; display: flex; gap: 12px; align-items: center; }
+  header { padding: 10px 16px; background: #1c1c1c; border-bottom: 1px solid #333; position: sticky; top: 0; display: flex; gap: 12px; align-items: center; z-index: 10; }
   header input { flex: 1; background: #222; color: #eee; border: 1px solid #444; padding: 6px 10px; border-radius: 4px; }
   header button { background: #2a2a2a; color: #ddd; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
   header button:hover { background: #333; }
+  header .active { background: #3a4 !important; border-color: #3a4; color: #fff; }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 6px 12px; text-align: left; border-bottom: 1px solid #222; font-size: 14px; }
   th { background: #1a1a1a; position: sticky; top: 50px; }
@@ -21,10 +22,17 @@
   .dir { color: #c90 !important; }
   #err { color: #f66; padding: 12px 16px; display: none; }
   #msg { color: #6c6; padding: 8px 16px; display: none; }
-  #upload { padding: 10px 16px; background: #181818; border-top: 1px solid #333; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; bottom: 0; }
+  #upload { padding: 10px 16px; background: #181818; border-top: 1px solid #333; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; bottom: 0; z-index: 10; }
   #upload input[type=file] { color: #ccc; }
   #upload button { background: #2a4; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
   #upload button:disabled { background: #444; cursor: not-allowed; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; padding: 16px; }
+  .grid .item { text-align: center; overflow: hidden; }
+  .grid .item a { color: #aaa; text-decoration: none; font-size: 13px; display: block; }
+  .grid .item a:hover { color: #fff; }
+  .grid .item img, .grid .item video { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #222; display: block; }
+  .grid .item .name { margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .grid .item.dir-item a { display: flex; align-items: center; justify-content: center; height: 160px; background: #1a1a1a; border-radius: 6px; color: #c90; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -33,13 +41,11 @@
   <input id="path" type="text" value="" placeholder="(root)" onkeydown="if(event.key==='Enter'){event.preventDefault();go();}">
   <button onclick="go()">Go</button>
   <button onclick="up()">Up</button>
+  <button id="viewBtn" onclick="toggleView()" style="display:none">Grid</button>
 </header>
 <div id="msg"></div>
 <div id="err"></div>
-<table id="list">
-  <thead><tr><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th></tr></thead>
-  <tbody></tbody>
-</table>
+<div id="listContainer"></div>
 <div id="upload">
   <span>Upload to current dir:</span>
   <input id="file" type="file">
@@ -47,14 +53,17 @@
   <span style="color:#888;font-size:12px;">(no overwrite)</span>
 </div>
 <script>
+const mediaExt = new Set([
+  '.jpg','.jpeg','.png','.gif','.bmp','.webp','.svg','.ico','.tiff','.tif','.avif','.heic','.heif',
+  '.mp4','.webm','.mkv','.avi','.mov'
+]);
+let viewMode = 'auto'; // auto | grid | list
+
 function fmtSize(n) {
   if (n < 1024) return n + ' B';
   if (n < 1048576) return (n/1024).toFixed(1) + ' K';
   if (n < 1073741824) return (n/1048576).toFixed(1) + ' M';
   return (n/1073741824).toFixed(2) + ' G';
-}
-function fmtTime(ts) {
-  return new Date(ts*1000).toISOString().replace('T',' ').slice(0,16);
 }
 function qs(p) { return '?path=' + encodeURIComponent(p); }
 function setPath(p) {
@@ -69,6 +78,15 @@ function up() {
   setPath(i < 0 ? '' : p.slice(0, i));
 }
 function go() { setPath(document.getElementById('path').value); }
+function parentOf(p, n) {
+  for (let i = 0; i < n; i++) {
+    if (!p) return '';
+    const j = p.lastIndexOf('/');
+    p = j < 0 ? '' : p.slice(0, j);
+  }
+  return p;
+}
+
 async function load(p) {
   const err = document.getElementById('err');
   err.style.display = 'none';
@@ -82,46 +100,133 @@ async function load(p) {
     err.style.display = 'block';
   }
 }
-function parentOf(p, n) {
-  for (let i = 0; i < n; i++) {
-    if (!p) return '';
-    const j = p.lastIndexOf('/');
-    p = j < 0 ? '' : p.slice(0, j);
-  }
-  return p;
+
+function toggleView() {
+  viewMode = viewMode === 'grid' ? 'list' : 'grid';
+  const cur = document.getElementById('path').value;
+  load(cur);
 }
+
 function render(d) {
-  const tb = document.querySelector('#list tbody');
-  tb.innerHTML = '';
-  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
+  const container = document.getElementById('listContainer');
+  const btn = document.getElementById('viewBtn');
+  const nonDirs = d.entries.filter(e => !e.is_dir);
+  const mediaCount = nonDirs.filter(e => mediaExt.has(e.name.slice(e.name.lastIndexOf('.')).toLowerCase())).length;
+  const hasMedia = nonDirs.length > 0 && mediaCount / nonDirs.length > 0.4;
+
+  // decide view
+  let useGrid = false;
+  if (viewMode === 'grid') useGrid = true;
+  else if (viewMode === 'auto') useGrid = hasMedia;
+
+  btn.style.display = hasMedia ? 'inline-block' : 'none';
+  btn.textContent = useGrid ? 'List' : 'Grid';
+  btn.className = '';
+
+  if (useGrid) {
+    renderGrid(d, container);
+  } else {
+    renderList(d, container);
+  }
+}
+
+function renderList(d, container) {
   const cur = d.path || '';
+  let html = '<table><thead><tr><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th></tr></thead><tbody>';
   if (cur) {
     for (const [label, n] of [['..', 1], ['...', 2]]) {
       const target = parentOf(cur, n);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="name"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')" class="dir">${label}</a></td>
-        <td class="size">-</td>
-        <td class="mtime"></td>
-        <td class="actions"></td>`;
-      tb.appendChild(tr);
+      html += `<tr><td class="name"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')" class="dir">${label}</a></td><td class="size">-</td><td class="mtime"></td><td class="actions"></td></tr>`;
     }
   }
+  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
   for (const e of d.entries) {
-    const tr = document.createElement('tr');
     const link = e.is_dir
       ? `<a href="javascript:setPath('${e.path.replace(/'/g,"\\'")}')" class="dir">${e.name}/</a>`
       : `<a href="/api/files/raw${qs(e.path)}" target="_blank">${e.name}</a>`;
-    tr.innerHTML = `
+    html += `<tr>
       <td class="name">${link}</td>
       <td class="size">${e.is_dir ? '-' : fmtSize(e.size)}</td>
-      <td class="mtime">${fmtTime(e.mtime)}</td>
+      <td class="mtime">${new Date(e.mtime*1000).toISOString().replace('T',' ').slice(0,16)}</td>
       <td class="actions">${e.is_dir ? '' :
         `<a href="/api/files/raw${qs(e.path)}" target="_blank">view</a>
-         <a href="/api/files/download${qs(e.path)}">download</a>`}</td>`;
-    tb.appendChild(tr);
+         <a href="/api/files/download${qs(e.path)}">download</a>`}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function renderGrid(d, container) {
+  const cur = d.path || '';
+  let html = '<div class="grid">';
+  if (cur) {
+    for (const [label, n] of [['..', 1], ['...', 2]]) {
+      const target = parentOf(cur, n);
+      html += `<div class="item dir-item"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')">${label}</a></div>`;
+    }
+  }
+  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
+  for (const e of d.entries) {
+    if (e.is_dir) {
+      html += `<div class="item dir-item"><a href="javascript:setPath('${e.path.replace(/'/g,"\\'")}')">${e.name}/</a></div>`;
+    } else {
+      const ext = e.name.slice(e.name.lastIndexOf('.')).toLowerCase();
+      const isMedia = mediaExt.has(ext);
+      const url = '/api/files/raw' + qs(e.path);
+      const thumbUrl = url + '&thumb=1';
+      let tmpl;
+      if (isMedia) {
+        const isVideo = ext==='.mp4'||ext==='.webm'||ext==='.mkv'||ext==='.avi'||ext==='.mov';
+        tmpl = isVideo
+          ? `<video data-src="${url}" preload="metadata"></video>`
+          : `<img data-src="${thumbUrl}" alt="${e.name}" loading="lazy">`;
+      } else {
+        tmpl = `<div style="height:160px;display:flex;align-items:center;justify-content:center;background:#1a1a1a;border-radius:6px;color:#666;font-size:13px">${ext||'?'}</div>`;
+      }
+      html += `<div class="item"><a href="${url}" target="_blank">${tmpl}<div class="name">${e.name}</div></a></div>`;
+    }
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  lazyLoadMedia(container);
+}
+
+function lazyLoadMedia(container) {
+  const obs = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const el = entry.target;
+      if (el.getAttribute('src')) continue;
+      const src = el.getAttribute('data-src');
+      if (!src) continue;
+      if (el.tagName === 'VIDEO') {
+        el.src = src;
+        el.load();
+      } else {
+        el.src = src;
+      }
+    }
+  }, { rootMargin: '300px' });
+  for (const el of container.querySelectorAll('[data-src]')) {
+    obs.observe(el);
   }
 }
+
+// 每 2s 清理远离视口的图片，防止内存堆积
+setInterval(() => {
+  const vh = window.innerHeight;
+  for (const el of document.querySelectorAll('.grid img[src], .grid video[src]')) {
+    const rect = el.getBoundingClientRect();
+    if (rect.bottom < -1000 || rect.top > vh + 1000) {
+      const src = el.getAttribute('data-src');
+      if (!src) continue;
+      el.removeAttribute('src');
+      if (el.tagName === 'VIDEO') el.load();
+    }
+  }
+}, 2000);
+
 const params = new URLSearchParams(location.search);
 const init = params.get('path') !== null
   ? params.get('path')

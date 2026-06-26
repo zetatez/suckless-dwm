@@ -1,17 +1,28 @@
 package filebrowser
 
 import (
+	"bytes"
 	"embed"
 	"errors"
+	"image"
+	_ "image/gif"
+	"image/jpeg"
+	_ "image/png"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
+	"assistant/pkg/cache"
 	"assistant/pkg/response"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/image/draw"
+	"golang.org/x/image/webp"
 )
+
+var thumbCache = cache.NewCacheWithMax(8*time.Minute, time.Minute, 500)
 
 //go:embed ui.html
 var uiFS embed.FS
@@ -82,6 +93,10 @@ func (h *Handler) Download(c *gin.Context) {
 // @Param path query string true "相对 root 的文件路径"
 // @Router /api/files/raw [get]
 func (h *Handler) Raw(c *gin.Context) {
+	if c.Query("thumb") == "1" {
+		h.thumb(c)
+		return
+	}
 	abs, _, err := h.svc.ResolveRaw(c.Query("path"))
 	if mapErr(c, err) {
 		return
@@ -101,6 +116,79 @@ func (h *Handler) Raw(c *gin.Context) {
 
 	c.Header("Content-Type", ct)
 	http.ServeContent(c.Writer, c.Request, abs, stat.ModTime(), f)
+}
+
+// thumb 生成缩略图：最长边 ≤ 300px，JPEG 质量 85。
+// 结果缓存在内存中(LRU+TTL 10min，最多 500 张)。
+func (h *Handler) thumb(c *gin.Context) {
+	abs, _, err := h.svc.ResolveFile(c.Query("path"))
+	if mapErr(c, err) {
+		return
+	}
+	stat, err := os.Stat(abs)
+	if err != nil {
+		response.ErrWithInternal(c, response.CodeServerError, "stat failed", err)
+		return
+	}
+
+	key := abs + "@" + stat.ModTime().Format(time.RFC3339Nano) + "@q85"
+	if data, ok := thumbCache.Get(key); ok {
+		c.Header("Cache-Control", "public, max-age=86400")
+		c.Data(http.StatusOK, "image/jpeg", data.([]byte))
+		return
+	}
+
+	f, err := os.Open(abs)
+	if err != nil {
+		response.ErrWithInternal(c, response.CodeServerError, "open failed", err)
+		return
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		f.Seek(0, 0)
+		img, err = webp.Decode(f)
+		if err != nil {
+			f.Seek(0, 0)
+			buf := make([]byte, 512)
+			n, _ := io.ReadFull(f, buf)
+			ct := http.DetectContentType(buf[:n])
+			f.Seek(0, 0)
+			c.Header("Content-Type", ct)
+			http.ServeContent(c.Writer, c.Request, abs, stat.ModTime(), f)
+			return
+		}
+	}
+
+	bounds := img.Bounds()
+	maxSize := 300
+	iw, ih := bounds.Dx(), bounds.Dy()
+	if iw > ih {
+		if iw > maxSize {
+			ih = ih * maxSize / iw
+			iw = maxSize
+		}
+	} else {
+		if ih > maxSize {
+			iw = iw * maxSize / ih
+			ih = maxSize
+		}
+	}
+
+	dst := image.NewRGBA(image.Rect(0, 0, iw, ih))
+	draw.BiLinear.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
+
+	var buf bytes.Buffer
+	if err := jpeg.Encode(&buf, dst, &jpeg.Options{Quality: 85}); err != nil {
+		response.ErrWithInternal(c, response.CodeServerError, "thumbnail encode failed", err)
+		return
+	}
+	data := buf.Bytes()
+
+	thumbCache.Set(key, data)
+	c.Header("Cache-Control", "public, max-age=86400")
+	c.Data(http.StatusOK, "image/jpeg", data)
 }
 
 // Upload godoc
