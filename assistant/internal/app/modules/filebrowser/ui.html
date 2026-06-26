@@ -48,7 +48,7 @@
 <div id="listContainer"></div>
 <div id="upload">
   <span>Upload to current dir:</span>
-  <input id="file" type="file">
+  <input id="file" type="file" multiple>
   <button id="upbtn" onclick="upload()">Upload</button>
   <span style="color:#888;font-size:12px;">(no overwrite)</span>
 </div>
@@ -240,27 +240,38 @@ async function upload() {
   const err = document.getElementById('err');
   msg.style.display = 'none';
   err.style.display = 'none';
-  if (!fi.files || !fi.files[0]) { err.textContent = 'pick a file'; err.style.display = 'block'; return; }
-  const fd = new FormData();
-  fd.append('file', fi.files[0]);
+  if (!fi.files || !fi.files.length) { err.textContent = 'pick a file'; err.style.display = 'block'; return; }
   const p = document.getElementById('path').value || '';
   btn.disabled = true;
-  btn.textContent = 'Uploading...';
-  try {
-    const r = await fetch('/api/files/upload?path=' + encodeURIComponent(p), { method: 'POST', body: fd });
-    const j = await r.json();
-    if (j.code !== 0) throw new Error(j.message || ('http ' + r.status));
-    msg.textContent = 'uploaded: ' + j.data.path;
-    msg.style.display = 'block';
-    fi.value = '';
-    load(document.getElementById('path').value);
-  } catch (e) {
-    err.textContent = String(e);
-    err.style.display = 'block';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Upload';
+  const total = fi.files.length;
+  let ok = 0, fail = 0, lastErr = '';
+  for (let i = 0; i < total; i++) {
+    btn.textContent = `Uploading ${i+1}/${total}...`;
+    const fd = new FormData();
+    fd.append('file', fi.files[i]);
+    try {
+      const r = await fetch('/api/files/upload?path=' + encodeURIComponent(p), { method: 'POST', body: fd });
+      const j = await r.json();
+      if (j.code !== 0) throw new Error(j.message || ('http ' + r.status));
+      ok++;
+    } catch (e) {
+      fail++;
+      lastErr = String(e);
+    }
   }
+  if (fail === 0) {
+    msg.textContent = `uploaded ${ok} file(s)`;
+    msg.style.display = 'block';
+  } else {
+    err.textContent = `${fail}/${total} failed` + (lastErr ? ': ' + lastErr : '');
+    err.style.display = 'block';
+    if (ok > 0) msg.textContent = `uploaded ${ok} file(s)`;
+    msg.style.display = ok > 0 ? 'block' : 'none';
+  }
+  fi.value = '';
+  load(document.getElementById('path').value);
+  btn.disabled = false;
+  btn.textContent = 'Upload';
 }
 </script>
 </body>

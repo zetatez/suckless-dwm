@@ -9,6 +9,7 @@ import (
 	"image/jpeg"
 	_ "image/png"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -192,24 +193,25 @@ func (h *Handler) thumb(c *gin.Context) {
 }
 
 // Upload godoc
-// @Summary 上传文件(不覆盖)
-// @Description multipart/form-data 上传; 字段 file 为文件, path 为目标目录(相对 root, 空=root)
+// @Summary 上传文件(不覆盖，支持多文件)
+// @Description multipart/form-data 上传; 字段 file 为文件(可多个), path 为目标目录(相对 root, 空=root)
 // @Tags 文件浏览
 // @Accept multipart/form-data
 // @Param path formData string false "目标目录(相对 root)"
-// @Param file formData file true "文件"
+// @Param file formData file true "文件(可多个)"
 // @Success 200 {object} response.Response
 // @Router /api/files/upload [post]
 func (h *Handler) Upload(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, MaxUploadBytes)
 
-	fh, err := c.FormFile("file")
+	form, err := c.MultipartForm()
 	if err != nil {
-		response.Err(c, response.CodeInvalidParams, "file is required: "+err.Error())
+		response.Err(c, response.CodeInvalidParams, "parse form failed: "+err.Error())
 		return
 	}
-	if fh.Size > MaxUploadBytes {
-		response.Err(c, response.CodeInvalidParams, "file too large")
+	files := form.File["file"]
+	if len(files) == 0 {
+		response.Err(c, response.CodeInvalidParams, "no file provided")
 		return
 	}
 
@@ -217,33 +219,42 @@ func (h *Handler) Upload(c *gin.Context) {
 	if dir == "" {
 		dir = c.PostForm("path")
 	}
-	name := filepath.Base(fh.Filename)
 
+	results := make([]gin.H, 0, len(files))
+	for _, fh := range files {
+		r := h.uploadOne(dir, fh)
+		results = append(results, r)
+	}
+	response.Ok(c, results)
+}
+
+func (h *Handler) uploadOne(dir string, fh *multipart.FileHeader) gin.H {
+	if fh.Size > MaxUploadBytes {
+		return gin.H{"name": fh.Filename, "error": "file too large"}
+	}
+	name := filepath.Base(fh.Filename)
 	dst, finalRel, err := h.svc.CreateUploadFile(dir, name)
-	if mapErr(c, err) {
-		return
+	if err != nil {
+		return gin.H{"name": fh.Filename, "error": err.Error()}
 	}
 	src, err := fh.Open()
 	if err != nil {
 		_ = dst.Close()
 		_ = os.Remove(dst.Name())
-		response.ErrWithInternal(c, response.CodeServerError, "open upload failed", err)
-		return
+		return gin.H{"name": fh.Filename, "error": err.Error()}
 	}
 	defer src.Close()
 
 	if _, err := io.Copy(dst, src); err != nil {
 		_ = dst.Close()
 		_ = os.Remove(dst.Name())
-		response.ErrWithInternal(c, response.CodeServerError, "write failed", err)
-		return
+		return gin.H{"name": fh.Filename, "error": err.Error()}
 	}
 	if err := dst.Close(); err != nil {
 		_ = os.Remove(dst.Name())
-		response.ErrWithInternal(c, response.CodeServerError, "close failed", err)
-		return
+		return gin.H{"name": fh.Filename, "error": err.Error()}
 	}
-	response.Ok(c, gin.H{"path": finalRel, "size": fh.Size})
+	return gin.H{"name": fh.Filename, "path": finalRel, "size": fh.Size}
 }
 
 // UI godoc
