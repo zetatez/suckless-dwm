@@ -212,20 +212,19 @@ function renderGrid(d, container) {
       const isMedia = mediaExt.has(ext);
       const url = '/api/files/raw' + qs(e.path);
       const thumbUrl = url + '&thumb=1';
-      let tmpl;
-      if (isMedia) {
-        const isVideo = ext==='.mp4'||ext==='.webm'||ext==='.mkv'||ext==='.avi'||ext==='.mov';
-        tmpl = isVideo
-          ? `<video data-src="${url}" preload="metadata"></video>`
-          : `<img data-src="${thumbUrl}" alt="${e.name}" loading="lazy">`;
-      } else {
-        tmpl = `<div style="height:160px;display:flex;align-items:center;justify-content:center;background:#1a1a1a;border-radius:6px;color:#666;font-size:13px">${ext||'?'}</div>`;
-      }
+      const isVideo = ext==='.mp4'||ext==='.webm'||ext==='.mkv'||ext==='.avi'||ext==='.mov';
       const dataAttr = `data-path="${e.path.replace(/"/g,'&quot;')}"`;
       html += `<div class="item${sel}" ${dataAttr} onclick="event.stopPropagation();toggleSelect('${e.path.replace(/'/g,"\\'")}')">
-        <input class="cb" type="checkbox" onclick="event.stopPropagation()" onchange="toggleSelect('${e.path.replace(/'/g,"\\'")}')" ${sel ? 'checked' : ''}>
-        <a href="${url}" target="_blank" onclick="event.stopPropagation()">${tmpl}<div class="name">${e.name}</div></a>
-      </div>`;
+        <input class="cb" type="checkbox" onclick="event.stopPropagation()" onchange="toggleSelect('${e.path.replace(/'/g,"\\'")}')" ${sel ? 'checked' : ''}>`;
+      if (isVideo) {
+        html += `<video data-src="${url}" controls preload="metadata" onplay="this.requestFullscreen()"></video>
+        <a href="${url}" target="_blank" onclick="event.stopPropagation()" class="name" style="display:block">${e.name}</a>`;
+      } else if (isMedia) {
+        html += `<a href="${url}" target="_blank" onclick="event.stopPropagation()"><img data-src="${thumbUrl}" alt="${e.name}" loading="lazy"><div class="name">${e.name}</div></a>`;
+      } else {
+        html += `<a href="${url}" target="_blank" onclick="event.stopPropagation()"><div style="height:160px;display:flex;align-items:center;justify-content:center;background:#1a1a1a;border-radius:6px;color:#666;font-size:13px">${ext||'?'}</div><div class="name">${e.name}</div></a>`;
+      }
+      html += `</div>`;
     }
   }
   html += '</div>';

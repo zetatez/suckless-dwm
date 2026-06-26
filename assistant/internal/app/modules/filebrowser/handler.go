@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"assistant/pkg/cache"
@@ -91,6 +92,18 @@ func (h *Handler) Download(c *gin.Context) {
 	c.FileAttachment(abs, info.Name())
 }
 
+var mimeMap = map[string]string{
+	".mp4":  "video/mp4",
+	".webm": "video/webm",
+	".mkv":  "video/x-matroska",
+	".avi":  "video/x-msvideo",
+	".mov":  "video/quicktime",
+	".mp3":  "audio/mpeg",
+	".flac": "audio/flac",
+	".wav":  "audio/wav",
+	".ogg":  "audio/ogg",
+}
+
 // Raw godoc
 // @Summary 在线预览文件
 // @Tags 文件浏览
@@ -113,10 +126,14 @@ func (h *Handler) Raw(c *gin.Context) {
 	defer f.Close()
 
 	stat, _ := f.Stat()
-	buf := make([]byte, 512)
-	n, _ := io.ReadFull(f, buf)
-	ct := http.DetectContentType(buf[:n])
-	f.Seek(0, 0)
+	ext := strings.ToLower(filepath.Ext(abs))
+	ct := mimeMap[ext]
+	if ct == "" {
+		buf := make([]byte, 512)
+		n, _ := io.ReadFull(f, buf)
+		f.Seek(0, 0)
+		ct = http.DetectContentType(buf[:n])
+	}
 
 	c.Header("Content-Type", ct)
 	http.ServeContent(c.Writer, c.Request, abs, stat.ModTime(), f)
