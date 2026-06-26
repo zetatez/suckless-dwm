@@ -20,6 +20,11 @@
   td.actions a:hover { color: #ddd; }
   .dir { color: #c90 !important; }
   #err { color: #f66; padding: 12px 16px; display: none; }
+  #msg { color: #6c6; padding: 8px 16px; display: none; }
+  #upload { padding: 10px 16px; background: #181818; border-top: 1px solid #333; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; bottom: 0; }
+  #upload input[type=file] { color: #ccc; }
+  #upload button { background: #2a4; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
+  #upload button:disabled { background: #444; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -29,11 +34,18 @@
   <button onclick="go()">Go</button>
   <button onclick="up()">Up</button>
 </header>
+<div id="msg"></div>
 <div id="err"></div>
 <table id="list">
   <thead><tr><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th></tr></thead>
   <tbody></tbody>
 </table>
+<div id="upload">
+  <span>Upload to current dir:</span>
+  <input id="file" type="file">
+  <button id="upbtn" onclick="upload()">Upload</button>
+  <span style="color:#888;font-size:12px;">(no overwrite)</span>
+</div>
 <script>
 function fmtSize(n) {
   if (n < 1024) return n + ' B';
@@ -70,10 +82,31 @@ async function load(p) {
     err.style.display = 'block';
   }
 }
+function parentOf(p, n) {
+  for (let i = 0; i < n; i++) {
+    if (!p) return '';
+    const j = p.lastIndexOf('/');
+    p = j < 0 ? '' : p.slice(0, j);
+  }
+  return p;
+}
 function render(d) {
   const tb = document.querySelector('#list tbody');
   tb.innerHTML = '';
   d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
+  const cur = d.path || '';
+  if (cur) {
+    for (const [label, n] of [['..', 1], ['...', 2]]) {
+      const target = parentOf(cur, n);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="name"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')" class="dir">${label}</a></td>
+        <td class="size">-</td>
+        <td class="mtime"></td>
+        <td class="actions"></td>`;
+      tb.appendChild(tr);
+    }
+  }
   for (const e of d.entries) {
     const tr = document.createElement('tr');
     const link = e.is_dir
@@ -89,8 +122,41 @@ function render(d) {
     tb.appendChild(tr);
   }
 }
-const init = decodeURIComponent((location.hash || '#').slice(1));
+const params = new URLSearchParams(location.search);
+const init = params.get('path') !== null
+  ? params.get('path')
+  : decodeURIComponent((location.hash || '#').slice(1));
 setPath(init);
+
+async function upload() {
+  const fi = document.getElementById('file');
+  const btn = document.getElementById('upbtn');
+  const msg = document.getElementById('msg');
+  const err = document.getElementById('err');
+  msg.style.display = 'none';
+  err.style.display = 'none';
+  if (!fi.files || !fi.files[0]) { err.textContent = 'pick a file'; err.style.display = 'block'; return; }
+  const fd = new FormData();
+  fd.append('file', fi.files[0]);
+  const p = document.getElementById('path').value || '';
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+  try {
+    const r = await fetch('/api/files/upload?path=' + encodeURIComponent(p), { method: 'POST', body: fd });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message || ('http ' + r.status));
+    msg.textContent = 'uploaded: ' + j.data.path;
+    msg.style.display = 'block';
+    fi.value = '';
+    load(document.getElementById('path').value);
+  } catch (e) {
+    err.textContent = String(e);
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Upload';
+  }
+}
 </script>
 </body>
 </html>

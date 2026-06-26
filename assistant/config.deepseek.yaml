@@ -61,3 +61,20 @@ svc:
   dir_snip: "~/git/obsidian/.snippets"
   path_ssh_secret: "~/.ssh/my.ssh.json"
 
+
+filebrowser:
+  root: "/home/shiyi"
+  allow:
+    - "Documents"
+    - "Downloads"
+    - "Music"
+    - "Pictures"
+    - "Videos"
+    - "git"
+    - "x"
+  deny:
+    - ".ssh"
+    - ".gnupg"
+  public:
+    - "Downloads"
+    - "x"

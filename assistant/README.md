@@ -15,7 +15,7 @@ curl -sL https://github.com/zetatez/suckless-dwm/raw/master/assistant/install.sh
 
 ## API
 
-All endpoints under `http://127.0.0.1:4321/api/svr/`.
+All endpoints under `http://<host>:4321/api/`.
 Auth: HTTP Basic (`auth.username` / `auth.password` from config).
 
 See `scripts/` for all available endpoints. Each file is a single curl command.
@@ -42,8 +42,9 @@ internal/
 ├── app/
 │   ├── server.go     # Gin server setup
 │   └── modules/
-│       ├── health/   # health check
-│       └── svc/      # all API endpoints (handler + service)
+│       ├── health/       # health check
+│       ├── svc/          # all API endpoints (handler + service)
+│       └── filebrowser/  # /api/files/* (list/raw/download/upload + embed UI)
 ├── bootstrap/        # init config, log, shutdown
 pkg/
 ├── response/         # API response helpers

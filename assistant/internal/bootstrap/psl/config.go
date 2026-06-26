@@ -69,11 +69,10 @@ type Config struct {
 }
 
 type FileBrowserConfig struct {
-	Root         string   `mapstructure:"root"`
-	Allow        []string `mapstructure:"allow"`
-	Deny         []string `mapstructure:"deny"`
-	MaxRawBytes  int64    `mapstructure:"max_raw_bytes"`
-	FollowSymlnk bool     `mapstructure:"follow_symlink"`
+	Root   string   `mapstructure:"root"`
+	Allow  []string `mapstructure:"allow"`
+	Deny   []string `mapstructure:"deny"`
+	Public []string `mapstructure:"public"`
 }
 
 type AppConfig struct {
@@ -168,9 +167,6 @@ func (c *Config) applyDefaults() {
 	if c.FileBrowser.Root == "" {
 		home, _ := os.UserHomeDir()
 		c.FileBrowser.Root = home
-	}
-	if c.FileBrowser.MaxRawBytes == 0 {
-		c.FileBrowser.MaxRawBytes = 50 * 1024 * 1024
 	}
 	if len(c.FileBrowser.Deny) == 0 {
 		c.FileBrowser.Deny = []string{".ssh", ".gnupg", ".config/assistant"}

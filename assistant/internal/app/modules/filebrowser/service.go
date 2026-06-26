@@ -15,6 +15,13 @@ var (
 	ErrDenied      = errors.New("path denied")
 	ErrNotFound    = errors.New("not found")
 	ErrTooLarge    = errors.New("file too large")
+	ErrExists      = errors.New("file already exists")
+	ErrBadName     = errors.New("invalid filename")
+)
+
+const (
+	MaxRawBytes    int64 = 248 * 1024 * 1024       // 在线预览最大 248MB
+	MaxUploadBytes int64 = 32 * 1024 * 1024 * 1024 // 上传最大 32GB
 )
 
 type Entry struct {
@@ -45,6 +52,33 @@ func pathMatch(rel, pat string) bool {
 		return true
 	}
 	return strings.HasPrefix(rel, pat+string(filepath.Separator))
+}
+
+// IsPublicPath 判断给定的 path(用户原始入参，相对 root) 是否落在 public 列表之下(含等于)。
+// 入参做与 resolve 相同的标准化，但不依赖文件系统。
+func IsPublicPath(raw string) bool {
+	cfg := psl.GetConfig().FileBrowser
+	if len(cfg.Public) == 0 {
+		return false
+	}
+	raw = strings.TrimSpace(raw)
+	if raw == "" || filepath.IsAbs(raw) {
+		return false
+	}
+	clean := filepath.Clean(raw)
+	if clean == "." || strings.HasPrefix(clean, "..") {
+		return false
+	}
+	for _, p := range cfg.Public {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		if pathMatch(clean, filepath.Clean(p)) {
+			return true
+		}
+	}
+	return false
 }
 
 // isAllowed 判定 normRel 是否可访问/可见。
@@ -221,8 +255,56 @@ func (s *Service) ResolveRaw(rel string) (string, os.FileInfo, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	if info.Size() > psl.GetConfig().FileBrowser.MaxRawBytes {
+	if info.Size() > MaxRawBytes {
 		return "", nil, ErrTooLarge
 	}
 	return abs, info, nil
+}
+
+// CreateUploadFile 在 dirRel 目录下以 name 为文件名原子创建一个新文件(O_EXCL，不覆盖)。
+// 调用方负责把上传内容写入返回的 *os.File 后 Close。
+// 返回值: 已打开的文件句柄、相对 root 的最终路径、错误。
+func (s *Service) CreateUploadFile(dirRel, name string) (*os.File, string, error) {
+	// 文件名校验：禁止空、含分隔符、含 ".." 段
+	name = strings.TrimSpace(name)
+	if name == "" || name == "." || name == ".." {
+		return nil, "", ErrBadName
+	}
+	if strings.ContainsAny(name, `/\`) {
+		return nil, "", ErrBadName
+	}
+	if name != filepath.Base(name) {
+		return nil, "", ErrBadName
+	}
+
+	dirAbs, dirNorm, err := s.resolve(dirRel)
+	if err != nil {
+		return nil, "", err
+	}
+	info, err := os.Stat(dirAbs)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, "", ErrNotFound
+		}
+		return nil, "", err
+	}
+	if !info.IsDir() {
+		return nil, "", fmt.Errorf("not a directory")
+	}
+
+	// 用 resolve 再次校验目标路径(allow/deny/穿越)
+	targetRel := filepath.Join(dirNorm, name)
+	targetAbs, finalRel, err := s.resolve(targetRel)
+	if err != nil {
+		return nil, "", err
+	}
+
+	f, err := os.OpenFile(targetAbs, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+	if err != nil {
+		if errors.Is(err, os.ErrExist) {
+			return nil, "", ErrExists
+		}
+		return nil, "", err
+	}
+	return f, finalRel, nil
 }

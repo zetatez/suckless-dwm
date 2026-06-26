@@ -74,5 +74,6 @@ filebrowser:
   deny:
     - ".ssh"
     - ".gnupg"
-  max_raw_bytes: 52428800
-
+  public:
+    - "Downloads"
+    - "x"
