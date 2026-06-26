@@ -10,7 +10,6 @@
   header button { background: #2a2a2a; color: #ddd; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
   header button:hover { background: #333; }
   header .active { background: #3a4 !important; border-color: #3a4; color: #fff; }
-  header .dlbtn { background: #46a !important; border-color: #46a; color: #fff; display: none; }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 6px 12px; text-align: left; border-bottom: 1px solid #222; font-size: 14px; }
   th { background: #1a1a1a; position: sticky; top: 50px; }
@@ -23,9 +22,11 @@
   .dir { color: #c90 !important; }
   #err { color: #f66; padding: 12px 16px; display: none; }
   #msg { color: #6c6; padding: 8px 16px; display: none; }
-  #upload { padding: 10px 16px; background: #181818; border-top: 1px solid #333; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; bottom: 0; z-index: 10; }
+  #upload { padding: 10px 16px; background: #181818; border-top: 1px solid #333; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; bottom: 12px; z-index: 10; }
   #upload input[type=file] { color: #ccc; }
   #upload button { background: #2a4; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
+  #upload .dlbtn { background: #46a !important; }
+  #upload .dlbtn:disabled { background: #444 !important; cursor: not-allowed; }
   #upload button:disabled { background: #444; cursor: not-allowed; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; padding: 16px; }
   .grid .item { text-align: center; overflow: hidden; position: relative; }
@@ -34,29 +35,28 @@
   .grid .item img, .grid .item video { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #222; display: block; }
   .grid .item .name { margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .grid .item.dir-item a { display: flex; align-items: center; justify-content: center; height: 160px; background: #1a1a1a; border-radius: 6px; color: #c90; font-size: 16px; }
-  .grid .cb { position: absolute; top: 6px; left: 6px; z-index: 2; width: 20px; height: 20px; cursor: pointer; accent-color: #46a; }
+  .grid .cb { position: absolute; top: 4px; left: 4px; z-index: 2; width: 14px; height: 14px; cursor: pointer; accent-color: #46a; }
   .grid .item.selected a { outline: 2px solid #46a; border-radius: 6px; }
-  td.cb { width: 32px; text-align: center; }
-  td.cb input { width: 18px; height: 18px; cursor: pointer; accent-color: #46a; }
+  td.cb { width: 24px; text-align: center; }
+  td.cb input { width: 14px; height: 14px; cursor: pointer; accent-color: #46a; }
 </style>
 </head>
 <body>
 <header>
+  <a href="javascript:setPath('')" style="display:flex;align-items:center;text-decoration:none;color:#aaa;cursor:pointer" title="Home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></a>
   <span>Path:</span>
   <input id="path" type="text" value="" placeholder="(root)" onkeydown="if(event.key==='Enter'){event.preventDefault();go();}">
   <button onclick="go()">Go</button>
   <button onclick="up()">Up</button>
   <button id="viewBtn" onclick="toggleView()" style="display:none">Grid</button>
-  <button id="dlBtn" class="dlbtn" onclick="downloadSelected()">Download selected</button>
 </header>
 <div id="msg"></div>
 <div id="err"></div>
 <div id="listContainer"></div>
 <div id="upload">
-  <span>Upload to current dir:</span>
-  <input id="file" type="file" multiple>
-  <button id="upbtn" onclick="upload()">Upload</button>
-  <span style="color:#888;font-size:12px;">(no overwrite)</span>
+  <button id="dlBtn" class="dlbtn" onclick="downloadSelected()">Download selected (0)</button>
+  <input id="file" type="file" multiple onchange="document.getElementById('upbtn').disabled=!this.files.length">
+  <button id="upbtn" onclick="upload()" disabled>Upload</button>
 </div>
 <script>
 const mediaExt = new Set([
@@ -117,7 +117,7 @@ function toggleView() {
 function updateDlBtn() {
   const btn = document.getElementById('dlBtn');
   const n = selected.size;
-  btn.style.display = n ? 'inline-block' : 'none';
+  btn.disabled = n === 0;
   btn.textContent = 'Download selected (' + n + ')';
 }
 
@@ -161,13 +161,14 @@ function render(d) {
   } else {
     renderList(d, container);
   }
+  updateDlBtn();
 }
 
 function renderList(d, container) {
   const cur = d.path || '';
   let html = '<table><thead><tr><th class="cb"><input type="checkbox" onchange="toggleAll(this.checked)" title="Select all"></th><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th></tr></thead><tbody>';
   if (cur) {
-    for (const [label, n] of [['..', 1], ['...', 2]]) {
+    for (const [label, n] of [['...', 2], ['..', 1]]) {
       const target = parentOf(cur, n);
       html += `<tr><td class="cb"></td><td class="name" colspan="4"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')" class="dir">${label}</a></td></tr>`;
     }
@@ -196,7 +197,7 @@ function renderGrid(d, container) {
   const cur = d.path || '';
   let html = '<div class="grid">';
   if (cur) {
-    for (const [label, n] of [['..', 1], ['...', 2]]) {
+    for (const [label, n] of [['...', 2], ['..', 1]]) {
       const target = parentOf(cur, n);
       html += `<div class="item dir-item"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')">${label}</a></div>`;
     }
@@ -317,7 +318,7 @@ async function upload() {
   }
   fi.value = '';
   load(document.getElementById('path').value);
-  btn.disabled = false;
+  btn.disabled = !fi.files.length;
   btn.textContent = 'Upload';
 }
 
