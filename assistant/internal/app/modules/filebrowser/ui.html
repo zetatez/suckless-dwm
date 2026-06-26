@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Files</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: #111; color: #ddd; }
+  header { padding: 10px 16px; background: #1c1c1c; border-bottom: 1px solid #333; position: sticky; top: 0; display: flex; gap: 12px; align-items: center; }
+  header input { flex: 1; background: #222; color: #eee; border: 1px solid #444; padding: 6px 10px; border-radius: 4px; }
+  header button { background: #2a2a2a; color: #ddd; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+  header button:hover { background: #333; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 6px 12px; text-align: left; border-bottom: 1px solid #222; font-size: 14px; }
+  th { background: #1a1a1a; position: sticky; top: 50px; }
+  tr:hover { background: #1a1a1a; }
+  td.name a { color: #6ab; text-decoration: none; }
+  td.name a:hover { text-decoration: underline; }
+  td.size, td.mtime { color: #888; font-variant-numeric: tabular-nums; }
+  td.actions a { margin-right: 8px; color: #999; text-decoration: none; font-size: 12px; }
+  td.actions a:hover { color: #ddd; }
+  .dir { color: #c90 !important; }
+  #err { color: #f66; padding: 12px 16px; display: none; }
+</style>
+</head>
+<body>
+<header>
+  <span>Path:</span>
+  <input id="path" type="text" value="" placeholder="(root)" onkeydown="if(event.key==='Enter'){event.preventDefault();go();}">
+  <button onclick="go()">Go</button>
+  <button onclick="up()">Up</button>
+</header>
+<div id="err"></div>
+<table id="list">
+  <thead><tr><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+<script>
+function fmtSize(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n/1024).toFixed(1) + ' K';
+  if (n < 1073741824) return (n/1048576).toFixed(1) + ' M';
+  return (n/1073741824).toFixed(2) + ' G';
+}
+function fmtTime(ts) {
+  return new Date(ts*1000).toISOString().replace('T',' ').slice(0,16);
+}
+function qs(p) { return '?path=' + encodeURIComponent(p); }
+function setPath(p) {
+  document.getElementById('path').value = p;
+  history.replaceState(null, '', '#' + encodeURIComponent(p));
+  load(p);
+}
+function up() {
+  const p = document.getElementById('path').value;
+  if (!p || p === '') return;
+  const i = p.lastIndexOf('/');
+  setPath(i < 0 ? '' : p.slice(0, i));
+}
+function go() { setPath(document.getElementById('path').value); }
+async function load(p) {
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  try {
+    const r = await fetch('/api/files/list' + qs(p || ''));
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message || 'error');
+    render(j.data);
+  } catch (e) {
+    err.textContent = String(e);
+    err.style.display = 'block';
+  }
+}
+function render(d) {
+  const tb = document.querySelector('#list tbody');
+  tb.innerHTML = '';
+  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
+  for (const e of d.entries) {
+    const tr = document.createElement('tr');
+    const link = e.is_dir
+      ? `<a href="javascript:setPath('${e.path.replace(/'/g,"\\'")}')" class="dir">${e.name}/</a>`
+      : `<a href="/api/files/raw${qs(e.path)}" target="_blank">${e.name}</a>`;
+    tr.innerHTML = `
+      <td class="name">${link}</td>
+      <td class="size">${e.is_dir ? '-' : fmtSize(e.size)}</td>
+      <td class="mtime">${fmtTime(e.mtime)}</td>
+      <td class="actions">${e.is_dir ? '' :
+        `<a href="/api/files/raw${qs(e.path)}" target="_blank">view</a>
+         <a href="/api/files/download${qs(e.path)}">download</a>`}</td>`;
+    tb.appendChild(tr);
+  }
+}
+const init = decodeURIComponent((location.hash || '#').slice(1));
+setPath(init);
+</script>
+</body>
+</html>

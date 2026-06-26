@@ -58,13 +58,22 @@ func loadConfig() (*Config, error) {
 }
 
 type Config struct {
-	App        AppConfig        `mapstructure:"app"`
-	Auth       AuthConfig       `mapstructure:"auth"`
-	Log        xlog.LogConfig   `mapstructure:"log"`
-	LLM        LLMConfig        `mapstructure:"llm"`
-	Svc        SvcConfig        `mapstructure:"svc"`
-	Channels   ChannelsConfig   `mapstructure:"channels"`
-	Background BackgroundConfig `mapstructure:"background"`
+	App         AppConfig         `mapstructure:"app"`
+	Auth        AuthConfig        `mapstructure:"auth"`
+	Log         xlog.LogConfig    `mapstructure:"log"`
+	LLM         LLMConfig         `mapstructure:"llm"`
+	Svc         SvcConfig         `mapstructure:"svc"`
+	Channels    ChannelsConfig    `mapstructure:"channels"`
+	Background  BackgroundConfig  `mapstructure:"background"`
+	FileBrowser FileBrowserConfig `mapstructure:"filebrowser"`
+}
+
+type FileBrowserConfig struct {
+	Root         string   `mapstructure:"root"`
+	Allow        []string `mapstructure:"allow"`
+	Deny         []string `mapstructure:"deny"`
+	MaxRawBytes  int64    `mapstructure:"max_raw_bytes"`
+	FollowSymlnk bool     `mapstructure:"follow_symlink"`
 }
 
 type AppConfig struct {
@@ -156,6 +165,16 @@ func (c *Config) applyDefaults() {
 	if c.Svc.SnipDir == "" {
 		c.Svc.SnipDir = "~/git/obsidian/.snippets"
 	}
+	if c.FileBrowser.Root == "" {
+		home, _ := os.UserHomeDir()
+		c.FileBrowser.Root = home
+	}
+	if c.FileBrowser.MaxRawBytes == 0 {
+		c.FileBrowser.MaxRawBytes = 50 * 1024 * 1024
+	}
+	if len(c.FileBrowser.Deny) == 0 {
+		c.FileBrowser.Deny = []string{".ssh", ".gnupg", ".config/assistant"}
+	}
 	if len(c.Background.Procs) == 0 {
 		home, _ := os.UserHomeDir()
 		c.Background.Procs = []BackgroundProc{
@@ -175,6 +194,7 @@ func (c *Config) expandPaths() error {
 		&c.Svc.SSHSecretFile,
 		&c.Svc.KeyboardBrightnessPath,
 		&c.Svc.SnipDir,
+		&c.FileBrowser.Root,
 	} {
 		*p = expandHomePath(*p, home)
 	}
