@@ -77,3 +77,4 @@ filebrowser:
   public:
     - "Downloads"
     - "x"
+    - "git/obsidian"

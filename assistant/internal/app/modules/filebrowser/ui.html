@@ -40,6 +40,19 @@
   .grid .item.selected a { outline: 2px solid #46a; border-radius: 6px; }
   td.cb { width: 24px; text-align: center; }
   td.cb input { width: 14px; height: 14px; cursor: pointer; accent-color: #46a; }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 10px; }
+    .grid .item img, .grid .item video { height: 100px; }
+    .grid .item.dir-item a { height: 100px; font-size: 13px; }
+    .grid .item .name { font-size: 11px; }
+    th, td { font-size: 12px; padding: 4px 6px; }
+    header { padding: 6px 8px; gap: 6px; font-size: 13px; }
+    header input { font-size: 13px; }
+    header button { font-size: 12px; padding: 4px 8px; }
+    #upload { padding: 6px 8px; font-size: 12px; }
+    #upload button { font-size: 12px; padding: 4px 10px; }
+    #upload input[type=file] { max-width: 120px; font-size: 11px; }
+  }
 </style>
 </head>
 <body>
