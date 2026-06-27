@@ -1,4 +1,4 @@
-.PHONY: build run dev install clean fmt
+.PHONY: build run dev install clean fmt swag
 
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o assistant ./cmd/assistant/
@@ -31,3 +31,8 @@ clean:
 
 fmt:
 	go fmt ./... && go vet ./...
+
+swag:
+	swag init -g ./cmd/assistant/main.go --output docs/
+	@echo "Swagger Addr:"
+	@echo "  http://127.0.0.1:4321/swagger/index.html"

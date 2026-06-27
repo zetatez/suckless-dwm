@@ -91,6 +91,7 @@ func (h *Handler) List(c *gin.Context) {
 // @Summary 下载文件
 // @Tags 文件浏览
 // @Param path query string true "相对 root 的文件路径"
+// @Success 200 {file} binary
 // @Router /api/files/download [get]
 func (h *Handler) Download(c *gin.Context) {
 	abs, info, err := h.svc.ResolveFile(c.Query("path"))
@@ -120,6 +121,8 @@ var mimeMap = map[string]string{
 // @Summary 在线预览文件
 // @Tags 文件浏览
 // @Param path query string true "相对 root 的文件路径"
+// @Param thumb query string false "1=生成缩略图(仅图片)"
+// @Success 200 {file} binary
 // @Router /api/files/raw [get]
 func (h *Handler) Raw(c *gin.Context) {
 	if c.Query("thumb") == "1" {
@@ -228,10 +231,9 @@ func (h *Handler) thumb(c *gin.Context) {
 // @Summary 下载选中文件/目录为 tar.gz
 // @Description 将指定路径列表(文件或目录)打包为 tar.gz 下载
 // @Tags 文件浏览
-// @Accept json
 // @Param paths query string false "路径(可重复 path=a&path=b)"
 // @Success 200 {file} binary
-// @Router /api/files/download-tgz [post]
+// @Router /api/files/download-tgz [get]
 func (h *Handler) DownloadTarGz(c *gin.Context) {
 	var req struct {
 		Paths []string `json:"paths"`

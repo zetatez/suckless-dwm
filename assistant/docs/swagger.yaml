@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  assistant_pkg_response.Response:
+  response.Response:
     properties:
       code:
         type: integer
@@ -8,7 +8,7 @@ definitions:
       message:
         type: string
     type: object
-  internal_app_modules_svc.DatetimeConvertRequest:
+  svc.DatetimeConvertRequest:
     properties:
       from:
         type: string
@@ -18,41 +18,287 @@ definitions:
     - from
     - to
     type: object
-  internal_app_modules_svc.FormatRequest:
+  svc.DirRequest:
+    properties:
+      dir:
+        type: string
+    type: object
+  svc.FormatRequest:
     properties:
       language:
         type: string
     required:
     - language
     type: object
-  internal_app_modules_svc.LaunchRequest:
+  svc.LaunchRequest:
     properties:
       command:
         type: string
     required:
     - command
     type: object
-  internal_app_modules_svc.NoteRequest:
+  svc.NoteRequest:
     properties:
       type:
         type: string
     required:
     - type
     type: object
-  internal_app_modules_svc.ToggleRequest:
+  svc.OpenURLRequest:
     properties:
+      browser:
+        type: string
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  svc.QueryRequest:
+    properties:
+      query:
+        type: string
+    required:
+    - query
+    type: object
+  svc.ToggleRequest:
+    properties:
+      match:
+        type: string
       process:
         type: string
     required:
+    - match
     - process
     type: object
-host: 127.0.0.1:9876
+host: 127.0.0.1:4321
 info:
   contact: {}
-  description: Example Swagger setup for Golang Gin.
+  description: Assistant backend service API
   title: Assistant API
   version: "1.0"
 paths:
+  /api/files/copy:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{paths, dest}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 复制文件/目录到目标目录
+      tags:
+      - 文件浏览
+  /api/files/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{paths}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 删除文件/目录
+      tags:
+      - 文件浏览
+  /api/files/download:
+    get:
+      parameters:
+      - description: 相对 root 的文件路径
+        in: query
+        name: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+      summary: 下载文件
+      tags:
+      - 文件浏览
+  /api/files/download-tgz:
+    get:
+      description: 将指定路径列表(文件或目录)打包为 tar.gz 下载
+      parameters:
+      - description: 路径(可重复 path=a&path=b)
+        in: query
+        name: paths
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+      summary: 下载选中文件/目录为 tar.gz
+      tags:
+      - 文件浏览
+  /api/files/list:
+    get:
+      parameters:
+      - description: 相对 root 的路径(空=root)
+        in: query
+        name: path
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 列出目录
+      tags:
+      - 文件浏览
+  /api/files/mkdir:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{path}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 创建目录
+      tags:
+      - 文件浏览
+  /api/files/move:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{paths, dest}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 移动文件/目录到目标目录
+      tags:
+      - 文件浏览
+  /api/files/raw:
+    get:
+      parameters:
+      - description: 相对 root 的文件路径
+        in: query
+        name: path
+        required: true
+        type: string
+      - description: 1=生成缩略图(仅图片)
+        in: query
+        name: thumb
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+      summary: 在线预览文件
+      tags:
+      - 文件浏览
+  /api/files/rename:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{path, new_name}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 重命名文件/目录
+      tags:
+      - 文件浏览
+  /api/files/touch:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{path}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 创建空文件（不覆盖）
+      tags:
+      - 文件浏览
+  /api/files/trash:
+    get:
+      responses: {}
+      summary: 列出回收站
+      tags:
+      - 文件浏览
+  /api/files/trash/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{trash_names}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 从回收站永久删除
+      tags:
+      - 文件浏览
+  /api/files/trash/restore:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{trash_names}'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      responses: {}
+      summary: 从回收站恢复
+      tags:
+      - 文件浏览
+  /api/files/ui:
+    get:
+      responses: {}
+      summary: 文件浏览前端
+      tags:
+      - 文件浏览
+  /api/files/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: multipart/form-data 上传; 字段 file 为文件(可多个), path 为目标目录(相对 root, 空=root)
+      parameters:
+      - description: 目标目录(相对 root)
+        in: formData
+        name: path
+        type: string
+      - description: 文件(可多个)
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 上传文件(不覆盖，支持多文件)
+      tags:
+      - 文件浏览
   /api/health:
     get:
       description: 检查服务健康状态
@@ -62,11 +308,11 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
         "500":
           description: 服务不健康
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 健康检查
       tags:
       - 健康检查
@@ -81,94 +327,132 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_app_modules_svc.DatetimeConvertRequest'
+          $ref: '#/definitions/svc.DatetimeConvertRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 时间格式转换
       tags:
       - 工具
-  /api/svr/send-to-feishu:
-    post:
-      description: 从剪贴板读取内容并发送到飞书机器人
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
-      summary: 发送飞书消息
-      tags:
-      - 通信
-  /api/svr/file-open-images:
-    post:
-      description: 用 sxiv 打开目录下所有图片
-      parameters:
-      - description: 目录路径(默认当前目录)
-        in: query
-        name: dir
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
-      summary: 打开图片
-      tags:
-      - 文件
   /api/svr/file-search:
     post:
-      description: 触发 fzf 全盘文件搜索并打开
+      consumes:
+      - application/json
+      description: 触发 fzf 文件搜索并打开; dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 文件搜索
       tags:
       - 文件
   /api/svr/file-search-book:
     post:
-      description: 触发 fzf 搜索电子书(pdf/epub/djvu)
+      consumes:
+      - application/json
+      description: 触发 fzf 搜索电子书(pdf/epub/djvu); dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 电子书搜索
       tags:
       - 文件
   /api/svr/file-search-content:
     post:
-      description: 触发 rg+fzf 文件内容搜索
+      consumes:
+      - application/json
+      description: 触发 rg+fzf 文件内容搜索; dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 文件内容搜索
+      tags:
+      - 文件
+  /api/svr/file-search-exec:
+    post:
+      consumes:
+      - application/json
+      description: 在指定目录下搜可执行脚本 (sh/py/jl) 并通过 fzf 选中执行; dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 目录下可执行文件搜索
       tags:
       - 文件
   /api/svr/file-search-media:
     post:
-      description: 触发 fzf 搜索图片/音频/视频文件
+      consumes:
+      - application/json
+      description: 触发 fzf 搜索图片/音频/视频文件; dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 媒体文件搜索
       tags:
       - 文件
   /api/svr/file-search-wiki:
     post:
-      description: 触发 fzf 搜索 Markdown 笔记文件
+      consumes:
+      - application/json
+      description: 触发 fzf 搜索 Markdown 笔记文件; dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: Wiki 搜索
       tags:
       - 文件
@@ -183,12 +467,12 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_app_modules_svc.FormatRequest'
+          $ref: '#/definitions/svc.FormatRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 格式化代码
       tags:
       - 工具
@@ -199,7 +483,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 获取当前 Unix 时间戳
       tags:
       - 工具
@@ -210,26 +494,41 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 获取当前时间
       tags:
       - 工具
   /api/svr/get-ip:
     get:
       description: 获取网卡 IP 地址并写入剪贴板
-      parameters:
-      - description: 网卡名称(默认 wlan0)
-        in: query
-        name: interface
-        type: string
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 获取 IP 地址
       tags:
       - 网络
+  /api/svr/git-log-show:
+    post:
+      consumes:
+      - application/json
+      description: fzf 选择 commit 查看完整信息(message, author, date, diff); dir 留空时默认 ~/.config
+      parameters:
+      - description: 'dir: 仓库目录路径(空表示当前目录)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Git log + show
+      tags:
+      - 开发
   /api/svr/handle-clipboard:
     post:
       description: '从剪贴板读取内容，自动判断: 文件路径、URL 或搜索'
@@ -237,7 +536,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 智能剪贴板
       tags:
       - 工具
@@ -252,12 +551,12 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_app_modules_svc.LaunchRequest'
+          $ref: '#/definitions/svc.LaunchRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 启动应用
       tags:
       - 进程
@@ -272,15 +571,35 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_app_modules_svc.NoteRequest'
+          $ref: '#/definitions/svc.NoteRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 笔记
       tags:
       - 工具
+  /api/svr/open-images:
+    post:
+      consumes:
+      - application/json
+      description: 用 sxiv 打开目录下所有图片; dir 留空时默认 $HOME
+      parameters:
+      - description: 'dir: 目录路径(空表示 $HOME)'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/svc.DirRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 打开图片
+      tags:
+      - 文件
   /api/svr/open-url:
     post:
       consumes:
@@ -292,12 +611,12 @@ paths:
         name: body
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/svc.OpenURLRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 打开 URL
       tags:
       - 网络
@@ -312,15 +631,26 @@ paths:
         name: body
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/svc.OpenURLRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 应用模式打开 URL
       tags:
       - 网络
+  /api/svr/screenshot:
+    post:
+      description: 使用 flameshot 截取整个屏幕，保存到 ~/Pictures/screenshots/ 目录
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 截图
+      tags:
+      - 工具
   /api/svr/search:
     post:
       description: rofi 列出所有可用命令并执行
@@ -328,7 +658,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 搜索并执行动作
       tags:
       - 工具
@@ -343,12 +673,12 @@ paths:
         name: body
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/svc.QueryRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 图书搜索
       tags:
       - 搜索
@@ -363,12 +693,12 @@ paths:
         name: body
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/svc.QueryRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 视频搜索
       tags:
       - 搜索
@@ -383,15 +713,26 @@ paths:
         name: body
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/svc.QueryRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 网页搜索
       tags:
       - 搜索
+  /api/svr/send-to-feishu:
+    post:
+      description: 从剪贴板读取内容并发送到飞书机器人
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 发送飞书消息
+      tags:
+      - 通信
   /api/svr/snip-create:
     post:
       description: rofi 输入名称, nvim 编辑内容
@@ -404,7 +745,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 创建 snip
       tags:
       - 工具
@@ -415,10 +756,32 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 选择并复制 snip
       tags:
       - 工具
+  /api/svr/solve-leetcode:
+    post:
+      description: 从剪贴板读取算法题, 调用大模型生成完整 Go 代码(含算法思想、复杂度、测试用例), 结果写回剪贴板
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: LeetCode 解题
+      tags:
+      - AI
+  /api/svr/solve-leetcode-screenshot:
+    post:
+      description: 截图当前屏幕, 调用大模型生成完整 Go 代码(含算法思想、复杂度、测试用例), 结果写回剪贴板
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: LeetCode 截图解题
+      tags:
+      - AI
   /api/svr/sys-bluetooth-connect:
     post:
       description: 触发 rofi 选择已配对设备并连接
@@ -426,7 +789,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 蓝牙连接
       tags:
       - 蓝牙
@@ -437,7 +800,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 蓝牙断开
       tags:
       - 蓝牙
@@ -448,7 +811,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 蓝牙扫描并连接
       tags:
       - 蓝牙
@@ -459,7 +822,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 显示器布局
       tags:
       - 系统
@@ -469,7 +832,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 屏幕亮度-
       tags:
       - 系统
@@ -479,7 +842,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 屏幕亮度+
       tags:
       - 系统
@@ -490,7 +853,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 键盘背光
       tags:
       - 系统
@@ -501,7 +864,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 进程管理器
       tags:
       - 系统
@@ -511,7 +874,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 麦克风-
       tags:
       - 系统
@@ -521,7 +884,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 麦克风开关
       tags:
       - 系统
@@ -531,7 +894,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 麦克风+
       tags:
       - 系统
@@ -542,7 +905,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 系统重置
       tags:
       - 系统
@@ -553,7 +916,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 电源操作菜单
       tags:
       - 系统
@@ -564,7 +927,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: SSH 连接
       tags:
       - 网络
@@ -574,7 +937,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 音量-
       tags:
       - 系统
@@ -584,7 +947,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 静音切换
       tags:
       - 系统
@@ -594,7 +957,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 音量+
       tags:
       - 系统
@@ -605,7 +968,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: WiFi 连接
       tags:
       - 网络
@@ -620,15 +983,86 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_app_modules_svc.ToggleRequest'
+          $ref: '#/definitions/svc.ToggleRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/assistant_pkg_response.Response'
+            $ref: '#/definitions/response.Response'
       summary: 切换进程
       tags:
       - 进程
+  /api/svr/toggle-music:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 切换音乐
+      tags:
+      - 进程
+  /api/svr/toggle-rec-audio:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 切换录音
+      tags:
+      - 进程
+  /api/svr/toggle-rec-screen:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 切换录屏
+      tags:
+      - 进程
+  /api/svr/toggle-rec-show:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 切换摄像头预览
+      tags:
+      - 进程
+  /api/svr/toggle-rec-webcam:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 切换摄像头录制
+      tags:
+      - 进程
+  /api/svr/toggle-tty-clock:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 切换 tty-clock
+      tags:
+      - 进程
+  /api/svr/translate-clipboard:
+    post:
+      description: 自动检测语言并翻译剪贴板内容，结果写入剪贴板
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 翻译剪贴板内容
+      tags:
+      - 工具
 schemes:
 - http
 swagger: "2.0"

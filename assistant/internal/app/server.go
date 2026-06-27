@@ -7,6 +7,7 @@ import (
 	"runtime/debug"
 	"time"
 
+	_ "assistant/docs"
 	"assistant/internal/app/module"
 	"assistant/internal/app/modules/filebrowser"
 	"assistant/internal/app/modules/health"
@@ -14,6 +15,8 @@ import (
 	"assistant/internal/bootstrap/psl"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Run(ctx context.Context) error {
@@ -53,6 +56,8 @@ func Run(ctx context.Context) error {
 	cfg := psl.GetConfig().App
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	logger.WithFields(map[string]interface{}{"address": addr}).Info("server running")
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	srv := &http.Server{Addr: addr, Handler: r}
 
