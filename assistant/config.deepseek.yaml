@@ -61,7 +61,6 @@ svc:
   dir_snip: "~/git/obsidian/.snippets"
   path_ssh_secret: "~/.ssh/my.ssh.json"
 
-
 filebrowser:
   root: "/home/shiyi"
   allow:
