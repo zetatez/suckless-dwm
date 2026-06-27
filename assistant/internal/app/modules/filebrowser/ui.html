@@ -34,12 +34,47 @@
   .grid .item a { color: #aaa; text-decoration: none; font-size: 13px; display: block; }
   .grid .item a:hover { color: #fff; }
   .grid .item img, .grid .item video { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #222; display: block; }
-  .grid .item .name { margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .grid .item .name { margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
   .grid .item.dir-item a { display: flex; align-items: center; justify-content: center; height: 160px; background: #1a1a1a; border-radius: 6px; color: #c90; font-size: 16px; }
-  .grid .cb { position: absolute; top: 4px; left: 4px; z-index: 2; width: 14px; height: 14px; cursor: pointer; accent-color: #46a; }
-  .grid .item.selected a { outline: 2px solid #46a; border-radius: 6px; }
+  .grid .cb-wrap { position: absolute; top: 2px; left: 2px; z-index: 5; padding: 10px; cursor: pointer; line-height: 0; }
+  .grid .cb-wrap .cb { width: 14px; height: 14px; margin: 0; accent-color: #46a; opacity: 0.35; cursor: pointer; }
+  .grid .cb-wrap .cb:hover { opacity: 0.75; }
+  .grid .cb-wrap .cb:checked { opacity: 0.75; }
+  .grid .item.selected a, .grid .item.selected img { outline: 2px solid #46a; border-radius: 6px; }
   td.cb { width: 24px; text-align: center; }
-  td.cb input { width: 14px; height: 14px; cursor: pointer; accent-color: #46a; }
+  td.cb input { width: 14px; height: 14px; cursor: pointer; accent-color: #46a; opacity: 0.5; }
+  td.cb input:hover { opacity: 0.9; }
+  td.cb input:checked { opacity: 0.9; }
+  #ctxMenu { display:none; position:fixed; z-index:100; background:#222; border:1px solid #444; border-radius:6px; padding:4px 0; min-width:140px; box-shadow:0 4px 12px rgba(0,0,0,.5); }
+  #ctxMenu button { display:block; width:100%; background:none; color:#ddd; border:none; padding:8px 16px; text-align:left; cursor:pointer; font-size:13px; }
+  #ctxMenu button:hover { background:#333; }
+  #ctxMenu .sep { height:1px; background:#333; margin:4px 0; }
+  #ctxMenu .danger:hover { color:#f66; }
+  .item-actions { position:absolute; top:4px; right:4px; z-index:3; }
+  .item-actions button { width:24px; height:24px; background:rgba(0,0,0,.5); color:#ccc; border:none; border-radius:4px; cursor:pointer; font-size:14px; line-height:24px; padding:0; display:none; }
+  .grid .item:hover .item-actions button, .grid .item .item-actions button.show { display:block; }
+  td.act { width:32px; text-align:center; }
+  td.act button { width:24px; height:24px; background:none; color:#888; border:1px solid #333; border-radius:4px; cursor:pointer; font-size:14px; line-height:22px; padding:0; }
+  td.act button:hover { color:#ddd; background:#333; }
+  .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:200; background:rgba(0,0,0,.85); justify-content:center; align-items:center; }
+  #textContent { background:#111; color:#ddd; padding:20px; border-radius:8px; max-width:90vw; max-height:85vh; overflow:auto; white-space:pre-wrap; word-wrap:break-word; font:13px/1.5 monospace; margin:0; }
+  #textPreview .close-btn { position:fixed; top:16px; right:16px; background:#333; color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:20px; cursor:pointer; }
+  #textPreview .wrap { max-width:95vw; max-height:90vh; position:relative; }
+  #slideshow { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:300; background:#000; justify-content:center; align-items:center; cursor:pointer; }
+  #slideshow img { max-width:95vw; max-height:90vh; object-fit:contain; cursor:default; }
+  #slideshow .counter { position:fixed; top:12px; left:50%; transform:translateX(-50%); color:#aaa; font-size:14px; background:rgba(0,0,0,.6); padding:4px 12px; border-radius:12px; }
+  #slideshow .nav { position:fixed; top:50%; transform:translateY(-50%); background:rgba(0,0,0,.5); color:#fff; border:none; font-size:32px; width:50px; height:80px; cursor:pointer; border-radius:8px; }
+  #slideshow .nav:hover { background:rgba(255,255,255,.2); }
+  #slideshow .prev { left:8px; }
+  #slideshow .next { right:8px; }
+  #slideshow .close { position:fixed; top:8px; right:12px; background:none; color:#fff; border:none; font-size:32px; cursor:pointer; z-index:301; }
+  .actbtn { background:#46a !important; }
+  .actbtn:disabled { background:#444 !important; cursor:not-allowed; }
+  .delbtn { background:#a44 !important; }
+  .delbtn:disabled { background:#444 !important; cursor:not-allowed; }
+  #upload input[type=file] { max-width:200px; }
+  #upload button svg { vertical-align:middle; }
+  .grid .item audio { width:100%; height:50px; display:block; border-radius:6px; }
   @media (max-width: 600px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 10px; }
     .grid .item img, .grid .item video { height: 100px; }
@@ -52,7 +87,35 @@
     #upload { padding: 6px 8px; font-size: 12px; }
     #upload button { font-size: 12px; padding: 4px 10px; }
     #upload input[type=file] { max-width: 120px; font-size: 11px; }
+    .item-actions button { display:block !important; width:20px; height:20px; font-size:12px; line-height:20px; }
+    #slideshow .nav { font-size:24px; width:36px; height:60px; }
   }
+  #trashHeader { display:none; padding:10px 16px; background:#1c1c1c; border-bottom:1px solid #333; align-items:center; gap:12px; }
+  #trashHeader span.title { flex:1; font-size:15px; color:#ddd; }
+  #trashHeader button { background:#2a2a2a; color:#ddd; border:1px solid #444; padding:6px 12px; border-radius:4px; cursor:pointer; white-space:nowrap; }
+  #trashHeader button:hover { background:#333; }
+  #trashHeader .danger { color:#f66; }
+  .trash-actions button { background:none; border:1px solid #444; color:#ddd; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; margin-right:6px; white-space:nowrap; }
+  .trash-actions .restore { color:#6c6; }
+  .trash-actions .delperm { color:#f66; }
+  #trashTable { table-layout:fixed; }
+  #trashTable td:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; color:#aaa; }
+  #trashTable th:first-child { width:auto; }
+  #trashTable th:nth-child(2), #trashTable td:nth-child(2) { width:65px; font-size:12px; color:#888; }
+  #trashTable th:nth-child(3), #trashTable td:nth-child(3) { width:140px; font-size:12px; color:#888; }
+  #trashTable th:nth-child(4), #trashTable td:nth-child(4) { width:60px; text-align:center; }
+  #trashTable th:nth-child(5), #trashTable td:nth-child(5) { width:50px; text-align:center; }
+  #trashTable td:nth-child(4) button, #trashTable td:nth-child(5) button { padding:4px 0; width:100%; font-size:12px; }
+  #trashEmpty { display:block; margin:20px auto; background:#a44; color:#fff; border:none; padding:8px 20px; border-radius:4px; cursor:pointer; }
+  #confirmDlg { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:400; background:rgba(0,0,0,.7); justify-content:center; align-items:center; }
+  #confirmDlg .box { background:#222; border:1px solid #444; border-radius:8px; padding:28px; max-width:420px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,.5); }
+  #confirmDlg #confirmMsg { margin:0 0 24px; color:#ddd; font-size:14px; line-height:1.6; }
+  #confirmDlg .btns { display:flex; gap:14px; justify-content:center; }
+  #confirmDlg .btns button { padding:8px 28px; border-radius:4px; border:1px solid #444; cursor:pointer; font-size:14px; transition:background .15s; }
+  #confirmDlg .btns .ok { background:#46a; color:#fff; border-color:#46a; }
+  #confirmDlg .btns .ok:hover { background:#57b; }
+  #confirmDlg .btns .cancel { background:#333; color:#ccc; }
+  #confirmDlg .btns .cancel:hover { background:#444; }
 </style>
 </head>
 <body>
@@ -63,22 +126,88 @@
   <button onclick="go()">Go</button>
   <button onclick="up()">Up</button>
   <button id="viewBtn" onclick="toggleView()" style="display:none">Grid</button>
+  <button onclick="showTrash()" title="Trash">&#x1F5D1;</button>
 </header>
+<div id="trashHeader">
+  <button onclick="showBrowse()">&larr; Back</button>
+  <span class="title">Trash</span>
+  <button id="trashEmpty" onclick="emptyTrash()" class="danger">Empty trash</button>
+</div>
 <div id="msg"></div>
 <div id="err"></div>
 <div id="listContainer"></div>
+<div id="ctxMenu" onmouseleave="hideCtxMenu()">
+  <button onclick="ctxRename()">Rename</button>
+  <button onclick="ctxCopy()">Copy</button>
+  <button onclick="ctxMove()">Move</button>
+  <button onclick="ctxDownload()">Download</button>
+  <div class="sep"></div>
+  <button onclick="ctxDelete()" class="danger">Delete</button>
+</div>
+<div id="textPreview" class="overlay" onclick="closeTextPreview()">
+  <div class="wrap" onclick="event.stopPropagation()">
+    <pre id="textContent"></pre>
+    <button class="close-btn" onclick="closeTextPreview()">&times;</button>
+  </div>
+</div>
+<div id="slideshow" onclick="closeSlideshow()">
+  <button class="close" onclick="closeSlideshow()">&times;</button>
+  <span class="counter" id="slideCounter"></span>
+  <button class="nav prev" onclick="event.stopPropagation();prevSlide()">&lsaquo;</button>
+  <button class="nav next" onclick="event.stopPropagation();nextSlide()">&rsaquo;</button>
+  <img id="slideImg" src="" onclick="event.stopPropagation()" alt="">
+</div>
+<div id="confirmDlg">
+  <div class="box" onclick="event.stopPropagation()">
+    <p id="confirmMsg"></p>
+    <div class="btns">
+      <button class="cancel" id="confirmCancel">Cancel</button>
+      <button class="ok" id="confirmOk">OK</button>
+    </div>
+  </div>
+</div>
 <div id="upload">
   <button id="dlBtn" class="dlbtn" onclick="downloadSelected()">Download selected (0)</button>
+  <button id="mkdirBtn" onclick="mkdir()" title="New folder"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></button>
+  <button id="touchBtn" onclick="newFile()" title="New file"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></button>
+  <button id="moveSelBtn" class="actbtn" onclick="moveSelected()" disabled title="Move"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/><line x1="5" y1="12" x2="16" y2="12"/></svg></button>
+  <button id="copySelBtn" class="actbtn" onclick="copySelected()" disabled title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+  <button id="delSelBtn" class="delbtn" onclick="deleteSelected()" disabled title="Delete"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
   <input id="file" type="file" multiple onchange="document.getElementById('upbtn').disabled=!this.files.length">
   <button id="upbtn" onclick="upload()" disabled>Upload</button>
 </div>
 <script>
 const mediaExt = new Set([
   '.jpg','.jpeg','.png','.gif','.bmp','.webp','.svg','.ico','.tiff','.tif','.avif','.heic','.heif',
-  '.mp4','.webm','.mkv','.avi','.mov'
+  '.mp4','.webm','.mkv','.avi','.mov',
+  '.mp3','.flac','.wav','.ogg','.aac','.m4a','.wma','.opus'
+]);
+const textExt = new Set([
+  '.txt','.text','.md','.markdown','.mdown',
+  '.log','.json','.xml','.yaml','.yml','.toml','.ini','.cfg','.conf',
+  '.go','.py','.js','.ts','.jsx','.tsx','.html','.htm','.css','.scss','.less',
+  '.sh','.bash','.zsh','.fish',
+  '.lua','.rb','.php','.pl','.pm',
+  '.sql','.r','.c','.h','.cpp','.hpp','.cc','.cxx',
+  '.java','.kt','.scala',
+  '.rs','.zig','.swift','.dart',
+  '.gradle','.env','.gitignore','.editorconfig',
+  '.tex','.bib','.rst','.adoc',
+  '.patch','.diff','.lock'
+]);
+const imgExt = new Set([
+  '.jpg','.jpeg','.png','.gif','.bmp','.webp','.svg','.ico','.tiff','.tif','.avif','.heic','.heif'
+]);
+const audioExt = new Set([
+  '.mp3','.flac','.wav','.ogg','.aac','.m4a','.wma','.opus'
 ]);
 let viewMode = 'auto';
 const selected = new Set();
+let lastEntries = [];
+let ctxPath = '';
+let ctxName = '';
+let slidePaths = [];
+let slideIndex = 0;
 
 function fmtSize(n) {
   if (n < 1024) return n + ' B';
@@ -87,6 +216,8 @@ function fmtSize(n) {
   return (n/1073741824).toFixed(2) + ' G';
 }
 function qs(p) { return '?path=' + encodeURIComponent(p); }
+function escJS(s) { return s.replace(/'/g,"\\'"); }
+function escAttr(s) { return s.replace(/"/g,'&quot;'); }
 function setPath(p) {
   selected.clear();
   document.getElementById('path').value = p;
@@ -107,6 +238,18 @@ function parentOf(p, n) {
     p = j < 0 ? '' : p.slice(0, j);
   }
   return p;
+}
+function showMsg(text) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+function showErr(text) {
+  const el = document.getElementById('err');
+  el.textContent = text;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
 }
 
 async function load(p) {
@@ -129,18 +272,167 @@ function toggleView() {
 }
 
 function updateDlBtn() {
-  const btn = document.getElementById('dlBtn');
   const n = selected.size;
-  btn.disabled = n === 0;
-  btn.textContent = 'Download selected (' + n + ')';
+  document.getElementById('dlBtn').disabled = n === 0;
+  document.getElementById('dlBtn').textContent = 'Download selected (' + n + ')';
+  document.getElementById('moveSelBtn').disabled = n === 0;
+  document.getElementById('copySelBtn').disabled = n === 0;
+  document.getElementById('delSelBtn').disabled = n === 0;
+  document.getElementById('mkdirBtn').disabled = n > 0;
+  document.getElementById('touchBtn').disabled = n > 0;
 }
 
 function toggleSelect(path) {
   if (selected.has(path)) selected.delete(path); else selected.add(path);
   updateDlBtn();
-  for (const el of document.querySelectorAll('[data-path="' + path.replace(/"/g,'\\"') + '"]')) {
+  const q = path.replace(/"/g,'\\"');
+  for (const el of document.querySelectorAll('[data-path="' + q + '"]')) {
     el.classList.toggle('selected', selected.has(path));
   }
+}
+
+function handleImgClick(e, cur, path) {
+  e.stopPropagation();
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const w = rect.width;
+  const h = rect.height;
+  if (x < w * 0.45 && y < h * 0.45) {
+    const item = e.currentTarget.closest('.item');
+    if (item) {
+      const cb = item.querySelector('.cb');
+      if (cb) { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+    }
+  } else if (x < w * 0.55 && y > h * 0.6) {
+    const a = document.createElement('a');
+    a.href = '/api/files/download?path=' + encodeURIComponent(path);
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else {
+    showSlideshowByPath(cur, path);
+  }
+}
+
+function render(d) {
+  const container = document.getElementById('listContainer');
+  const btn = document.getElementById('viewBtn');
+  const nonDirs = d.entries.filter(e => !e.is_dir);
+  const mediaCount = nonDirs.filter(e => mediaExt.has(e.name.slice(e.name.lastIndexOf('.')).toLowerCase())).length;
+  const hasMedia = nonDirs.length > 0 && mediaCount / nonDirs.length > 0.35;
+
+  let useGrid = false;
+  if (viewMode === 'grid') useGrid = true;
+  else if (viewMode === 'auto') useGrid = hasMedia;
+
+  btn.style.display = 'inline-block';
+  btn.textContent = useGrid ? 'List' : 'Grid';
+  btn.className = '';
+
+  lastEntries = d.entries;
+
+  if (useGrid) {
+    renderGrid(d, container);
+  } else {
+    renderList(d, container);
+  }
+  updateDlBtn();
+}
+
+function renderList(d, container) {
+  const cur = d.path || '';
+  let html = '<table><thead><tr><th class="cb"><input type="checkbox" onchange="toggleAll(this.checked)" title="Select all"></th><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th><th class="act"></th></tr></thead><tbody>';
+  if (cur) {
+    for (const [label, n] of [['...', 2], ['..', 1]]) {
+      const target = parentOf(cur, n);
+      html += `<tr><td class="cb"></td><td class="name" colspan="5"><a href="javascript:setPath('${escJS(target)}')" class="dir">${label}</a></td></tr>`;
+    }
+  }
+  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
+  for (const e of d.entries) {
+    const ck = `cb_${e.path.replace(/[^a-zA-Z0-9_]/g,'_')}`;
+    const checked = selected.has(e.path) ? 'checked' : '';
+    const ext = e.name.slice(e.name.lastIndexOf('.')).toLowerCase();
+    const isText = !e.is_dir && textExt.has(ext);
+    const isImg = !e.is_dir && imgExt.has(ext);
+    const isAudio = !e.is_dir && audioExt.has(ext);
+    let nameLink = '';
+    if (e.is_dir) {
+      nameLink = `<a href="javascript:setPath('${escJS(e.path)}')" class="dir">${e.name}/</a>`;
+    } else if (isText) {
+      nameLink = `<a href="javascript:showTextPreview('${escJS(e.path)}')">${e.name}</a>`;
+    } else if (isImg) {
+      nameLink = `<a href="javascript:showSlideshowByPath('${escJS(cur)}','${escJS(e.path)}')" style="color:#b8a">${e.name}</a>`;
+    } else if (isAudio) {
+      nameLink = `<a href="javascript:playAudio('${escJS(e.path)}')" style="color:#8b8">${e.name}</a>`;
+    } else {
+      nameLink = `<a href="/api/files/raw${qs(e.path)}" target="_blank">${e.name}</a>`;
+    }
+    html += `<tr${checked?' class="selected"':''}>
+      <td class="cb"><input type="checkbox" id="${ck}" data-path="${escAttr(e.path)}" ${checked} onchange="toggleSelect('${escJS(e.path)}')"></td>
+      <td class="name">${nameLink}</td>
+      <td class="size">${e.is_dir ? '-' : fmtSize(e.size)}</td>
+      <td class="mtime">${new Date(e.mtime*1000).toISOString().replace('T',' ').slice(0,16)}</td>
+      <td class="actions">${e.is_dir ? '' :
+        `<a href="/api/files/raw${qs(e.path)}" target="_blank">view</a>
+         <a href="/api/files/download${qs(e.path)}">download</a>`}</td>
+      <td class="act"><button onclick="event.stopPropagation();showCtxMenu(event,'${escJS(e.path)}','${escJS(e.name)}')" title="More">&#8942;</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function renderGrid(d, container) {
+  const cur = d.path || '';
+  let html = '<div class="grid">';
+  if (cur) {
+    for (const [label, n] of [['...', 2], ['..', 1]]) {
+      const target = parentOf(cur, n);
+      html += `<div class="item dir-item"><a href="javascript:setPath('${escJS(target)}')">${label}</a></div>`;
+    }
+  }
+  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
+  for (const e of d.entries) {
+    const sel = selected.has(e.path) ? ' selected' : '';
+    const dataAttr = `data-path="${escAttr(e.path)}"`;
+    if (e.is_dir) {
+      html += `<div class="item dir-item${sel}" ${dataAttr} onclick="event.stopPropagation();toggleSelect('${escJS(e.path)}')">
+        <label class="cb-wrap" onclick="event.stopPropagation()"><input class="cb" type="checkbox" onclick="event.stopPropagation()" onchange="toggleSelect('${escJS(e.path)}')" ${sel ? 'checked' : ''}></label>
+        <div class="item-actions"><button onclick="event.stopPropagation();showCtxMenu(event,'${escJS(e.path)}','${escJS(e.name)}')" title="More">&#8942;</button></div>
+        <a href="javascript:setPath('${escJS(e.path)}')" onclick="event.stopPropagation()" class="name" style="display:block">${e.name}/</a></div>`;
+    } else {
+      const ext = e.name.slice(e.name.lastIndexOf('.')).toLowerCase();
+      const isImg = imgExt.has(ext);
+      const isAudio2 = audioExt.has(ext);
+      const url = '/api/files/raw' + qs(e.path);
+      const thumbUrl = url + '&thumb=1';
+      const isVideo = ext==='.mp4'||ext==='.webm'||ext==='.mkv'||ext==='.avi'||ext==='.mov';
+      html += `<div class="item${sel}" ${dataAttr} onclick="event.stopPropagation();toggleSelect('${escJS(e.path)}')">
+        <label class="cb-wrap" onclick="event.stopPropagation()"><input class="cb" type="checkbox" onclick="event.stopPropagation()" onchange="toggleSelect('${escJS(e.path)}')" ${sel ? 'checked' : ''}></label>
+        <div class="item-actions"><button onclick="event.stopPropagation();showCtxMenu(event,'${escJS(e.path)}','${escJS(e.name)}')" title="More">&#8942;</button></div>`;
+      if (isVideo) {
+        html += `<video data-src="${url}" controls preload="metadata" onplay="this.requestFullscreen()"></video>
+        <a href="${url}" target="_blank" onclick="event.stopPropagation()" class="name" style="display:block">${e.name}</a>`;
+      } else if (isAudio2) {
+        html += `<audio data-src="${url}" controls preload="none"></audio>
+        <div class="name">${e.name}</div>`;
+      } else if (isImg) {
+        html += `<div class="img-wrap">
+        <img data-src="${thumbUrl}" alt="${e.name}" loading="lazy" onclick="handleImgClick(event,'${escJS(cur)}','${escJS(e.path)}')">
+        <div class="name" onclick="event.stopPropagation();showSlideshowByPath('${escJS(cur)}','${escJS(e.path)}')">${e.name}</div>
+      </div>`;
+      } else {
+        html += `<a href="${url}" target="_blank" onclick="event.stopPropagation()"><div style="height:160px;display:flex;align-items:center;justify-content:center;background:#1a1a1a;border-radius:6px;color:#666;font-size:13px">${ext||'?'}</div><div class="name">${e.name}</div></a>`;
+      }
+      html += `</div>`;
+    }
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  lazyLoadMedia(container);
 }
 
 function toggleAll(checked) {
@@ -155,105 +447,6 @@ function toggleAll(checked) {
   updateDlBtn();
 }
 
-function render(d) {
-  const container = document.getElementById('listContainer');
-  const btn = document.getElementById('viewBtn');
-  const nonDirs = d.entries.filter(e => !e.is_dir);
-  const mediaCount = nonDirs.filter(e => mediaExt.has(e.name.slice(e.name.lastIndexOf('.')).toLowerCase())).length;
-  const hasMedia = nonDirs.length > 0 && mediaCount / nonDirs.length > 0.4;
-
-  let useGrid = false;
-  if (viewMode === 'grid') useGrid = true;
-  else if (viewMode === 'auto') useGrid = hasMedia;
-
-  btn.style.display = hasMedia ? 'inline-block' : 'none';
-  btn.textContent = useGrid ? 'List' : 'Grid';
-  btn.className = '';
-
-  if (useGrid) {
-    renderGrid(d, container);
-  } else {
-    renderList(d, container);
-  }
-  updateDlBtn();
-}
-
-function renderList(d, container) {
-  const cur = d.path || '';
-  let html = '<table><thead><tr><th class="cb"><input type="checkbox" onchange="toggleAll(this.checked)" title="Select all"></th><th>Name</th><th>Size</th><th>Modified</th><th>Actions</th></tr></thead><tbody>';
-  if (cur) {
-    for (const [label, n] of [['...', 2], ['..', 1]]) {
-      const target = parentOf(cur, n);
-      html += `<tr><td class="cb"></td><td class="name" colspan="4"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')" class="dir">${label}</a></td></tr>`;
-    }
-  }
-  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
-  for (const e of d.entries) {
-    const ck = `cb_${e.path.replace(/[^a-zA-Z0-9_]/g,'_')}`;
-    const checked = selected.has(e.path) ? 'checked' : '';
-    html += `<tr${checked?' class="selected"':''}>
-      <td class="cb"><input type="checkbox" id="${ck}" data-path="${e.path.replace(/"/g,'&quot;')}" ${checked} onchange="toggleSelect('${e.path.replace(/'/g,"\\'")}')"></td>
-      <td class="name">${e.is_dir
-        ? `<a href="javascript:setPath('${e.path.replace(/'/g,"\\'")}')" class="dir">${e.name}/</a>`
-        : `<a href="/api/files/raw${qs(e.path)}" target="_blank">${e.name}</a>`}</td>
-      <td class="size">${e.is_dir ? '-' : fmtSize(e.size)}</td>
-      <td class="mtime">${new Date(e.mtime*1000).toISOString().replace('T',' ').slice(0,16)}</td>
-      <td class="actions">${e.is_dir ? '' :
-        `<a href="/api/files/raw${qs(e.path)}" target="_blank">view</a>
-         <a href="/api/files/download${qs(e.path)}">download</a>`}</td>
-    </tr>`;
-  }
-  html += '</tbody></table>';
-  container.innerHTML = html;
-}
-
-function renderGrid(d, container) {
-  const cur = d.path || '';
-  let html = '<div class="grid">';
-  if (cur) {
-    for (const [label, n] of [['...', 2], ['..', 1]]) {
-      const target = parentOf(cur, n);
-      html += `<div class="item dir-item"><a href="javascript:setPath('${target.replace(/'/g,"\\'")}')">${label}</a></div>`;
-    }
-  }
-  d.entries.sort((a,b) => (b.is_dir - a.is_dir) || a.name.localeCompare(b.name));
-  for (const e of d.entries) {
-    const sel = selected.has(e.path) ? ' selected' : '';
-    if (e.is_dir) {
-      html += `<div class="item dir-item${sel}"><a href="javascript:setPath('${e.path.replace(/'/g,"\\'")}')">${e.name}/</a></div>`;
-    } else {
-      const ext = e.name.slice(e.name.lastIndexOf('.')).toLowerCase();
-      const isMedia = mediaExt.has(ext);
-      const url = '/api/files/raw' + qs(e.path);
-      const thumbUrl = url + '&thumb=1';
-      const isVideo = ext==='.mp4'||ext==='.webm'||ext==='.mkv'||ext==='.avi'||ext==='.mov';
-      const dataAttr = `data-path="${e.path.replace(/"/g,'&quot;')}"`;
-      html += `<div class="item${sel}" ${dataAttr} onclick="event.stopPropagation();toggleSelect('${e.path.replace(/'/g,"\\'")}')">
-        <input class="cb" type="checkbox" onclick="event.stopPropagation()" onchange="toggleSelect('${e.path.replace(/'/g,"\\'")}')" ${sel ? 'checked' : ''}>`;
-      if (isVideo) {
-        html += `<video data-src="${url}" controls preload="metadata" onplay="this.requestFullscreen()"></video>
-        <a href="${url}" target="_blank" onclick="event.stopPropagation()" class="name" style="display:block">${e.name}</a>`;
-      } else if (isMedia) {
-        html += `<a href="${url}" target="_blank" onclick="event.stopPropagation()"><img data-src="${thumbUrl}" alt="${e.name}" loading="lazy"><div class="name">${e.name}</div></a>`;
-      } else {
-        html += `<a href="${url}" target="_blank" onclick="event.stopPropagation()"><div style="height:160px;display:flex;align-items:center;justify-content:center;background:#1a1a1a;border-radius:6px;color:#666;font-size:13px">${ext||'?'}</div><div class="name">${e.name}</div></a>`;
-      }
-      html += `</div>`;
-    }
-  }
-  html += '</div>';
-  container.innerHTML = html;
-  lazyLoadMedia(container);
-}
-
-function toggleAll(checked) {
-  const container = document.getElementById('listContainer');
-  for (const cb of container.querySelectorAll('td.cb input[data-path]')) {
-    cb.checked = checked;
-    toggleSelect(cb.getAttribute('data-path'));
-  }
-}
-
 function lazyLoadMedia(container) {
   const obs = new IntersectionObserver((entries) => {
     for (const entry of entries) {
@@ -262,7 +455,7 @@ function lazyLoadMedia(container) {
       if (el.getAttribute('src')) continue;
       const src = el.getAttribute('data-src');
       if (!src) continue;
-      if (el.tagName === 'VIDEO') {
+      if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') {
         el.src = src;
         el.load();
       } else {
@@ -277,22 +470,210 @@ function lazyLoadMedia(container) {
 
 setInterval(() => {
   const vh = window.innerHeight;
-  for (const el of document.querySelectorAll('.grid img[src], .grid video[src]')) {
+  for (const el of document.querySelectorAll('.grid img[src], .grid video[src], .grid audio[src]')) {
     const rect = el.getBoundingClientRect();
     if (rect.bottom < -1000 || rect.top > vh + 1000) {
       const src = el.getAttribute('data-src');
       if (!src) continue;
       el.removeAttribute('src');
-      if (el.tagName === 'VIDEO') el.load();
+      if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') el.load();
     }
   }
 }, 2000);
 
-const params = new URLSearchParams(location.search);
-const init = params.get('path') !== null
-  ? params.get('path')
-  : decodeURIComponent((location.hash || '#').slice(1));
-setPath(init);
+// Context menu
+function showCtxMenu(e, path, name) {
+  e.preventDefault();
+  hideCtxMenu();
+  ctxPath = path;
+  ctxName = name;
+  const menu = document.getElementById('ctxMenu');
+  const cx = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+  const cy = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+  menu.style.left = Math.min(cx, window.innerWidth - 160) + 'px';
+  menu.style.top = Math.min(cy, window.innerHeight - 220) + 'px';
+  menu.style.display = 'block';
+}
+function hideCtxMenu() { document.getElementById('ctxMenu').style.display = 'none'; }
+
+function ctxRename() { hideCtxMenu(); renameItem(ctxPath); }
+function ctxCopy() { hideCtxMenu(); copyItems([ctxPath]); }
+function ctxMove() { hideCtxMenu(); moveItems([ctxPath]); }
+function ctxDownload() {
+  hideCtxMenu();
+  const a = document.createElement('a');
+  a.href = '/api/files/download-tgz?path=' + encodeURIComponent(ctxPath);
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+function ctxDelete() { hideCtxMenu(); deleteItems([ctxPath]); }
+
+// Touch long-press
+let longTimer = null;
+document.addEventListener('touchstart', (e) => {
+  const item = e.target.closest('[data-path]');
+  if (!item) return;
+  const p = item.getAttribute('data-path');
+  if (!p) return;
+  const nEl = item.querySelector('.name') || item.querySelector('a');
+  const n = nEl ? (nEl.textContent || '').replace(/\/$/,'') : '';
+  longTimer = setTimeout(() => showCtxMenu(e, p, n), 500);
+}, { passive: true });
+document.addEventListener('touchend', () => { clearTimeout(longTimer); }, { passive: true });
+document.addEventListener('touchmove', () => { clearTimeout(longTimer); }, { passive: true });
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#ctxMenu')) hideCtxMenu();
+});
+document.addEventListener('contextmenu', (e) => {
+  const item = e.target.closest('[data-path]');
+  if (item) {
+    const p = item.getAttribute('data-path');
+    const nEl = item.querySelector('.name') || item.querySelector('a');
+    const n = nEl ? (nEl.textContent || '').replace(/\/$/,'') : '';
+    showCtxMenu(e, p, n);
+  }
+});
+
+// Text preview
+async function showTextPreview(path) {
+  try {
+    const r = await fetch('/api/files/raw' + qs(path));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const text = await r.text();
+    document.getElementById('textContent').textContent = text;
+    document.getElementById('textPreview').style.display = 'flex';
+  } catch (e) { showErr(String(e)); }
+}
+function closeTextPreview() { document.getElementById('textPreview').style.display = 'none'; }
+
+// Slideshow
+function showSlideshowByPath(curPath, clickedPath) {
+  const all = lastEntries.filter(e => !e.is_dir && imgExt.has(e.name.slice(e.name.lastIndexOf('.')).toLowerCase()));
+  slidePaths = all.map(e => e.path);
+  slideIndex = slidePaths.indexOf(clickedPath);
+  if (slideIndex < 0) slideIndex = 0;
+  if (slidePaths.length === 0) return;
+  updateSlide();
+  document.getElementById('slideshow').style.display = 'flex';
+}
+function updateSlide() {
+  document.getElementById('slideImg').src = '/api/files/raw' + qs(slidePaths[slideIndex]);
+  document.getElementById('slideCounter').textContent = (slideIndex + 1) + '/' + slidePaths.length;
+}
+function nextSlide() { if (slideIndex < slidePaths.length - 1) { slideIndex++; updateSlide(); } }
+function prevSlide() { if (slideIndex > 0) { slideIndex--; updateSlide(); } }
+function closeSlideshow() {
+  document.getElementById('slideshow').style.display = 'none';
+  document.getElementById('slideImg').src = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('slideshow').style.display === 'flex') {
+    if (e.key === 'Escape') closeSlideshow();
+    else if (e.key === 'ArrowRight') nextSlide();
+    else if (e.key === 'ArrowLeft') prevSlide();
+  }
+  if (document.getElementById('textPreview').style.display === 'flex') {
+    if (e.key === 'Escape') closeTextPreview();
+  }
+});
+
+// Audio player (floating)
+function playAudio(path) {
+  const el = document.createElement('audio');
+  el.src = '/api/files/raw' + qs(path);
+  el.controls = true;
+  el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:150;background:#222;padding:8px 16px;border-radius:8px;border:1px solid #444;max-width:90vw';
+  document.body.appendChild(el);
+  el.play();
+  el.addEventListener('ended', () => el.remove());
+}
+
+// File operations
+async function mkdir() {
+  const name = prompt('New folder name:');
+  if (!name) return;
+  const cur = document.getElementById('path').value;
+  const target = cur ? cur + '/' + name : name;
+  try {
+    const r = await fetch('/api/files/mkdir', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: target}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    showMsg('Folder created');
+    load(cur);
+  } catch (e) { showErr(String(e)); }
+}
+
+async function newFile() {
+  const name = prompt('New file name:');
+  if (!name) return;
+  const cur = document.getElementById('path').value;
+  const target = cur ? cur + '/' + name : name;
+  try {
+    const r = await fetch('/api/files/touch', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: target}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    showMsg('File created');
+    load(cur);
+  } catch (e) { showErr(String(e)); }
+}
+
+async function renameItem(path) {
+  const oldName = path.split('/').pop();
+  const newName = prompt('Rename "' + oldName + '" to:', oldName);
+  if (!newName || newName === oldName) return;
+  try {
+    const r = await fetch('/api/files/rename', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: path, new_name: newName}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    showMsg('Renamed');
+    load(document.getElementById('path').value);
+  } catch (e) { showErr(String(e)); }
+}
+
+async function moveItems(paths) {
+  const dest = prompt('Move to (relative path):');
+  if (dest === null) return;
+  try {
+    const r = await fetch('/api/files/move', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({paths: paths, dest: dest || ''}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    selected.clear();
+    showMsg('Moved ' + (j.data && j.data.count || '') + ' item(s)');
+    load(document.getElementById('path').value);
+  } catch (e) { showErr(String(e)); }
+}
+
+async function copyItems(paths) {
+  const dest = prompt('Copy to (relative path):');
+  if (dest === null) return;
+  try {
+    const r = await fetch('/api/files/copy', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({paths: paths, dest: dest || ''}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    selected.clear();
+    showMsg('Copied ' + (j.data && j.data.count || '') + ' item(s)');
+    load(document.getElementById('path').value);
+  } catch (e) { showErr(String(e)); }
+}
+
+async function deleteItems(paths) {
+  if (!await showConfirm('Move ' + paths.length + ' item(s) to trash?')) return;
+  try {
+    const r = await fetch('/api/files/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({paths: paths}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    selected.clear();
+    load(document.getElementById('path').value);
+  } catch (e) { showErr(String(e)); }
+}
+
+function moveSelected() { moveItems(Array.from(selected)); }
+function copySelected() { copyItems(Array.from(selected)); }
+function deleteSelected() { deleteItems(Array.from(selected)); }
 
 async function upload() {
   const fi = document.getElementById('file');
@@ -307,7 +688,7 @@ async function upload() {
   const total = fi.files.length;
   let ok = 0, fail = 0, lastErr = '';
   for (let i = 0; i < total; i++) {
-    btn.textContent = `Uploading ${i+1}/${total}...`;
+    btn.textContent = 'Uploading ' + (i+1) + '/' + total + '...';
     const fd = new FormData();
     fd.append('file', fi.files[i]);
     try {
@@ -315,37 +696,135 @@ async function upload() {
       const j = await r.json();
       if (j.code !== 0) throw new Error(j.message || ('http ' + r.status));
       ok++;
-    } catch (e) {
-      fail++;
-      lastErr = String(e);
-    }
+    } catch (e) { fail++; lastErr = String(e); }
   }
   if (fail === 0) {
-    msg.textContent = `uploaded ${ok} file(s)`;
+    msg.textContent = 'uploaded ' + ok + ' file(s)';
     msg.style.display = 'block';
   } else {
-    err.textContent = `${fail}/${total} failed` + (lastErr ? ': ' + lastErr : '');
+    err.textContent = fail + '/' + total + ' failed' + (lastErr ? ': ' + lastErr : '');
     err.style.display = 'block';
-    if (ok > 0) msg.textContent = `uploaded ${ok} file(s)`;
+    if (ok > 0) msg.textContent = 'uploaded ' + ok + ' file(s)';
     msg.style.display = ok > 0 ? 'block' : 'none';
   }
   fi.value = '';
-  load(document.getElementById('path').value);
-  btn.disabled = !fi.files.length;
+  btn.disabled = true;
   btn.textContent = 'Upload';
+  load(document.getElementById('path').value);
 }
 
 function downloadSelected() {
   const paths = Array.from(selected);
   if (!paths.length) return;
-  const qs = paths.map(p => 'path=' + encodeURIComponent(p)).join('&');
+  const q = paths.map(p => 'path=' + encodeURIComponent(p)).join('&');
   const a = document.createElement('a');
-  a.href = '/api/files/download-tgz?' + qs;
+  a.href = '/api/files/download-tgz?' + q;
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 }
+
+// Trash
+function showTrash() {
+  document.querySelector('header').style.display = 'none';
+  document.getElementById('trashHeader').style.display = 'flex';
+  document.getElementById('upload').style.display = 'none';
+  document.getElementById('listContainer').innerHTML = '<p style="padding:20px;color:#888">Loading trash...</p>';
+  fetchTrash();
+}
+function showBrowse() {
+  document.querySelector('header').style.display = 'flex';
+  document.getElementById('trashHeader').style.display = 'none';
+  document.getElementById('upload').style.display = 'flex';
+  load(document.getElementById('path').value);
+}
+
+async function fetchTrash() {
+  try {
+    const r = await fetch('/api/files/trash');
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    renderTrash(j.data || []);
+  } catch (e) { showErr(String(e)); }
+}
+
+function renderTrash(entries) {
+  const c = document.getElementById('listContainer');
+  if (!entries.length) {
+    c.innerHTML = '<p style="padding:20px;color:#888;text-align:center">Trash is empty</p>';
+    return;
+  }
+  entries.sort((a,b) => (b.deletion_date||'').localeCompare(a.deletion_date||''));
+  let html = '<table id="trashTable"><thead><tr><th>Original path</th><th>Size</th><th>Deleted</th><th>Res</th><th>Del</th></tr></thead><tbody>';
+  for (const e of entries) {
+    const d = e.deletion_date ? e.deletion_date.replace('T',' ').slice(0,16) : '?';
+    html += `<tr>
+      <td>${e.original_path}</td>
+      <td>${fmtSize(e.size)}</td>
+      <td>${d}</td>
+      <td><button class="restore" onclick="restoreFromTrash('${escJS(e.trash_name)}')">Res</button></td>
+      <td><button class="delperm" onclick="permDeleteTrash('${escJS(e.trash_name)}','${escJS(e.original_path)}')">Del</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  c.innerHTML = html;
+}
+
+async function restoreFromTrash(name) {
+  try {
+    const r = await fetch('/api/files/trash/restore', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({trash_names: [name]}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    showMsg('Restored');
+    fetchTrash();
+  } catch (e) { showErr(String(e)); }
+}
+
+async function permDeleteTrash(trashName, origPath) {
+  const label = origPath || trashName;
+  if (!await showConfirm('Permanently delete "' + label + '"? Cannot be undone.')) return;
+  try {
+    const r = await fetch('/api/files/trash/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({trash_names: [trashName]}) });
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    fetchTrash();
+  } catch (e) { showErr(String(e)); }
+}
+
+async function emptyTrash() {
+  try {
+    const r = await fetch('/api/files/trash');
+    const j = await r.json();
+    if (j.code !== 0) throw new Error(j.message);
+    const items = j.data || [];
+    if (!items.length) { showMsg('Trash already empty'); return; }
+    if (!await showConfirm('Empty trash (' + items.length + ' item(s))? All items permanently deleted.')) return;
+    const names = items.map(e => e.trash_name);
+    const r2 = await fetch('/api/files/trash/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({trash_names: names}) });
+    const j2 = await r2.json();
+    if (j2.code !== 0) throw new Error(j2.message);
+    showMsg('Trash emptied');
+    fetchTrash();
+  } catch (e) { showErr(String(e)); }
+}
+
+function showConfirm(msg) {
+  return new Promise(resolve => {
+    const dlg = document.getElementById('confirmDlg');
+    document.getElementById('confirmMsg').textContent = msg;
+    dlg.style.display = 'flex';
+    document.getElementById('confirmOk').onclick = () => { dlg.style.display = 'none'; resolve(true); };
+    document.getElementById('confirmCancel').onclick = () => { dlg.style.display = 'none'; resolve(false); };
+    dlg.onclick = () => { dlg.style.display = 'none'; resolve(false); };
+  });
+}
+
+const params = new URLSearchParams(location.search);
+const init = params.get('path') !== null
+  ? params.get('path')
+  : decodeURIComponent((location.hash || '#').slice(1));
+setPath(init);
 </script>
 </body>
 </html>

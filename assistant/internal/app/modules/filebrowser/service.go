@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
+	"time"
 
 	"assistant/internal/bootstrap/psl"
 )
@@ -21,6 +23,7 @@ var (
 	ErrExists      = errors.New("file already exists")
 	ErrBadName     = errors.New("invalid filename")
 	ErrEmpty       = errors.New("no files to download")
+	ErrIsRoot      = errors.New("cannot operate on root")
 )
 
 const (
@@ -367,6 +370,458 @@ func (s *Service) CreateTarGz(paths []string) (string, error) {
 		return "", err
 	}
 	return tmp.Name(), nil
+}
+
+// Mkdir 在 root 下新建目录。rel 包含新目录名。
+func (s *Service) Mkdir(rel string) error {
+	name := filepath.Base(rel)
+	if name == "" || name == "." || name == ".." || strings.ContainsAny(name, `/\`) {
+		return ErrBadName
+	}
+	targetAbs, _, err := s.resolve(rel)
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stat(targetAbs); err == nil {
+		return ErrExists
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	parentAbs := filepath.Dir(targetAbs)
+	pInfo, err := os.Stat(parentAbs)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return ErrNotFound
+		}
+		return err
+	}
+	if !pInfo.IsDir() {
+		return fmt.Errorf("parent is not a directory")
+	}
+	return os.Mkdir(targetAbs, 0o755)
+}
+
+// Touch 创建新文件（不覆盖）。
+func (s *Service) Touch(rel string) error {
+	name := filepath.Base(rel)
+	if name == "" || name == "." || name == ".." || strings.ContainsAny(name, `/\`) {
+		return ErrBadName
+	}
+	targetAbs, _, err := s.resolve(rel)
+	if err != nil {
+		return err
+	}
+	f, err := os.OpenFile(targetAbs, os.O_CREATE|os.O_EXCL, 0o644)
+	if err != nil {
+		if os.IsExist(err) {
+			return ErrExists
+		}
+		return err
+	}
+	return f.Close()
+}
+
+// Rename 重命名文件或目录。
+func (s *Service) Rename(rel, newName string) error {
+	newName = strings.TrimSpace(newName)
+	if newName == "" || newName == "." || newName == ".." || strings.ContainsAny(newName, `/\`) {
+		return ErrBadName
+	}
+	srcAbs, normRel, err := s.resolve(rel)
+	if err != nil {
+		return err
+	}
+	if normRel == "" {
+		return ErrIsRoot
+	}
+	parentAbs := filepath.Dir(srcAbs)
+	dstAbs := filepath.Join(parentAbs, newName)
+	cfg := psl.GetConfig().FileBrowser
+	dstRel := filepath.Join(filepath.Dir(normRel), newName)
+	if !isAllowed(dstRel, cfg.Allow, cfg.Deny) {
+		return ErrDenied
+	}
+	if _, err := os.Stat(dstAbs); err == nil {
+		return ErrExists
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	return os.Rename(srcAbs, dstAbs)
+}
+
+// Move 批量移动文件/目录到目标目录。
+func (s *Service) Move(paths []string, destRel string) (int, error) {
+	if len(paths) == 0 {
+		return 0, fmt.Errorf("no paths provided")
+	}
+	destAbs, destNorm, err := s.resolve(destRel)
+	if err != nil {
+		return 0, err
+	}
+	dInfo, err := os.Stat(destAbs)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return 0, ErrNotFound
+		}
+		return 0, err
+	}
+	if !dInfo.IsDir() {
+		return 0, fmt.Errorf("destination is not a directory")
+	}
+	moved := 0
+	cfg := psl.GetConfig().FileBrowser
+	for _, rel := range paths {
+		srcAbs, _, err := s.resolve(rel)
+		if err != nil {
+			continue
+		}
+		name := filepath.Base(rel)
+		dstAbs := filepath.Join(destAbs, name)
+		dstRel := filepath.Join(destNorm, name)
+		if !isAllowed(dstRel, cfg.Allow, cfg.Deny) {
+			continue
+		}
+		if err := os.Rename(srcAbs, dstAbs); err == nil {
+			moved++
+		}
+	}
+	if moved == 0 {
+		return 0, fmt.Errorf("nothing was moved")
+	}
+	return moved, nil
+}
+
+// Copy 批量复制文件/目录到目标目录。
+func (s *Service) Copy(paths []string, destRel string) (int, error) {
+	if len(paths) == 0 {
+		return 0, fmt.Errorf("no paths provided")
+	}
+	destAbs, destNorm, err := s.resolve(destRel)
+	if err != nil {
+		return 0, err
+	}
+	dInfo, err := os.Stat(destAbs)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return 0, ErrNotFound
+		}
+		return 0, err
+	}
+	if !dInfo.IsDir() {
+		return 0, fmt.Errorf("destination is not a directory")
+	}
+	copied := 0
+	cfg := psl.GetConfig().FileBrowser
+	for _, rel := range paths {
+		srcAbs, _, err := s.resolve(rel)
+		if err != nil {
+			continue
+		}
+		name := filepath.Base(rel)
+		dstAbs := filepath.Join(destAbs, name)
+		dstRel := filepath.Join(destNorm, name)
+		if !isAllowed(dstRel, cfg.Allow, cfg.Deny) {
+			continue
+		}
+		if err := s.copyOne(srcAbs, dstAbs); err == nil {
+			copied++
+		}
+	}
+	if copied == 0 {
+		return 0, fmt.Errorf("nothing was copied")
+	}
+	return copied, nil
+}
+
+func (s *Service) copyOne(src, dst string) error {
+	info, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if info.IsDir() {
+		return s.copyDir(src, dst)
+	}
+	return s.copyFile(src, dst)
+}
+
+func (s *Service) copyFile(src, dst string) error {
+	srcF, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer srcF.Close()
+	dstF, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(dstF, srcF); err != nil {
+		dstF.Close()
+		os.Remove(dst)
+		return err
+	}
+	if err := dstF.Close(); err != nil {
+		os.Remove(dst)
+		return err
+	}
+	return nil
+}
+
+func (s *Service) copyDir(src, dst string) error {
+	if err := os.Mkdir(dst, 0o755); err != nil {
+		return err
+	}
+	dirents, err := os.ReadDir(src)
+	if err != nil {
+		return err
+	}
+	for _, de := range dirents {
+		childSrc := filepath.Join(src, de.Name())
+		childDst := filepath.Join(dst, de.Name())
+		if err := s.copyOne(childSrc, childDst); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+const trashRel = ".local/share/Trash"
+
+func (s *Service) trashDir() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, trashRel), nil
+}
+
+func (s *Service) ensureTrash() (filesDir, infoDir string, err error) {
+	root, err := s.trashDir()
+	if err != nil {
+		return "", "", err
+	}
+	filesDir = filepath.Join(root, "files")
+	infoDir = filepath.Join(root, "info")
+	for _, d := range []string{filesDir, infoDir} {
+		if err := os.MkdirAll(d, 0o700); err != nil {
+			return "", "", err
+		}
+	}
+	return
+}
+
+func uniqueTrashName(filesDir, base string) string {
+	candidate := base
+	for i := 1; ; i++ {
+		if _, err := os.Stat(filepath.Join(filesDir, candidate)); os.IsNotExist(err) {
+			return candidate
+		}
+		candidate = fmt.Sprintf("%s (%d)", base, i)
+	}
+}
+
+func writeTrashInfo(infoDir, trashName, origAbs string) error {
+	path := filepath.Join(infoDir, trashName+".trashinfo")
+	content := fmt.Sprintf("[Trash Info]\nPath=%s\nDeletionDate=%s\n", origAbs, time.Now().Format(time.RFC3339))
+	return os.WriteFile(path, []byte(content), 0o644)
+}
+
+func readTrashInfo(infoPath string) (origPath, delDate string, err error) {
+	data, err := os.ReadFile(infoPath)
+	if err != nil {
+		return "", "", err
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "Path=") {
+			origPath = line[5:]
+		} else if strings.HasPrefix(line, "DeletionDate=") {
+			delDate = line[13:]
+		}
+	}
+	if origPath == "" {
+		return "", "", fmt.Errorf("invalid trashinfo: missing Path")
+	}
+	return
+}
+
+// TrashEntry 表示回收站中的一项。
+type TrashEntry struct {
+	TrashName    string `json:"trash_name"`
+	OriginalPath string `json:"original_path"`
+	DeletionDate string `json:"deletion_date"`
+	Size         int64  `json:"size"`
+	IsDir        bool   `json:"is_dir"`
+}
+
+// Delete 将文件/目录移动到回收站 ~/.local/share/Trash。
+func (s *Service) Delete(paths []string) (int, error) {
+	if len(paths) == 0 {
+		return 0, fmt.Errorf("no paths provided")
+	}
+	for _, rel := range paths {
+		_, normRel, err := s.resolve(rel)
+		if err != nil {
+			continue
+		}
+		if normRel == "" {
+			return 0, ErrIsRoot
+		}
+	}
+	filesDir, infoDir, err := s.ensureTrash()
+	if err != nil {
+		return 0, err
+	}
+	deleted := 0
+	for _, rel := range paths {
+		abs, _, err := s.resolve(rel)
+		if err != nil {
+			continue
+		}
+		if _, err := os.Stat(abs); err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			continue
+		}
+		base := filepath.Base(abs)
+		trashName := uniqueTrashName(filesDir, base)
+		dst := filepath.Join(filesDir, trashName)
+		if err := s.moveFile(abs, dst); err != nil {
+			continue
+		}
+		if err := writeTrashInfo(infoDir, trashName, abs); err != nil {
+			os.Rename(dst, abs)
+			continue
+		}
+		deleted++
+	}
+	if deleted == 0 {
+		return 0, ErrNotFound
+	}
+	return deleted, nil
+}
+
+// moveFile 将 src 移到 dst（先尝试 rename，跨文件系统则 copy+delete）。
+func (s *Service) moveFile(src, dst string) error {
+	err := os.Rename(src, dst)
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, syscall.EXDEV) {
+		if err := s.copyOne(src, dst); err != nil {
+			os.RemoveAll(dst)
+			return err
+		}
+		if err := os.RemoveAll(src); err != nil {
+			os.RemoveAll(dst)
+			return err
+		}
+		return nil
+	}
+	return err
+}
+
+// ListTrash 列出回收站内容。
+func (s *Service) ListTrash() ([]TrashEntry, error) {
+	root, err := s.trashDir()
+	if err != nil {
+		return nil, err
+	}
+	infoDir := filepath.Join(root, "info")
+	filesDir := filepath.Join(root, "files")
+	entries, err := os.ReadDir(infoDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []TrashEntry{}, nil
+		}
+		return nil, err
+	}
+	result := make([]TrashEntry, 0, len(entries))
+	for _, de := range entries {
+		if de.IsDir() || !strings.HasSuffix(de.Name(), ".trashinfo") {
+			continue
+		}
+		trashName := strings.TrimSuffix(de.Name(), ".trashinfo")
+		origPath, delDate, err := readTrashInfo(filepath.Join(infoDir, de.Name()))
+		if err != nil {
+			continue
+		}
+		trashAbs := filepath.Join(filesDir, trashName)
+		fi, err := os.Stat(trashAbs)
+		if err != nil {
+			continue
+		}
+		result = append(result, TrashEntry{
+			TrashName:    trashName,
+			OriginalPath: origPath,
+			DeletionDate: delDate,
+			Size:         fi.Size(),
+			IsDir:        fi.IsDir(),
+		})
+	}
+	return result, nil
+}
+
+// RestoreTrash 从回收站恢复到原位置。
+func (s *Service) RestoreTrash(trashNames []string) (int, error) {
+	root, err := s.trashDir()
+	if err != nil {
+		return 0, err
+	}
+	filesDir := filepath.Join(root, "files")
+	infoDir := filepath.Join(root, "info")
+	restored := 0
+	for _, name := range trashNames {
+		infoPath := filepath.Join(infoDir, name+".trashinfo")
+		origPath, _, err := readTrashInfo(infoPath)
+		if err != nil {
+			continue
+		}
+		trashAbs := filepath.Join(filesDir, name)
+		if _, err := os.Stat(trashAbs); err != nil {
+			continue
+		}
+		if _, err := os.Stat(origPath); err == nil {
+			continue
+		}
+		parent := filepath.Dir(origPath)
+		if err := os.MkdirAll(parent, 0o755); err != nil {
+			continue
+		}
+		if err := s.moveFile(trashAbs, origPath); err != nil {
+			continue
+		}
+		os.Remove(infoPath)
+		restored++
+	}
+	if restored == 0 {
+		return 0, fmt.Errorf("nothing was restored")
+	}
+	return restored, nil
+}
+
+// PermanentDelete 从回收站永久删除。
+func (s *Service) PermanentDelete(trashNames []string) (int, error) {
+	root, err := s.trashDir()
+	if err != nil {
+		return 0, err
+	}
+	filesDir := filepath.Join(root, "files")
+	infoDir := filepath.Join(root, "info")
+	deleted := 0
+	for _, name := range trashNames {
+		if name == "" {
+			continue
+		}
+		if err := os.RemoveAll(filepath.Join(filesDir, name)); err == nil {
+			os.Remove(filepath.Join(infoDir, name+".trashinfo"))
+			deleted++
+		}
+	}
+	if deleted == 0 {
+		return 0, fmt.Errorf("nothing was permanently deleted")
+	}
+	return deleted, nil
 }
 
 // collectTarEntries 递归收集文件路径，供 CreateTarGz 使用。

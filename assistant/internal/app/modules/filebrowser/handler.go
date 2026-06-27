@@ -41,8 +41,16 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	r.GET("/download", h.Download)
 	r.GET("/raw", h.Raw)
 	r.POST("/upload", h.Upload)
-	r.POST("/download-tgz", h.DownloadTarGz)
 	r.GET("/download-tgz", h.DownloadTarGz)
+	r.POST("/mkdir", h.Mkdir)
+	r.POST("/touch", h.Touch)
+	r.POST("/rename", h.Rename)
+	r.POST("/move", h.Move)
+	r.POST("/copy", h.Copy)
+	r.POST("/delete", h.Delete)
+	r.GET("/trash", h.ListTrash)
+	r.POST("/trash/restore", h.RestoreTrash)
+	r.POST("/trash/delete", h.PermanentDelete)
 	r.GET("/ui", h.UI)
 	r.GET("", h.UI)
 }
@@ -102,6 +110,10 @@ var mimeMap = map[string]string{
 	".flac": "audio/flac",
 	".wav":  "audio/wav",
 	".ogg":  "audio/ogg",
+	".aac":  "audio/aac",
+	".m4a":  "audio/mp4",
+	".wma":  "audio/x-ms-wma",
+	".opus": "audio/opus",
 }
 
 // Raw godoc
@@ -271,6 +283,186 @@ func tgzFilename(paths []string) string {
 		return "download.tar.gz"
 	}
 	return base + ".tar.gz"
+}
+
+// Mkdir godoc
+// @Summary 创建目录
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{path}"
+// @Router /api/files/mkdir [post]
+func (h *Handler) Mkdir(c *gin.Context) {
+	var req struct {
+		Path string `json:"path"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	if mapErr(c, h.svc.Mkdir(req.Path)) {
+		return
+	}
+	response.Ok(c, nil)
+}
+
+// Touch godoc
+// @Summary 创建空文件（不覆盖）
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{path}"
+// @Router /api/files/touch [post]
+func (h *Handler) Touch(c *gin.Context) {
+	var req struct {
+		Path string `json:"path"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	if mapErr(c, h.svc.Touch(req.Path)) {
+		return
+	}
+	response.Ok(c, nil)
+}
+
+// Rename godoc
+// @Summary 重命名文件/目录
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{path, new_name}"
+// @Router /api/files/rename [post]
+func (h *Handler) Rename(c *gin.Context) {
+	var req struct {
+		Path    string `json:"path"`
+		NewName string `json:"new_name"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	if mapErr(c, h.svc.Rename(req.Path, req.NewName)) {
+		return
+	}
+	response.Ok(c, nil)
+}
+
+// Move godoc
+// @Summary 移动文件/目录到目标目录
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{paths, dest}"
+// @Router /api/files/move [post]
+func (h *Handler) Move(c *gin.Context) {
+	var req struct {
+		Paths []string `json:"paths"`
+		Dest  string   `json:"dest"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	count, err := h.svc.Move(req.Paths, req.Dest)
+	if mapErr(c, err) {
+		return
+	}
+	response.Ok(c, gin.H{"count": count})
+}
+
+// Copy godoc
+// @Summary 复制文件/目录到目标目录
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{paths, dest}"
+// @Router /api/files/copy [post]
+func (h *Handler) Copy(c *gin.Context) {
+	var req struct {
+		Paths []string `json:"paths"`
+		Dest  string   `json:"dest"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	count, err := h.svc.Copy(req.Paths, req.Dest)
+	if mapErr(c, err) {
+		return
+	}
+	response.Ok(c, gin.H{"count": count})
+}
+
+// Delete godoc
+// @Summary 删除文件/目录
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{paths}"
+// @Router /api/files/delete [post]
+func (h *Handler) Delete(c *gin.Context) {
+	var req struct {
+		Paths []string `json:"paths"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	count, err := h.svc.Delete(req.Paths)
+	if mapErr(c, err) {
+		return
+	}
+	response.Ok(c, gin.H{"count": count})
+}
+
+// ListTrash godoc
+// @Summary 列出回收站
+// @Tags 文件浏览
+// @Router /api/files/trash [get]
+func (h *Handler) ListTrash(c *gin.Context) {
+	entries, err := h.svc.ListTrash()
+	if mapErr(c, err) {
+		return
+	}
+	response.Ok(c, entries)
+}
+
+// RestoreTrash godoc
+// @Summary 从回收站恢复
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{trash_names}"
+// @Router /api/files/trash/restore [post]
+func (h *Handler) RestoreTrash(c *gin.Context) {
+	var req struct {
+		TrashNames []string `json:"trash_names"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	count, err := h.svc.RestoreTrash(req.TrashNames)
+	if mapErr(c, err) {
+		return
+	}
+	response.Ok(c, gin.H{"count": count})
+}
+
+// PermanentDelete godoc
+// @Summary 从回收站永久删除
+// @Tags 文件浏览
+// @Accept json
+// @Param body body object true "{trash_names}"
+// @Router /api/files/trash/delete [post]
+func (h *Handler) PermanentDelete(c *gin.Context) {
+	var req struct {
+		TrashNames []string `json:"trash_names"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Err(c, response.CodeInvalidParams, err.Error())
+		return
+	}
+	count, err := h.svc.PermanentDelete(req.TrashNames)
+	if mapErr(c, err) {
+		return
+	}
+	response.Ok(c, gin.H{"count": count})
 }
 
 // Upload godoc
