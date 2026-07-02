@@ -4,18 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
-)
-
-var (
-	ErrNoProvider         = errors.New("no available provider")
-	ErrAllProvidersFailed = errors.New("all providers failed")
 )
 
 var sharedTransport = &http.Transport{
@@ -132,7 +127,10 @@ func (s *ProxyService) selectProvider(model string) *providerState {
 func (s *ProxyService) pickBestLocked(model string) *providerState {
 	var fixed, payg []*providerState
 	for _, p := range s.providers {
-		if p.status != StatusAvailable {
+		if p.status != StatusAvailable && p.PlanType != "payg" {
+			continue
+		}
+		if p.status == StatusExhausted {
 			continue
 		}
 		if model != "" && !hasModel(p.Models, model) {
@@ -166,7 +164,14 @@ func (s *ProxyService) ProbeHigherPriority() {
 	s.mu.RLock()
 	active := s.active
 	var candidates []*providerState
-	if active != nil && active != s.providers[0] {
+	if active == nil {
+		// 全部不可用，探测所有非 available 供应商
+		for _, p := range s.providers {
+			if p.status != StatusAvailable {
+				candidates = append(candidates, p)
+			}
+		}
+	} else if active != s.providers[0] {
 		for _, p := range s.providers {
 			if p == active {
 				break
@@ -273,7 +278,10 @@ func (s *ProxyService) findNext(current *providerState, modelSpecific bool, orig
 		if p == current {
 			continue
 		}
-		if p.status != StatusAvailable {
+		if p.status != StatusAvailable && p.PlanType != "payg" {
+			continue
+		}
+		if p.status == StatusExhausted {
 			continue
 		}
 		if modelSpecific && !hasModel(p.Models, originalModel) {
@@ -300,7 +308,8 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 	}
 
 	if p == nil {
-		return nil, ErrNoProvider
+		s.NotifyActivity()
+		return nil, s.noProviderError()
 	}
 
 	for {
@@ -313,7 +322,8 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 			s.markStatus(p, StatusOffline)
 			next := s.findNext(p, modelSpecific, requestedModel)
 			if next == nil {
-				return nil, ErrAllProvidersFailed
+				s.NotifyActivity()
+				return nil, fmt.Errorf("all providers failed: %s: %v", p.Name, err)
 			}
 			p = next
 			continue
@@ -324,7 +334,7 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 			return resp, nil
 		}
 
-		io.Copy(io.Discard, resp.Body)
+		bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 8192))
 		resp.Body.Close()
 
 		if p.PlanType == "fixed" {
@@ -335,7 +345,9 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 
 		next := s.findNext(p, modelSpecific, requestedModel)
 		if next == nil {
-			return nil, &HTTPError{Code: resp.StatusCode, Message: "provider failed"}
+			s.NotifyActivity()
+			errMsg := providerErrorMessage(bodyBytes)
+			return nil, &HTTPError{Code: resp.StatusCode, Message: errMsg}
 		}
 		p = next
 	}
@@ -369,4 +381,40 @@ func hasModel(models []string, target string) bool {
 
 func logError(format string, args ...interface{}) {
 	log.Printf("[llmproxy] "+format, args...)
+}
+
+func (s *ProxyService) noProviderError() error {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	exhausted, offline := 0, 0
+	for _, p := range s.providers {
+		if p.status == StatusExhausted {
+			exhausted++
+		} else if p.status == StatusOffline && p.PlanType != "payg" {
+			offline++
+		}
+	}
+	if exhausted > 0 {
+		return fmt.Errorf("no available provider (%d exhausted, %d offline)", exhausted, offline)
+	}
+	return fmt.Errorf("no available provider (%d offline)", offline)
+}
+
+func providerErrorMessage(body []byte) string {
+	if len(body) == 0 {
+		return "provider failed"
+	}
+	var parsed map[string]interface{}
+	if err := json.Unmarshal(body, &parsed); err != nil {
+		return string(body)
+	}
+	if msg, ok := parsed["error"].(string); ok {
+		return msg
+	}
+	if errObj, ok := parsed["error"].(map[string]interface{}); ok {
+		if msg, ok := errObj["message"].(string); ok {
+			return msg
+		}
+	}
+	return string(body)
 }

@@ -374,7 +374,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/llm/status": {
+        "/api/llmproxy/status": {
             "get": {
                 "tags": [
                     "LLM代理"
@@ -391,12 +391,12 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/llm/v1/chat/completions": {
+        "/api/llmproxy/v1/chat/completions": {
             "post": {
                 "tags": [
                     "LLM代理"
                 ],
-                "summary": "聊天补全(自动路由到可用供应商)",
+                "summary": "OpenAI 格式聊天补全",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -408,7 +408,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/llm/v1/messages": {
+        "/api/llmproxy/v1/messages": {
             "post": {
                 "tags": [
                     "LLM代理"
@@ -436,7 +436,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/llm/v1/models": {
+        "/api/llmproxy/v1/models": {
             "get": {
                 "tags": [
                     "LLM代理"
@@ -453,7 +453,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/llm/v1/models/{model}": {
+        "/api/llmproxy/v1/models/{model}": {
             "get": {
                 "tags": [
                     "LLM代理"

@@ -332,7 +332,7 @@ paths:
       summary: 健康检查
       tags:
       - 健康检查
-  /api/llm/status:
+  /api/llmproxy/status:
     get:
       responses:
         "200":
@@ -343,7 +343,7 @@ paths:
       summary: 查看供应商状态
       tags:
       - LLM代理
-  /api/llm/v1/chat/completions:
+  /api/llmproxy/v1/chat/completions:
     post:
       responses:
         "200":
@@ -351,10 +351,10 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: 聊天补全(自动路由到可用供应商)
+      summary: OpenAI 格式聊天补全
       tags:
       - LLM代理
-  /api/llm/v1/messages:
+  /api/llmproxy/v1/messages:
     post:
       parameters:
       - description: Anthropic 格式请求体
@@ -372,7 +372,7 @@ paths:
       summary: Anthropic 格式聊天补全
       tags:
       - LLM代理
-  /api/llm/v1/models:
+  /api/llmproxy/v1/models:
     get:
       responses:
         "200":
@@ -383,7 +383,7 @@ paths:
       summary: 列出可用模型
       tags:
       - LLM代理
-  /api/llm/v1/models/{model}:
+  /api/llmproxy/v1/models/{model}:
     get:
       parameters:
       - description: 模型ID

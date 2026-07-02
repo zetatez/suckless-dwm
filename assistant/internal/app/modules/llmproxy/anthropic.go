@@ -102,13 +102,13 @@ func openAIToAnthropic(body []byte) ([]byte, error) {
 	return json.Marshal(ares)
 }
 
-// AnthropicMessages godoc
+// anthropicMessages godoc
 // @Summary Anthropic 格式聊天补全
 // @Tags LLM代理
 // @Param request body anthropicReq true "Anthropic 格式请求体"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/llm/v1/messages [post]
-func (h *Handler) AnthropicMessages(c *gin.Context) {
+// @Router /api/llmproxy/v1/messages [post]
+func (h *Handler) anthropicMessages(c *gin.Context) {
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		writeAnthropicError(c, http.StatusBadRequest, "invalid_request_error", "read body failed")
@@ -133,6 +133,9 @@ func (h *Handler) AnthropicMessages(c *gin.Context) {
 
 	var reqMap map[string]interface{}
 	json.Unmarshal(oaiBody, &reqMap)
+	normalizeTools(reqMap)
+	normalizeMessages(reqMap)
+	normalizeContent(reqMap)
 
 	resp, err := h.svc.Forward(c.Request.Context(), reqMap, areq.Model)
 	if err != nil {

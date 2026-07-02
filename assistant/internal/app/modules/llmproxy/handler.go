@@ -3,8 +3,10 @@ package llmproxy
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"assistant/pkg/llm"
@@ -21,11 +23,19 @@ func NewHandler(svc *llm.ProxyService) *Handler {
 }
 
 func (h *Handler) Register(r *gin.RouterGroup) {
-	r.POST("/v1/chat/completions", h.ChatCompletions)
-	r.POST("/v1/messages", h.AnthropicMessages)
+	// OpenAI Chat Completions
+	r.POST("/v1/chat/completions", h.chatCompletions)
+
+	// OpenAI Responses API
+	r.POST("/v1/responses", h.responsesHandler)
+	r.POST("/responses", h.responsesHandlerLegacy)
+
 	r.GET("/v1/models", h.ListModels)
 	r.GET("/v1/models/:model", h.GetModel)
 	r.GET("/status", h.Status)
+
+	// Anthropic
+	r.POST("/v1/messages", h.anthropicMessages)
 }
 
 // GetModel godoc
@@ -33,7 +43,7 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 // @Tags LLM代理
 // @Param model path string true "模型ID"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/llm/v1/models/{model} [get]
+// @Router /api/llmproxy/v1/models/{model} [get]
 func (h *Handler) GetModel(c *gin.Context) {
 	cfg := h.svc.Config()
 	modelID := c.Param("model")
@@ -59,7 +69,7 @@ func (h *Handler) GetModel(c *gin.Context) {
 // @Summary 列出可用模型
 // @Tags LLM代理
 // @Success 200 {object} map[string]interface{}
-// @Router /api/llm/v1/models [get]
+// @Router /api/llmproxy/v1/models [get]
 func (h *Handler) ListModels(c *gin.Context) {
 	cfg := h.svc.Config()
 	now := time.Now().Unix()
@@ -81,12 +91,12 @@ func (h *Handler) ListModels(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"object": "list", "data": data})
 }
 
-// ChatCompletions godoc
-// @Summary 聊天补全(自动路由到可用供应商)
+// openaiResponse godoc
+// @Summary OpenAI 格式聊天补全
 // @Tags LLM代理
 // @Success 200 {object} map[string]interface{}
-// @Router /api/llm/v1/chat/completions [post]
-func (h *Handler) ChatCompletions(c *gin.Context) {
+// @Router /api/llmproxy/v1/chat/completions [post]
+func (h *Handler) chatCompletions(c *gin.Context) {
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
@@ -98,6 +108,9 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
 		return
 	}
+
+	normalizeTools(reqMap)
+	normalizeRoles(reqMap)
 
 	model, _ := reqMap["model"].(string)
 	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
@@ -119,6 +132,136 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 	}
 }
 
+// responsesHandler handles OpenAI Responses API format (/v1/responses, /responses)
+func (h *Handler) responsesHandler(c *gin.Context) {
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
+		return
+	}
+
+	var reqMap map[string]interface{}
+	if err := json.Unmarshal(body, &reqMap); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
+		return
+	}
+
+	normalizeTools(reqMap)
+	normalizeMessages(reqMap)
+	normalizeRoles(reqMap)
+	normalizeContent(reqMap)
+
+	model, _ := reqMap["model"].(string)
+	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
+	if err != nil {
+		h.writeError(c, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	stream, _ := reqMap["stream"].(bool)
+	if stream {
+		h.streamResponses(c, resp)
+	} else {
+		raw, _ := io.ReadAll(resp.Body)
+		c.Data(http.StatusOK, "application/json", oaiToResponses(raw))
+	}
+}
+
+// responsesHandlerLegacy handles Codex CLI's /responses endpoint
+func (h *Handler) responsesHandlerLegacy(c *gin.Context) {
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
+		return
+	}
+
+	var reqMap map[string]interface{}
+	if err := json.Unmarshal(body, &reqMap); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
+		return
+	}
+
+	normalizeTools(reqMap)
+	normalizeMessages(reqMap)
+	normalizeRoles(reqMap)
+	normalizeContent(reqMap)
+
+	model, _ := reqMap["model"].(string)
+	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
+	if err != nil {
+		h.writeError(c, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	stream, _ := reqMap["stream"].(bool)
+	if stream {
+		h.streamResponses(c, resp)
+	} else {
+		raw, _ := io.ReadAll(resp.Body)
+		c.Data(http.StatusOK, "application/json", oaiToResponses(raw))
+	}
+}
+
+func oaiToResponses(body []byte) []byte {
+	var oai struct {
+		ID      string `json:"id"`
+		Model   string `json:"model"`
+		Created int64  `json:"created"`
+		Choices []struct {
+			Message struct {
+				Role    string `json:"role"`
+				Content string `json:"content"`
+			} `json:"message"`
+			FinishReason string `json:"finish_reason"`
+		} `json:"choices"`
+		Usage *struct {
+			PromptTokens     int `json:"prompt_tokens"`
+			CompletionTokens int `json:"completion_tokens"`
+			TotalTokens      int `json:"total_tokens"`
+		} `json:"usage"`
+	}
+	if err := json.Unmarshal(body, &oai); err != nil || len(oai.Choices) == 0 {
+		return body
+	}
+
+	stopReason := oai.Choices[0].FinishReason
+	switch stopReason {
+	case "stop":
+		stopReason = "end_turn"
+	case "length":
+		stopReason = "max_tokens"
+	default:
+		stopReason = "end_turn"
+	}
+
+	resp := map[string]interface{}{
+		"id":      "resp_" + oai.ID,
+		"object":  "response",
+		"created": oai.Created,
+		"model":   oai.Model,
+		"output": []map[string]interface{}{
+			{
+				"type": "message",
+				"role": oai.Choices[0].Message.Role,
+				"content": []map[string]string{
+					{"type": "output_text", "text": oai.Choices[0].Message.Content},
+				},
+			},
+		},
+		"stop_reason": stopReason,
+	}
+	if oai.Usage != nil {
+		resp["usage"] = map[string]int{
+			"input_tokens":  oai.Usage.PromptTokens,
+			"output_tokens": oai.Usage.CompletionTokens,
+		}
+	}
+	result, _ := json.Marshal(resp)
+	return result
+}
+
 func (h *Handler) streamOpenAI(c *gin.Context, resp *http.Response) {
 	flusher, ok := c.Writer.(http.Flusher)
 	if !ok {
@@ -126,12 +269,10 @@ func (h *Handler) streamOpenAI(c *gin.Context, resp *http.Response) {
 		c.Data(http.StatusOK, resp.Header.Get("Content-Type"), raw)
 		return
 	}
-
 	for k, v := range resp.Header {
 		c.Header(k, v[0])
 	}
 	c.Status(http.StatusOK)
-
 	buf := make([]byte, 4096)
 	for {
 		n, err := resp.Body.Read(buf)
@@ -140,6 +281,105 @@ func (h *Handler) streamOpenAI(c *gin.Context, resp *http.Response) {
 			flusher.Flush()
 		}
 		if err != nil {
+			break
+		}
+	}
+}
+
+// streamResponses streams OpenAI Chat Completions SSE as Responses API SSE
+func (h *Handler) streamResponses(c *gin.Context, resp *http.Response) {
+	flusher, ok := c.Writer.(http.Flusher)
+	if !ok {
+		raw, _ := io.ReadAll(resp.Body)
+		c.Data(http.StatusOK, "application/json", oaiToResponses(raw))
+		return
+	}
+
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Status(http.StatusOK)
+
+	var itemID string
+	var outputIndex int
+	var contentBuf strings.Builder
+
+	scanner := NewSSEScanner(resp.Body)
+	for {
+		_, data, err := scanner.Next()
+		if err != nil {
+			break
+		}
+
+		var chunk struct {
+			Choices []struct {
+				Delta struct {
+					Role    string `json:"role"`
+					Content string `json:"content"`
+				} `json:"delta"`
+				FinishReason string `json:"finish_reason"`
+			} `json:"choices"`
+		}
+		if err := json.Unmarshal([]byte(data), &chunk); err != nil || len(chunk.Choices) == 0 {
+			continue
+		}
+		delta := chunk.Choices[0].Delta
+		fr := chunk.Choices[0].FinishReason
+
+		if delta.Role == "assistant" && itemID == "" {
+			itemID = "item_" + fmt.Sprintf("%x", time.Now().UnixNano())
+			added, _ := json.Marshal(map[string]interface{}{
+				"type": "response.output_item.added",
+				"item": map[string]interface{}{
+					"id":      itemID,
+					"type":    "message",
+					"role":    "assistant",
+					"content": []interface{}{},
+				},
+				"output_index": outputIndex,
+			})
+			fmt.Fprintf(c.Writer, "event: response.output_item.added\ndata: %s\n\n", added)
+			flusher.Flush()
+		}
+
+		if delta.Content != "" {
+			contentBuf.WriteString(delta.Content)
+			textDelta, _ := json.Marshal(map[string]interface{}{
+				"type":         "response.output_text.delta",
+				"delta":        delta.Content,
+				"item_id":      itemID,
+				"output_index": outputIndex,
+			})
+			fmt.Fprintf(c.Writer, "event: response.output_text.delta\ndata: %s\n\n", textDelta)
+			flusher.Flush()
+		}
+
+		if fr != "" {
+			done, _ := json.Marshal(map[string]interface{}{
+				"type": "response.output_item.done",
+				"item": map[string]interface{}{
+					"id":   itemID,
+					"type": "message",
+					"role": "assistant",
+					"content": []map[string]string{
+						{"type": "output_text", "text": contentBuf.String()},
+					},
+				},
+				"output_index": outputIndex,
+			})
+			fmt.Fprintf(c.Writer, "event: response.output_item.done\ndata: %s\n\n", done)
+
+			completed, _ := json.Marshal(map[string]interface{}{
+				"type": "response.completed",
+				"response": map[string]interface{}{
+					"id":     "resp_" + fmt.Sprintf("%x", time.Now().UnixNano()),
+					"object": "response",
+					"status": "completed",
+					"output": []interface{}{},
+				},
+			})
+			fmt.Fprintf(c.Writer, "event: response.completed\ndata: %s\n\n", completed)
+			flusher.Flush()
 			break
 		}
 	}
@@ -158,7 +398,7 @@ func (h *Handler) writeError(c *gin.Context, err error) {
 // @Summary 查看供应商状态
 // @Tags LLM代理
 // @Success 200 {object} map[string]interface{}
-// @Router /api/llm/status [get]
+// @Router /api/llmproxy/status [get]
 func (h *Handler) Status(c *gin.Context) {
 	active := h.svc.ActiveProvider()
 	resp := map[string]interface{}{
@@ -177,4 +417,125 @@ func hasModel(models []string, target string) bool {
 		}
 	}
 	return false
+}
+
+// normalizeTools 将 tools 数组转换为 ark 兼容格式（只保留 function 类型）
+func normalizeTools(req map[string]interface{}) {
+	tools, ok := req["tools"].([]interface{})
+	if !ok {
+		return
+	}
+	var filtered []interface{}
+	for _, t := range tools {
+		tool, ok := t.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		tt, _ := tool["type"].(string)
+		if tt != "" && tt != "function" {
+			continue
+		}
+		if _, hasFunc := tool["function"]; hasFunc {
+			filtered = append(filtered, tool)
+			continue
+		}
+		name, _ := tool["name"].(string)
+		_, hasParams := tool["parameters"]
+		if name == "" && !hasParams {
+			continue
+		}
+		fn := map[string]interface{}{}
+		if name != "" {
+			fn["name"] = name
+		}
+		if desc, _ := tool["description"].(string); desc != "" {
+			fn["description"] = desc
+		}
+		if hasParams {
+			fn["parameters"] = tool["parameters"]
+		}
+		tool["type"] = "function"
+		tool["function"] = fn
+		delete(tool, "name")
+		delete(tool, "description")
+		delete(tool, "parameters")
+		filtered = append(filtered, tool)
+	}
+	if len(filtered) == 0 {
+		delete(req, "tools")
+	} else {
+		req["tools"] = filtered
+	}
+}
+
+// normalizeMessages 将 Responses API 的 input 字段映射为 messages 字段
+func normalizeMessages(req map[string]interface{}) {
+	if _, ok := req["messages"]; ok {
+		return
+	}
+	input, ok := req["input"]
+	if !ok {
+		return
+	}
+	switch v := input.(type) {
+	case string:
+		req["messages"] = []map[string]interface{}{
+			{"role": "user", "content": v},
+		}
+	case []interface{}:
+		req["messages"] = v
+	}
+	delete(req, "input")
+}
+
+// normalizeContent 将 Responses API 的消息内容块类型转为 Chat Completions 兼容格式
+func normalizeContent(req map[string]interface{}) {
+	msgs, ok := req["messages"].([]interface{})
+	if !ok {
+		return
+	}
+	for _, m := range msgs {
+		msg, ok := m.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		content, ok := msg["content"].([]interface{})
+		if !ok {
+			continue
+		}
+		for _, c := range content {
+			block, ok := c.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			t, _ := block["type"].(string)
+			switch t {
+			case "input_text":
+				block["type"] = "text"
+			case "input_image":
+				block["type"] = "image_url"
+			case "input_file":
+				delete(block, "type")
+			}
+		}
+	}
+}
+
+// normalizeRoles 将 Responses API 的角色名转换为 Chat Completions 兼容格式
+func normalizeRoles(req map[string]interface{}) {
+	msgs, ok := req["messages"].([]interface{})
+	if !ok {
+		return
+	}
+	for _, m := range msgs {
+		msg, ok := m.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		role, _ := msg["role"].(string)
+		switch role {
+		case "developer":
+			msg["role"] = "system"
+		}
+	}
 }

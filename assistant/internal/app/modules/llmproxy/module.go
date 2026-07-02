@@ -23,7 +23,7 @@ func NewModule() module.Module {
 	}
 }
 
-func (m *Module) Name() string { return "llm" }
+func (m *Module) Name() string { return "llmproxy" }
 
 func (m *Module) Register(r *gin.RouterGroup) {
 	if m.handler == nil {
