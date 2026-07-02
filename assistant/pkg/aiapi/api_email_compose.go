@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 	"assistant/pkg/aiapi/prompts"
 )
 
@@ -13,7 +13,7 @@ type EmailComposer struct {
 	engine *Engine
 }
 
-func NewEmailComposer(client llmproxy.Client) *EmailComposer {
+func NewEmailComposer(client llm.Client) *EmailComposer {
 	return &EmailComposer{engine: NewEngine(client)}
 }
 

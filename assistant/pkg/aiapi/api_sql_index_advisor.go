@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 )
 
 type SQLIndexAdvisor struct {
 	engine *Engine
 }
 
-func NewSQLIndexAdvisor(client llmproxy.Client) *SQLIndexAdvisor {
+func NewSQLIndexAdvisor(client llm.Client) *SQLIndexAdvisor {
 	return &SQLIndexAdvisor{engine: NewEngine(client)}
 }
 

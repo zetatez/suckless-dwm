@@ -3,7 +3,7 @@ package aiapi
 import (
 	"context"
 
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 	"assistant/pkg/aiapi/prompts"
 )
 
@@ -11,7 +11,7 @@ type MonthlyReporter struct {
 	engine *Engine
 }
 
-func NewMonthlyReporter(client llmproxy.Client) *MonthlyReporter {
+func NewMonthlyReporter(client llm.Client) *MonthlyReporter {
 	return &MonthlyReporter{engine: NewEngine(client)}
 }
 

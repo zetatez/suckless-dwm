@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 )
 
 type ReportType string
@@ -36,10 +36,10 @@ type ReportResult struct {
 }
 
 type Reporter struct {
-	client llmproxy.Client
+	client llm.Client
 }
 
-func NewReporter(client llmproxy.Client) *Reporter {
+func NewReporter(client llm.Client) *Reporter {
 	return &Reporter{client: client}
 }
 

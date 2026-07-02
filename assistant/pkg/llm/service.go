@@ -1,4 +1,4 @@
-package llmproxy
+package llm
 
 import (
 	"bytes"
@@ -55,7 +55,7 @@ type providerState struct {
 	status ProviderStatus
 }
 
-type Service struct {
+type ProxyService struct {
 	config       Config
 	mu           sync.RWMutex
 	providers    []*providerState
@@ -66,12 +66,12 @@ type Service struct {
 	probeRunning bool
 }
 
-func NewService(cfg Config) *Service {
+func NewProxyService(cfg Config) *ProxyService {
 	timeout := 5 * time.Minute
 	if cfg.Timeout > 0 {
 		timeout = time.Duration(cfg.Timeout) * time.Second
 	}
-	s := &Service{
+	s := &ProxyService{
 		config: cfg,
 		httpClient: &http.Client{
 			Timeout:   timeout,
@@ -87,15 +87,15 @@ func NewService(cfg Config) *Service {
 	return s
 }
 
-func (s *Service) Config() Config { return s.config }
+func (s *ProxyService) Config() Config { return s.config }
 
-func (s *Service) HasProviders() bool {
+func (s *ProxyService) HasProviders() bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return len(s.providers) > 0
 }
 
-func (s *Service) ActiveProvider() *ProviderConfig {
+func (s *ProxyService) ActiveProvider() *ProviderConfig {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	if s.active == nil {
@@ -104,7 +104,7 @@ func (s *Service) ActiveProvider() *ProviderConfig {
 	return &s.active.ProviderConfig
 }
 
-func (s *Service) ProviderStatuses() []map[string]interface{} {
+func (s *ProxyService) ProviderStatuses() []map[string]interface{} {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	var res []map[string]interface{}
@@ -119,7 +119,7 @@ func (s *Service) ProviderStatuses() []map[string]interface{} {
 	return res
 }
 
-func (s *Service) selectProvider(model string) *providerState {
+func (s *ProxyService) selectProvider(model string) *providerState {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	p := s.pickBestLocked(model)
@@ -129,7 +129,7 @@ func (s *Service) selectProvider(model string) *providerState {
 	return p
 }
 
-func (s *Service) pickBestLocked(model string) *providerState {
+func (s *ProxyService) pickBestLocked(model string) *providerState {
 	var fixed, payg []*providerState
 	for _, p := range s.providers {
 		if p.status != StatusAvailable {
@@ -153,7 +153,7 @@ func (s *Service) pickBestLocked(model string) *providerState {
 	return nil
 }
 
-func (s *Service) markStatus(p *providerState, status ProviderStatus) {
+func (s *ProxyService) markStatus(p *providerState, status ProviderStatus) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	p.status = status
@@ -162,7 +162,7 @@ func (s *Service) markStatus(p *providerState, status ProviderStatus) {
 	}
 }
 
-func (s *Service) ProbeHigherPriority() {
+func (s *ProxyService) ProbeHigherPriority() {
 	s.mu.RLock()
 	active := s.active
 	var candidates []*providerState
@@ -220,7 +220,7 @@ func probeProvider(p *providerState, client *http.Client) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-func (s *Service) NotifyActivity() {
+func (s *ProxyService) NotifyActivity() {
 	s.probeMu.Lock()
 	s.lastActivity = time.Now()
 	if !s.probeRunning {
@@ -232,7 +232,7 @@ func (s *Service) NotifyActivity() {
 	}
 }
 
-func (s *Service) probeLoop() {
+func (s *ProxyService) probeLoop() {
 	interval := 30 * time.Second
 	if s.config.ProbeInterval > 0 {
 		interval = time.Duration(s.config.ProbeInterval) * time.Second
@@ -253,7 +253,7 @@ func (s *Service) probeLoop() {
 	}
 }
 
-func (s *Service) ForwardChat(ctx context.Context, cfg ProviderConfig, bodyReader io.ReadCloser) (*http.Response, error) {
+func (s *ProxyService) ForwardChat(ctx context.Context, cfg ProviderConfig, bodyReader io.ReadCloser) (*http.Response, error) {
 	targetURL := strings.TrimRight(cfg.BaseURL, "/") + "/chat/completions"
 	req, err := http.NewRequestWithContext(ctx, "POST", targetURL, bodyReader)
 	if err != nil {
@@ -266,7 +266,7 @@ func (s *Service) ForwardChat(ctx context.Context, cfg ProviderConfig, bodyReade
 	return s.httpClient.Do(req)
 }
 
-func (s *Service) findNext(current *providerState, modelSpecific bool, originalModel string) *providerState {
+func (s *ProxyService) findNext(current *providerState, modelSpecific bool, originalModel string) *providerState {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	for _, p := range s.providers {
@@ -284,7 +284,7 @@ func (s *Service) findNext(current *providerState, modelSpecific bool, originalM
 	return nil
 }
 
-func (s *Service) Forward(ctx context.Context, reqMap map[string]interface{}, requestedModel string) (*http.Response, error) {
+func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{}, requestedModel string) (*http.Response, error) {
 	var p *providerState
 	var modelSpecific bool
 

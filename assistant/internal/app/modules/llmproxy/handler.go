@@ -7,16 +7,16 @@ import (
 	"net/http"
 	"time"
 
-	llmproxysvc "assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	svc *Service
+	svc *llm.ProxyService
 }
 
-func NewHandler(svc *Service) *Handler {
+func NewHandler(svc *llm.ProxyService) *Handler {
 	return &Handler{svc: svc}
 }
 
@@ -146,7 +146,7 @@ func (h *Handler) streamOpenAI(c *gin.Context, resp *http.Response) {
 }
 
 func (h *Handler) writeError(c *gin.Context, err error) {
-	var httpErr *llmproxysvc.HTTPError
+	var httpErr *llm.HTTPError
 	if errors.As(err, &httpErr) {
 		c.JSON(httpErr.Code, gin.H{"error": httpErr.Message})
 		return

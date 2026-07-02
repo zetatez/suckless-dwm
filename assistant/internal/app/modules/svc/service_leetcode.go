@@ -12,7 +12,7 @@ import (
 
 	"assistant/internal/bootstrap/psl"
 	"assistant/pkg/dwmblocknotify"
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 )
 
 var leetCodeSystemPrompt = `你是顶级算法工程师，正在参加技术面试。解决用户给出的算法题，用 Golang 实现。
@@ -83,7 +83,7 @@ func (s *Service) SolveLeetCode() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
-	resp, err := llmproxy.Complete(ctx, client, text, llmproxy.WithSystemPrompt(leetCodeSystemPrompt), llmproxy.WithTemperature(0.3))
+	resp, err := llm.Complete(ctx, client, text, llm.WithSystemPrompt(leetCodeSystemPrompt), llm.WithTemperature(0.3))
 	if err != nil {
 		return fmt.Errorf("LLM request: %w", err)
 	}
@@ -127,10 +127,10 @@ func (s *Service) SolveLeetCodeScreenshot() error {
 
 	prompt := "请识别截图中显示的算法题，用 Golang 实现最优解。"
 
-	resp, err := llmproxy.Complete(ctx, client, prompt,
-		llmproxy.WithSystemPrompt(leetCodeSystemPrompt),
-		llmproxy.WithTemperature(0.3),
-		llmproxy.WithImageBase64(imgBase64),
+	resp, err := llm.Complete(ctx, client, prompt,
+		llm.WithSystemPrompt(leetCodeSystemPrompt),
+		llm.WithTemperature(0.3),
+		llm.WithImageBase64(imgBase64),
 	)
 	if err != nil {
 		return fmt.Errorf("LLM request: %w", err)

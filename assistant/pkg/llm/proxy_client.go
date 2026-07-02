@@ -1,4 +1,4 @@
-package llmproxy
+package llm
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 )
 
 type ProxyClient struct {
-	svc *Service
+	svc *ProxyService
 }
 
-func NewProxyClient(svc *Service) *ProxyClient {
+func NewProxyClient(svc *ProxyService) *ProxyClient {
 	return &ProxyClient{svc: svc}
 }
 

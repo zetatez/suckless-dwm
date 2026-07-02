@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	llmproxysvc "assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -136,7 +136,7 @@ func (h *Handler) AnthropicMessages(c *gin.Context) {
 
 	resp, err := h.svc.Forward(c.Request.Context(), reqMap, areq.Model)
 	if err != nil {
-		var httpErr *llmproxysvc.HTTPError
+		var httpErr *llm.HTTPError
 		if errors.As(err, &httpErr) {
 			writeAnthropicError(c, httpErr.Code, "api_error", httpErr.Message)
 		} else {

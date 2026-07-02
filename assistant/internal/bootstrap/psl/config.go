@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 	"assistant/pkg/xlog"
 
 	"github.com/spf13/viper"
@@ -62,7 +62,7 @@ type Config struct {
 	App         AppConfig         `mapstructure:"app"`
 	Auth        AuthConfig        `mapstructure:"auth"`
 	Log         xlog.LogConfig    `mapstructure:"log"`
-	LLMProxy    llmproxy.Config   `mapstructure:"llm_proxy"`
+	LLMProxy    llm.Config        `mapstructure:"llm_proxy"`
 	Svc         SvcConfig         `mapstructure:"svc"`
 	Channels    ChannelsConfig    `mapstructure:"channels"`
 	Background  BackgroundConfig  `mapstructure:"background"`

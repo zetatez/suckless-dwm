@@ -5,7 +5,7 @@ import (
 
 	"assistant/internal/app/module"
 	"assistant/internal/bootstrap/psl"
-
+	"assistant/pkg/llm"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +19,7 @@ func NewModule() module.Module {
 		return &Module{}
 	}
 	return &Module{
-		handler: NewHandler(NewService()),
+		handler: NewHandler(llm.NewProxyService(cfg)),
 	}
 }
 

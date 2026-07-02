@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"assistant/pkg/llmproxy"
+	"assistant/pkg/llm"
 	"assistant/pkg/utils"
 )
 
 type Engine struct {
-	client llmproxy.Client
+	client llm.Client
 }
 
-func NewEngine(client llmproxy.Client) *Engine {
+func NewEngine(client llm.Client) *Engine {
 	return &Engine{client: client}
 }
 
@@ -25,7 +25,7 @@ func CompleteJSON[T any](
 	temperature float32,
 	maxTokens int,
 ) (*T, error) {
-	resp, err := llmproxy.Complete(ctx, e.client, prompt, llmproxy.WithSystemPrompt(systemPrompt), llmproxy.WithTemperature(temperature), llmproxy.WithMaxTokens(maxTokens))
+	resp, err := llm.Complete(ctx, e.client, prompt, llm.WithSystemPrompt(systemPrompt), llm.WithTemperature(temperature), llm.WithMaxTokens(maxTokens))
 	if err != nil {
 		return nil, err
 	}
