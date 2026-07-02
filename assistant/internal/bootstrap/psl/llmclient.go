@@ -8,21 +8,21 @@ import (
 )
 
 var (
-	proxySvc  *llmproxy.Service
-	llmClient llmproxy.Client
-	onceLLM   sync.Once
+	llmProxySvc   *llmproxy.Service
+	llmClient     llmproxy.Client
+	onceLLMClient sync.Once
 )
 
-func GetProxyService() *llmproxy.Service { return proxySvc }
+func GetProxyService() *llmproxy.Service { return llmProxySvc }
 
 func GetLLMClient() llmproxy.Client { return llmClient }
 
 func InitLLMClient() error {
-	onceLLM.Do(func() {
+	onceLLMClient.Do(func() {
 		cfg := GetConfig().LLMProxy
-		proxySvc = llmproxy.NewService(cfg)
-		if proxySvc.HasProviders() {
-			llmClient = llmproxy.NewProxyClient(proxySvc)
+		llmProxySvc = llmproxy.NewService(cfg)
+		if llmProxySvc.HasProviders() {
+			llmClient = llmproxy.NewProxyClient(llmProxySvc)
 		}
 	})
 	return nil
@@ -31,6 +31,6 @@ func InitLLMClient() error {
 func RegisterCleanupLLM() {
 	RegisterCleanup(func(ctx context.Context) {
 		llmClient = nil
-		proxySvc = nil
+		llmProxySvc = nil
 	})
 }

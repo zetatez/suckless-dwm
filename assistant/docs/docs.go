@@ -374,20 +374,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/llm/status": {
+            "get": {
+                "tags": [
+                    "LLM代理"
+                ],
+                "summary": "查看供应商状态",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/llm/v1/chat/completions": {
             "post": {
                 "tags": [
                     "LLM代理"
                 ],
                 "summary": "聊天补全(自动路由到可用供应商)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/llm/v1/messages": {
+            "post": {
+                "tags": [
+                    "LLM代理"
+                ],
+                "summary": "Anthropic 格式聊天补全",
                 "parameters": [
                     {
-                        "description": "请求体",
+                        "description": "Anthropic 格式请求体",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/llmproxy.anthropicReq"
                         }
                     }
                 ],
@@ -1611,6 +1645,40 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "llmproxy.anthropicMsg": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "llmproxy.anthropicReq": {
+            "type": "object",
+            "properties": {
+                "max_tokens": {
+                    "type": "integer"
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/llmproxy.anthropicMsg"
+                    }
+                },
+                "model": {
+                    "type": "string"
+                },
+                "stream": {
+                    "type": "boolean"
+                },
+                "system": {
+                    "type": "string"
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {

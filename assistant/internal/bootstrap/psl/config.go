@@ -130,14 +130,8 @@ func (c *Config) applyDefaults() {
 	if c.App.Interface == "" {
 		c.App.Interface = detectDefaultInterface()
 	}
-	if c.LLMProxy.ProbeInterval == 0 {
-		c.LLMProxy.ProbeInterval = 30
-	}
 	if c.LLMProxy.MiddleModel == "" {
 		c.LLMProxy.MiddleModel = "assistant"
-	}
-	if c.LLMProxy.Timeout == 0 {
-		c.LLMProxy.Timeout = 300
 	}
 	if c.Svc.PrimaryMonitor == "" {
 		c.Svc.PrimaryMonitor = "eDP-1"

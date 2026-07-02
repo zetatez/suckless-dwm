@@ -2,25 +2,27 @@ package llmproxy
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"time"
 
-	"assistant/pkg/llmproxy"
+	llmproxysvc "assistant/pkg/llmproxy"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	svc *llmproxy.Service
+	svc *Service
 }
 
-func NewHandler(svc *llmproxy.Service) *Handler {
+func NewHandler(svc *Service) *Handler {
 	return &Handler{svc: svc}
 }
 
 func (h *Handler) Register(r *gin.RouterGroup) {
 	r.POST("/v1/chat/completions", h.ChatCompletions)
+	r.POST("/v1/messages", h.AnthropicMessages)
 	r.GET("/v1/models", h.ListModels)
 	r.GET("/v1/models/:model", h.GetModel)
 	r.GET("/status", h.Status)
@@ -79,73 +81,56 @@ func (h *Handler) ListModels(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"object": "list", "data": data})
 }
 
-func copyHeaders(c *gin.Context, h http.Header) {
-	for k, v := range h {
-		for _, val := range v {
-			c.Writer.Header().Add(k, val)
-		}
-	}
-}
-
 // ChatCompletions godoc
 // @Summary 聊天补全(自动路由到可用供应商)
 // @Tags LLM代理
-// @Param request body object true "请求体"
 // @Success 200 {object} map[string]interface{}
 // @Router /api/llm/v1/chat/completions [post]
 func (h *Handler) ChatCompletions(c *gin.Context) {
-	rawBody, err := io.ReadAll(c.Request.Body)
+	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
 		return
 	}
 
 	var reqMap map[string]interface{}
-	if err := json.Unmarshal(rawBody, &reqMap); err != nil {
+	if err := json.Unmarshal(body, &reqMap); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
 		return
 	}
 
-	requestedModel, _ := reqMap["model"].(string)
-	reqStream, _ := reqMap["stream"].(bool)
-
-	resp, err := h.svc.Forward(c.Request.Context(), reqMap, requestedModel)
+	model, _ := reqMap["model"].(string)
+	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
 	if err != nil {
-		if err == llmproxy.ErrNoProvider {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "no available provider"})
-			return
-		}
-		if err == llmproxy.ErrAllProvidersFailed {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "all providers failed"})
-			return
-		}
-		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		h.writeError(c, err)
 		return
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		copyHeaders(c, resp.Header)
+	stream, _ := reqMap["stream"].(bool)
+	if stream {
+		h.streamOpenAI(c, resp)
+	} else {
 		raw, _ := io.ReadAll(resp.Body)
-		c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), raw)
-		return
-	}
-
-	copyHeaders(c, resp.Header)
-
-	if !reqStream {
-		raw, _ := io.ReadAll(resp.Body)
+		for k, v := range resp.Header {
+			c.Header(k, v[0])
+		}
 		c.Data(http.StatusOK, resp.Header.Get("Content-Type"), raw)
-		return
 	}
+}
 
-	c.Status(http.StatusOK)
+func (h *Handler) streamOpenAI(c *gin.Context, resp *http.Response) {
 	flusher, ok := c.Writer.(http.Flusher)
 	if !ok {
 		raw, _ := io.ReadAll(resp.Body)
 		c.Data(http.StatusOK, resp.Header.Get("Content-Type"), raw)
 		return
 	}
+
+	for k, v := range resp.Header {
+		c.Header(k, v[0])
+	}
+	c.Status(http.StatusOK)
 
 	buf := make([]byte, 4096)
 	for {
@@ -160,6 +145,20 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 	}
 }
 
+func (h *Handler) writeError(c *gin.Context, err error) {
+	var httpErr *llmproxysvc.HTTPError
+	if errors.As(err, &httpErr) {
+		c.JSON(httpErr.Code, gin.H{"error": httpErr.Message})
+		return
+	}
+	c.JSON(http.StatusServiceUnavailable, gin.H{"error": err.Error()})
+}
+
+// Status godoc
+// @Summary 查看供应商状态
+// @Tags LLM代理
+// @Success 200 {object} map[string]interface{}
+// @Router /api/llm/status [get]
 func (h *Handler) Status(c *gin.Context) {
 	active := h.svc.ActiveProvider()
 	resp := map[string]interface{}{
