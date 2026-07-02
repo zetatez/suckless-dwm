@@ -5,6 +5,7 @@ import (
 
 	"assistant/internal/app/module"
 	"assistant/internal/bootstrap/psl"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,8 +37,6 @@ func (m *Module) Register(r *gin.RouterGroup) {
 	}
 	m.handler.Register(r)
 }
-
-func (m *Module) RegisterUI(r *gin.RouterGroup) {}
 
 func (m *Module) Middleware() []gin.HandlerFunc {
 	cfg := psl.GetConfig().LLMProxy

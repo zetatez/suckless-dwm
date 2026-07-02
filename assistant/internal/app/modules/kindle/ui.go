@@ -30,30 +30,6 @@ func renderUI(svc *Service, w http.ResponseWriter) error {
 		date = date + "  ·  " + weather
 	}
 
-	tmpl, err := template.New("ui").Parse(uiHTML)
-	if err != nil {
-		return err
-	}
-
-	data := uiData{
-		Clock:    clock,
-		Date:     date,
-		News:     template.HTML(svc.BuildNewsHTML()),
-		Calendar: template.HTML(svc.BuildCalendar(now)),
-		Market:   template.HTML(svc.MarketChart()),
-	}
-	return tmpl.Execute(w, data)
-}
-
-func renderContent(svc *Service, w http.ResponseWriter) error {
-	now := time.Now()
-	clock := now.Format("15:04")
-	date := now.Format("2006年1月2日  Monday")
-	weather := svc.FetchWeather()
-	if weather != "" {
-		date = date + "  ·  " + weather
-	}
-
 	tmpl, err := template.New("content").Parse(contentHTML)
 	if err != nil {
 		return err

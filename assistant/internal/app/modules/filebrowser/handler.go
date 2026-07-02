@@ -35,24 +35,21 @@ type Handler struct {
 func NewHandler(svc *Service) *Handler { return &Handler{svc: svc} }
 
 func (h *Handler) Register(r *gin.RouterGroup) {
-	r.GET("/list", h.List)
+	r.GET("", func(c *gin.Context) { renderUI(c.Writer) })
 	r.GET("/download", h.Download)
-	r.GET("/raw", h.Raw)
-	r.POST("/upload", h.Upload)
 	r.GET("/download-tgz", h.DownloadTarGz)
-	r.POST("/mkdir", h.Mkdir)
-	r.POST("/touch", h.Touch)
-	r.POST("/rename", h.Rename)
-	r.POST("/move", h.Move)
+	r.GET("/list", h.List)
+	r.GET("/raw", h.Raw)
+	r.GET("/trash", h.ListTrash)
 	r.POST("/copy", h.Copy)
 	r.POST("/delete", h.Delete)
-	r.GET("/trash", h.ListTrash)
-	r.POST("/trash/restore", h.RestoreTrash)
+	r.POST("/mkdir", h.Mkdir)
+	r.POST("/move", h.Move)
+	r.POST("/rename", h.Rename)
+	r.POST("/touch", h.Touch)
 	r.POST("/trash/delete", h.PermanentDelete)
-}
-
-func (h *Handler) RegisterUI(r *gin.RouterGroup) {
-	r.GET("", func(c *gin.Context) { renderUI(c.Writer) })
+	r.POST("/trash/restore", h.RestoreTrash)
+	r.POST("/upload", h.Upload)
 }
 
 func mapErr(c *gin.Context, err error) bool {
