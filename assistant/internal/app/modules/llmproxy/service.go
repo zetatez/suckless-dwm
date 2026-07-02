@@ -12,6 +12,13 @@ import (
 	"assistant/internal/bootstrap/psl"
 )
 
+var sharedTransport = &http.Transport{
+	MaxIdleConns:        8,
+	MaxIdleConnsPerHost: 2,
+	IdleConnTimeout:     120 * time.Second,
+	DisableCompression:  false,
+}
+
 type ProviderStatus string
 
 const (
@@ -25,7 +32,7 @@ type providerState struct {
 	status ProviderStatus
 }
 
-type Router struct {
+type Service struct {
 	mu           sync.RWMutex
 	providers    []*providerState
 	active       *providerState
@@ -35,43 +42,36 @@ type Router struct {
 	probeRunning bool
 }
 
-var sharedTransport = &http.Transport{
-	MaxIdleConns:        8,
-	MaxIdleConnsPerHost: 2,
-	IdleConnTimeout:     120 * time.Second,
-	DisableCompression:  false,
-}
-
-func NewRouter() *Router {
-	r := &Router{
+func NewService() *Service {
+	s := &Service{
 		httpClient: &http.Client{
 			Timeout:   5 * time.Minute,
 			Transport: sharedTransport,
 		},
 	}
 	for _, pc := range psl.GetConfig().LLMProxy.Providers {
-		r.providers = append(r.providers, &providerState{
+		s.providers = append(s.providers, &providerState{
 			ProviderConfig: pc,
 			status:         StatusAvailable,
 		})
 	}
-	return r
+	return s
 }
 
-func (r *Router) ActiveProvider() *psl.ProviderConfig {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	if r.active == nil {
+func (s *Service) ActiveProvider() *psl.ProviderConfig {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.active == nil {
 		return nil
 	}
-	return &r.active.ProviderConfig
+	return &s.active.ProviderConfig
 }
 
-func (r *Router) ProviderStatuses() []map[string]interface{} {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+func (s *Service) ProviderStatuses() []map[string]interface{} {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	var res []map[string]interface{}
-	for _, p := range r.providers {
+	for _, p := range s.providers {
 		m := map[string]interface{}{
 			"name":      p.Name,
 			"status":    p.status,
@@ -82,21 +82,21 @@ func (r *Router) ProviderStatuses() []map[string]interface{} {
 	return res
 }
 
-func (r *Router) selectProvider() *providerState {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	p := r.pickBestLocked()
+func (s *Service) selectProvider() *providerState {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	p := s.pickBestLocked()
 	if p != nil {
-		r.active = p
+		s.active = p
 	}
 	return p
 }
 
-func (r *Router) selectProviderByModel(model string) *providerState {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+func (s *Service) selectProviderByModel(model string) *providerState {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	var fixed, payg []*providerState
-	for _, p := range r.providers {
+	for _, p := range s.providers {
 		if p.status != StatusAvailable {
 			continue
 		}
@@ -110,19 +110,19 @@ func (r *Router) selectProviderByModel(model string) *providerState {
 		}
 	}
 	if len(fixed) > 0 {
-		r.active = fixed[0]
+		s.active = fixed[0]
 		return fixed[0]
 	}
 	if len(payg) > 0 {
-		r.active = payg[0]
+		s.active = payg[0]
 		return payg[0]
 	}
 	return nil
 }
 
-func (r *Router) pickBestLocked() *providerState {
+func (s *Service) pickBestLocked() *providerState {
 	var fixed, payg []*providerState
-	for _, p := range r.providers {
+	for _, p := range s.providers {
 		if p.status != StatusAvailable {
 			continue
 		}
@@ -141,55 +141,55 @@ func (r *Router) pickBestLocked() *providerState {
 	return nil
 }
 
-func (r *Router) MarkExhausted(p *providerState) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+func (s *Service) MarkExhausted(p *providerState) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	p.status = StatusExhausted
-	if r.active == p {
-		r.active = nil
+	if s.active == p {
+		s.active = nil
 	}
 }
 
-func (r *Router) MarkOffline(p *providerState) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+func (s *Service) MarkOffline(p *providerState) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	p.status = StatusOffline
-	if r.active == p {
-		r.active = nil
+	if s.active == p {
+		s.active = nil
 	}
 }
 
 // ProbeHigherPriority 探测当前 active 前面的高优先级供应商。
 // 如果发现可用的高优先级供应商，切换到它。由 handler 在每次请求完成后调用。
-func (r *Router) ProbeHigherPriority() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+func (s *Service) ProbeHigherPriority() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
-	active := r.active
+	active := s.active
 	if active == nil {
-		if best := r.pickBestLocked(); best != nil {
-			r.active = best
+		if best := s.pickBestLocked(); best != nil {
+			s.active = best
 		}
 		return
 	}
-	if active == r.providers[0] {
+	if active == s.providers[0] {
 		return
 	}
 
-	for _, p := range r.providers {
+	for _, p := range s.providers {
 		if p == active {
 			break
 		}
 		if p.status == StatusAvailable {
 			continue
 		}
-		if probeProvider(p, r.httpClient) {
+		if probeProvider(p, s.httpClient) {
 			p.status = StatusAvailable
 		}
 	}
 
-	if best := r.pickBestLocked(); best != nil && best != active {
-		r.active = best
+	if best := s.pickBestLocked(); best != nil && best != active {
+		s.active = best
 	}
 }
 
@@ -215,37 +215,37 @@ func probeProvider(p *providerState, client *http.Client) bool {
 }
 
 // NotifyActivity 通知路由器有请求完成，触发探测循环（如有需要）。
-func (r *Router) NotifyActivity() {
-	r.probeMu.Lock()
-	r.lastActivity = time.Now()
-	if !r.probeRunning {
-		r.probeRunning = true
-		r.probeMu.Unlock()
-		go r.probeLoop()
+func (s *Service) NotifyActivity() {
+	s.probeMu.Lock()
+	s.lastActivity = time.Now()
+	if !s.probeRunning {
+		s.probeRunning = true
+		s.probeMu.Unlock()
+		go s.probeLoop()
 	} else {
-		r.probeMu.Unlock()
+		s.probeMu.Unlock()
 	}
 }
 
-func (r *Router) probeLoop() {
+func (s *Service) probeLoop() {
 	const interval = 30 * time.Second
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		r.ProbeHigherPriority()
+		s.ProbeHigherPriority()
 
-		r.probeMu.Lock()
-		if time.Since(r.lastActivity) > interval*2 {
-			r.probeRunning = false
-			r.probeMu.Unlock()
+		s.probeMu.Lock()
+		if time.Since(s.lastActivity) > interval*2 {
+			s.probeRunning = false
+			s.probeMu.Unlock()
 			return
 		}
-		r.probeMu.Unlock()
+		s.probeMu.Unlock()
 	}
 }
 
-func (r *Router) ForwardChat(ctx context.Context, cfg psl.ProviderConfig, bodyReader io.ReadCloser) (*http.Response, error) {
+func (s *Service) ForwardChat(ctx context.Context, cfg psl.ProviderConfig, bodyReader io.ReadCloser) (*http.Response, error) {
 	targetURL := strings.TrimRight(cfg.BaseURL, "/") + "/chat/completions"
 	req, err := http.NewRequestWithContext(ctx, "POST", targetURL, bodyReader)
 	if err != nil {
@@ -255,7 +255,7 @@ func (r *Router) ForwardChat(ctx context.Context, cfg psl.ProviderConfig, bodyRe
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "assistant/1.0")
 
-	return r.httpClient.Do(req)
+	return s.httpClient.Do(req)
 }
 
 func logError(format string, args ...interface{}) {

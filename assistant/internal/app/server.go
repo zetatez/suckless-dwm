@@ -37,7 +37,7 @@ func Run(ctx context.Context) error {
 	}))
 
 	modules := []module.Module{
-		health.NewHealthModule(),
+		health.NewModule(),
 		svc.NewModule(),
 		filebrowser.NewModule(),
 		llmproxy.NewModule(),

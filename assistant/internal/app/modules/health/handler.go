@@ -6,15 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HealthHandler struct {
-	svc *HealthService
+type Handler struct {
+	svc *Service
 }
 
-func NewHealthHandler(svc *HealthService) *HealthHandler {
-	return &HealthHandler{svc: svc}
+func NewHandler(svc *Service) *Handler {
+	return &Handler{svc: svc}
 }
 
-func (h *HealthHandler) Register(r *gin.RouterGroup) {
+func (h *Handler) Register(r *gin.RouterGroup) {
 	r.GET("", h.Health)
 }
 
@@ -26,7 +26,7 @@ func (h *HealthHandler) Register(r *gin.RouterGroup) {
 // @Success 200 {object} response.Response "成功"
 // @Failure 500 {object} response.Response "服务不健康"
 // @Router /api/health [get]
-func (h *HealthHandler) Health(c *gin.Context) {
+func (h *Handler) Health(c *gin.Context) {
 	data, err := h.svc.Health()
 	if err != nil {
 		response.ErrWithInternal(c, response.CodeServerError, "health check failed", err)

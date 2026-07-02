@@ -10,21 +10,21 @@ import (
 
 type Module struct {
 	handler *Handler
-	router  *Router
+	svc     *Service
 }
 
 func NewModule() module.Module {
 	cfg := psl.GetConfig().LLMProxy
 	hasProviders := len(cfg.Providers) > 0
-	var router *Router
+	var svc *Service
 	var handler *Handler
 	if hasProviders {
-		router = NewRouter()
-		handler = NewHandler(router)
+		svc = NewService()
+		handler = NewHandler(svc)
 	}
 	return &Module{
 		handler: handler,
-		router:  router,
+		svc:     svc,
 	}
 }
 

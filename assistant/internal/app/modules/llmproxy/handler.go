@@ -12,11 +12,11 @@ import (
 )
 
 type Handler struct {
-	router *Router
+	svc *Service
 }
 
-func NewHandler(router *Router) *Handler {
-	return &Handler{router: router}
+func NewHandler(svc *Service) *Handler {
+	return &Handler{svc: svc}
 }
 
 func (h *Handler) Register(r *gin.RouterGroup) {
@@ -42,7 +42,7 @@ func (h *Handler) GetModel(c *gin.Context) {
 		})
 		return
 	}
-	for _, p := range h.router.providers {
+	for _, p := range h.svc.providers {
 		if hasModel(p.Models, modelID) {
 			c.JSON(http.StatusOK, map[string]interface{}{
 				"id": modelID, "object": "model", "created": time.Now().Unix(), "owned_by": p.Name,
@@ -65,7 +65,7 @@ func (h *Handler) ListModels(c *gin.Context) {
 	data := []map[string]interface{}{
 		{"id": cfg.MiddleModel, "object": "model", "created": now, "owned_by": "assistant"},
 	}
-	for _, p := range h.router.providers {
+	for _, p := range h.svc.providers {
 		for _, m := range p.Models {
 			if seen[m] {
 				continue
@@ -111,11 +111,11 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 	var p *providerState
 	var modelSpecific bool
 	if requestedModel == cfg.MiddleModel {
-		p = h.router.selectProvider()
+		p = h.svc.selectProvider()
 	} else {
-		p = h.router.selectProviderByModel(requestedModel)
+		p = h.svc.selectProviderByModel(requestedModel)
 		if p == nil {
-			p = h.router.selectProvider()
+			p = h.svc.selectProvider()
 		} else {
 			modelSpecific = true
 		}
@@ -145,10 +145,10 @@ func resolveModel(p *providerState, requested string) string {
 
 func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string, reqMap map[string]interface{}) {
 	for {
-		resp, err := h.router.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
+		resp, err := h.svc.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 		if err != nil {
 			logError("forward to %s failed: %v", p.Name, err)
-			h.router.MarkOffline(p)
+			h.svc.MarkOffline(p)
 			p = h.findNext(p, modelSpecific, originalModel)
 			if p == nil {
 				break
@@ -165,7 +165,7 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 			raw, _ := io.ReadAll(resp.Body)
 			resp.Body.Close()
 			c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), raw)
-			h.router.NotifyActivity()
+			h.svc.NotifyActivity()
 			return
 		}
 
@@ -173,9 +173,9 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 		resp.Body.Close()
 
 		if p.PlanType == "fixed" {
-			h.router.MarkExhausted(p)
+			h.svc.MarkExhausted(p)
 		} else {
-			h.router.MarkOffline(p)
+			h.svc.MarkOffline(p)
 		}
 
 		pNext := h.findNext(p, modelSpecific, originalModel)
@@ -192,10 +192,10 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 }
 
 func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string, reqMap map[string]interface{}) {
-	resp, err := h.router.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
+	resp, err := h.svc.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 	if err != nil {
 		logError("stream forward to %s failed: %v", p.Name, err)
-		h.router.MarkOffline(p)
+		h.svc.MarkOffline(p)
 		if next := h.findNext(p, modelSpecific, originalModel); next != nil {
 			reqMap["model"] = resolveModel(next, originalModel)
 			body, _ = json.Marshal(reqMap)
@@ -209,7 +209,7 @@ func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, 
 	if resp.StatusCode != http.StatusOK {
 		io.Copy(io.Discard, resp.Body)
 		resp.Body.Close()
-		h.router.MarkExhausted(p)
+		h.svc.MarkExhausted(p)
 		if next := h.findNext(p, modelSpecific, originalModel); next != nil {
 			reqMap["model"] = resolveModel(next, originalModel)
 			body, _ = json.Marshal(reqMap)
@@ -245,7 +245,7 @@ func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, 
 		}
 	}
 	resp.Body.Close()
-	h.router.NotifyActivity()
+	h.svc.NotifyActivity()
 
 	if c.Request.Context().Err() != nil {
 		logError("stream %s cancelled by client", p.Name)
@@ -253,9 +253,9 @@ func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, 
 }
 
 func (h *Handler) findNext(current *providerState, modelSpecific bool, originalModel string) *providerState {
-	h.router.mu.RLock()
-	defer h.router.mu.RUnlock()
-	for _, p := range h.router.providers {
+	h.svc.mu.RLock()
+	defer h.svc.mu.RUnlock()
+	for _, p := range h.svc.providers {
 		if p == current {
 			continue
 		}
@@ -271,9 +271,9 @@ func (h *Handler) findNext(current *providerState, modelSpecific bool, originalM
 }
 
 func (h *Handler) Status(c *gin.Context) {
-	active := h.router.ActiveProvider()
+	active := h.svc.ActiveProvider()
 	resp := map[string]interface{}{
-		"providers": h.router.ProviderStatuses(),
+		"providers": h.svc.ProviderStatuses(),
 	}
 	if active != nil {
 		resp["active_provider"] = active.Name

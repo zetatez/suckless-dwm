@@ -16,13 +16,13 @@ type Check struct {
 	Error    string `json:"error,omitempty"`
 }
 
-func NewHealthService() *HealthService {
-	return &HealthService{}
+func NewService() *Service {
+	return &Service{}
 }
 
-type HealthService struct{}
+type Service struct{}
 
-func (s *HealthService) Health() (*HealthStatus, error) {
+func (s *Service) Health() (*HealthStatus, error) {
 	status := &HealthStatus{
 		Status: "ok",
 		Checks: make(map[string]Check),

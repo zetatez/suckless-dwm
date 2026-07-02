@@ -6,24 +6,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HealthModule struct {
-	handler *HealthHandler
+type Module struct {
+	handler *Handler
 }
 
-func NewHealthModule() module.Module {
-	return &HealthModule{
-		handler: NewHealthHandler(NewHealthService()),
+func NewModule() module.Module {
+	return &Module{
+		handler: NewHandler(NewService()),
 	}
 }
 
-func (m *HealthModule) Name() string { return "health" }
+func (m *Module) Name() string { return "health" }
 
-func (m *HealthModule) Register(r *gin.RouterGroup) {
+func (m *Module) Register(r *gin.RouterGroup) {
 	m.handler.Register(r)
 }
 
-func (m *HealthModule) RegisterUI(r *gin.RouterGroup) {} // no UI
+func (m *Module) RegisterUI(r *gin.RouterGroup) {} // no UI
 
-func (m *HealthModule) Middleware() []gin.HandlerFunc {
+func (m *Module) Middleware() []gin.HandlerFunc {
 	return module.BaseMiddleware()
 }
