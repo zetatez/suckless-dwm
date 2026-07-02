@@ -79,16 +79,18 @@ func (h *Handler) ListModels(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"object": "list", "data": data})
 }
 
-type proxyChatRequest struct {
-	Model    string `json:"model"`
-	Messages []any  `json:"messages"`
-	Stream   bool   `json:"stream,omitempty"`
+func copyHeaders(c *gin.Context, h http.Header) {
+	for k, v := range h {
+		for _, val := range v {
+			c.Writer.Header().Add(k, val)
+		}
+	}
 }
 
 // ChatCompletions godoc
 // @Summary 聊天补全(自动路由到可用供应商)
 // @Tags LLM代理
-// @Param request body proxyChatRequest true "请求体"
+// @Param request body object true "请求体"
 // @Success 200 {object} map[string]interface{}
 // @Router /api/llm/v1/chat/completions [post]
 func (h *Handler) ChatCompletions(c *gin.Context) {
@@ -159,9 +161,7 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 		}
 
 		if resp.StatusCode == http.StatusOK {
-			for k, v := range resp.Header {
-				c.Header(k, v[0])
-			}
+			copyHeaders(c, resp.Header)
 			raw, _ := io.ReadAll(resp.Body)
 			resp.Body.Close()
 			c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), raw)
@@ -192,63 +192,70 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 }
 
 func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string, reqMap map[string]interface{}) {
-	resp, err := h.svc.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
-	if err != nil {
-		logError("stream forward to %s failed: %v", p.Name, err)
-		h.svc.MarkOffline(p)
-		if next := h.findNext(p, modelSpecific, originalModel); next != nil {
-			reqMap["model"] = resolveModel(next, originalModel)
-			body, _ = json.Marshal(reqMap)
-			h.streamResponse(c, next, body, modelSpecific, originalModel, reqMap)
-		} else {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "all providers failed"})
-		}
-		return
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		io.Copy(io.Discard, resp.Body)
-		resp.Body.Close()
-		h.svc.MarkExhausted(p)
-		if next := h.findNext(p, modelSpecific, originalModel); next != nil {
-			reqMap["model"] = resolveModel(next, originalModel)
-			body, _ = json.Marshal(reqMap)
-			h.streamResponse(c, next, body, modelSpecific, originalModel, reqMap)
-		} else {
-			c.JSON(resp.StatusCode, gin.H{"error": "provider failed", "provider": p.Name})
-		}
-		return
-	}
-
-	for k, v := range resp.Header {
-		c.Header(k, v[0])
-	}
-	c.Status(http.StatusOK)
-
-	flusher, ok := c.Writer.(http.Flusher)
-	if !ok {
-		raw, _ := io.ReadAll(resp.Body)
-		resp.Body.Close()
-		c.Data(http.StatusOK, resp.Header.Get("Content-Type"), raw)
-		return
-	}
-
-	buf := make([]byte, 4096)
 	for {
-		n, err := resp.Body.Read(buf)
-		if n > 0 {
-			c.Writer.Write(buf[:n])
-			flusher.Flush()
-		}
+		resp, err := h.svc.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 		if err != nil {
-			break
+			logError("stream forward to %s failed: %v", p.Name, err)
+			h.svc.MarkOffline(p)
+			next := h.findNext(p, modelSpecific, originalModel)
+			if next == nil {
+				c.JSON(http.StatusServiceUnavailable, gin.H{"error": "all providers failed"})
+				return
+			}
+			p = next
+			reqMap["model"] = resolveModel(p, originalModel)
+			body, _ = json.Marshal(reqMap)
+			continue
 		}
-	}
-	resp.Body.Close()
-	h.svc.NotifyActivity()
 
-	if c.Request.Context().Err() != nil {
-		logError("stream %s cancelled by client", p.Name)
+		if resp.StatusCode != http.StatusOK {
+			io.Copy(io.Discard, resp.Body)
+			resp.Body.Close()
+			if p.PlanType == "fixed" {
+				h.svc.MarkExhausted(p)
+			} else {
+				h.svc.MarkOffline(p)
+			}
+			next := h.findNext(p, modelSpecific, originalModel)
+			if next == nil {
+				c.JSON(resp.StatusCode, gin.H{"error": "provider failed", "provider": p.Name})
+				return
+			}
+			p = next
+			reqMap["model"] = resolveModel(p, originalModel)
+			body, _ = json.Marshal(reqMap)
+			continue
+		}
+
+		copyHeaders(c, resp.Header)
+		c.Status(http.StatusOK)
+
+		flusher, ok := c.Writer.(http.Flusher)
+		if !ok {
+			raw, _ := io.ReadAll(resp.Body)
+			resp.Body.Close()
+			c.Data(http.StatusOK, resp.Header.Get("Content-Type"), raw)
+			return
+		}
+
+		buf := make([]byte, 4096)
+		for {
+			n, err := resp.Body.Read(buf)
+			if n > 0 {
+				c.Writer.Write(buf[:n])
+				flusher.Flush()
+			}
+			if err != nil {
+				break
+			}
+		}
+		resp.Body.Close()
+		h.svc.NotifyActivity()
+
+		if c.Request.Context().Err() != nil {
+			logError("stream %s cancelled by client", p.Name)
+		}
+		return
 	}
 }
 

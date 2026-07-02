@@ -162,33 +162,38 @@ func (s *Service) MarkOffline(p *providerState) {
 // ProbeHigherPriority 探测当前 active 前面的高优先级供应商。
 // 如果发现可用的高优先级供应商，切换到它。由 handler 在每次请求完成后调用。
 func (s *Service) ProbeHigherPriority() {
+	s.mu.RLock()
+	active := s.active
+	candidates := []*providerState{}
+	if active != nil && active != s.providers[0] {
+		for _, p := range s.providers {
+			if p == active {
+				break
+			}
+			if p.status != StatusAvailable {
+				candidates = append(candidates, p)
+			}
+		}
+	}
+	s.mu.RUnlock()
+
+	for _, p := range candidates {
+		if probeProvider(p, s.httpClient) {
+			s.mu.Lock()
+			p.status = StatusAvailable
+			s.mu.Unlock()
+		}
+	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
-
-	active := s.active
-	if active == nil {
+	if s.active == nil {
 		if best := s.pickBestLocked(); best != nil {
 			s.active = best
 		}
 		return
 	}
-	if active == s.providers[0] {
-		return
-	}
-
-	for _, p := range s.providers {
-		if p == active {
-			break
-		}
-		if p.status == StatusAvailable {
-			continue
-		}
-		if probeProvider(p, s.httpClient) {
-			p.status = StatusAvailable
-		}
-	}
-
-	if best := s.pickBestLocked(); best != nil && best != active {
+	if best := s.pickBestLocked(); best != nil && best != s.active {
 		s.active = best
 	}
 }

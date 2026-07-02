@@ -1,15 +1,5 @@
 basePath: /
 definitions:
-  llmproxy.proxyChatRequest:
-    properties:
-      messages:
-        items: {}
-        type: array
-      model:
-        type: string
-      stream:
-        type: boolean
-    type: object
   response.Response:
     properties:
       code:
@@ -328,7 +318,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/llmproxy.proxyChatRequest'
+          type: object
       responses:
         "200":
           description: OK

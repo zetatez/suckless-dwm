@@ -387,7 +387,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/llmproxy.proxyChatRequest"
+                            "type": "object"
                         }
                     }
                 ],
@@ -1611,21 +1611,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "llmproxy.proxyChatRequest": {
-            "type": "object",
-            "properties": {
-                "messages": {
-                    "type": "array",
-                    "items": {}
-                },
-                "model": {
-                    "type": "string"
-                },
-                "stream": {
-                    "type": "boolean"
-                }
-            }
-        },
         "response.Response": {
             "type": "object",
             "properties": {
