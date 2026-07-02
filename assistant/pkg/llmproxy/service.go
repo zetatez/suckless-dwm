@@ -119,48 +119,23 @@ func (s *Service) ProviderStatuses() []map[string]interface{} {
 	return res
 }
 
-func (s *Service) selectProvider() *providerState {
+func (s *Service) selectProvider(model string) *providerState {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	p := s.pickBestLocked()
+	p := s.pickBestLocked(model)
 	if p != nil {
 		s.active = p
 	}
 	return p
 }
 
-func (s *Service) selectProviderByModel(model string) *providerState {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (s *Service) pickBestLocked(model string) *providerState {
 	var fixed, payg []*providerState
 	for _, p := range s.providers {
 		if p.status != StatusAvailable {
 			continue
 		}
-		if !hasModel(p.Models, model) {
-			continue
-		}
-		if p.PlanType == "fixed" {
-			fixed = append(fixed, p)
-		} else {
-			payg = append(payg, p)
-		}
-	}
-	if len(fixed) > 0 {
-		s.active = fixed[0]
-		return fixed[0]
-	}
-	if len(payg) > 0 {
-		s.active = payg[0]
-		return payg[0]
-	}
-	return nil
-}
-
-func (s *Service) pickBestLocked() *providerState {
-	var fixed, payg []*providerState
-	for _, p := range s.providers {
-		if p.status != StatusAvailable {
+		if model != "" && !hasModel(p.Models, model) {
 			continue
 		}
 		if p.PlanType == "fixed" {
@@ -178,19 +153,10 @@ func (s *Service) pickBestLocked() *providerState {
 	return nil
 }
 
-func (s *Service) markExhausted(p *providerState) {
+func (s *Service) markStatus(p *providerState, status ProviderStatus) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	p.status = StatusExhausted
-	if s.active == p {
-		s.active = nil
-	}
-}
-
-func (s *Service) markOffline(p *providerState) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	p.status = StatusOffline
+	p.status = status
 	if s.active == p {
 		s.active = nil
 	}
@@ -223,12 +189,12 @@ func (s *Service) ProbeHigherPriority() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.active == nil {
-		if best := s.pickBestLocked(); best != nil {
+		if best := s.pickBestLocked(""); best != nil {
 			s.active = best
 		}
 		return
 	}
-	if best := s.pickBestLocked(); best != nil && best != s.active {
+	if best := s.pickBestLocked(""); best != nil && best != s.active {
 		s.active = best
 	}
 }
@@ -323,11 +289,11 @@ func (s *Service) Forward(ctx context.Context, reqMap map[string]interface{}, re
 	var modelSpecific bool
 
 	if requestedModel == s.config.MiddleModel || requestedModel == "" {
-		p = s.selectProvider()
+		p = s.selectProvider("")
 	} else {
-		p = s.selectProviderByModel(requestedModel)
+		p = s.selectProvider(requestedModel)
 		if p == nil {
-			p = s.selectProvider()
+			p = s.selectProvider("")
 		} else {
 			modelSpecific = true
 		}
@@ -344,7 +310,7 @@ func (s *Service) Forward(ctx context.Context, reqMap map[string]interface{}, re
 		resp, err := s.ForwardChat(ctx, p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 		if err != nil {
 			logError("forward to %s failed: %v", p.Name, err)
-			s.markOffline(p)
+			s.markStatus(p, StatusOffline)
 			next := s.findNext(p, modelSpecific, requestedModel)
 			if next == nil {
 				return nil, ErrAllProvidersFailed
@@ -362,9 +328,9 @@ func (s *Service) Forward(ctx context.Context, reqMap map[string]interface{}, re
 		resp.Body.Close()
 
 		if p.PlanType == "fixed" {
-			s.markExhausted(p)
+			s.markStatus(p, StatusExhausted)
 		} else {
-			s.markOffline(p)
+			s.markStatus(p, StatusOffline)
 		}
 
 		next := s.findNext(p, modelSpecific, requestedModel)

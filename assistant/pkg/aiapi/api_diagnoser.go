@@ -1,18 +1,18 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 	"fmt"
 
-	"assistant/pkg/llm"
-	"assistant/pkg/smartapi/prompts"
+	"assistant/pkg/llmproxy"
+	"assistant/pkg/aiapi/prompts"
 )
 
 type Diagnoser struct {
 	engine *Engine
 }
 
-func NewDiagnoser(client llm.Client) *Diagnoser {
+func NewDiagnoser(client llmproxy.Client) *Diagnoser {
 	return &Diagnoser{engine: NewEngine(client)}
 }
 

@@ -1,17 +1,17 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 
-	"assistant/pkg/llm"
-	"assistant/pkg/smartapi/prompts"
+	"assistant/pkg/llmproxy"
+	"assistant/pkg/aiapi/prompts"
 )
 
 type WeeklyReporter struct {
 	engine *Engine
 }
 
-func NewWeeklyReporter(client llm.Client) *WeeklyReporter {
+func NewWeeklyReporter(client llmproxy.Client) *WeeklyReporter {
 	return &WeeklyReporter{engine: NewEngine(client)}
 }
 

@@ -1,19 +1,19 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"assistant/pkg/llm"
+	"assistant/pkg/llmproxy"
 	"assistant/pkg/utils"
 )
 
 type Engine struct {
-	client llm.Client
+	client llmproxy.Client
 }
 
-func NewEngine(client llm.Client) *Engine {
+func NewEngine(client llmproxy.Client) *Engine {
 	return &Engine{client: client}
 }
 
@@ -25,7 +25,7 @@ func CompleteJSON[T any](
 	temperature float32,
 	maxTokens int,
 ) (*T, error) {
-	resp, err := llm.Complete(ctx, e.client, prompt, llm.WithSystemPrompt(systemPrompt), llm.WithTemperature(temperature), llm.WithMaxTokens(maxTokens))
+	resp, err := llmproxy.Complete(ctx, e.client, prompt, llmproxy.WithSystemPrompt(systemPrompt), llmproxy.WithTemperature(temperature), llmproxy.WithMaxTokens(maxTokens))
 	if err != nil {
 		return nil, err
 	}

@@ -1,19 +1,19 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 	"fmt"
 	"strings"
 
-	"assistant/pkg/llm"
-	"assistant/pkg/smartapi/prompts"
+	"assistant/pkg/llmproxy"
+	"assistant/pkg/aiapi/prompts"
 )
 
 type EmailComposer struct {
 	engine *Engine
 }
 
-func NewEmailComposer(client llm.Client) *EmailComposer {
+func NewEmailComposer(client llmproxy.Client) *EmailComposer {
 	return &EmailComposer{engine: NewEngine(client)}
 }
 

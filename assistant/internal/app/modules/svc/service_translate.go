@@ -8,8 +8,8 @@ import (
 	"unicode"
 
 	"assistant/internal/bootstrap/psl"
+	"assistant/pkg/aiapi"
 	"assistant/pkg/dwmblocknotify"
-	"assistant/pkg/smartapi"
 )
 
 var translateSystemPrompt = `You are a professional translator. Translate the user's text.
@@ -38,7 +38,7 @@ func (s *Service) TranslateClipboard() (string, error) {
 
 	targetLang := detectTargetLang(text)
 
-	translator := smartapi.NewTranslator(client)
+	translator := aiapi.NewTranslator(client)
 	timeout := psl.GetConfig().LLMProxy.Timeout
 	if timeout <= 0 {
 		timeout = 60

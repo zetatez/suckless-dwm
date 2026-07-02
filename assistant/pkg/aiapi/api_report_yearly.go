@@ -1,17 +1,17 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 
-	"assistant/pkg/llm"
-	"assistant/pkg/smartapi/prompts"
+	"assistant/pkg/llmproxy"
+	"assistant/pkg/aiapi/prompts"
 )
 
 type YearlyReporter struct {
 	engine *Engine
 }
 
-func NewYearlyReporter(client llm.Client) *YearlyReporter {
+func NewYearlyReporter(client llmproxy.Client) *YearlyReporter {
 	return &YearlyReporter{engine: NewEngine(client)}
 }
 

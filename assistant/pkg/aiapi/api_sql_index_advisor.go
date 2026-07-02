@@ -1,18 +1,18 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"assistant/pkg/llm"
+	"assistant/pkg/llmproxy"
 )
 
 type SQLIndexAdvisor struct {
 	engine *Engine
 }
 
-func NewSQLIndexAdvisor(client llm.Client) *SQLIndexAdvisor {
+func NewSQLIndexAdvisor(client llmproxy.Client) *SQLIndexAdvisor {
 	return &SQLIndexAdvisor{engine: NewEngine(client)}
 }
 

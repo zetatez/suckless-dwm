@@ -1,10 +1,10 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 	"fmt"
 
-	"assistant/pkg/llm"
+	"assistant/pkg/llmproxy"
 )
 
 type ReportType string
@@ -36,10 +36,10 @@ type ReportResult struct {
 }
 
 type Reporter struct {
-	client llm.Client
+	client llmproxy.Client
 }
 
-func NewReporter(client llm.Client) *Reporter {
+func NewReporter(client llmproxy.Client) *Reporter {
 	return &Reporter{client: client}
 }
 

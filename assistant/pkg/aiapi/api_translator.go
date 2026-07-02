@@ -1,18 +1,18 @@
-package smartapi
+package aiapi
 
 import (
 	"context"
 	"fmt"
 
-	"assistant/pkg/llm"
-	"assistant/pkg/smartapi/prompts"
+	"assistant/pkg/llmproxy"
+	"assistant/pkg/aiapi/prompts"
 )
 
 type Translator struct {
 	engine *Engine
 }
 
-func NewTranslator(client llm.Client) *Translator {
+func NewTranslator(client llmproxy.Client) *Translator {
 	return &Translator{engine: NewEngine(client)}
 }
 
