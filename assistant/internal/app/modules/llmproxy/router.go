@@ -141,31 +141,21 @@ func (r *Router) pickBestLocked() *providerState {
 	return nil
 }
 
-func (r *Router) MarkExhausted(name string) {
+func (r *Router) MarkExhausted(p *providerState) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	for _, p := range r.providers {
-		if p.Name == name {
-			p.status = StatusExhausted
-			if r.active == p {
-				r.active = nil
-			}
-			return
-		}
+	p.status = StatusExhausted
+	if r.active == p {
+		r.active = nil
 	}
 }
 
-func (r *Router) MarkOffline(name string) {
+func (r *Router) MarkOffline(p *providerState) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	for _, p := range r.providers {
-		if p.Name == name {
-			p.status = StatusOffline
-			if r.active == p {
-				r.active = nil
-			}
-			return
-		}
+	p.status = StatusOffline
+	if r.active == p {
+		r.active = nil
 	}
 }
 

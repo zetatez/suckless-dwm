@@ -97,15 +97,17 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
 		return
 	}
-	var req proxyChatRequest
-	if err := json.Unmarshal(rawBody, &req); err != nil {
+
+	var reqMap map[string]interface{}
+	if err := json.Unmarshal(rawBody, &reqMap); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
 		return
 	}
 
-	cfg := psl.GetConfig().LLMProxy
-	requestedModel := req.Model
+	requestedModel, _ := reqMap["model"].(string)
+	reqStream, _ := reqMap["stream"].(bool)
 
+	cfg := psl.GetConfig().LLMProxy
 	var p *providerState
 	var modelSpecific bool
 	if requestedModel == cfg.MiddleModel {
@@ -124,12 +126,13 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 		return
 	}
 
-	body := patchModel(rawBody, resolveModel(p, requestedModel))
+	reqMap["model"] = resolveModel(p, requestedModel)
+	body, _ := json.Marshal(reqMap)
 
-	if req.Stream {
-		h.streamResponse(c, p, body, modelSpecific, requestedModel)
+	if reqStream {
+		h.streamResponse(c, p, body, modelSpecific, requestedModel, reqMap)
 	} else {
-		h.syncResponse(c, p, body, modelSpecific, requestedModel)
+		h.syncResponse(c, p, body, modelSpecific, requestedModel, reqMap)
 	}
 }
 
@@ -140,17 +143,18 @@ func resolveModel(p *providerState, requested string) string {
 	return p.Models[0]
 }
 
-func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string) {
+func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string, reqMap map[string]interface{}) {
 	for {
 		resp, err := h.router.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 		if err != nil {
 			logError("forward to %s failed: %v", p.Name, err)
-			h.router.MarkOffline(p.Name)
+			h.router.MarkOffline(p)
 			p = h.findNext(p, modelSpecific, originalModel)
 			if p == nil {
 				break
 			}
-			body = patchModel(body, resolveModel(p, originalModel))
+			reqMap["model"] = resolveModel(p, originalModel)
+			body, _ = json.Marshal(reqMap)
 			continue
 		}
 
@@ -169,9 +173,9 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 		resp.Body.Close()
 
 		if p.PlanType == "fixed" {
-			h.router.MarkExhausted(p.Name)
+			h.router.MarkExhausted(p)
 		} else {
-			h.router.MarkOffline(p.Name)
+			h.router.MarkOffline(p)
 		}
 
 		pNext := h.findNext(p, modelSpecific, originalModel)
@@ -180,20 +184,22 @@ func (h *Handler) syncResponse(c *gin.Context, p *providerState, body []byte, mo
 			return
 		}
 		p = pNext
-		body = patchModel(body, resolveModel(p, originalModel))
+		reqMap["model"] = resolveModel(p, originalModel)
+		body, _ = json.Marshal(reqMap)
 	}
 
 	c.JSON(http.StatusServiceUnavailable, gin.H{"error": "all providers failed"})
 }
 
-func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string) {
+func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, modelSpecific bool, originalModel string, reqMap map[string]interface{}) {
 	resp, err := h.router.ForwardChat(c.Request.Context(), p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 	if err != nil {
 		logError("stream forward to %s failed: %v", p.Name, err)
-		h.router.MarkOffline(p.Name)
+		h.router.MarkOffline(p)
 		if next := h.findNext(p, modelSpecific, originalModel); next != nil {
-			body = patchModel(body, resolveModel(next, originalModel))
-			h.streamResponse(c, next, body, modelSpecific, originalModel)
+			reqMap["model"] = resolveModel(next, originalModel)
+			body, _ = json.Marshal(reqMap)
+			h.streamResponse(c, next, body, modelSpecific, originalModel, reqMap)
 		} else {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "all providers failed"})
 		}
@@ -203,10 +209,11 @@ func (h *Handler) streamResponse(c *gin.Context, p *providerState, body []byte, 
 	if resp.StatusCode != http.StatusOK {
 		io.Copy(io.Discard, resp.Body)
 		resp.Body.Close()
-		h.router.MarkExhausted(p.Name)
+		h.router.MarkExhausted(p)
 		if next := h.findNext(p, modelSpecific, originalModel); next != nil {
-			body = patchModel(body, resolveModel(next, originalModel))
-			h.streamResponse(c, next, body, modelSpecific, originalModel)
+			reqMap["model"] = resolveModel(next, originalModel)
+			body, _ = json.Marshal(reqMap)
+			h.streamResponse(c, next, body, modelSpecific, originalModel, reqMap)
 		} else {
 			c.JSON(resp.StatusCode, gin.H{"error": "provider failed", "provider": p.Name})
 		}
@@ -261,16 +268,6 @@ func (h *Handler) findNext(current *providerState, modelSpecific bool, originalM
 		return p
 	}
 	return nil
-}
-
-func patchModel(body []byte, model string) []byte {
-	var m map[string]interface{}
-	if err := json.Unmarshal(body, &m); err != nil {
-		return body
-	}
-	m["model"] = model
-	patched, _ := json.Marshal(m)
-	return patched
 }
 
 func (h *Handler) Status(c *gin.Context) {
