@@ -44,20 +44,18 @@ func Run(ctx context.Context) error {
 		kindle.NewModule(),
 	}
 
-	api := r.Group("/api")
-	ui := r.Group("/ui")
+	api, ui := r.Group("/api"), r.Group("/ui")
 	for _, m := range modules {
 		logger.WithFields(map[string]interface{}{"module": m.Name()}).Info("registering module")
+		mw := m.Middleware()
 
-		// API at /api/<name>/...
-		apiGroup := api.Group("/" + m.Name())
-		apiGroup.Use(m.Middleware()...)
-		m.Register(apiGroup)
+		aGroup := api.Group("/" + m.Name())
+		aGroup.Use(mw...)
+		m.Register(aGroup)
 
-		// UI at /ui/<name>
-		uiGroup := ui.Group("/" + m.Name())
-		uiGroup.Use(m.Middleware()...)
-		m.RegisterUI(uiGroup)
+		uGroup := ui.Group("/" + m.Name())
+		uGroup.Use(mw...)
+		m.RegisterUI(uGroup)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
