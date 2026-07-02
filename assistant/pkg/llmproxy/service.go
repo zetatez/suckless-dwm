@@ -1,15 +1,21 @@
 package llmproxy
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+)
 
-	"assistant/internal/bootstrap/psl"
+var (
+	ErrNoProvider         = errors.New("no available provider")
+	ErrAllProvidersFailed = errors.New("all providers failed")
 )
 
 var sharedTransport = &http.Transport{
@@ -27,12 +33,30 @@ const (
 	StatusOffline   ProviderStatus = "offline"
 )
 
+type ProviderConfig struct {
+	Name     string   `mapstructure:"name"`
+	BaseURL  string   `mapstructure:"base_url"`
+	APIKey   string   `mapstructure:"api_key"`
+	Models   []string `mapstructure:"models"`
+	PlanType string   `mapstructure:"plan_type"`
+}
+
+type Config struct {
+	MiddleModel   string           `mapstructure:"middle_model"`
+	ProbeInterval int              `mapstructure:"probe_interval"`
+	AuthToken     string           `mapstructure:"auth_token"`
+	Timeout       int              `mapstructure:"timeout"`
+	Temperature   float32          `mapstructure:"temperature"`
+	Providers     []ProviderConfig `mapstructure:"providers"`
+}
+
 type providerState struct {
-	psl.ProviderConfig
+	ProviderConfig
 	status ProviderStatus
 }
 
 type Service struct {
+	config       Config
 	mu           sync.RWMutex
 	providers    []*providerState
 	active       *providerState
@@ -42,14 +66,19 @@ type Service struct {
 	probeRunning bool
 }
 
-func NewService() *Service {
+func NewService(cfg Config) *Service {
+	timeout := 5 * time.Minute
+	if cfg.Timeout > 0 {
+		timeout = time.Duration(cfg.Timeout) * time.Second
+	}
 	s := &Service{
+		config: cfg,
 		httpClient: &http.Client{
-			Timeout:   5 * time.Minute,
+			Timeout:   timeout,
 			Transport: sharedTransport,
 		},
 	}
-	for _, pc := range psl.GetConfig().LLMProxy.Providers {
+	for _, pc := range cfg.Providers {
 		s.providers = append(s.providers, &providerState{
 			ProviderConfig: pc,
 			status:         StatusAvailable,
@@ -58,7 +87,15 @@ func NewService() *Service {
 	return s
 }
 
-func (s *Service) ActiveProvider() *psl.ProviderConfig {
+func (s *Service) Config() Config { return s.config }
+
+func (s *Service) HasProviders() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return len(s.providers) > 0
+}
+
+func (s *Service) ActiveProvider() *ProviderConfig {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	if s.active == nil {
@@ -141,7 +178,7 @@ func (s *Service) pickBestLocked() *providerState {
 	return nil
 }
 
-func (s *Service) MarkExhausted(p *providerState) {
+func (s *Service) markExhausted(p *providerState) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	p.status = StatusExhausted
@@ -150,7 +187,7 @@ func (s *Service) MarkExhausted(p *providerState) {
 	}
 }
 
-func (s *Service) MarkOffline(p *providerState) {
+func (s *Service) markOffline(p *providerState) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	p.status = StatusOffline
@@ -159,12 +196,10 @@ func (s *Service) MarkOffline(p *providerState) {
 	}
 }
 
-// ProbeHigherPriority 探测当前 active 前面的高优先级供应商。
-// 如果发现可用的高优先级供应商，切换到它。由 handler 在每次请求完成后调用。
 func (s *Service) ProbeHigherPriority() {
 	s.mu.RLock()
 	active := s.active
-	candidates := []*providerState{}
+	var candidates []*providerState
 	if active != nil && active != s.providers[0] {
 		for _, p := range s.providers {
 			if p == active {
@@ -219,7 +254,6 @@ func probeProvider(p *providerState, client *http.Client) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-// NotifyActivity 通知路由器有请求完成，触发探测循环（如有需要）。
 func (s *Service) NotifyActivity() {
 	s.probeMu.Lock()
 	s.lastActivity = time.Now()
@@ -233,7 +267,10 @@ func (s *Service) NotifyActivity() {
 }
 
 func (s *Service) probeLoop() {
-	const interval = 30 * time.Second
+	interval := 30 * time.Second
+	if s.config.ProbeInterval > 0 {
+		interval = time.Duration(s.config.ProbeInterval) * time.Second
+	}
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
@@ -250,7 +287,7 @@ func (s *Service) probeLoop() {
 	}
 }
 
-func (s *Service) ForwardChat(ctx context.Context, cfg psl.ProviderConfig, bodyReader io.ReadCloser) (*http.Response, error) {
+func (s *Service) ForwardChat(ctx context.Context, cfg ProviderConfig, bodyReader io.ReadCloser) (*http.Response, error) {
 	targetURL := strings.TrimRight(cfg.BaseURL, "/") + "/chat/completions"
 	req, err := http.NewRequestWithContext(ctx, "POST", targetURL, bodyReader)
 	if err != nil {
@@ -263,8 +300,96 @@ func (s *Service) ForwardChat(ctx context.Context, cfg psl.ProviderConfig, bodyR
 	return s.httpClient.Do(req)
 }
 
-func logError(format string, args ...interface{}) {
-	log.Printf("[llmproxy] "+format, args...)
+func (s *Service) findNext(current *providerState, modelSpecific bool, originalModel string) *providerState {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	for _, p := range s.providers {
+		if p == current {
+			continue
+		}
+		if p.status != StatusAvailable {
+			continue
+		}
+		if modelSpecific && !hasModel(p.Models, originalModel) {
+			continue
+		}
+		return p
+	}
+	return nil
+}
+
+func (s *Service) Forward(ctx context.Context, reqMap map[string]interface{}, requestedModel string) (*http.Response, error) {
+	var p *providerState
+	var modelSpecific bool
+
+	if requestedModel == s.config.MiddleModel || requestedModel == "" {
+		p = s.selectProvider()
+	} else {
+		p = s.selectProviderByModel(requestedModel)
+		if p == nil {
+			p = s.selectProvider()
+		} else {
+			modelSpecific = true
+		}
+	}
+
+	if p == nil {
+		return nil, ErrNoProvider
+	}
+
+	for {
+		reqMap["model"] = resolveModel(p, requestedModel)
+		body, _ := json.Marshal(reqMap)
+
+		resp, err := s.ForwardChat(ctx, p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
+		if err != nil {
+			logError("forward to %s failed: %v", p.Name, err)
+			s.markOffline(p)
+			next := s.findNext(p, modelSpecific, requestedModel)
+			if next == nil {
+				return nil, ErrAllProvidersFailed
+			}
+			p = next
+			continue
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			s.NotifyActivity()
+			return resp, nil
+		}
+
+		io.Copy(io.Discard, resp.Body)
+		resp.Body.Close()
+
+		if p.PlanType == "fixed" {
+			s.markExhausted(p)
+		} else {
+			s.markOffline(p)
+		}
+
+		next := s.findNext(p, modelSpecific, requestedModel)
+		if next == nil {
+			return nil, &HTTPError{Code: resp.StatusCode, Message: "provider failed"}
+		}
+		p = next
+	}
+}
+
+type HTTPError struct {
+	Code    int
+	Message string
+}
+
+func (e *HTTPError) Error() string { return e.Message }
+
+func resolveModel(p *providerState, requested string) string {
+	if requested == "" {
+		return p.Models[0]
+	}
+	if hasModel(p.Models, requested) {
+		return requested
+	}
+	return p.Models[0]
 }
 
 func hasModel(models []string, target string) bool {
@@ -274,4 +399,8 @@ func hasModel(models []string, target string) bool {
 		}
 	}
 	return false
+}
+
+func logError(format string, args ...interface{}) {
+	log.Printf("[llmproxy] "+format, args...)
 }

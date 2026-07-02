@@ -80,14 +80,12 @@ func (s *Service) SolveLeetCode() error {
 		return fmt.Errorf("LLM client not initialized")
 	}
 
-	cfg := psl.GetConfig().LLM
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
 	resp, err := llm.Complete(ctx, client, text,
 		llm.WithSystemPrompt(leetCodeSystemPrompt),
 		llm.WithTemperature(0.3),
-		llm.WithMaxTokens(cfg.MaxTokens),
 	)
 	if err != nil {
 		return fmt.Errorf("LLM request: %w", err)
@@ -127,7 +125,6 @@ func (s *Service) SolveLeetCodeScreenshot() error {
 		return fmt.Errorf("LLM client not initialized")
 	}
 
-	cfg := psl.GetConfig().LLM
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
@@ -136,7 +133,6 @@ func (s *Service) SolveLeetCodeScreenshot() error {
 	resp, err := llm.Complete(ctx, client, prompt,
 		llm.WithSystemPrompt(leetCodeSystemPrompt),
 		llm.WithTemperature(0.3),
-		llm.WithMaxTokens(cfg.MaxTokens),
 		llm.WithImageBase64(imgBase64),
 	)
 	if err != nil {

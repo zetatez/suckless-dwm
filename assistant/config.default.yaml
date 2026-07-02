@@ -17,46 +17,12 @@ log:
   format: text
   console: true
 
-# llm:
-#   provider: deepseek
-#   api_key: "${DEEPSEEK_API_KEY}"
-#   base_url: https://api.deepseek.com
-#   model: deepseek-v4-pro
-#   timeout: 300
-#   max_tokens: 8192
-#   temperature: 0.3
-
-llm:
-  provider: ark
-  api_key: "${ARK_AGENT_PLAN_API_KEY}"
-  base_url: https://ark.cn-beijing.volces.com/api/plan/v3
-  model: ark-code-latest
-  timeout: 300
-  max_tokens: 131072
-  temperature: 0.3
-
-# llm:
-#   provider: ark
-#   api_key: "${ARK_CODING_AGENT_API_KEY}"
-#   base_url: https://ark.cn-beijing.volces.com/api/coding/v3
-#   model: minimax-m3
-#   timeout: 300
-#   max_tokens: 131072
-#   temperature: 0.3
-
-# llm:
-#   provider: minimax
-#   api_key: "${MINIMAX_API_KEY}"
-#   base_url: https://api.minimaxi.com/v1
-#   model: MiniMax-M3
-#   timeout: 300
-#   max_tokens: 196608
-#   temperature: 0.3
-
 llm_proxy:
   middle_model: "assistant"
   auth_token: "sk-your-token-here"
   probe_interval: 30
+  timeout: 300
+  temperature: 0.3
   providers:
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/plan/v3

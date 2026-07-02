@@ -9,7 +9,6 @@ import (
 
 	"assistant/internal/bootstrap/psl"
 	"assistant/pkg/dwmblocknotify"
-	"assistant/pkg/llm"
 	"assistant/pkg/smartapi"
 )
 
@@ -32,22 +31,19 @@ func (s *Service) TranslateClipboard() (string, error) {
 
 	dwmblocknotify.PUT("translating...", 2*time.Second)
 
-	cfg := psl.GetConfig().LLM
-	client, err := llm.NewClient(cfg.Provider, llm.Config{
-		APIKey:  cfg.APIKey,
-		BaseURL: cfg.BaseURL,
-		Model:   cfg.Model,
-		Extra:   cfg.Extra,
-		Timeout: cfg.Timeout,
-	})
-	if err != nil {
-		return "", fmt.Errorf("create LLM client: %w", err)
+	client := psl.GetLLMClient()
+	if client == nil {
+		return "", fmt.Errorf("LLM client not initialized")
 	}
 
 	targetLang := detectTargetLang(text)
 
 	translator := smartapi.NewTranslator(client)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.Timeout)*time.Second)
+	timeout := psl.GetConfig().LLMProxy.Timeout
+	if timeout <= 0 {
+		timeout = 60
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
 	result, err := translator.Translate(ctx, text, targetLang)

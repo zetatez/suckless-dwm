@@ -2,43 +2,36 @@ package psl
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"assistant/pkg/llm"
+	"assistant/pkg/llmproxy"
 )
 
 var (
+	proxySvc  *llmproxy.Service
 	llmClient llm.Client
 	onceLLM   sync.Once
-	llmErr    error
 )
+
+func GetProxyService() *llmproxy.Service { return proxySvc }
 
 func GetLLMClient() llm.Client { return llmClient }
 
 func InitLLMClient() error {
-	cfg := GetConfig().LLM
 	onceLLM.Do(func() {
-		llmClient, llmErr = llm.NewClient(cfg.Provider, llm.Config{
-			APIKey:      cfg.APIKey,
-			BaseURL:     cfg.BaseURL,
-			Model:       cfg.Model,
-			Extra:       cfg.Extra,
-			Timeout:     cfg.Timeout,
-			MaxTokens:   cfg.MaxTokens,
-			Temperature: cfg.Temperature,
-		})
-		if llmErr != nil {
-			llmErr = fmt.Errorf("create LLM client: %w", llmErr)
+		cfg := GetConfig().LLMProxy
+		proxySvc = llmproxy.NewService(cfg)
+		if proxySvc.HasProviders() {
+			llmClient = llmproxy.NewProxyClient(proxySvc)
 		}
 	})
-	return llmErr
+	return nil
 }
 
 func RegisterCleanupLLM() {
 	RegisterCleanup(func(ctx context.Context) {
-		if llmClient != nil {
-			llmClient = nil
-		}
+		llmClient = nil
+		proxySvc = nil
 	})
 }

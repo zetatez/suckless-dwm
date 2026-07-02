@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"assistant/pkg/llmproxy"
 	"assistant/pkg/xlog"
 
 	"github.com/spf13/viper"
@@ -61,8 +62,7 @@ type Config struct {
 	App         AppConfig         `mapstructure:"app"`
 	Auth        AuthConfig        `mapstructure:"auth"`
 	Log         xlog.LogConfig    `mapstructure:"log"`
-	LLM         LLMConfig         `mapstructure:"llm"`
-	LLMProxy    LLMProxyConfig    `mapstructure:"llm_proxy"`
+	LLMProxy    llmproxy.Config   `mapstructure:"llm_proxy"`
 	Svc         SvcConfig         `mapstructure:"svc"`
 	Channels    ChannelsConfig    `mapstructure:"channels"`
 	Background  BackgroundConfig  `mapstructure:"background"`
@@ -86,32 +86,6 @@ type AppConfig struct {
 type AuthConfig struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
-}
-
-type LLMConfig struct {
-	Provider    string            `mapstructure:"provider"`
-	APIKey      string            `mapstructure:"api_key"`
-	BaseURL     string            `mapstructure:"base_url"`
-	Model       string            `mapstructure:"model"`
-	Extra       map[string]string `mapstructure:"extra"`
-	Timeout     int               `mapstructure:"timeout"`
-	MaxTokens   int               `mapstructure:"max_tokens"`
-	Temperature float32           `mapstructure:"temperature"`
-}
-
-type LLMProxyConfig struct {
-	MiddleModel   string           `mapstructure:"middle_model"`
-	ProbeInterval int              `mapstructure:"probe_interval"`
-	AuthToken     string           `mapstructure:"auth_token"`
-	Providers     []ProviderConfig `mapstructure:"providers"`
-}
-
-type ProviderConfig struct {
-	Name     string   `mapstructure:"name"`
-	BaseURL  string   `mapstructure:"base_url"`
-	APIKey   string   `mapstructure:"api_key"`
-	Models   []string `mapstructure:"models"`
-	PlanType string   `mapstructure:"plan_type"` // "fixed" or "payg"
 }
 
 type SvcConfig struct {
@@ -156,17 +130,14 @@ func (c *Config) applyDefaults() {
 	if c.App.Interface == "" {
 		c.App.Interface = detectDefaultInterface()
 	}
-	if c.LLM.Timeout == 0 {
-		c.LLM.Timeout = 60
-	}
-	if c.LLM.MaxTokens == 0 {
-		c.LLM.MaxTokens = 4096
-	}
 	if c.LLMProxy.ProbeInterval == 0 {
 		c.LLMProxy.ProbeInterval = 30
 	}
 	if c.LLMProxy.MiddleModel == "" {
 		c.LLMProxy.MiddleModel = "assistant"
+	}
+	if c.LLMProxy.Timeout == 0 {
+		c.LLMProxy.Timeout = 300
 	}
 	if c.Svc.PrimaryMonitor == "" {
 		c.Svc.PrimaryMonitor = "eDP-1"
@@ -239,16 +210,12 @@ func (c *Config) Validate() error {
 	if c.App.Host != "" && net.ParseIP(c.App.Host) == nil && c.App.Host != "0.0.0.0" {
 		return fmt.Errorf("app.host must be a valid IP address: %s", c.App.Host)
 	}
-	if c.LLM.Provider == "" {
-		return fmt.Errorf("llm.provider is required")
-	}
 	return nil
 }
 
 func (c *Config) resolveEnv() {
 	envPH := regexp.MustCompile(`\$\{(\w+)\}`)
 	expand := func(p *string) { *p = expandEnvPH(*p, envPH) }
-	expand(&c.LLM.APIKey)
 	expand(&c.Channels.Feishu.AppID)
 	expand(&c.Channels.Feishu.AppSecret)
 	expand(&c.Channels.Feishu.ChatID)
@@ -297,5 +264,3 @@ func detectDefaultInterface() string {
 	}
 	return bestIface
 }
-
-func (c *LLMConfig) GetAPIKey() string { return c.APIKey }
