@@ -236,7 +236,7 @@ func (h *Handler) SendToFeishu(c *gin.Context) {
 // @Router /api/svr/solve-leetcode [post]
 func (h *Handler) SolveLeetCode(c *gin.Context) {
 	if err := h.svc.SolveLeetCode(); err != nil {
-		dwmblocknotify.PUT(fmt.Sprintf("Err: %v", err), 3*time.Second)
+		dwmblocknotify.PUT(fmt.Sprintf("Err: %v", err), 5*time.Second)
 		psl.GetLogger().WithError(err).Error("solve leetcode failed")
 		response.ErrWithInternal(c, response.CodeServerError, "solve leetcode failed", err)
 		return
@@ -252,7 +252,7 @@ func (h *Handler) SolveLeetCode(c *gin.Context) {
 // @Router /api/svr/solve-leetcode-screenshot [post]
 func (h *Handler) SolveLeetCodeScreenshot(c *gin.Context) {
 	if err := h.svc.SolveLeetCodeScreenshot(); err != nil {
-		dwmblocknotify.PUT(fmt.Sprintf("Err: %v", err), 3*time.Second)
+		dwmblocknotify.PUT(fmt.Sprintf("Err: %v", err), 5*time.Second)
 		psl.GetLogger().WithError(err).Error("solve leetcode with screenshot failed")
 		response.ErrWithInternal(c, response.CodeServerError, "solve leetcode failed", err)
 		return

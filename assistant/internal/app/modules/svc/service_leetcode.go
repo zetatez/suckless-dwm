@@ -122,7 +122,7 @@ func (s *Service) SolveLeetCode() error {
 		return fmt.Errorf("write file: %w", err)
 	}
 
-	dwmblocknotify.PUT("!!!", 3*time.Second)
+	dwmblocknotify.PUT("!!!", 5*time.Second)
 	return nil
 }
 
@@ -171,7 +171,7 @@ func (s *Service) SolveLeetCodeScreenshot() error {
 		return fmt.Errorf("write file: %w", err)
 	}
 
-	dwmblocknotify.PUT("!!!", 3*time.Second)
+	dwmblocknotify.PUT("!!!", 5*time.Second)
 	return nil
 }
 
