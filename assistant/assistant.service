@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/opt/assistant/assistant
+KillMode=process
 WorkingDirectory=/home/shiyi/.config/assistant
 Restart=always
 RestartSec=5

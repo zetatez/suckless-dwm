@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,6 +12,7 @@ import (
 
 	"assistant/internal/bootstrap/psl"
 	"assistant/pkg/dwmblocknotify"
+	"assistant/pkg/utils"
 
 	"github.com/sirupsen/logrus"
 	"golang.design/x/clipboard"
@@ -24,45 +24,6 @@ type Service struct {
 
 func NewService() *Service {
 	return &Service{logger: psl.GetLogger()}
-}
-
-var interpreters = map[string][]string{
-	"sh":     {"sh", "-c"},
-	"bash":   {"bash", "-c"},
-	"python": {"python3", "-c"},
-}
-
-func runScript(lang, script string) (string, string, error) {
-	args, ok := interpreters[lang]
-	if !ok {
-		return "", "", fmt.Errorf("unsupported language: %s", lang)
-	}
-	var outBuf, errBuf bytes.Buffer
-	cmd := exec.Command(args[0], append(args[1:], script)...)
-	cmd.Stdout, cmd.Stderr = &outBuf, &errBuf
-	cmd.Env = os.Environ()
-	if os.Getenv("DISPLAY") == "" {
-		cmd.Env = append(cmd.Env, "DISPLAY=:0")
-	}
-	err := cmd.Run()
-	return outBuf.String(), errBuf.String(), err
-}
-
-func startScript(lang, script string) error {
-	args, ok := interpreters[lang]
-	if !ok {
-		return fmt.Errorf("unsupported language: %s", lang)
-	}
-	cmd := exec.Command(args[0], append(args[1:], script)...)
-	cmd.Env = os.Environ()
-	if os.Getenv("DISPLAY") == "" {
-		cmd.Env = append(cmd.Env, "DISPLAY=:0")
-	}
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-	go cmd.Wait()
-	return nil
 }
 
 var clipboardOnce sync.Once
@@ -118,7 +79,7 @@ func (s *Service) copyToClipboardWithNotify(value, summary string) {
 // rofiPrompt opens rofi with the given prompt and returns the trimmed result.
 // An empty string is returned if the user dismisses the dialog.
 func (s *Service) rofiPrompt(prompt string) (string, error) {
-	out, _, err := runScript("bash", fmt.Sprintf("printf '' | rofi -dmenu -p '%s'", prompt))
+	out, _, err := utils.RunScript("bash", fmt.Sprintf("printf '' | rofi -dmenu -p '%s'", prompt))
 	return strings.TrimSpace(out), err
 }
 
@@ -134,7 +95,7 @@ func (s *Service) killProcess(proc string) error {
 }
 
 func (s *Service) screenSize() (int, int) {
-	out, _, err := runScript("bash", "xdpyinfo|awk '/dimensions/{split($2,a,\"x\");print a[1],a[2]}'")
+	out, _, err := utils.RunScript("bash", "xdpyinfo|awk '/dimensions/{split($2,a,\"x\");print a[1],a[2]}'")
 	if err != nil {
 		return 1920, 1080
 	}
@@ -158,7 +119,7 @@ func (s *Service) geoForTerminal(xr, yr float64, w, h int) string {
 }
 
 func (s *Service) Launch(command string) error {
-	return startScript("bash", command)
+	return utils.StartScript("bash", command)
 }
 
 func (s *Service) Toggle(cmd, match string) (string, error) {
@@ -174,7 +135,7 @@ func (s *Service) Toggle(cmd, match string) (string, error) {
 		}
 		return "killed", nil
 	}
-	if err := startScript("bash", cmd); err != nil {
+	if err := utils.StartScript("bash", cmd); err != nil {
 		return "", fmt.Errorf("launch %s: %w", cmd, err)
 	}
 	return "launched", nil
@@ -198,10 +159,10 @@ func (s *Service) ToggleMusic() (string, error) {
 		return "killed", nil
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	if err := startScript("bash", fmt.Sprintf("%s -e ncmpcpp", term)); err != nil {
+	if err := utils.StartScript("bash", fmt.Sprintf("%s -e ncmpcpp", term)); err != nil {
 		return "", fmt.Errorf("launch ncmpcpp: %w", err)
 	}
-	if err := startScript("bash", fmt.Sprintf("%s -e cava", term)); err != nil {
+	if err := utils.StartScript("bash", fmt.Sprintf("%s -e cava", term)); err != nil {
 		return "", fmt.Errorf("launch cava: %w", err)
 	}
 	return "launched", nil

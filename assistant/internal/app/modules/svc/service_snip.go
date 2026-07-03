@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"fmt"
 	"os"
 	"path"
@@ -30,7 +31,7 @@ cd %s && selected=$(
 `
 	script := fmt.Sprintf(tmpl, snipDir, tmpf)
 	cmd := fmt.Sprintf("%s -e sh -c '%s'", term, script)
-	if _, _, err := runScript("bash", cmd); err != nil {
+	if _, _, err := utils.RunScript("bash", cmd); err != nil {
 		return fmt.Errorf("launch fzf: %w", err)
 	}
 
@@ -62,7 +63,7 @@ func (s *Service) SnipCreate(name string) error {
 	}
 
 	if name == "" {
-		out, _, err := runScript("bash", "rofi -dmenu -p 'Snippet name' < /dev/null")
+		out, _, err := utils.RunScript("bash", "rofi -dmenu -p 'Snippet name' < /dev/null")
 		if err != nil || strings.TrimSpace(out) == "" {
 			return nil
 		}
@@ -74,7 +75,7 @@ func (s *Service) SnipCreate(name string) error {
 		return fmt.Errorf("create snippet subdir: %w", err)
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	if err := startScript("bash", fmt.Sprintf("%s -e nvim '%s'", term, filePath)); err != nil {
+	if err := utils.StartScript("bash", fmt.Sprintf("%s -e nvim '%s'", term, filePath)); err != nil {
 		return fmt.Errorf("launch nvim: %w", err)
 	}
 	dwmblocknotify.PUT(fmt.Sprintf("Snip created: %s", name), 2*time.Second)

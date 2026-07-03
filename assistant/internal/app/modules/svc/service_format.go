@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"encoding/json"
 	"fmt"
 	"go/format"
@@ -42,7 +43,7 @@ func (s *Service) Format(language string) (string, error) {
 		}
 		result = string(formatted)
 	case "sql":
-		stdout, stderr, e := runScript("python", fmt.Sprintf(
+		stdout, stderr, e := utils.RunScript("python", fmt.Sprintf(
 			`import sqlparse; print(sqlparse.format("""%s""", reindent=True, indent=2, keyword_case='lower'))`, content))
 		if e != nil {
 			return "", fmt.Errorf("format SQL failed: %s", stderr)

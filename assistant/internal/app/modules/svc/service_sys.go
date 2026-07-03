@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -25,7 +26,7 @@ func (s *Service) SysShortcut() error {
 	for k := range shortcuts {
 		list = append(list, k)
 	}
-	out, _, err := runScript("bash", fmt.Sprintf("printf '%%s\n' %s | rofi -dmenu -p 'power'", strings.Join(list, " ")))
+	out, _, err := utils.RunScript("bash", fmt.Sprintf("printf '%%s\n' %s | rofi -dmenu -p 'power'", strings.Join(list, " ")))
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil
 	}
@@ -34,14 +35,14 @@ func (s *Service) SysShortcut() error {
 	if !ok {
 		return fmt.Errorf("unknown action: %s", action)
 	}
-	_, _, err = runScript("bash", cmd)
+	_, _, err = utils.RunScript("bash", cmd)
 	return err
 }
 
 func (s *Service) SysDisplay() error {
 	cfg := psl.GetConfig().Svc
 	primaryMonitor := cfg.PrimaryMonitor
-	stdout, _, err := runScript("bash", fmt.Sprintf("xrandr|grep ' connected'|grep -v '%s'|awk '{print $1}'", primaryMonitor))
+	stdout, _, err := utils.RunScript("bash", fmt.Sprintf("xrandr|grep ' connected'|grep -v '%s'|awk '{print $1}'", primaryMonitor))
 	if err != nil {
 		return fmt.Errorf("detect monitors: %w", err)
 	}
@@ -69,7 +70,7 @@ func (s *Service) SysDisplay() error {
 	for k := range displayCmds {
 		list = append(list, k)
 	}
-	out, _, err := runScript("bash", fmt.Sprintf(`printf '%%s\n' %s | rofi -dmenu -p 'screen strategy'`, strings.Join(list, " ")))
+	out, _, err := utils.RunScript("bash", fmt.Sprintf(`printf '%%s\n' %s | rofi -dmenu -p 'screen strategy'`, strings.Join(list, " ")))
 	if err != nil {
 		dwmblocknotify.PUT(fmt.Sprintf("display: rofi failed: %v", err), 3*time.Second)
 		s.runDisplayFallback(displayCmds["default"], cfg.DirWallpaper)
@@ -87,11 +88,11 @@ func (s *Service) SysDisplay() error {
 		return nil
 	}
 
-	if _, stderr, err := runScript("bash", cmd); err != nil {
+	if _, stderr, err := utils.RunScript("bash", cmd); err != nil {
 		return fmt.Errorf("set display: %s", stderr)
 	}
 
-	if _, _, err := runScript("bash", fmt.Sprintf("feh --bg-fill %s", cfg.DirWallpaper)); err != nil {
+	if _, _, err := utils.RunScript("bash", fmt.Sprintf("feh --bg-fill %s", cfg.DirWallpaper)); err != nil {
 		dwmblocknotify.PUT(fmt.Sprintf("display: feh wallpaper failed: %v", err), 3*time.Second)
 	}
 	return nil
@@ -102,10 +103,10 @@ func (s *Service) SysDisplay() error {
 // layout — we still want a working display, but the operator should know if
 // the fallback also failed.
 func (s *Service) runDisplayFallback(xrandrCmd, wallpaperDir string) {
-	if _, _, err := runScript("bash", xrandrCmd); err != nil {
+	if _, _, err := utils.RunScript("bash", xrandrCmd); err != nil {
 		dwmblocknotify.PUT(fmt.Sprintf("display fallback: xrandr failed: %v", err), 3*time.Second)
 	}
-	if _, _, err := runScript("bash", fmt.Sprintf("feh --bg-fill %s", wallpaperDir)); err != nil {
+	if _, _, err := utils.RunScript("bash", fmt.Sprintf("feh --bg-fill %s", wallpaperDir)); err != nil {
 		dwmblocknotify.PUT(fmt.Sprintf("display fallback: feh failed: %v", err), 3*time.Second)
 	}
 }
@@ -121,7 +122,7 @@ func (s *Service) SysKeyboardLight() (string, error) {
 	if current == "1" {
 		newVal = "0"
 	}
-	_, _, err = runScript("bash", fmt.Sprintf("sudo sh -c 'echo %s > %s'", newVal, kbdPath))
+	_, _, err = utils.RunScript("bash", fmt.Sprintf("sudo sh -c 'echo %s > %s'", newVal, kbdPath))
 	if err != nil {
 		return "", fmt.Errorf("set keyboard brightness: %w", err)
 	}
@@ -129,7 +130,7 @@ func (s *Service) SysKeyboardLight() (string, error) {
 }
 
 func (s *Service) SysVolumeUp() error {
-	_, _, err := runScript("bash", "amixer set Master unmute && amixer set Master 5%+")
+	_, _, err := utils.RunScript("bash", "amixer set Master unmute && amixer set Master 5%+")
 	if err == nil {
 		dwmblocknotify.PUT("vol +5%", 1*time.Second)
 	}
@@ -137,7 +138,7 @@ func (s *Service) SysVolumeUp() error {
 }
 
 func (s *Service) SysVolumeDown() error {
-	_, _, err := runScript("bash", "amixer set Master unmute && amixer set Master 5%-")
+	_, _, err := utils.RunScript("bash", "amixer set Master unmute && amixer set Master 5%-")
 	if err == nil {
 		dwmblocknotify.PUT("vol -5%", 1*time.Second)
 	}
@@ -145,7 +146,7 @@ func (s *Service) SysVolumeDown() error {
 }
 
 func (s *Service) SysVolumeToggle() error {
-	_, _, err := runScript("bash", "amixer set Master toggle")
+	_, _, err := utils.RunScript("bash", "amixer set Master toggle")
 	if err == nil {
 		dwmblocknotify.PUT("vol toggle", 1*time.Second)
 	}
@@ -153,7 +154,7 @@ func (s *Service) SysVolumeToggle() error {
 }
 
 func (s *Service) SysMicroUp() error {
-	_, _, err := runScript("bash", "amixer set Capture 5%+")
+	_, _, err := utils.RunScript("bash", "amixer set Capture 5%+")
 	if err == nil {
 		dwmblocknotify.PUT("micro +5%", 1*time.Second)
 	}
@@ -161,7 +162,7 @@ func (s *Service) SysMicroUp() error {
 }
 
 func (s *Service) SysMicroDown() error {
-	_, _, err := runScript("bash", "amixer set Capture 5%-")
+	_, _, err := utils.RunScript("bash", "amixer set Capture 5%-")
 	if err == nil {
 		dwmblocknotify.PUT("micro -5%", 1*time.Second)
 	}
@@ -169,7 +170,7 @@ func (s *Service) SysMicroDown() error {
 }
 
 func (s *Service) SysMicroToggle() error {
-	_, _, err := runScript("bash", "amixer set Capture toggle")
+	_, _, err := utils.RunScript("bash", "amixer set Capture toggle")
 	if err == nil {
 		dwmblocknotify.PUT("micro toggle", 1*time.Second)
 	}
@@ -177,7 +178,7 @@ func (s *Service) SysMicroToggle() error {
 }
 
 func (s *Service) SysDisplayLightUp() error {
-	_, _, err := runScript("bash", "sudo light -A 1")
+	_, _, err := utils.RunScript("bash", "sudo light -A 1")
 	if err == nil {
 		dwmblocknotify.PUT("light +1%", 1*time.Second)
 	}
@@ -185,7 +186,7 @@ func (s *Service) SysDisplayLightUp() error {
 }
 
 func (s *Service) SysDisplayLightDown() error {
-	_, _, err := runScript("bash", "sudo light -N 1 && sudo light -U 1")
+	_, _, err := utils.RunScript("bash", "sudo light -N 1 && sudo light -U 1")
 	if err == nil {
 		dwmblocknotify.PUT("light -1%", 1*time.Second)
 	}
@@ -195,7 +196,7 @@ func (s *Service) SysDisplayLightDown() error {
 func (s *Service) SysReset() error {
 	dwmblocknotify.PUT("reset sys default", 1*time.Second)
 
-	out, _, _ := runScript("bash", "amixer scontrols")
+	out, _, _ := utils.RunScript("bash", "amixer scontrols")
 	hasCtl := func(name string) bool {
 		return strings.Contains(out, fmt.Sprintf("'%s'", name))
 	}
@@ -226,7 +227,7 @@ func (s *Service) SysReset() error {
 	steps = append(steps, step{"xset r rate 158 128", "set keyboard rate to 158 128"})
 
 	for _, st := range steps {
-		if _, _, err := runScript("bash", st.cmd); err != nil {
+		if _, _, err := utils.RunScript("bash", st.cmd); err != nil {
 			dwmblocknotify.PUT(fmt.Sprintf("%s failed: %v", st.cmd, err), 3*time.Second)
 		} else {
 			dwmblocknotify.PUT(st.msg, 1*time.Second)
@@ -239,17 +240,17 @@ func (s *Service) SysReset() error {
 func (s *Service) SysKill() error {
 	term := psl.GetConfig().Svc.DefaultTerminal
 	tmpl := `%s -e zsh -c 'ps -ef | fzf --prompt="kill -9 >" --select-1 --exit-0 | awk "{print \$2}" | xargs -r kill -9'`
-	return startScript("bash", fmt.Sprintf(tmpl, term))
+	return utils.StartScript("bash", fmt.Sprintf(tmpl, term))
 }
 
 func (s *Service) SysWifiConnect() error {
-	out, _, err := runScript("bash", "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq|rofi -dmenu -p 'connect to wifi'")
+	out, _, err := utils.RunScript("bash", "nmcli device wifi list|sed '1d'|sed '/--/ d'|awk '{print $2}'|sort|uniq|rofi -dmenu -p 'connect to wifi'")
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil
 	}
 	ssid := strings.TrimSpace(out)
 
-	out, _, err = runScript("bash", "rofi -dmenu -p 'password' < /dev/null")
+	out, _, err = utils.RunScript("bash", "rofi -dmenu -p 'password' < /dev/null")
 	if err != nil {
 		return nil
 	}
@@ -260,7 +261,7 @@ func (s *Service) SysWifiConnect() error {
 
 func (s *Service) wifiConnect(ssid, password string) error {
 	cmd := fmt.Sprintf("nmcli device wifi connect '%s' password '%s'", ssid, password)
-	_, stderr, err := runScript("bash", cmd)
+	_, stderr, err := utils.RunScript("bash", cmd)
 	if err != nil {
 		return fmt.Errorf("connect wifi failed: %s", stderr)
 	}
@@ -268,7 +269,7 @@ func (s *Service) wifiConnect(ssid, password string) error {
 }
 
 func (s *Service) SysBluetoothConnect() error {
-	out, _, err := runScript("bash", "bluetoothctl devices | rofi -dmenu -p 'connect to'")
+	out, _, err := utils.RunScript("bash", "bluetoothctl devices | rofi -dmenu -p 'connect to'")
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil
 	}
@@ -280,7 +281,7 @@ func (s *Service) SysBluetoothConnect() error {
 }
 
 func (s *Service) SysBluetoothDisconnect() error {
-	out, _, err := runScript("bash", "bluetoothctl info | grep 'Device ' | rofi -dmenu -p 'disconnect from'")
+	out, _, err := utils.RunScript("bash", "bluetoothctl info | grep 'Device ' | rofi -dmenu -p 'disconnect from'")
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil
 	}
@@ -302,7 +303,7 @@ func (s *Service) SysBluetoothScanConnect() error {
 	}
 
 	input := strings.Join(devices, "\n")
-	out, _, err := runScript("bash", fmt.Sprintf("echo '%s' | rofi -dmenu -p 'connect bluetooth'", strings.ReplaceAll(input, "'", "'\"'\"'")))
+	out, _, err := utils.RunScript("bash", fmt.Sprintf("echo '%s' | rofi -dmenu -p 'connect bluetooth'", strings.ReplaceAll(input, "'", "'\"'\"'")))
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil
 	}
@@ -316,7 +317,7 @@ func (s *Service) SysBluetoothScanConnect() error {
 }
 
 func (s *Service) bluetoothDisconnect(mac string) error {
-	_, stderr, err := runScript("bash", fmt.Sprintf("bluetoothctl disconnect %s", mac))
+	_, stderr, err := utils.RunScript("bash", fmt.Sprintf("bluetoothctl disconnect %s", mac))
 	if err != nil {
 		return fmt.Errorf("disconnect failed: %s", stderr)
 	}
@@ -329,7 +330,7 @@ func (s *Service) bluetoothConnect(mac string) error {
 		fmt.Sprintf("bluetoothctl trust %s", mac),
 		fmt.Sprintf("bluetoothctl connect %s", mac),
 	} {
-		_, stderr, err := runScript("bash", subcmd)
+		_, stderr, err := utils.RunScript("bash", subcmd)
 		if err != nil {
 			return fmt.Errorf("%s failed: %s", subcmd, stderr)
 		}

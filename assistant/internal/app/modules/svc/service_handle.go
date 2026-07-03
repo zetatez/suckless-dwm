@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -109,7 +110,7 @@ func (s *Service) extractFileLocation(text string) (file string, line int, col i
 
 		if abs, err := filepath.Abs(candidate); err == nil {
 			candidate = abs
-		} else if out, _, err := runScript("bash", fmt.Sprintf("fd -H -1 -f '%s'", candidate)); err == nil && out != "" {
+		} else if out, _, err := utils.RunScript("bash", fmt.Sprintf("fd -H -1 -f '%s'", candidate)); err == nil && out != "" {
 			candidate = strings.TrimSpace(out)
 		}
 		if _, err := os.Stat(candidate); err == nil {
@@ -149,11 +150,11 @@ func (s *Service) HandleClipboard() (string, error) {
 		switch {
 		case line > 0 && col > 0:
 			vimcmd = fmt.Sprintf("call cursor(%d,%d)", line, col)
-			_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim +'%s' %s", term, vimcmd, file))
+			_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +'%s' %s", term, vimcmd, file))
 		case line > 0:
-			_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim +%d %s", term, line, file))
+			_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim +%d %s", term, line, file))
 		default:
-			_, _, err = runScript("bash", fmt.Sprintf("%s -e nvim %s", term, file))
+			_, _, err = utils.RunScript("bash", fmt.Sprintf("%s -e nvim %s", term, file))
 		}
 		msg := fmt.Sprintf("opened %s", file)
 		return msg, err

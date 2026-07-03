@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"fmt"
 	"os"
 	"path"
@@ -56,7 +57,7 @@ func (s *Service) Note(noteType string) error {
 	}
 
 	term := psl.GetConfig().Svc.DefaultTerminal
-	if _, _, err := runScript("bash", fmt.Sprintf(`%s -e nvim "+normal G$" "%s"`, term, filePath)); err != nil {
+	if _, _, err := utils.RunScript("bash", fmt.Sprintf(`%s -e nvim "+normal G$" "%s"`, term, filePath)); err != nil {
 		return fmt.Errorf("launch nvim: %w", err)
 	}
 	return nil

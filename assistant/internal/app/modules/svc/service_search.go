@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"fmt"
 	"os"
 	"path"
@@ -19,7 +20,7 @@ func (s *Service) Search() error {
 	if err := os.WriteFile(tmpf, []byte(list), 0o644); err != nil {
 		return fmt.Errorf("write action list: %w", err)
 	}
-	out, _, err := runScript("bash", fmt.Sprintf("rofi -dmenu -p 'search' < %s", tmpf))
+	out, _, err := utils.RunScript("bash", fmt.Sprintf("rofi -dmenu -p 'search' < %s", tmpf))
 	_ = os.Remove(tmpf)
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil

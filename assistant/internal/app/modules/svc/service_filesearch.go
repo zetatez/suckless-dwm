@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"fmt"
 	"os"
 	"strings"
@@ -152,7 +153,7 @@ func (s *Service) FileSearch(dir string) error {
 		dir = homeDir()
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	return startScript("bash", fmt.Sprintf(tmplFileSearch, term, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearch, term, dir))
 }
 
 func (s *Service) FileSearchContent(dir string) error {
@@ -160,7 +161,7 @@ func (s *Service) FileSearchContent(dir string) error {
 		dir = homeDir()
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	return startScript("bash", fmt.Sprintf(tmplFileSearchContent, term, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchContent, term, dir))
 }
 
 func (s *Service) FileSearchBook(dir string) error {
@@ -168,7 +169,7 @@ func (s *Service) FileSearchBook(dir string) error {
 		dir = homeDir()
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	return startScript("bash", fmt.Sprintf(tmplFileSearchBook, term, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchBook, term, dir))
 }
 
 func (s *Service) FileSearchMedia(dir string) error {
@@ -176,7 +177,7 @@ func (s *Service) FileSearchMedia(dir string) error {
 		dir = homeDir()
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	return startScript("bash", fmt.Sprintf(tmplFileSearchMedia, term, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchMedia, term, dir))
 }
 
 func (s *Service) FileSearchWiki(dir string) error {
@@ -184,7 +185,7 @@ func (s *Service) FileSearchWiki(dir string) error {
 		dir = homeDir()
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	return startScript("bash", fmt.Sprintf(tmplFileSearchWiki, term, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchWiki, term, dir))
 }
 
 func (s *Service) FileSearchExec(dir string) error {
@@ -192,12 +193,12 @@ func (s *Service) FileSearchExec(dir string) error {
 		dir = homeDir()
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
-	return startScript("bash", fmt.Sprintf(tmplFileSearchExec, term, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchExec, term, dir))
 }
 
 func (s *Service) OpenImages(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	return startScript("bash", fmt.Sprintf(tmplFileSearchImages, dir))
+	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchImages, dir))
 }

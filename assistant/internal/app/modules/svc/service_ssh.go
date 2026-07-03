@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"assistant/pkg/utils"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -19,7 +20,7 @@ func (s *Service) ConnectSSH(host string, port int, user, password string) error
 	}
 	term := psl.GetConfig().Svc.DefaultTerminal
 	cmd := fmt.Sprintf("%s -e sshpass -p '%s' ssh -o 'StrictHostKeyChecking no' -p %d %s@%s &", term, password, port, user, host)
-	_, _, err := runScript("bash", cmd)
+	_, _, err := utils.RunScript("bash", cmd)
 	return err
 }
 
@@ -65,7 +66,7 @@ func (s *Service) SysSSHConnect() error {
 	}
 
 	input := strings.Join(lines, "\n")
-	out, _, err := runScript("bash", fmt.Sprintf("echo '%s' | rofi -dmenu -p 'ssh to'", strings.ReplaceAll(input, "'", "'\"'\"'")))
+	out, _, err := utils.RunScript("bash", fmt.Sprintf("echo '%s' | rofi -dmenu -p 'ssh to'", strings.ReplaceAll(input, "'", "'\"'\"'")))
 	if err != nil || strings.TrimSpace(out) == "" {
 		return nil
 	}
@@ -107,7 +108,7 @@ func (s *Service) SysSSHConnect() error {
 	}
 
 	if password == "" {
-		out2, _, err := runScript("bash", "rofi -dmenu -p 'password' < /dev/null")
+		out2, _, err := utils.RunScript("bash", "rofi -dmenu -p 'password' < /dev/null")
 		if err != nil || strings.TrimSpace(out2) == "" {
 			return nil
 		}
