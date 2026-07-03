@@ -65,6 +65,20 @@ func stripThinkTags(s string) string {
 	return s
 }
 
+func stripCodeFence(s string) string {
+	s = strings.TrimSpace(s)
+	for _, prefix := range []string{"```go\n", "```python\n", "```rust\n", "```sql\n", "```"} {
+		if strings.HasPrefix(s, prefix) {
+			s = strings.TrimSpace(s[len(prefix):])
+			break
+		}
+	}
+	if strings.HasSuffix(s, "```") {
+		s = strings.TrimSpace(s[:len(s)-3])
+	}
+	return s
+}
+
 func (s *Service) SolveLeetCode() error {
 	text, err := s.readClipboard()
 	if err != nil {
@@ -91,6 +105,7 @@ func (s *Service) SolveLeetCode() error {
 
 	result := strings.TrimSpace(resp.Content)
 	result = stripThinkTags(result)
+	result = stripCodeFence(result)
 	if result == "" {
 		return fmt.Errorf("LLM returned empty response")
 	}
@@ -139,6 +154,7 @@ func (s *Service) SolveLeetCodeScreenshot() error {
 
 	result := strings.TrimSpace(resp.Content)
 	result = stripThinkTags(result)
+	result = stripCodeFence(result)
 	if result == "" {
 		return fmt.Errorf("LLM returned empty response")
 	}
