@@ -89,14 +89,14 @@ type AuthConfig struct {
 }
 
 type SvcConfig struct {
-	ProxyServer            string `mapstructure:"vpn_proxy"`
 	PrimaryMonitor         string `mapstructure:"default_monitor"`
+	SnipDir                string `mapstructure:"dir_snip"`
 	DirWallpaper           string `mapstructure:"dir_wallpaper"`
 	WorkingLogbookDir      string `mapstructure:"dir_working_logbook"`
 	KeyboardBrightnessPath string `mapstructure:"path_keyboard_brightness"`
 	SSHSecretFile          string `mapstructure:"path_ssh_secret"`
-	DefaultTerminal        string `mapstructure:"terminal_default"`
-	SnipDir                string `mapstructure:"dir_snip"`
+	DefaultTerminal        string `mapstructure:"default_terminal"`
+	ProxyServer            string `mapstructure:"vpn_proxy"`
 }
 
 type ChannelsConfig struct {
