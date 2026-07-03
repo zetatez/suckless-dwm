@@ -2,7 +2,7 @@ package utils
 
 import "bytes"
 
-func detectEncoding(content []byte) string {
+func GetEncodingType(content []byte) string {
 	if len(content) == 0 {
 		return "empty"
 	}
@@ -16,18 +16,4 @@ func detectEncoding(content []byte) string {
 		return "utf-16-be"
 	}
 	return "utf-8"
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

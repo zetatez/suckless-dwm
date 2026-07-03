@@ -88,6 +88,10 @@ func ReadLines(path string, start, end int) (*ReadResult, error) {
 	}, nil
 }
 
+func detectEncoding(content []byte) string {
+	return "utf-8"
+}
+
 func ReadChunk(path string, offset, size int) (*ReadResult, error) {
 	if offset < 0 || size <= 0 {
 		return nil, fmt.Errorf("invalid offset or size")
