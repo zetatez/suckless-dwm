@@ -88,14 +88,17 @@ background:
     - name: picom
       command: picom --config ~/.config/picom/picom.conf
       precursor: dwm
-    - name: dunst
-      command: dunst
+    - name: hhkb
+      command: hhkb
       precursor: dwm
     - name: xset
       command: xset r rate 158 128
       precursor: dwm
     - name: clipmenud
       command: clipmenud
+      precursor: dwm
+    - name: dunst
+      command: dunst
       precursor: dwm
 
 filebrowser:
