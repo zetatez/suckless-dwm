@@ -60,7 +60,6 @@ func loadConfig() (*Config, error) {
 
 type Config struct {
 	App         AppConfig         `mapstructure:"app"`
-	Auth        AuthConfig        `mapstructure:"auth"`
 	Log         xlog.LogConfig    `mapstructure:"log"`
 	LLMProxy    llm.Config        `mapstructure:"llm_proxy"`
 	Settings    SettingsConfig    `mapstructure:"settings"`
@@ -76,15 +75,12 @@ type FileBrowserConfig struct {
 }
 
 type AppConfig struct {
-	Name      string `mapstructure:"name"`
-	Host      string `mapstructure:"host"`
-	Port      int    `mapstructure:"port"`
-	Interface string `mapstructure:"interface"`
-}
-
-type AuthConfig struct {
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
+	Name         string `mapstructure:"name"`
+	Host         string `mapstructure:"host"`
+	Port         int    `mapstructure:"port"`
+	Interface    string `mapstructure:"interface"`
+	RootUsername string `mapstructure:"root_username"`
+	RootPassword string `mapstructure:"root_password"`
 }
 
 type SettingsConfig struct {

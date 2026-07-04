@@ -20,9 +20,7 @@ func GetLLMClient() llm.Client { return llmClient }
 func InitLLMClient() error {
 	onceLLMClient.Do(func() {
 		cfg := GetConfig().LLMProxy
-		if cfg.VPN == "" {
-			cfg.VPN = GetConfig().Settings.VPN
-		}
+		cfg.VPN = GetConfig().Settings.VPN
 		llmProxySvc = llm.NewProxyService(cfg)
 		if llmProxySvc.HasProviders() {
 			llmClient = llm.NewProxyClient(llmProxySvc)

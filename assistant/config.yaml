@@ -2,10 +2,8 @@ app:
   name: assistant
   host: 0.0.0.0
   port: 4321
-
-auth:
-  username: admin
-  password: AAaa00__
+  root_username: admin
+  root_password: AAaa00__
 
 log:
   level: debug
@@ -37,7 +35,6 @@ llm_proxy:
   probe_interval: 30
   timeout: 300
   temperature: 0.3
-  vpn: "socks5://127.0.0.1:7891"
   providers:
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/plan/v3

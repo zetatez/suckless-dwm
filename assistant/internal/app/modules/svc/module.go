@@ -33,7 +33,7 @@ func (m *Module) Middleware() []gin.HandlerFunc {
 				return
 			}
 			cfg := psl.GetConfig()
-			if username != cfg.Auth.Username || password != cfg.Auth.Password {
+			if username != cfg.App.RootUsername || password != cfg.App.RootPassword {
 				c.Header("WWW-Authenticate", `Basic realm="cmd"`)
 				c.AbortWithStatusJSON(401, gin.H{"code": 40101, "message": "unauthorized"})
 				return
