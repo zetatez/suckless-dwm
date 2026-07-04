@@ -64,7 +64,6 @@ type Config struct {
 	Log         xlog.LogConfig    `mapstructure:"log"`
 	LLMProxy    llm.Config        `mapstructure:"llm_proxy"`
 	Settings    SettingsConfig    `mapstructure:"settings"`
-	Channels    ChannelsConfig    `mapstructure:"channels"`
 	Background  BackgroundConfig  `mapstructure:"background"`
 	FileBrowser FileBrowserConfig `mapstructure:"filebrowser"`
 }
@@ -89,18 +88,15 @@ type AuthConfig struct {
 }
 
 type SettingsConfig struct {
-	DefaultMonitor         string `mapstructure:"default_monitor"`
-	DirSnip                string `mapstructure:"dir_snip"`
-	DirWallpaper           string `mapstructure:"dir_wallpaper"`
-	DirWorkingLogbook      string `mapstructure:"dir_working_logbook"`
-	PathKeyboardBrightness string `mapstructure:"path_keyboard_brightness"`
-	PathSSHSecret          string `mapstructure:"path_ssh_secret"`
-	DefaultTerminal        string `mapstructure:"default_terminal"`
-	VPN                    string `mapstructure:"vpn"`
-}
-
-type ChannelsConfig struct {
-	Feishu FeishuConfig `mapstructure:"feishu"`
+	DefaultMonitor         string       `mapstructure:"default_monitor"`
+	DirSnip                string       `mapstructure:"dir_snip"`
+	DirWallpaper           string       `mapstructure:"dir_wallpaper"`
+	DirWorkingLogbook      string       `mapstructure:"dir_working_logbook"`
+	PathKeyboardBrightness string       `mapstructure:"path_keyboard_brightness"`
+	PathSSHSecret          string       `mapstructure:"path_ssh_secret"`
+	DefaultTerminal        string       `mapstructure:"default_terminal"`
+	VPN                    string       `mapstructure:"vpn"`
+	Feishu                 FeishuConfig `mapstructure:"feishu"`
 }
 
 type FeishuConfig struct {
@@ -210,9 +206,9 @@ func (c *Config) Validate() error {
 func (c *Config) resolveEnv() {
 	envPH := regexp.MustCompile(`\$\{(\w+)\}`)
 	expand := func(p *string) { *p = expandEnvPH(*p, envPH) }
-	expand(&c.Channels.Feishu.AppID)
-	expand(&c.Channels.Feishu.AppSecret)
-	expand(&c.Channels.Feishu.ChatID)
+	expand(&c.Settings.Feishu.AppID)
+	expand(&c.Settings.Feishu.AppSecret)
+	expand(&c.Settings.Feishu.ChatID)
 	for i := range c.LLMProxy.Providers {
 		expand(&c.LLMProxy.Providers[i].APIKey)
 	}

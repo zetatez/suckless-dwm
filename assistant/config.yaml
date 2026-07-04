@@ -17,6 +17,20 @@ log:
   format: text
   console: true
 
+settings:
+  vpn: "socks5://127.0.0.1:7891"
+  default_monitor: "eDP-1"
+  default_terminal: "st"
+  dir_snip: "~/git/obsidian/.snippets"
+  dir_wallpaper: "~/Pictures/wallpapers"
+  dir_working_logbook: "~/git/working/logbook"
+  path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
+  path_ssh_secret: "~/.ssh/my.ssh.json"
+  feishu:
+    app_id: "${FEISHU_APP_ID}"
+    app_secret: "${FEISHU_APP_SECRET}"
+    chat_id: "${FEISHU_CHAT_ID}"
+
 llm_proxy:
   proxied_model: "assistant"
   proxied_api_key: "sk-your-token-here"
@@ -65,12 +79,6 @@ llm_proxy:
       plan_type: payg
       need_vpn: false
 
-channels:
-  feishu:
-    app_id: "${FEISHU_APP_ID}"
-    app_secret: "${FEISHU_APP_SECRET}"
-    chat_id: "${FEISHU_CHAT_ID}"
-
 background:
   enabled: true
   procs:
@@ -92,16 +100,6 @@ background:
     - name: clipmenud
       command: clipmenud
       precursor: dwm
-
-settings:
-  default_monitor: "eDP-1"
-  default_terminal: "st"
-  dir_snip: "~/git/obsidian/.snippets"
-  dir_wallpaper: "~/Pictures/wallpapers"
-  dir_working_logbook: "~/git/working/logbook"
-  path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
-  path_ssh_secret: "~/.ssh/my.ssh.json"
-  vpn: "socks5://127.0.0.1:7891"
 
 filebrowser:
   root: "/home/shiyi"

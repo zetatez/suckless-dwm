@@ -17,12 +17,27 @@ log:
   format: text
   console: true
 
+settings:
+  vpn: "socks5://127.0.0.1:7891"
+  default_monitor: "eDP-1"
+  default_terminal: "st"
+  dir_snip: "~/git/obsidian/.snippets"
+  dir_wallpaper: "~/Pictures/wallpapers"
+  dir_working_logbook: "~/git/working/logbook"
+  path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
+  path_ssh_secret: "~/.ssh/my.ssh.json"
+  feishu:
+    app_id: "${FEISHU_APP_ID}"
+    app_secret: "${FEISHU_APP_SECRET}"
+    chat_id: "${FEISHU_CHAT_ID}"
+
 llm_proxy:
   proxied_model: "assistant"
   proxied_api_key: "sk-your-token-here"
   probe_interval: 30
   timeout: 300
   temperature: 0.3
+  vpn: "socks5://127.0.0.1:7891"
   providers:
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/plan/v3
@@ -31,6 +46,7 @@ llm_proxy:
         - glm-5.2
         - deepseek-v4-pro
       plan_type: fixed
+      need_vpn: false
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/coding/v3
       api_key: "${ARK_CODING_PLAN_API_KEY}"
@@ -38,6 +54,14 @@ llm_proxy:
         - glm-5.2
         - deepseek-v4-pro
       plan_type: fixed
+      need_vpn: false
+    - name: google
+      base_url: https://generativelanguage.googleapis.com/v1beta/openai
+      api_key: "${GEMINI_API_KEY}"
+      models:
+        - gemini-3.5-flash
+      plan_type: fixed
+      need_vpn: true
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/plan/v3
       api_key: "${ARK_AGENT_PLAN_API_KEY}"
@@ -45,6 +69,7 @@ llm_proxy:
         - glm-5.2
         - deepseek-v4-pro
       plan_type: fixed
+      need_vpn: false
     - name: deepseek
       base_url: https://api.deepseek.com
       api_key: "${DEEPSEEK_API_KEY}"
@@ -52,12 +77,7 @@ llm_proxy:
         - deepseek-v4-pro
         - deepseek-v4-flash
       plan_type: payg
-
-channels:
-  feishu:
-    app_id: "${FEISHU_APP_ID}"
-    app_secret: "${FEISHU_APP_SECRET}"
-    chat_id: "${FEISHU_CHAT_ID}"
+      need_vpn: false
 
 background:
   enabled: true
@@ -80,16 +100,6 @@ background:
     - name: clipmenud
       command: clipmenud
       precursor: dwm
-
-settings:
-  default_monitor: "eDP-1"
-  default_terminal: "st"
-  dir_snip: "~/git/obsidian/.snippets"
-  dir_wallpaper: "~/Pictures/wallpapers"
-  dir_working_logbook: "~/git/working/logbook"
-  path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
-  path_ssh_secret: "~/.ssh/my.ssh.json"
-  vpn: "socks5://127.0.0.1:7891"
 
 filebrowser:
   root: "/home/shiyi"

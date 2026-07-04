@@ -22,7 +22,7 @@ func (s *Service) SendToFeishu() error {
 		return fmt.Errorf("clipboard is empty")
 	}
 
-	cfg := psl.GetConfig().Channels
+	cfg := psl.GetConfig().Settings
 	appID := cfg.Feishu.AppID
 	appSecret := cfg.Feishu.AppSecret
 	chatID := cfg.Feishu.ChatID
