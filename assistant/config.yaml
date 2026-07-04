@@ -62,17 +62,20 @@ channels:
 background:
   enabled: true
   procs:
+    - name: dwmblocks
+      command: dwmblocks
+      precursor: dwm
     - name: fcitx5
       command: fcitx5 -d
       precursor: dwm
     - name: picom
       command: picom --config ~/.config/picom/picom.conf
       precursor: dwm
-    - name: xset
-      command: xset r rate 158 128
-      precursor: dwm
     - name: dunst
       command: dunst
+      precursor: dwm
+    - name: xset
+      command: xset r rate 158 128
       precursor: dwm
     - name: clipmenud
       command: clipmenud
