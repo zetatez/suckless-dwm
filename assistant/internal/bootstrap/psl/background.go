@@ -53,7 +53,7 @@ func isRunning(name string) bool {
 
 func startWallpaper(ctx context.Context) {
 	go func() {
-		dir := GetConfig().Svc.DirWallpaper
+		dir := GetConfig().Settings.DirWallpaper
 		ticker := time.NewTicker(60 * time.Second)
 		defer ticker.Stop()
 		for {

@@ -18,8 +18,8 @@ log:
   console: true
 
 llm_proxy:
-  middle_model: "assistant"
-  auth_token: "sk-your-token-here"
+  proxied_model: "assistant"
+  proxied_api_key: "sk-your-token-here"
   probe_interval: 30
   timeout: 300
   temperature: 0.3

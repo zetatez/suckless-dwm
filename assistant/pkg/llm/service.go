@@ -42,12 +42,12 @@ type ProviderConfig struct {
 }
 
 type Config struct {
-	MiddleModel   string           `mapstructure:"middle_model"`
+	ProxiedModel  string           `mapstructure:"proxied_model"`
 	ProbeInterval int              `mapstructure:"probe_interval"`
-	AuthToken     string           `mapstructure:"auth_token"`
+	ProxiedAPIKey string           `mapstructure:"proxied_api_key"`
 	Timeout       int              `mapstructure:"timeout"`
 	Temperature   float32          `mapstructure:"temperature"`
-	VPNProxy      string           `mapstructure:"vpn"`
+	VPN           string           `mapstructure:"vpn"`
 	Providers     []ProviderConfig `mapstructure:"providers"`
 }
 
@@ -82,8 +82,8 @@ func NewProxyService(cfg Config) *ProxyService {
 		},
 	}
 
-	if cfg.VPNProxy != "" {
-		if dialer, err := newSocksDialer(cfg.VPNProxy); err == nil {
+	if cfg.VPN != "" {
+		if dialer, err := newSocksDialer(cfg.VPN); err == nil {
 			tr := &http.Transport{
 				MaxIdleConns:        8,
 				MaxIdleConnsPerHost: 2,
@@ -348,7 +348,7 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 	var p *providerState
 	var modelSpecific bool
 
-	if requestedModel == s.config.MiddleModel || requestedModel == "" {
+	if requestedModel == s.config.ProxiedModel || requestedModel == "" {
 		p = s.selectProvider("")
 	} else {
 		p = s.selectProvider(requestedModel)

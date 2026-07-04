@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Service) OpenURL(browser, url string) error {
-	proxy := psl.GetConfig().Svc.ProxyServer
+	proxy := psl.GetConfig().Settings.VPN
 	switch browser {
 	case "chrome":
 		return utils.StartScript("bash", fmt.Sprintf("chrome --proxy-server=%s '%s'", proxy, url))
@@ -21,7 +21,7 @@ func (s *Service) OpenURL(browser, url string) error {
 }
 
 func (s *Service) OpenURLAsApp(browser, url string) error {
-	proxy := psl.GetConfig().Svc.ProxyServer
+	proxy := psl.GetConfig().Settings.VPN
 	switch browser {
 	case "chrome":
 		return utils.StartScript("bash", fmt.Sprintf("chrome --proxy-server='%s' --app='%s'", proxy, url))

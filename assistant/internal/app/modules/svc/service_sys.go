@@ -40,8 +40,8 @@ func (s *Service) SysShortcut() error {
 }
 
 func (s *Service) SysDisplay() error {
-	cfg := psl.GetConfig().Svc
-	primaryMonitor := cfg.PrimaryMonitor
+	cfg := psl.GetConfig().Settings
+	primaryMonitor := cfg.DefaultMonitor
 	stdout, _, err := utils.RunScript("bash", fmt.Sprintf("xrandr|grep ' connected'|grep -v '%s'|awk '{print $1}'", primaryMonitor))
 	if err != nil {
 		return fmt.Errorf("detect monitors: %w", err)
@@ -112,7 +112,7 @@ func (s *Service) runDisplayFallback(xrandrCmd, wallpaperDir string) {
 }
 
 func (s *Service) SysKeyboardLight() (string, error) {
-	kbdPath := psl.GetConfig().Svc.KeyboardBrightnessPath
+	kbdPath := psl.GetConfig().Settings.PathKeyboardBrightness
 	data, err := os.ReadFile(kbdPath)
 	if err != nil {
 		return "", fmt.Errorf("read keyboard brightness: %w", err)
@@ -238,7 +238,7 @@ func (s *Service) SysReset() error {
 }
 
 func (s *Service) SysKill() error {
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	tmpl := `%s -e zsh -c 'ps -ef | fzf --prompt="kill -9 >" --select-1 --exit-0 | awk "{print \$2}" | xargs -r kill -9'`
 	return utils.StartScript("bash", fmt.Sprintf(tmpl, term))
 }

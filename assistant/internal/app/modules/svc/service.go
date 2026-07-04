@@ -142,7 +142,7 @@ func (s *Service) Toggle(cmd, match string) (string, error) {
 }
 
 func (s *Service) ToggleTTYClock() (string, error) {
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	geo := s.geoForTerminal(0.72, 0.04, 53, 8)
 	cmd := fmt.Sprintf("%s -g %s -t float -c float -e tty-clock -s", term, geo)
 	return s.Toggle(cmd, "tty-clock")
@@ -158,7 +158,7 @@ func (s *Service) ToggleMusic() (string, error) {
 		}
 		return "killed", nil
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	if err := utils.StartScript("bash", fmt.Sprintf("%s -e ncmpcpp", term)); err != nil {
 		return "", fmt.Errorf("launch ncmpcpp: %w", err)
 	}
@@ -169,7 +169,7 @@ func (s *Service) ToggleMusic() (string, error) {
 }
 
 func (s *Service) ToggleRecShow() (string, error) {
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	cmd := fmt.Sprintf("%s -e ffplay -loglevel quiet -framedrop -fast -alwaysontop -i /dev/video0", term)
 	return s.Toggle(cmd, "ffplay")
 }
@@ -183,7 +183,7 @@ func (s *Service) ToggleRecAudio() (string, error) {
 	}
 	homeDir, _ := os.UserHomeDir()
 	now := time.Now().Format("2006-01-02-15-04-05")
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	scratch := fmt.Sprintf("%s -t scratchpad -c scratchpad -e", term)
 	filename := path.Join(homeDir, fmt.Sprintf("Videos/rec-audio-%s.flac", now))
 	cmd := fmt.Sprintf("%s ffmpeg -y -r 60 -f alsa -i default -c:a flac %s", scratch, filename)
@@ -199,7 +199,7 @@ func (s *Service) ToggleRecScreen() (string, error) {
 	}
 	homeDir, _ := os.UserHomeDir()
 	now := time.Now().Format("2006-01-02-15-04-05")
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	scratch := fmt.Sprintf("%s -t scratchpad -c scratchpad -e", term)
 	filename := path.Join(homeDir, fmt.Sprintf("Videos/rec-screen-%s.mkv", now))
 	w, h := s.screenSize()
@@ -216,7 +216,7 @@ func (s *Service) ToggleRecWebcam() (string, error) {
 	}
 	homeDir, _ := os.UserHomeDir()
 	now := time.Now().Format("2006-01-02-15-04-05")
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	scratch := fmt.Sprintf("%s -t scratchpad -c scratchpad -e", term)
 	filename := path.Join(homeDir, fmt.Sprintf("Videos/rec-webcam-%s.mp4", now))
 	cmd := fmt.Sprintf("%s ffmpeg -f pulse -ac 2 -i default -f v4l2 -i /dev/video0 -t 00:00:20 -vcodec libx264 %s", scratch, filename)

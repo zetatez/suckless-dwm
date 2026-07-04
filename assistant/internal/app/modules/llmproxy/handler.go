@@ -48,7 +48,7 @@ func (h *Handler) GetModel(c *gin.Context) {
 	cfg := h.svc.Config()
 	modelID := c.Param("model")
 
-	if modelID == cfg.MiddleModel {
+	if modelID == cfg.ProxiedModel {
 		c.JSON(http.StatusOK, map[string]interface{}{
 			"id": modelID, "object": "model", "created": time.Now().Unix(), "owned_by": "assistant",
 		})
@@ -73,9 +73,9 @@ func (h *Handler) GetModel(c *gin.Context) {
 func (h *Handler) ListModels(c *gin.Context) {
 	cfg := h.svc.Config()
 	now := time.Now().Unix()
-	seen := map[string]bool{cfg.MiddleModel: true}
+	seen := map[string]bool{cfg.ProxiedModel: true}
 	data := []map[string]interface{}{
-		{"id": cfg.MiddleModel, "object": "model", "created": now, "owned_by": "assistant"},
+		{"id": cfg.ProxiedModel, "object": "model", "created": now, "owned_by": "assistant"},
 	}
 	for _, p := range cfg.Providers {
 		for _, m := range p.Models {

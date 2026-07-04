@@ -152,7 +152,7 @@ func (s *Service) FileSearch(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearch, term, dir))
 }
 
@@ -160,7 +160,7 @@ func (s *Service) FileSearchContent(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchContent, term, dir))
 }
 
@@ -168,7 +168,7 @@ func (s *Service) FileSearchBook(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchBook, term, dir))
 }
 
@@ -176,7 +176,7 @@ func (s *Service) FileSearchMedia(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchMedia, term, dir))
 }
 
@@ -184,7 +184,7 @@ func (s *Service) FileSearchWiki(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchWiki, term, dir))
 }
 
@@ -192,7 +192,7 @@ func (s *Service) FileSearchExec(dir string) error {
 	if dir == "" {
 		dir = homeDir()
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	return utils.StartScript("bash", fmt.Sprintf(tmplFileSearchExec, term, dir))
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Service) Note(noteType string) error {
-	fileDir := psl.GetConfig().Svc.WorkingLogbookDir
+	fileDir := psl.GetConfig().Settings.DirWorkingLogbook
 	if err := os.MkdirAll(fileDir, 0o755); err != nil {
 		return fmt.Errorf("create logbook dir: %w", err)
 	}
@@ -56,7 +56,7 @@ func (s *Service) Note(noteType string) error {
 		return fmt.Errorf("close note file: %w", err)
 	}
 
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	if _, _, err := utils.RunScript("bash", fmt.Sprintf(`%s -e nvim "+normal G$" "%s"`, term, filePath)); err != nil {
 		return fmt.Errorf("launch nvim: %w", err)
 	}

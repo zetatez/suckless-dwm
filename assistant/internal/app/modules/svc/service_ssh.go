@@ -18,7 +18,7 @@ func (s *Service) ConnectSSH(host string, port int, user, password string) error
 	if user == "" {
 		user = "root"
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	cmd := fmt.Sprintf("%s -e sshpass -p '%s' ssh -o 'StrictHostKeyChecking no' -p %d %s@%s &", term, password, port, user, host)
 	_, _, err := utils.RunScript("bash", cmd)
 	return err
@@ -29,7 +29,7 @@ func (s *Service) SysSSHConnect() error {
 	if err != nil {
 		return err
 	}
-	sshConfigPath := psl.GetConfig().Svc.SSHSecretFile
+	sshConfigPath := psl.GetConfig().Settings.PathSSHSecret
 	sshConfigPath = strings.ReplaceAll(sshConfigPath, "~", homeDir)
 
 	var lines []string

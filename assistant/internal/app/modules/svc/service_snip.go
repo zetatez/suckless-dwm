@@ -13,14 +13,14 @@ import (
 )
 
 func (s *Service) SnipFzf() error {
-	snipDir := psl.GetConfig().Svc.SnipDir
+	snipDir := psl.GetConfig().Settings.DirSnip
 	if _, err := os.Stat(snipDir); err != nil {
 		return fmt.Errorf("snippet dir not found: %s", snipDir)
 	}
 
 	tmpf := path.Join(os.TempDir(), "snip-fzf-selected")
 	_ = os.Remove(tmpf)
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	tmpl := `
 cd %s && selected=$(
   find . -type f | sed "s|^\./||" |
@@ -57,7 +57,7 @@ cd %s && selected=$(
 }
 
 func (s *Service) SnipCreate(name string) error {
-	snipDir := psl.GetConfig().Svc.SnipDir
+	snipDir := psl.GetConfig().Settings.DirSnip
 	if err := os.MkdirAll(snipDir, 0o755); err != nil {
 		return fmt.Errorf("create snippet dir: %w", err)
 	}
@@ -74,7 +74,7 @@ func (s *Service) SnipCreate(name string) error {
 	if err := os.MkdirAll(path.Dir(filePath), 0o755); err != nil {
 		return fmt.Errorf("create snippet subdir: %w", err)
 	}
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 	if err := utils.StartScript("bash", fmt.Sprintf("%s -e nvim '%s'", term, filePath)); err != nil {
 		return fmt.Errorf("launch nvim: %w", err)
 	}

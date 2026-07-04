@@ -36,12 +36,12 @@ func (m *Module) RegisterUI(r *gin.RouterGroup) {}
 
 func (m *Module) Middleware() []gin.HandlerFunc {
 	cfg := psl.GetConfig().LLMProxy
-	if cfg.AuthToken == "" {
+	if cfg.ProxiedAPIKey == "" {
 		return module.BaseMiddleware()
 	}
 	return []gin.HandlerFunc{
 		func(c *gin.Context) {
-			if c.GetHeader("Authorization") != "Bearer "+cfg.AuthToken {
+			if c.GetHeader("Authorization") != "Bearer "+cfg.ProxiedAPIKey {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 				return
 			}

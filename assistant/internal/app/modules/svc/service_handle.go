@@ -143,7 +143,7 @@ func (s *Service) HandleClipboard() (string, error) {
 		return fmt.Sprintf("opened URL: %s", url), err
 	}
 
-	term := psl.GetConfig().Svc.DefaultTerminal
+	term := psl.GetConfig().Settings.DefaultTerminal
 
 	if file, line, col, ok := s.extractFileLocation(text); ok {
 		var vimcmd string

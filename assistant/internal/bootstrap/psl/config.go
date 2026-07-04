@@ -63,7 +63,7 @@ type Config struct {
 	Auth        AuthConfig        `mapstructure:"auth"`
 	Log         xlog.LogConfig    `mapstructure:"log"`
 	LLMProxy    llm.Config        `mapstructure:"llm_proxy"`
-	Svc         SvcConfig         `mapstructure:"settings"`
+	Settings    SettingsConfig    `mapstructure:"settings"`
 	Channels    ChannelsConfig    `mapstructure:"channels"`
 	Background  BackgroundConfig  `mapstructure:"background"`
 	FileBrowser FileBrowserConfig `mapstructure:"filebrowser"`
@@ -88,15 +88,15 @@ type AuthConfig struct {
 	Password string `mapstructure:"password"`
 }
 
-type SvcConfig struct {
-	PrimaryMonitor         string `mapstructure:"default_monitor"`
-	SnipDir                string `mapstructure:"dir_snip"`
+type SettingsConfig struct {
+	DefaultMonitor         string `mapstructure:"default_monitor"`
+	DirSnip                string `mapstructure:"dir_snip"`
 	DirWallpaper           string `mapstructure:"dir_wallpaper"`
-	WorkingLogbookDir      string `mapstructure:"dir_working_logbook"`
-	KeyboardBrightnessPath string `mapstructure:"path_keyboard_brightness"`
-	SSHSecretFile          string `mapstructure:"path_ssh_secret"`
+	DirWorkingLogbook      string `mapstructure:"dir_working_logbook"`
+	PathKeyboardBrightness string `mapstructure:"path_keyboard_brightness"`
+	PathSSHSecret          string `mapstructure:"path_ssh_secret"`
 	DefaultTerminal        string `mapstructure:"default_terminal"`
-	ProxyServer            string `mapstructure:"vpn"`
+	VPN                    string `mapstructure:"vpn"`
 }
 
 type ChannelsConfig struct {
@@ -130,26 +130,26 @@ func (c *Config) applyDefaults() {
 	if c.App.Interface == "" {
 		c.App.Interface = detectDefaultInterface()
 	}
-	if c.LLMProxy.MiddleModel == "" {
-		c.LLMProxy.MiddleModel = "assistant"
+	if c.LLMProxy.ProxiedModel == "" {
+		c.LLMProxy.ProxiedModel = "assistant"
 	}
-	if c.Svc.PrimaryMonitor == "" {
-		c.Svc.PrimaryMonitor = "eDP-1"
+	if c.Settings.DefaultMonitor == "" {
+		c.Settings.DefaultMonitor = "eDP-1"
 	}
-	if c.Svc.DirWallpaper == "" {
-		c.Svc.DirWallpaper = "~/Pictures/wallpapers"
+	if c.Settings.DirWallpaper == "" {
+		c.Settings.DirWallpaper = "~/Pictures/wallpapers"
 	}
-	if c.Svc.WorkingLogbookDir == "" {
-		c.Svc.WorkingLogbookDir = "~/git/working/logbook"
+	if c.Settings.DirWorkingLogbook == "" {
+		c.Settings.DirWorkingLogbook = "~/git/working/logbook"
 	}
-	if c.Svc.KeyboardBrightnessPath == "" {
-		c.Svc.KeyboardBrightnessPath = "/sys/class/leds/tpacpi::kbd_backlight/brightness"
+	if c.Settings.PathKeyboardBrightness == "" {
+		c.Settings.PathKeyboardBrightness = "/sys/class/leds/tpacpi::kbd_backlight/brightness"
 	}
-	if c.Svc.DefaultTerminal == "" {
-		c.Svc.DefaultTerminal = "st"
+	if c.Settings.DefaultTerminal == "" {
+		c.Settings.DefaultTerminal = "st"
 	}
-	if c.Svc.SnipDir == "" {
-		c.Svc.SnipDir = "~/git/obsidian/.snippets"
+	if c.Settings.DirSnip == "" {
+		c.Settings.DirSnip = "~/git/obsidian/.snippets"
 	}
 	if c.FileBrowser.Root == "" {
 		home, _ := os.UserHomeDir()
@@ -172,11 +172,11 @@ func (c *Config) expandPaths() error {
 	home, _ := os.UserHomeDir()
 	for _, p := range []*string{
 		&c.Log.Filename,
-		&c.Svc.DirWallpaper,
-		&c.Svc.WorkingLogbookDir,
-		&c.Svc.SSHSecretFile,
-		&c.Svc.KeyboardBrightnessPath,
-		&c.Svc.SnipDir,
+		&c.Settings.DirWallpaper,
+		&c.Settings.DirWorkingLogbook,
+		&c.Settings.PathSSHSecret,
+		&c.Settings.PathKeyboardBrightness,
+		&c.Settings.DirSnip,
 		&c.FileBrowser.Root,
 	} {
 		*p = expandHomePath(*p, home)
