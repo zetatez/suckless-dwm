@@ -211,8 +211,9 @@ func oaiToResponses(body []byte) []byte {
 		Created int64  `json:"created"`
 		Choices []struct {
 			Message struct {
-				Role    string `json:"role"`
-				Content string `json:"content"`
+				Role             string `json:"role"`
+				Content          string `json:"content"`
+				ReasoningContent string `json:"reasoning_content"`
 			} `json:"message"`
 			FinishReason string `json:"finish_reason"`
 		} `json:"choices"`
@@ -236,20 +237,24 @@ func oaiToResponses(body []byte) []byte {
 		stopReason = "end_turn"
 	}
 
-	resp := map[string]interface{}{
-		"id":      "resp_" + oai.ID,
-		"object":  "response",
-		"created": oai.Created,
-		"model":   oai.Model,
-		"output": []map[string]interface{}{
-			{
-				"type": "message",
-				"role": oai.Choices[0].Message.Role,
-				"content": []map[string]string{
-					{"type": "output_text", "text": oai.Choices[0].Message.Content},
-				},
-			},
+	msg := oai.Choices[0].Message
+	output := map[string]interface{}{
+		"type": "message",
+		"role": msg.Role,
+		"content": []map[string]string{
+			{"type": "output_text", "text": msg.Content},
 		},
+	}
+	if msg.ReasoningContent != "" {
+		output["reasoning_content"] = msg.ReasoningContent
+	}
+
+	resp := map[string]interface{}{
+		"id":          "resp_" + oai.ID,
+		"object":      "response",
+		"created":     oai.Created,
+		"model":       oai.Model,
+		"output":      []map[string]interface{}{output},
 		"stop_reason": stopReason,
 	}
 	if oai.Usage != nil {
@@ -303,6 +308,7 @@ func (h *Handler) streamResponses(c *gin.Context, resp *http.Response) {
 	var itemID string
 	var outputIndex int
 	var contentBuf strings.Builder
+	var reasoningBuf strings.Builder
 
 	scanner := NewSSEScanner(resp.Body)
 	for {
@@ -314,8 +320,9 @@ func (h *Handler) streamResponses(c *gin.Context, resp *http.Response) {
 		var chunk struct {
 			Choices []struct {
 				Delta struct {
-					Role    string `json:"role"`
-					Content string `json:"content"`
+					Role             string `json:"role"`
+					Content          string `json:"content"`
+					ReasoningContent string `json:"reasoning_content"`
 				} `json:"delta"`
 				FinishReason string `json:"finish_reason"`
 			} `json:"choices"`
@@ -326,7 +333,7 @@ func (h *Handler) streamResponses(c *gin.Context, resp *http.Response) {
 		delta := chunk.Choices[0].Delta
 		fr := chunk.Choices[0].FinishReason
 
-		if delta.Role == "assistant" && itemID == "" {
+		if (delta.Role == "assistant" || delta.ReasoningContent != "" || delta.Content != "") && itemID == "" {
 			itemID = "item_" + fmt.Sprintf("%x", time.Now().UnixNano())
 			added, _ := json.Marshal(map[string]interface{}{
 				"type": "response.output_item.added",
@@ -342,6 +349,10 @@ func (h *Handler) streamResponses(c *gin.Context, resp *http.Response) {
 			flusher.Flush()
 		}
 
+		if delta.ReasoningContent != "" {
+			reasoningBuf.WriteString(delta.ReasoningContent)
+		}
+
 		if delta.Content != "" {
 			contentBuf.WriteString(delta.Content)
 			textDelta, _ := json.Marshal(map[string]interface{}{
@@ -355,16 +366,20 @@ func (h *Handler) streamResponses(c *gin.Context, resp *http.Response) {
 		}
 
 		if fr != "" {
-			done, _ := json.Marshal(map[string]interface{}{
-				"type": "response.output_item.done",
-				"item": map[string]interface{}{
-					"id":   itemID,
-					"type": "message",
-					"role": "assistant",
-					"content": []map[string]string{
-						{"type": "output_text", "text": contentBuf.String()},
-					},
+			item := map[string]interface{}{
+				"id":   itemID,
+				"type": "message",
+				"role": "assistant",
+				"content": []map[string]string{
+					{"type": "output_text", "text": contentBuf.String()},
 				},
+			}
+			if reasoningBuf.Len() > 0 {
+				item["reasoning_content"] = reasoningBuf.String()
+			}
+			done, _ := json.Marshal(map[string]interface{}{
+				"type":         "response.output_item.done",
+				"item":         item,
 				"output_index": outputIndex,
 			})
 			fmt.Fprintf(c.Writer, "event: response.output_item.done\ndata: %s\n\n", done)
