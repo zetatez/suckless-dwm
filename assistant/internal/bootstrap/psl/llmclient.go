@@ -20,6 +20,9 @@ func GetLLMClient() llm.Client { return llmClient }
 func InitLLMClient() error {
 	onceLLMClient.Do(func() {
 		cfg := GetConfig().LLMProxy
+		if cfg.VPNProxy == "" {
+			cfg.VPNProxy = GetConfig().Svc.ProxyServer
+		}
 		llmProxySvc = llm.NewProxyService(cfg)
 		if llmProxySvc.HasProviders() {
 			llmClient = llm.NewProxyClient(llmProxySvc)

@@ -63,7 +63,7 @@ type Config struct {
 	Auth        AuthConfig        `mapstructure:"auth"`
 	Log         xlog.LogConfig    `mapstructure:"log"`
 	LLMProxy    llm.Config        `mapstructure:"llm_proxy"`
-	Svc         SvcConfig         `mapstructure:"svc"`
+	Svc         SvcConfig         `mapstructure:"settings"`
 	Channels    ChannelsConfig    `mapstructure:"channels"`
 	Background  BackgroundConfig  `mapstructure:"background"`
 	FileBrowser FileBrowserConfig `mapstructure:"filebrowser"`
@@ -96,7 +96,7 @@ type SvcConfig struct {
 	KeyboardBrightnessPath string `mapstructure:"path_keyboard_brightness"`
 	SSHSecretFile          string `mapstructure:"path_ssh_secret"`
 	DefaultTerminal        string `mapstructure:"default_terminal"`
-	ProxyServer            string `mapstructure:"vpn_proxy"`
+	ProxyServer            string `mapstructure:"vpn"`
 }
 
 type ChannelsConfig struct {

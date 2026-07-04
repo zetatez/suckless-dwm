@@ -7,10 +7,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/net/proxy"
 )
 
 var sharedTransport = &http.Transport{
@@ -34,6 +38,7 @@ type ProviderConfig struct {
 	APIKey   string   `mapstructure:"api_key"`
 	Models   []string `mapstructure:"models"`
 	PlanType string   `mapstructure:"plan_type"`
+	NeedVPN  bool     `mapstructure:"need_vpn"`
 }
 
 type Config struct {
@@ -42,6 +47,7 @@ type Config struct {
 	AuthToken     string           `mapstructure:"auth_token"`
 	Timeout       int              `mapstructure:"timeout"`
 	Temperature   float32          `mapstructure:"temperature"`
+	VPNProxy      string           `mapstructure:"vpn"`
 	Providers     []ProviderConfig `mapstructure:"providers"`
 }
 
@@ -56,6 +62,7 @@ type ProxyService struct {
 	providers    []*providerState
 	active       *providerState
 	httpClient   *http.Client
+	vpnClient    *http.Client
 	lastActivity time.Time
 	probeMu      sync.Mutex
 	probeRunning bool
@@ -66,6 +73,7 @@ func NewProxyService(cfg Config) *ProxyService {
 	if cfg.Timeout > 0 {
 		timeout = time.Duration(cfg.Timeout) * time.Second
 	}
+
 	s := &ProxyService{
 		config: cfg,
 		httpClient: &http.Client{
@@ -73,6 +81,20 @@ func NewProxyService(cfg Config) *ProxyService {
 			Transport: sharedTransport,
 		},
 	}
+
+	if cfg.VPNProxy != "" {
+		if dialer, err := newSocksDialer(cfg.VPNProxy); err == nil {
+			tr := &http.Transport{
+				MaxIdleConns:        8,
+				MaxIdleConnsPerHost: 2,
+				IdleConnTimeout:     120 * time.Second,
+				DisableCompression:  false,
+			}
+			tr.DialContext = dialer.DialContext
+			s.vpnClient = &http.Client{Timeout: timeout, Transport: tr}
+		}
+	}
+
 	for _, pc := range cfg.Providers {
 		s.providers = append(s.providers, &providerState{
 			ProviderConfig: pc,
@@ -80,6 +102,28 @@ func NewProxyService(cfg Config) *ProxyService {
 		})
 	}
 	return s
+}
+
+func newSocksDialer(proxyURL string) (interface {
+	DialContext(ctx context.Context, network, addr string) (net.Conn, error)
+}, error) {
+	u, err := url.Parse(proxyURL)
+	if err != nil {
+		return nil, err
+	}
+	d, err := proxy.FromURL(u, proxy.Direct)
+	if err != nil {
+		return nil, err
+	}
+	return &socksDialer{d: d}, nil
+}
+
+type socksDialer struct {
+	d proxy.Dialer
+}
+
+func (s *socksDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+	return s.d.Dial(network, addr)
 }
 
 func (s *ProxyService) Config() Config { return s.config }
@@ -184,7 +228,11 @@ func (s *ProxyService) ProbeHigherPriority() {
 	s.mu.RUnlock()
 
 	for _, p := range candidates {
-		if probeProvider(p, s.httpClient) {
+		client := s.httpClient
+		if p.NeedVPN && s.vpnClient != nil {
+			client = s.vpnClient
+		}
+		if probeProvider(p, client) {
 			s.mu.Lock()
 			p.status = StatusAvailable
 			s.mu.Unlock()
@@ -268,7 +316,11 @@ func (s *ProxyService) ForwardChat(ctx context.Context, cfg ProviderConfig, body
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "assistant/1.0")
 
-	return s.httpClient.Do(req)
+	client := s.httpClient
+	if cfg.NeedVPN && s.vpnClient != nil {
+		client = s.vpnClient
+	}
+	return client.Do(req)
 }
 
 func (s *ProxyService) findNext(current *providerState, modelSpecific bool, originalModel string) *providerState {
@@ -314,6 +366,7 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 
 	for {
 		reqMap["model"] = resolveModel(p, requestedModel)
+		stripKnownBad(reqMap)
 		body, _ := json.Marshal(reqMap)
 
 		resp, err := s.ForwardChat(ctx, p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
@@ -359,6 +412,14 @@ type HTTPError struct {
 }
 
 func (e *HTTPError) Error() string { return e.Message }
+
+var knownBadFields = []string{"promptCacheKey"}
+
+func stripKnownBad(req map[string]interface{}) {
+	for _, k := range knownBadFields {
+		delete(req, k)
+	}
+}
 
 func resolveModel(p *providerState, requested string) string {
 	if requested == "" {

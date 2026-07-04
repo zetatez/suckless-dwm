@@ -81,7 +81,7 @@ background:
       command: clipmenud
       precursor: dwm
 
-svc:
+settings:
   default_monitor: "eDP-1"
   default_terminal: "st"
   dir_snip: "~/git/obsidian/.snippets"
@@ -89,7 +89,7 @@ svc:
   dir_working_logbook: "~/git/working/logbook"
   path_keyboard_brightness: "/sys/class/leds/tpacpi::kbd_backlight/brightness"
   path_ssh_secret: "~/.ssh/my.ssh.json"
-  vpn_proxy: "socks5://127.0.0.1:7891"
+  vpn: "socks5://127.0.0.1:7891"
 
 filebrowser:
   root: "/home/shiyi"
