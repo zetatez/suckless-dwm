@@ -1,4 +1,0 @@
-#!/bin/bash
-
-curl -s -X GET http://127.0.0.1:4321/api/svr/get-datetime \
-  -u "admin:AAaa00__"
