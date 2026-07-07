@@ -53,7 +53,8 @@ type Config struct {
 
 type providerState struct {
 	ProviderConfig
-	status ProviderStatus
+	status           ProviderStatus
+	rateLimitedUntil time.Time
 }
 
 type ProxyService struct {
@@ -169,12 +170,16 @@ func (s *ProxyService) selectProvider(model string) *providerState {
 }
 
 func (s *ProxyService) pickBestLocked(model string) *providerState {
+	now := time.Now()
 	var fixed, payg []*providerState
 	for _, p := range s.providers {
 		if p.status != StatusAvailable && p.PlanType != "payg" {
 			continue
 		}
 		if p.status == StatusExhausted {
+			continue
+		}
+		if p.status == StatusAvailable && now.Before(p.rateLimitedUntil) {
 			continue
 		}
 		if model != "" && !hasModel(p.Models, model) {
@@ -199,6 +204,15 @@ func (s *ProxyService) markStatus(p *providerState, status ProviderStatus) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	p.status = status
+	if s.active == p {
+		s.active = nil
+	}
+}
+
+func (s *ProxyService) markRateLimited(p *providerState, cooldown time.Duration) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	p.rateLimitedUntil = time.Now().Add(cooldown)
 	if s.active == p {
 		s.active = nil
 	}
@@ -326,6 +340,7 @@ func (s *ProxyService) ForwardChat(ctx context.Context, cfg ProviderConfig, body
 func (s *ProxyService) findNext(current *providerState, modelSpecific bool, originalModel string) *providerState {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+	now := time.Now()
 	for _, p := range s.providers {
 		if p == current {
 			continue
@@ -334,6 +349,9 @@ func (s *ProxyService) findNext(current *providerState, modelSpecific bool, orig
 			continue
 		}
 		if p.status == StatusExhausted {
+			continue
+		}
+		if p.status == StatusAvailable && now.Before(p.rateLimitedUntil) {
 			continue
 		}
 		if modelSpecific && !hasModel(p.Models, originalModel) {
@@ -390,7 +408,9 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 		bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 8192))
 		resp.Body.Close()
 
-		if p.PlanType == "fixed" {
+		if resp.StatusCode == 429 {
+			s.markRateLimited(p, 60*time.Second)
+		} else if p.PlanType == "fixed" {
 			s.markStatus(p, StatusExhausted)
 		} else {
 			s.markStatus(p, StatusOffline)
