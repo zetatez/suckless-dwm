@@ -36,6 +36,13 @@ llm_proxy:
   timeout: 300
   temperature: 0.3
   providers:
+    - name: google
+      base_url: https://generativelanguage.googleapis.com/v1beta/openai
+      api_key: "${GEMINI_API_KEY}"
+      models:
+        - gemini-3.5-flash
+      plan_type: fixed
+      need_vpn: true
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/plan/v3
       api_key: "${ARK_AGENT_PLAN_API_KEY_ZIWEI}"
@@ -44,21 +51,6 @@ llm_proxy:
         - deepseek-v4-pro
       plan_type: fixed
       need_vpn: false
-    - name: ark
-      base_url: https://ark.cn-beijing.volces.com/api/coding/v3
-      api_key: "${ARK_CODING_PLAN_API_KEY}"
-      models:
-        - glm-5.2
-        - deepseek-v4-pro
-      plan_type: fixed
-      need_vpn: false
-    - name: google
-      base_url: https://generativelanguage.googleapis.com/v1beta/openai
-      api_key: "${GEMINI_API_KEY}"
-      models:
-        - gemini-3.5-flash
-      plan_type: fixed
-      need_vpn: true
     - name: ark
       base_url: https://ark.cn-beijing.volces.com/api/plan/v3
       api_key: "${ARK_AGENT_PLAN_API_KEY}"
@@ -75,6 +67,14 @@ llm_proxy:
         - deepseek-v4-flash
       plan_type: payg
       need_vpn: false
+    # - name: ark
+    #   base_url: https://ark.cn-beijing.volces.com/api/coding/v3
+    #   api_key: "${ARK_CODING_PLAN_API_KEY}"
+    #   models:
+    #     - glm-5.2
+    #     - deepseek-v4-pro
+    #   plan_type: fixed
+    #   need_vpn: false
 
 background:
   enabled: true
@@ -111,10 +111,9 @@ filebrowser:
     - "Videos"
     - "git"
     - "x"
+    - ".config"
   deny:
     - ".ssh"
     - ".gnupg"
   public:
-    - "Downloads"
     - "x"
-    - "git/obsidian"
