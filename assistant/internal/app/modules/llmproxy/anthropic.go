@@ -24,8 +24,9 @@ type anthropicReq struct {
 }
 
 type anthropicMsg struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role             string `json:"role"`
+	Content          string `json:"content"`
+	ReasoningContent string `json:"reasoning_content,omitempty"`
 }
 
 func anthropicToOpenAI(body []byte) ([]byte, error) {
@@ -46,7 +47,11 @@ func anthropicToOpenAI(body []byte) ([]byte, error) {
 		if m.Role == "" || m.Content == "" {
 			continue
 		}
-		omsgs = append(omsgs, map[string]interface{}{"role": m.Role, "content": m.Content})
+		msg := map[string]interface{}{"role": m.Role, "content": m.Content}
+		if m.ReasoningContent != "" {
+			msg["reasoning_content"] = m.ReasoningContent
+		}
+		omsgs = append(omsgs, msg)
 	}
 	omap["messages"] = omsgs
 	return json.Marshal(omap)
@@ -57,8 +62,9 @@ func openAIToAnthropic(body []byte) ([]byte, error) {
 		Model   string `json:"model"`
 		Choices []struct {
 			Message struct {
-				Role    string `json:"role"`
-				Content string `json:"content"`
+				Role             string `json:"role"`
+				Content          string `json:"content"`
+				ReasoningContent string `json:"reasoning_content"`
 			} `json:"message"`
 			FinishReason string `json:"finish_reason"`
 		} `json:"choices"`
@@ -85,6 +91,9 @@ func openAIToAnthropic(body []byte) ([]byte, error) {
 			ares["content"] = []map[string]string{
 				{"type": "text", "text": ores.Choices[0].Message.Content},
 			}
+		}
+		if ores.Choices[0].Message.ReasoningContent != "" {
+			ares["reasoning_content"] = ores.Choices[0].Message.ReasoningContent
 		}
 		switch ores.Choices[0].FinishReason {
 		case "stop":
