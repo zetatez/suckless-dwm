@@ -62,6 +62,7 @@ type ProxyService struct {
 	mu           sync.RWMutex
 	providers    []*providerState
 	active       *providerState
+	lastModel    string
 	httpClient   *http.Client
 	vpnClient    *http.Client
 	lastActivity time.Time
@@ -171,7 +172,6 @@ func (s *ProxyService) selectProvider(model string) *providerState {
 
 func (s *ProxyService) pickBestLocked(model string) *providerState {
 	now := time.Now()
-	var fixed, payg []*providerState
 	for _, p := range s.providers {
 		if p.status != StatusAvailable && p.PlanType != "payg" {
 			continue
@@ -185,17 +185,7 @@ func (s *ProxyService) pickBestLocked(model string) *providerState {
 		if model != "" && !hasModel(p.Models, model) {
 			continue
 		}
-		if p.PlanType == "fixed" {
-			fixed = append(fixed, p)
-		} else {
-			payg = append(payg, p)
-		}
-	}
-	if len(fixed) > 0 {
-		return fixed[0]
-	}
-	if len(payg) > 0 {
-		return payg[0]
+		return p
 	}
 	return nil
 }
@@ -242,6 +232,9 @@ func (s *ProxyService) ProbeHigherPriority() {
 	s.mu.RUnlock()
 
 	for _, p := range candidates {
+		if p.PlanType == "payg" {
+			continue
+		}
 		client := s.httpClient
 		if p.NeedVPN && s.vpnClient != nil {
 			client = s.vpnClient
@@ -249,32 +242,44 @@ func (s *ProxyService) ProbeHigherPriority() {
 		if probeProvider(p, client) {
 			s.mu.Lock()
 			p.status = StatusAvailable
+			p.rateLimitedUntil = time.Time{}
 			s.mu.Unlock()
 		}
 	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	model := s.lastModel
 	if s.active == nil {
-		if best := s.pickBestLocked(""); best != nil {
+		if best := s.pickBestLocked(model); best != nil {
 			s.active = best
 		}
 		return
 	}
-	if best := s.pickBestLocked(""); best != nil && best != s.active {
+	if best := s.pickBestLocked(model); best != nil && best != s.active {
 		s.active = best
 	}
 }
 
 func probeProvider(p *providerState, client *http.Client) bool {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, "GET",
-		strings.TrimRight(p.BaseURL, "/")+"/models", nil)
+
+	probeModel := p.Models[0]
+	payload, _ := json.Marshal(map[string]interface{}{
+		"model":      probeModel,
+		"messages":   []map[string]string{{"role": "user", "content": "hi"}},
+		"max_tokens": 1,
+		"stream":     false,
+	})
+	req, err := http.NewRequestWithContext(ctx, "POST",
+		strings.TrimRight(p.BaseURL, "/")+"/chat/completions",
+		bytes.NewReader(payload))
 	if err != nil {
 		return false
 	}
 	req.Header.Set("Authorization", "Bearer "+p.APIKey)
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "assistant/1.0")
 
 	resp, err := client.Do(req)
@@ -367,8 +372,14 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 	var modelSpecific bool
 
 	if requestedModel == s.config.ProxiedModel || requestedModel == "" {
+		s.mu.Lock()
+		s.lastModel = ""
+		s.mu.Unlock()
 		p = s.selectProvider("")
 	} else {
+		s.mu.Lock()
+		s.lastModel = requestedModel
+		s.mu.Unlock()
 		p = s.selectProvider(requestedModel)
 		if p == nil {
 			p = s.selectProvider("")
