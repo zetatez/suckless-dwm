@@ -51,22 +51,6 @@ llm_proxy:
         - deepseek-v4-pro
       plan_type: fixed
       need_vpn: false
-    - name: ark
-      base_url: https://ark.cn-beijing.volces.com/api/plan/v3
-      api_key: "${ARK_AGENT_PLAN_API_KEY}"
-      models:
-        - glm-5.2
-        - deepseek-v4-pro
-      plan_type: fixed
-      need_vpn: false
-    - name: deepseek
-      base_url: https://api.deepseek.com
-      api_key: "${DEEPSEEK_API_KEY}"
-      models:
-        - deepseek-v4-pro
-        - deepseek-v4-flash
-      plan_type: payg
-      need_vpn: false
     # - name: ark
     #   base_url: https://ark.cn-beijing.volces.com/api/coding/v3
     #   api_key: "${ARK_CODING_PLAN_API_KEY}"
@@ -74,6 +58,30 @@ llm_proxy:
     #     - glm-5.2
     #     - deepseek-v4-pro
     #   plan_type: fixed
+    #   need_vpn: false
+    # - name: nvidia
+    #   base_url: https://integrate.api.nvidia.com/v1
+    #   api_key: "${NVIDIA_API_KEY}"
+    #   models:
+    #     - z-ai/glm-5.2
+    #     - deepseek-ai/deepseek-v4-pro
+    #   plan_type: fixed
+    #   need_vpn: true
+    # - name: ark
+    #   base_url: https://ark.cn-beijing.volces.com/api/plan/v3
+    #   api_key: "${ARK_AGENT_PLAN_API_KEY}"
+    #   models:
+    #     - glm-5.2
+    #     - deepseek-v4-pro
+    #   plan_type: fixed
+    #   need_vpn: false
+    # - name: deepseek
+    #   base_url: https://api.deepseek.com
+    #   api_key: "${DEEPSEEK_API_KEY}"
+    #   models:
+    #     - deepseek-v4-pro
+    #     - deepseek-v4-flash
+    #   plan_type: payg
     #   need_vpn: false
 
 background:

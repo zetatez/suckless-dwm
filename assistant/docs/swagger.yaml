@@ -4,6 +4,8 @@ definitions:
     properties:
       content:
         type: string
+      reasoning_content:
+        type: string
       role:
         type: string
     type: object
