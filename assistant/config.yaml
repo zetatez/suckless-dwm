@@ -67,14 +67,14 @@ llm_proxy:
     #     - deepseek-ai/deepseek-v4-pro
     #   plan_type: fixed
     #   need_vpn: true
-    # - name: ark
-    #   base_url: https://ark.cn-beijing.volces.com/api/plan/v3
-    #   api_key: "${ARK_AGENT_PLAN_API_KEY}"
-    #   models:
-    #     - glm-5.2
-    #     - deepseek-v4-pro
-    #   plan_type: fixed
-    #   need_vpn: false
+    - name: ark
+      base_url: https://ark.cn-beijing.volces.com/api/plan/v3
+      api_key: "${ARK_AGENT_PLAN_API_KEY}"
+      models:
+        - glm-5.2
+        - deepseek-v4-pro
+      plan_type: fixed
+      need_vpn: false
     # - name: deepseek
     #   base_url: https://api.deepseek.com
     #   api_key: "${DEEPSEEK_API_KEY}"
