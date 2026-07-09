@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"assistant/internal/bootstrap/psl"
 	"assistant/pkg/llm"
 
 	"github.com/gin-gonic/gin"
@@ -116,10 +117,14 @@ func (h *Handler) chatCompletions(c *gin.Context) {
 	model, _ := reqMap["model"].(string)
 	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
 	if err != nil {
+		psl.GetLogger().Errorf("llmproxy: %v", err)
 		h.writeError(c, err)
 		return
 	}
 	defer resp.Body.Close()
+	if active := h.svc.ActiveProvider(); active != nil {
+		psl.GetLogger().Infof("llmproxy: provider=%s model=%s stream=%v", active.Name, model, reqMap["stream"])
+	}
 
 	stream, _ := reqMap["stream"].(bool)
 	if stream {
@@ -155,10 +160,14 @@ func (h *Handler) responsesHandler(c *gin.Context) {
 	model, _ := reqMap["model"].(string)
 	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
 	if err != nil {
+		psl.GetLogger().Errorf("llmproxy/responses: %v", err)
 		h.writeError(c, err)
 		return
 	}
 	defer resp.Body.Close()
+	if active := h.svc.ActiveProvider(); active != nil {
+		psl.GetLogger().Infof("llmproxy/responses: provider=%s model=%s stream=%v", active.Name, model, reqMap["stream"])
+	}
 
 	stream, _ := reqMap["stream"].(bool)
 	if stream {

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"assistant/internal/bootstrap/psl"
 	"assistant/pkg/llm"
 
 	"github.com/gin-gonic/gin"
@@ -148,6 +149,7 @@ func (h *Handler) anthropicMessages(c *gin.Context) {
 
 	resp, err := h.svc.Forward(c.Request.Context(), reqMap, areq.Model)
 	if err != nil {
+		psl.GetLogger().Errorf("llmproxy/anthropic: %v", err)
 		var httpErr *llm.HTTPError
 		if errors.As(err, &httpErr) {
 			writeAnthropicError(c, httpErr.Code, "api_error", httpErr.Message)
@@ -157,6 +159,9 @@ func (h *Handler) anthropicMessages(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
+	if active := h.svc.ActiveProvider(); active != nil {
+		psl.GetLogger().Infof("llmproxy/anthropic: provider=%s model=%s stream=%v", active.Name, areq.Model, areq.Stream)
+	}
 
 	if areq.Stream {
 		h.anthropicStream(c, resp)

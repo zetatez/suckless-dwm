@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -239,13 +238,11 @@ func (s *ProxyService) ProbeHigherPriority() {
 	if s.active == nil {
 		if best := s.pickBestLocked(model); best != nil {
 			s.active = best
-			log.Printf("[llmproxy] probe recovered, switched to provider: %s", best.Name)
 		}
 		return
 	}
 	if best := s.pickBestLocked(model); best != nil && best != s.active {
 		s.active = best
-		log.Printf("[llmproxy] probe recovered, switched to provider: %s", best.Name)
 	}
 }
 
@@ -377,7 +374,6 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 	}
 	if p != nil {
 		s.active = p
-		log.Printf("[llmproxy] selected provider: %s (model=%s)", p.Name, resolveModel(p, requestedModel))
 	}
 	s.mu.Unlock()
 
@@ -393,7 +389,6 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 
 		resp, err := s.ForwardChat(ctx, p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 		if err != nil {
-			logError("forward to %s failed: %v", p.Name, err)
 			s.markProvider(p, StatusOffline, 0)
 			next := s.findNext(p, modelSpecific, requestedModel)
 			if next == nil {
@@ -401,7 +396,6 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 				return nil, fmt.Errorf("all providers failed: %s: %v", p.Name, err)
 			}
 			p = next
-			log.Printf("[llmproxy] failover to provider: %s", p.Name)
 			continue
 		}
 
@@ -415,13 +409,10 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 
 		if resp.StatusCode == 429 {
 			s.markProvider(p, "", 60*time.Second)
-			log.Printf("[llmproxy] provider %s rate limited (429), cool down 60s", p.Name)
 		} else if p.PlanType == "fixed" {
 			s.markProvider(p, StatusExhausted, 0)
-			log.Printf("[llmproxy] provider %s error: %s (code=%d)", p.Name, providerErrorMessage(bodyBytes), resp.StatusCode)
 		} else {
 			s.markProvider(p, StatusOffline, 0)
-			log.Printf("[llmproxy] provider %s error: %s (code=%d)", p.Name, providerErrorMessage(bodyBytes), resp.StatusCode)
 		}
 
 		next := s.findNext(p, modelSpecific, requestedModel)
@@ -431,7 +422,6 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 			return nil, &HTTPError{Code: resp.StatusCode, Message: errMsg}
 		}
 		p = next
-		log.Printf("[llmproxy] failover to provider: %s", p.Name)
 	}
 }
 
@@ -458,10 +448,6 @@ func resolveModel(p *providerState, requested string) string {
 		return requested
 	}
 	return p.Models[0]
-}
-
-func logError(format string, args ...interface{}) {
-	log.Printf("[llmproxy] "+format, args...)
 }
 
 func (s *ProxyService) noProviderError() error {
