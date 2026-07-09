@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -28,7 +29,7 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 
 	// OpenAI Responses API
 	r.POST("/v1/responses", h.responsesHandler)
-	r.POST("/responses", h.responsesHandlerLegacy)
+	r.POST("/responses", h.responsesHandler)
 
 	r.GET("/v1/models", h.ListModels)
 	r.GET("/v1/models/:model", h.GetModel)
@@ -55,7 +56,7 @@ func (h *Handler) GetModel(c *gin.Context) {
 		return
 	}
 	for _, p := range cfg.Providers {
-		if hasModel(p.Models, modelID) {
+		if slices.Contains(p.Models, modelID) {
 			c.JSON(http.StatusOK, map[string]interface{}{
 				"id": modelID, "object": "model", "created": time.Now().Unix(), "owned_by": p.Name,
 			})
@@ -134,42 +135,6 @@ func (h *Handler) chatCompletions(c *gin.Context) {
 
 // responsesHandler handles OpenAI Responses API format (/v1/responses, /responses)
 func (h *Handler) responsesHandler(c *gin.Context) {
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
-		return
-	}
-
-	var reqMap map[string]interface{}
-	if err := json.Unmarshal(body, &reqMap); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
-		return
-	}
-
-	normalizeTools(reqMap)
-	normalizeMessages(reqMap)
-	normalizeRoles(reqMap)
-	normalizeContent(reqMap)
-
-	model, _ := reqMap["model"].(string)
-	resp, err := h.svc.Forward(c.Request.Context(), reqMap, model)
-	if err != nil {
-		h.writeError(c, err)
-		return
-	}
-	defer resp.Body.Close()
-
-	stream, _ := reqMap["stream"].(bool)
-	if stream {
-		h.streamResponses(c, resp)
-	} else {
-		raw, _ := io.ReadAll(resp.Body)
-		c.Data(http.StatusOK, "application/json", oaiToResponses(raw))
-	}
-}
-
-// responsesHandlerLegacy handles Codex CLI's /responses endpoint
-func (h *Handler) responsesHandlerLegacy(c *gin.Context) {
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "read body failed"})
@@ -426,12 +391,7 @@ func (h *Handler) Status(c *gin.Context) {
 }
 
 func hasModel(models []string, target string) bool {
-	for _, m := range models {
-		if m == target {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(models, target)
 }
 
 // normalizeTools 将 tools 数组转换为 ark 兼容格式（只保留 function 类型）

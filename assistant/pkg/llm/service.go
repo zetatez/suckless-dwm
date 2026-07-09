@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -160,16 +161,6 @@ func (s *ProxyService) ProviderStatuses() []map[string]interface{} {
 	return res
 }
 
-func (s *ProxyService) selectProvider(model string) *providerState {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	p := s.pickBestLocked(model)
-	if p != nil {
-		s.active = p
-	}
-	return p
-}
-
 func (s *ProxyService) pickBestLocked(model string) *providerState {
 	now := time.Now()
 	for _, p := range s.providers {
@@ -182,7 +173,7 @@ func (s *ProxyService) pickBestLocked(model string) *providerState {
 		if p.status == StatusAvailable && now.Before(p.rateLimitedUntil) {
 			continue
 		}
-		if model != "" && !hasModel(p.Models, model) {
+		if model != "" && !slices.Contains(p.Models, model) {
 			continue
 		}
 		return p
@@ -190,19 +181,15 @@ func (s *ProxyService) pickBestLocked(model string) *providerState {
 	return nil
 }
 
-func (s *ProxyService) markStatus(p *providerState, status ProviderStatus) {
+func (s *ProxyService) markProvider(p *providerState, status ProviderStatus, cooldown time.Duration) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	p.status = status
-	if s.active == p {
-		s.active = nil
+	if status != "" {
+		p.status = status
 	}
-}
-
-func (s *ProxyService) markRateLimited(p *providerState, cooldown time.Duration) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	p.rateLimitedUntil = time.Now().Add(cooldown)
+	if cooldown > 0 {
+		p.rateLimitedUntil = time.Now().Add(cooldown)
+	}
 	if s.active == p {
 		s.active = nil
 	}
@@ -213,13 +200,12 @@ func (s *ProxyService) ProbeHigherPriority() {
 	active := s.active
 	var candidates []*providerState
 	if active == nil {
-		// 全部不可用，探测所有非 available 供应商
 		for _, p := range s.providers {
 			if p.status != StatusAvailable {
 				candidates = append(candidates, p)
 			}
 		}
-	} else if active != s.providers[0] {
+	} else if len(s.providers) > 0 && active != s.providers[0] {
 		for _, p := range s.providers {
 			if p == active {
 				break
@@ -262,6 +248,9 @@ func (s *ProxyService) ProbeHigherPriority() {
 }
 
 func probeProvider(p *providerState, client *http.Client) bool {
+	if len(p.Models) == 0 {
+		return false
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -359,7 +348,7 @@ func (s *ProxyService) findNext(current *providerState, modelSpecific bool, orig
 		if p.status == StatusAvailable && now.Before(p.rateLimitedUntil) {
 			continue
 		}
-		if modelSpecific && !hasModel(p.Models, originalModel) {
+		if modelSpecific && !slices.Contains(p.Models, originalModel) {
 			continue
 		}
 		return p
@@ -371,22 +360,23 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 	var p *providerState
 	var modelSpecific bool
 
+	s.mu.Lock()
 	if requestedModel == s.config.ProxiedModel || requestedModel == "" {
-		s.mu.Lock()
 		s.lastModel = ""
-		s.mu.Unlock()
-		p = s.selectProvider("")
+		p = s.pickBestLocked("")
 	} else {
-		s.mu.Lock()
 		s.lastModel = requestedModel
-		s.mu.Unlock()
-		p = s.selectProvider(requestedModel)
+		p = s.pickBestLocked(requestedModel)
 		if p == nil {
-			p = s.selectProvider("")
+			p = s.pickBestLocked("")
 		} else {
 			modelSpecific = true
 		}
 	}
+	if p != nil {
+		s.active = p
+	}
+	s.mu.Unlock()
 
 	if p == nil {
 		s.NotifyActivity()
@@ -401,7 +391,7 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 		resp, err := s.ForwardChat(ctx, p.ProviderConfig, io.NopCloser(bytes.NewReader(body)))
 		if err != nil {
 			logError("forward to %s failed: %v", p.Name, err)
-			s.markStatus(p, StatusOffline)
+			s.markProvider(p, StatusOffline, 0)
 			next := s.findNext(p, modelSpecific, requestedModel)
 			if next == nil {
 				s.NotifyActivity()
@@ -420,11 +410,11 @@ func (s *ProxyService) Forward(ctx context.Context, reqMap map[string]interface{
 		resp.Body.Close()
 
 		if resp.StatusCode == 429 {
-			s.markRateLimited(p, 60*time.Second)
+			s.markProvider(p, "", 60*time.Second)
 		} else if p.PlanType == "fixed" {
-			s.markStatus(p, StatusExhausted)
+			s.markProvider(p, StatusExhausted, 0)
 		} else {
-			s.markStatus(p, StatusOffline)
+			s.markProvider(p, StatusOffline, 0)
 		}
 
 		next := s.findNext(p, modelSpecific, requestedModel)
@@ -453,22 +443,13 @@ func stripKnownBad(req map[string]interface{}) {
 }
 
 func resolveModel(p *providerState, requested string) string {
-	if requested == "" {
-		return p.Models[0]
+	if len(p.Models) == 0 {
+		return requested
 	}
-	if hasModel(p.Models, requested) {
+	if requested != "" && slices.Contains(p.Models, requested) {
 		return requested
 	}
 	return p.Models[0]
-}
-
-func hasModel(models []string, target string) bool {
-	for _, m := range models {
-		if m == target {
-			return true
-		}
-	}
-	return false
 }
 
 func logError(format string, args ...interface{}) {
