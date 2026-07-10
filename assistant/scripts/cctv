@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+qutebrowser --set content.proxy 'socks5://127.0.0.1:7891' --target window 'https://tv.cctv.com/live/cctv5/?spm=C28340.P2qo7O8Q1Led.S87602.57'
+
