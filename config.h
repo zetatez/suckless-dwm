@@ -144,7 +144,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_l,            movewin,           { .ui = RIGHT                                                                } },
 
    { SUPKEY,                       XK_a,            spawn,             { .v = SpawnShellCmd("thunar")                                               } },
-   { SUPKEY,                       XK_b,            spawn,             { .v = SpawnShellCmd("qutebrowser")                                          } },
+   { SUPKEY,                       XK_b,            spawn,             { .v = SpawnShellCmd("chrome")                                               } },
    { SUPKEY,                       XK_c,            spawn,             { .v = SpawnShellCmd("note monthly-work")                                    } },
    { SUPKEY,                       XK_d,            toggle,            { .v = CmdClass("st -c cls-lazydocker -e lazydocker", "cls-lazydocker")      } },
 // { SUPKEY,                       XK_e,            spawn,             { .v =                                                                       } },
@@ -182,12 +182,12 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_l,            resizewin,         { .ui = HORINC                                                               } },
 
 // { SUPKEY|ShiftMask,             XK_a,            spawn,             { .v = SpawnShellCmd("gamescope -e -f -- steam -bigpicture")                 } },
-   { SUPKEY|ShiftMask,             XK_b,            spawn_or_focus,    { .v = CmdClass("chrome", "Google-chrome")                                   } },
+   { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v = SpawnShellCmd("qutebrowser")                                          } },
 // { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                                       } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")                       } },
    { SUPKEY|ShiftMask,             XK_e,            toggle,            { .v = CmdClass("st -c cls-mutt mutt", "cls-mutt")                           } },
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                                          } },
-// { SUPKEY|ShiftMask,             XK_g,            spawn,             { .v =                                                                       } },
+   { SUPKEY|ShiftMask,             XK_g,            spawn,             { .v = SpawnShellCmd("qutebrowser")                                          } },
    { SUPKEY|ShiftMask,             XK_i,            spawn_or_focus,    { .v = CmdClass("inkscape", "Inkscape")                                      } },
    { SUPKEY|ShiftMask,             XK_m,            spawn_or_focus,    { .v = CmdClass("netease-cloud-music", "netease-cloud-music")                } },
    { SUPKEY|ShiftMask,             XK_n,            toggle_scratchpad, { .v = CmdClass("st -c cls-julia -e julia", "cls-julia")                     } },
