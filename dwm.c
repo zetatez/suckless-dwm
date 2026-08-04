@@ -1764,9 +1764,9 @@ restack(Monitor *m)
 
 void
 reset(void) {
-  selmon->mfact = mfact;
-  selmon->hfact = hfact;
-  selmon->nmaster = nmaster;
+  selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = mfact;
+  selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag] = hfact;
+  selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = nmaster;
 
   if (selmon->sel) {
     arrange(selmon);
