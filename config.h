@@ -48,7 +48,8 @@ static const char *themes[][SchemeLast][3] = {
 };
 
 /* tagging */
-static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+// static const char *tags[] = { "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix" };
+static const char *tags[] = { "α", "β", "γ", "δ", "ε", "ϛ", "ζ", "η", "θ" };
 
 static const Rule rules[] = {
   /* cls                     instance    title      tags mask     isfloating    isterminal     noswallow     isontop  monitor */
@@ -152,7 +153,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_g,            spawn,             { .v = SpawnShellCmd("chrome")                                               } },
    { SUPKEY,                       XK_i,            toggle,            { .v = CmdClass("flameshot gui", "flameshot")                                } },
    { SUPKEY,                       XK_m,            spawn,             { .v = SpawnShellCmd("file-search-content")                                  } },
-   { SUPKEY,                       XK_n,            toggle_scratchpad, { .v = CmdClass("st -c cls-python -e python -i -c 'import os, sys, datetime as dt, re, json, random, math, numpy as np, pandas as pd, scipy, matplotlib.pyplot as plt)'", "cls-python") } },
+   { SUPKEY,                       XK_n,            toggle_scratchpad, { .v = CmdClass("st -c cls-python -e python -i -c 'import os, sys, datetime as dt, re, random, math, numpy as np, scipy, matplotlib.pyplot as plt; print([d for d in dir() if not d.startswith(\"__\")])'", "cls-python") } },
    { SUPKEY,                       XK_o,            spawn,             { .v = SpawnShellCmd("handle-clipboard")                                     } },
    { SUPKEY,                       XK_p,            spawn,             { .v = SpawnShellCmd("file-search")                                          } },
    { SUPKEY,                       XK_q,            spawn,             { .v = SpawnShellCmd("slock")                                                } },
