@@ -187,7 +187,7 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                                       } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")                       } },
    { SUPKEY|ShiftMask,             XK_e,            toggle,            { .v = CmdClass("st -c cls-mutt mutt", "cls-mutt")                           } },
-   { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = SpawnShellCmd("solve-question-screen")                                } },
+   { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = SpawnShellCmd("solve-question-screenshot")                            } },
 
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                                          } },
    { SUPKEY|ShiftMask,             XK_g,            spawn,             { .v = SpawnShellCmd("qutebrowser")                                          } },
@@ -200,7 +200,7 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_r,            spawn,             { .v = CmdClass("st -c cls-mutt mutt", "cls-mutt")                           } },
    { SUPKEY|ShiftMask,             XK_s,            spawn_or_focus,    { .v = CmdClass("subl", "Sublime_text")                                      } },
 // { SUPKEY|ShiftMask,             XK_t,            spawn,             { .v =                                                                       } },
-   { SUPKEY|ShiftMask,             XK_u,            spawn,             { .v = SpawnShellCmd("solve-leetcode-screen")                                } },
+   { SUPKEY|ShiftMask,             XK_u,            spawn,             { .v = SpawnShellCmd("solve-leetcode-screenshot")                            } },
 // { SUPKEY|ShiftMask,             XK_v,            spawn,             { .v =                                                                       } },
    { SUPKEY|ShiftMask,             XK_w,            spawn,             { .v = SpawnShellCmd("send-to-feishu")                                       } },
    { SUPKEY|ShiftMask,             XK_x,            spawn_or_focus,    { .v = CmdClass("xournalpp", "com.github.xournalpp.xournalpp")               } },
