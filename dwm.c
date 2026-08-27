@@ -1210,7 +1210,7 @@ killclient_unsel(const Arg *arg)
       XGrabServer(dpy);
       XSetErrorHandler(xerrordummy);
       XSetCloseDownMode(dpy, DestroyAll);
-      XKillClient(dpy, selmon->sel->win);
+      XKillClient(dpy, c->win);
       XSync(dpy, False);
       XSetErrorHandler(xerror);
       XUngrabServer(dpy);
@@ -1481,7 +1481,7 @@ next_theme(const Arg *arg)
   current_theme_idx = (current_theme_idx + 1) % LENGTH(themes);
 
   /* 更新 drw scheme */
-  for (int i = 0; i < SchemeLast; i++) {
+  for (int i = 0; i < LENGTH(colors); i++) {
     if (scheme[i]) {
       drw_scm_free(drw, scheme[i], 3);
     }
