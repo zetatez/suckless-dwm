@@ -527,6 +527,7 @@ cleanupmon(Monitor *mon)
 
   XUnmapWindow(dpy, mon->barwin);
   XDestroyWindow(dpy, mon->barwin);
+  free(mon->pertag);
   free(mon);
 }
 
@@ -3006,6 +3007,9 @@ cyclelayout(const Arg *arg)
 savesession(void)
 {
   FILE *fw = fopen(SESSION_FILE, "w");
+  if (!fw) {
+    return;
+  }
   for (Client *c = selmon->clients; c != NULL; c = c->next) {
     fprintf(fw, "%lu %u\n", c->win, c->tags);
   }
@@ -3020,11 +3024,12 @@ restoresession(void)
     return;
   }
 
-  char *str = malloc(23 * sizeof(char));
-  while (fscanf(fr, "%[^\n] ", str) != EOF) {
+  char *line = NULL;
+  size_t len = 0;
+  while (getline(&line, &len, fr) != -1) {
     long unsigned int winId;
     unsigned int tagsForWin;
-    int check = sscanf(str, "%lu %u", &winId, &tagsForWin);
+    int check = sscanf(line, "%lu %u", &winId, &tagsForWin);
     if (check != 2) {
       break;
     }
@@ -3046,7 +3051,7 @@ restoresession(void)
     arrange(m);
   }
 
-  free(str);
+  free(line);
   fclose(fr);
   remove(SESSION_FILE);
 }
