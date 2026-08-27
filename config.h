@@ -186,7 +186,6 @@ static const Key keys[] = {
    { SUPKEY|ShiftMask,             XK_b,            spawn,             { .v = SpawnShellCmd("qutebrowser")                                          } },
 // { SUPKEY|ShiftMask,             XK_c,            spawn,             { .v =                                                                       } },
    { SUPKEY|ShiftMask,             XK_d,            spawn_or_focus,    { .v = CmdClass("dingtalk", "com.alibabainc.dingtalk")                       } },
-   { SUPKEY|ShiftMask,             XK_e,            toggle,            { .v = CmdClass("st -c cls-mutt mutt", "cls-mutt")                           } },
    { SUPKEY|ShiftMask,             XK_e,            spawn,             { .v = SpawnShellCmd("solve-question-screenshot")                            } },
 
    { SUPKEY|ShiftMask,             XK_f,            spawn_or_focus,    { .v = CmdClass("feishu", "Feishu")                                          } },
@@ -204,7 +203,7 @@ static const Key keys[] = {
 // { SUPKEY|ShiftMask,             XK_v,            spawn,             { .v =                                                                       } },
    { SUPKEY|ShiftMask,             XK_w,            spawn,             { .v = SpawnShellCmd("send-to-feishu")                                       } },
    { SUPKEY|ShiftMask,             XK_x,            spawn_or_focus,    { .v = CmdClass("xournalpp", "com.github.xournalpp.xournalpp")               } },
-// { SUPKEY|ShiftMask,             XK_y,            spawn,             { .v =                                                                       } },
+   { SUPKEY|ShiftMask,             XK_y,            toggle,            { .v = CmdClass("st -c cls-mutt mutt", "cls-mutt")                           } },
    { SUPKEY|ShiftMask,             XK_z,            spawn_or_focus,    { .v = CmdClass("zoom", "zoom")                                              } },
 // { SUPKEY|ShiftMask,             XK_Delete,       spawn,             { .v = SpawnShellCmd("systemctl poweroff")                                   } },
 // { SUPKEY|ShiftMask,             XK_Return,       spawn,             { .v =                                                                       } },
