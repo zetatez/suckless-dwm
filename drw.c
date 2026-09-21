@@ -121,6 +121,9 @@ xfont_create(Drw *drw, const char *fontname, FcPattern *fontpattern)
   } else {
     die("no font specified.");
   }
+  if (!xfont) {
+    return NULL;
+  }
 
   font = ecalloc(1, sizeof(Fnt));
   font->xfont = xfont;
@@ -320,7 +323,7 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
 	if (!invalid_width && render)
 		invalid_width = drw_fontset_getwidth(drw, invalid);
   while (1) {
-		ew = ellipsis_len = utf8err = utf8charlen = utf8strlen = 0;
+		ew = ellipsis_len = utf8err = utf8strlen = 0;
     utf8str = text;
     nextfont = NULL;
     while (*text) {
@@ -403,9 +406,10 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lp
       fccharset = FcCharSetCreate();
       FcCharSetAddChar(fccharset, utf8codepoint);
 
-      if (!drw->fonts->pattern) {
+      if (!drw->fonts || !drw->fonts->pattern) {
         /* Refer to the comment in xfont_create for more information. */
         die("the first font in the cache must be loaded from a font string.");
+        return 0;
       }
 
       fcpattern = FcPatternDuplicate(drw->fonts->pattern);
