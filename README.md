@@ -63,10 +63,10 @@ dwm is an extremely fast, small, and dynamic window manager for X.
 ## Requirements
 
 ```
-libx11  libxft  libxinerama  imlib2  xclip  xdotool
+fontconfig  freetype2  libx11  libxcb  libxft  libxinerama  xclip  xdotool
 ```
 
-On Arch Linux: `sudo pacman -S libx11 libxft libxinerama imlib2 xclip xdotool`
+On Arch Linux, run `sh deps.sh`.
 
 ## Installation
 
@@ -98,7 +98,7 @@ Edit `config.h` and recompile. Three color themes are included and switchable at
 
 ## Key Bindings
 
-`SUPKEY` maps to `Mod4Mask` (Super/Win) and `MODKEY` maps to `Mod1Mask` (Alt). All shortcuts below are defined in `config.def.h` and rely on those two modifiers unless noted.
+`SUPKEY` maps to `Mod4Mask` (Super/Win) and `MODKEY` maps to `Mod1Mask` (Alt). All shortcuts below are defined in `config.h` and rely on those two modifiers unless noted.
 
 ### Super Layer – Function Row
 
@@ -115,7 +115,7 @@ Edit `config.h` and recompile. Three color themes are included and switchable at
 
 ### Super Layer – Browser Presets
 
-The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding `Shift` launches the same URL in qutebrowser.
+The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shift` launches the same URL in qutebrowser.
 
 | Key     | Destination                           |
 | ---     | ---                                   |
@@ -136,7 +136,7 @@ The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding 
 | Key     | Command                    | Purpose                                   |
 | ---     | ---                        | ---                                       |
 | `SUP+a` | `thunar`                   | Open the file manager                     |
-| `SUP+b` | `qutebrowser`              | Launch qutebrowser                        |
+| `SUP+b` | `chrome`                   | Launch Google Chrome                      |
 | `SUP+c` | `note monthly-work`        | Append to the monthly work log            |
 | `SUP+d` | `lazydocker` (toggle)      | Show or hide lazydocker                   |
 | `SUP+g` | `chrome`                   | Launch Google Chrome                      |
@@ -166,11 +166,11 @@ The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding 
 | `SUP+[`         | `nvim +Calendar -view=month` | Show the weekly calendar scheduling view   |
 | `SUP+]`         | `nvim +Calendar -view=day`   | Show today's calendar scheduling view      |
 
-### Super Layer – Text Input
+### Super Layer – Question Helper
 
 | Key     | Function   | Purpose                                                                           |
 | ---     | ---        | ---                                                                               |
-| `SUP+e` | `typetext` | Type user-defined text (writes to PRIMARY + CLIPBOARD, pastes via `Shift+Insert`) |
+| `SUP+e` | `solve-question` | Solve a question from the current context |
 
 ### Super Layer – Floating Window Controls
 
@@ -195,21 +195,24 @@ The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding 
 | `SUP+Shift+9` | Open LeetCode in qutebrowser           |
 | `SUP+Shift+0` | Open Doubao in qutebrowser             |
 | `SUP+Shift+/` | Toggle opencode                        |
-| `SUP+Shift+d` | Launch/focus DingTalk                  |
-| `SUP+Shift+e` | Toggle the terminal mail client (mutt) |
-| `SUP+Shift+f` | Launch/focus Feishu                    |
-| `SUP+Shift+i` | Launch/focus Inkscape                  |
-| `SUP+Shift+m` | Launch/focus NetEase Cloud Music       |
-| `SUP+Shift+n` | Toggle the Julia scratchpad            |
-| `SUP+Shift+o` | Launch/focus Obsidian                  |
-| `SUP+Shift+s` | Launch/focus Sublime Text              |
-| `SUP+Shift+u` | Solve LeetCode screenshot              |
-| `SUP+Shift+w` | Send to Feishu                         |
-| `SUP+Shift+x` | Launch/focus Xournal++                 |
-| `SUP+Shift+z` | Launch/focus Zoom                      |
-| `SUP+Shift+'` | Toggle Screenkey overlay               |
-| `SUP+Shift+,` | Toggle audio recording                 |
-| `SUP+Shift+.` | Toggle screen recording                |
+| `SUP+Shift+b/g` | Launch qutebrowser                    |
+| `SUP+Shift+d`   | Launch/focus DingTalk                 |
+| `SUP+Shift+e`   | Solve a question from a screenshot    |
+| `SUP+Shift+f`   | Launch/focus Feishu                   |
+| `SUP+Shift+i`   | Launch/focus Inkscape                 |
+| `SUP+Shift+m`   | Launch/focus NetEase Cloud Music      |
+| `SUP+Shift+n`   | Toggle the Julia scratchpad           |
+| `SUP+Shift+o`   | Launch/focus Obsidian                 |
+| `SUP+Shift+r`   | Launch the terminal mail client       |
+| `SUP+Shift+s`   | Launch/focus Sublime Text             |
+| `SUP+Shift+u`   | Solve a LeetCode screenshot           |
+| `SUP+Shift+w`   | Send to Feishu                        |
+| `SUP+Shift+x`   | Launch/focus Xournal++                |
+| `SUP+Shift+y`   | Toggle the terminal mail client       |
+| `SUP+Shift+z`   | Launch/focus Zoom                     |
+| `SUP+Shift+'`   | Toggle Screenkey overlay              |
+| `SUP+Shift+,`   | Toggle audio recording                |
+| `SUP+Shift+.`   | Toggle screen recording               |
 
 ### Alt Layer – Core Controls
 
@@ -297,4 +300,4 @@ The number row opens curated URLs in Chrome via `open_url_with_chrome`; holding 
 | Tag bar (`MOD` held)       | Left / right          | Assign the focused client to the tag / toggle tag assignment |
 | Client window (`MOD` held) | Left / middle / right | Move / toggle floating / resize the client                   |
 
-This list mirrors the current `keys[]` and `buttons[]` definitions; update it whenever `config.def.h` changes so the README stays authoritative.
+This list mirrors the current `keys[]` and `buttons[]` definitions; update it whenever `config.h` changes so the README stays authoritative.
