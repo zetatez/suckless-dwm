@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <fcntl.h>
 #include <locale.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -6,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <X11/Xatom.h>
@@ -26,8 +28,6 @@
 #include <sys/sysctl.h>
 #include <kvm.h>
 #endif
-
-#define SESSION_FILE "/tmp/dwm-session"
 
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
