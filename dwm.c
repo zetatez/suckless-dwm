@@ -69,15 +69,15 @@ static void pointerfocuswin(Client *c);
 static void pop(Client *c);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
-static void reset();
+static void reset(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void resizewin(const Arg *arg);
 static void restack(Monitor *m);
-static void restoresession();
+static void restoresession(void);
 static void run(void);
-static void savesession();
+static void savesession(void);
 static void scan(void);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -149,6 +149,7 @@ static int vp;
 static int sp;
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
+static char sessionfile[4096];
 static void (*handler[LASTEvent]) (XEvent *) = {
   [ButtonPress] = buttonpress,
   [ClientMessage] = clientmessage,
@@ -166,8 +167,8 @@ static void (*handler[LASTEvent]) (XEvent *) = {
   [UnmapNotify] = unmapnotify
 };
 static Atom wmatom[WMLast], netatom[NetLast];
-static int restart = 0;
-static int running = 1;
+static volatile sig_atomic_t restart = 0;
+static volatile sig_atomic_t running = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -522,6 +523,9 @@ cleanupmon(Monitor *mon)
   } else {
     for (m = mons; m && m->next != mon; m = m->next)
       ;
+    if (!m) {
+      return;
+    }
     m->next = mon->next;
   }
 
@@ -716,7 +720,7 @@ detach(Client *c)
 {
   Client **tc;
 
-  for (int i = 1; i < LENGTH(tags); i++) {
+  for (size_t i = 1; i <= LENGTH(tags); i++) {
     if (c == c->mon->tagmarked[i]) {
       c->mon->tagmarked[i] = NULL;
     }
@@ -1221,8 +1225,17 @@ killclient_unsel(const Arg *arg)
 
 static void
 freeclasshints(XClassHint *ch) {
-  if (ch && ch->res_name) XFree(ch->res_name);
-  if (ch && ch->res_class) XFree(ch->res_class);
+  if (!ch) {
+    return;
+  }
+  if (ch->res_name) {
+    XFree(ch->res_name);
+    ch->res_name = NULL;
+  }
+  if (ch->res_class) {
+    XFree(ch->res_class);
+    ch->res_class = NULL;
+  }
 }
 
   void
@@ -1614,15 +1627,8 @@ propertynotify(XEvent *e)
   void
 quit(const Arg *arg)
 {
-  if(arg->i) {
-    restart = 1;
-  }
-
+  restart = arg->i != 0;
   running = 0;
-
-  if (restart == 1) {
-    savesession();
-  }
 }
 
   Monitor *
@@ -1665,7 +1671,6 @@ resizeclient(Client *c, int x, int y, int w, int h)
   }
   XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
   configure(c);
-  XSync(dpy, False);
 }
 
   void
@@ -1764,7 +1769,8 @@ restack(Monitor *m)
 }
 
 void
-reset(void) {
+reset(const Arg *arg) {
+  (void)arg;
   selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = mfact;
   selmon->hfact = selmon->pertag->hfacts[selmon->pertag->curtag] = hfact;
   selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = nmaster;
@@ -1955,6 +1961,7 @@ sethfact(const Arg *arg)
   void
 setup(void)
 {
+  const char *runtime_dir;
   int i;
   XSetWindowAttributes wa;
   Atom utf8string;
@@ -1972,6 +1979,15 @@ setup(void)
 
   signal(SIGHUP, sighup);
   signal(SIGTERM, sigterm);
+
+  runtime_dir = getenv("XDG_RUNTIME_DIR");
+  if (runtime_dir && *runtime_dir) {
+    if (snprintf(sessionfile, sizeof(sessionfile), "%s/dwm-session", runtime_dir) >= (int)sizeof(sessionfile)) {
+      die("dwm: XDG_RUNTIME_DIR path is too long");
+    }
+  } else {
+    snprintf(sessionfile, sizeof(sessionfile), "/tmp/dwm-session-%lu", (unsigned long)getuid());
+  }
 
   /* init screen */
   screen = DefaultScreen(dpy);
@@ -2049,7 +2065,7 @@ seturgent(Client *c, int urg)
   void
 showhide(Client *c)
 {
-  if (!c) {
+  if (!c || !c->mon) {
     return;
   }
   if (ISVISIBLE(c)) {
@@ -2069,15 +2085,17 @@ showhide(Client *c)
   void
 sighup(int unused)
 {
-  Arg a = {.i = 1};
-  quit(&a);
+  (void)unused;
+  restart = 1;
+  running = 0;
 }
 
   void
 sigterm(int unused)
 {
-  Arg a = {.i = 0};
-  quit(&a);
+  (void)unused;
+  restart = 0;
+  running = 0;
 }
 
   void
@@ -2112,22 +2130,24 @@ spawn_or_focus(const Arg *arg)
   const char *class = data[1];
 
   Client *c;
-  XClassHint ch = { NULL, NULL };
+  Monitor *m;
 
   /* 找到窗口 -> focus */
-  for (c = selmon->clients; c; c = c->next) {
-    if (XGetClassHint(dpy, c->win, &ch)) {
-      if (ch.res_class && strcmp(ch.res_class, class) == 0) {
-        view(&(Arg){ .ui = c->tags });
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      if (strcmp(c->class, class) == 0) {
+        if (m != selmon) {
+          unfocus(selmon->sel, 0);
+          selmon = m;
+        }
+        if (c->tags & TAGMASK) {
+          view(&(Arg){ .ui = c->tags & TAGMASK });
+        }
         focus(c);
         arrange(selmon);
-
-        if (ch.res_name)  XFree(ch.res_name);
-        if (ch.res_class) XFree(ch.res_class);
         return;
       }
     }
-    freeclasshints(&ch);
   }
 
   /* not found -> spawn */
@@ -2227,18 +2247,27 @@ toggle_scratchpad(const Arg *arg)
 	const char *class = data[1];
 
 	Client *c;
+	Monitor *m;
 
-	for (c = selmon->clients; c; c = c->next) {
-		if (strcmp(c->class, class) == 0) {
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c; c = c->next) {
+			if (strcmp(c->class, class) != 0) {
+				continue;
+			}
 
 			/* set floating */
 			c->isfloating = 1;
 
 			/* visible -> hide: move to scratchpad tag 1<<30 */
-			if (ISVISIBLE(c)) {
+			if (m == selmon && ISVISIBLE(c)) {
 				c->tags = 1 << 30;
 				arrange(selmon);
 				return;
+			}
+
+			/* move scratchpads from another monitor to the active monitor */
+			if (m != selmon) {
+				sendmon(c, selmon);
 			}
 
 			/* invisible -> show, restore to current tag */
@@ -2342,13 +2371,12 @@ toggleview(const Arg *arg)
   if (newtagset) {
     selmon->tagset[selmon->seltags] = newtagset;
 
-    if (newtagset == ~0) {
+    if (newtagset == TAGMASK) {
       selmon->pertag->prevtag = selmon->pertag->curtag;
       selmon->pertag->curtag = 0;
-    }
-
-    /* test if the user did not select the same tag */
-    if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {
+    } else if (selmon->pertag->curtag == 0 ||
+               !(newtagset & 1U << (selmon->pertag->curtag - 1))) {
+      /* select the first active tag when leaving the all-tags view */
       selmon->pertag->prevtag = selmon->pertag->curtag;
       for (i = 0; !(newtagset & 1 << i); i++)
         ;
@@ -2546,6 +2574,9 @@ updategeom(void)
     for (i = nn; i < n; i++) {
       for (m = mons; m && m->next; m = m->next)
         ;
+      if (!m) {
+        break;
+      }
       while ((c = m->clients)) {
         dirty = 1;
         m->clients = c->next;
@@ -2725,7 +2756,7 @@ view(const Arg *arg)
     selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
     selmon->pertag->prevtag = selmon->pertag->curtag;
 
-    if (arg->ui == ~0) {
+    if (arg->ui == ~0U) {
       selmon->pertag->curtag = 0;
     } else {
       for (i = 0; !(arg->ui & 1 << i); i++)
@@ -2767,6 +2798,7 @@ winpid(Window w)
   xcb_res_query_client_ids_cookie_t c = xcb_res_query_client_ids(xcon, 1, &spec);
   xcb_res_query_client_ids_reply_t *r = xcb_res_query_client_ids_reply(xcon, c, &e);
 
+  free(e);
   if (!r) {
     return (pid_t)0;
   }
@@ -2814,14 +2846,20 @@ getparentprocess(pid_t p)
 
 #ifdef __linux__
   FILE *f;
-  char buf[256];
-  snprintf(buf, sizeof(buf) - 1, "/proc/%u/stat", (unsigned)p);
+  char buf[4096];
+  char path[64];
+  char *comm_end;
+  snprintf(path, sizeof(path), "/proc/%u/stat", (unsigned)p);
 
-  if (!(f = fopen(buf, "r"))) {
+  if (!(f = fopen(path, "r"))) {
     return 0;
   }
 
-  fscanf(f, "%*u %*s %*c %u", &v);
+  if (fgets(buf, sizeof(buf), f) && (comm_end = strrchr(buf, ')'))) {
+    if (sscanf(comm_end + 1, " %*c %u", &v) != 1) {
+      v = 0;
+    }
+  }
   fclose(f);
 #endif /* __linux__*/
 
@@ -3006,12 +3044,28 @@ cyclelayout(const Arg *arg)
   void
 savesession(void)
 {
-  FILE *fw = fopen(SESSION_FILE, "w");
-  if (!fw) {
+  Client *c;
+  FILE *fw;
+  int fd;
+  Monitor *m;
+
+  fd = open(sessionfile, O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC|O_NOFOLLOW, 0600);
+  if (fd == -1) {
     return;
   }
-  for (Client *c = selmon->clients; c != NULL; c = c->next) {
-    fprintf(fw, "%lu %u\n", c->win, c->tags);
+  if (fchmod(fd, 0600) == -1) {
+    close(fd);
+    return;
+  }
+  fw = fdopen(fd, "w");
+  if (!fw) {
+    close(fd);
+    return;
+  }
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      fprintf(fw, "%lu %u %d\n", c->win, c->tags, m->num);
+    }
   }
   fclose(fw);
 }
@@ -3019,8 +3073,18 @@ savesession(void)
   void
 restoresession(void)
 {
-  FILE *fr = fopen(SESSION_FILE, "r");
+  Client *c, *restored;
+  FILE *fr;
+  int fd;
+  Monitor *m, *target;
+
+  fd = open(sessionfile, O_RDONLY|O_CLOEXEC|O_NOFOLLOW);
+  if (fd == -1) {
+    return;
+  }
+  fr = fdopen(fd, "r");
   if (!fr) {
+    close(fd);
     return;
   }
 
@@ -3028,32 +3092,72 @@ restoresession(void)
   size_t len = 0;
   while (getline(&line, &len, fr) != -1) {
     long unsigned int winId;
+    int monitorNum = -1;
     unsigned int tagsForWin;
-    int check = sscanf(line, "%lu %u", &winId, &tagsForWin);
-    if (check != 2) {
-      break;
+    int check = sscanf(line, "%lu %u %d", &winId, &tagsForWin, &monitorNum);
+    if (check < 2) {
+      continue;
     }
 
-    for (Client *c = selmon->clients; c ; c = c->next) {
-      if (c->win == winId) {
-        c->tags = tagsForWin;
-        break;
+    restored = NULL;
+    for (m = mons; m && !restored; m = m->next) {
+      for (c = m->clients; c; c = c->next) {
+        if (c->win == winId) {
+          restored = c;
+          break;
+        }
       }
     }
+    if (!restored) {
+      continue;
+    }
+
+    target = NULL;
+    if (check == 3) {
+      for (m = mons; m; m = m->next) {
+        if (m->num == monitorNum) {
+          target = m;
+          break;
+        }
+      }
+    }
+    if (target && target != restored->mon) {
+      detach(restored);
+      detachstack(restored);
+      restored->mon = target;
+      attach(restored);
+      attachstack(restored);
+      if (restored->isfullscreen) {
+        resizeclient(restored, target->mx, target->my, target->mw, target->mh);
+      }
+    }
+
+    if ((tagsForWin & TAGMASK) || tagsForWin == (1U << 30)) {
+      restored->tags = tagsForWin;
+    } else {
+      restored->tags = restored->mon->tagset[restored->mon->seltags];
+    }
   }
 
-  for (Client *c = selmon->clients; c ; c = c->next) {
-    focus(c);
-    restack(c->mon);
-  }
-
-  for (Monitor *m = selmon; m; m = m->next) {
+  for (m = mons; m; m = m->next) {
+    if (m->sel && m->sel->mon != m) {
+      m->sel = NULL;
+    }
+    if (!m->sel) {
+      for (c = m->stack; c; c = c->snext) {
+        if (ISVISIBLE(c)) {
+          m->sel = c;
+          break;
+        }
+      }
+    }
     arrange(m);
   }
+  focus(NULL);
 
   free(line);
   fclose(fr);
-  remove(SESSION_FILE);
+  remove(sessionfile);
 }
 
   void
@@ -3220,7 +3324,7 @@ layout_fibonacci(Monitor *m, int s)
 {
   unsigned int i, n;
   Client *c;
-  unsigned int nx, ny, nw, nh;
+  int nx, ny, nw, nh;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
     ;
@@ -3298,7 +3402,8 @@ layout_fib_spiral(Monitor *m)
   void
 layout_grid(Monitor *m)
 {
-  unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
+  unsigned int i, n, cols, rows;
+  int cx, cy, cw, ch, aw, ah;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3333,7 +3438,10 @@ layout_grid(Monitor *m)
   void
 layout_tile_right(Monitor *m)
 {
-  unsigned int i, n, h, mw, my = 0, ty = 0;
+  unsigned int i, masters, n;
+  int h, mw, my = 0, ty = 0;
+  int topbar_offset = topbar ? 1 : 0;
+  int winpad_offset = topbar_offset * winpad;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3341,20 +3449,22 @@ layout_tile_right(Monitor *m)
 
   if (n == 0) return;
 
-  mw = (n > m->nmaster) ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
-
-  unsigned int topbar_offset = topbar ? 1 : 0;
-  unsigned int winpad_offset = topbar_offset * winpad;
+  masters = MIN(n, (unsigned int)m->nmaster);
+  mw = (n > masters) ? (masters ? m->ww * m->mfact : 0) : m->ww;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      h = (m->wh - my - winpad_offset) / (MIN(n, m->nmaster) - i);
+    if (i < masters) {
+      h = (m->wh - my - winpad_offset) / (int)(masters - i);
       resize(c, m->wx, m->wy + my + winpad_offset, mw - 2 * c->bw, h - 2 * c->bw, False);
       if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
       }
     } else {
-      h = (m->wh - ty - winpad_offset) / (n - i);
+      unsigned int remaining = n - i;
+      if (!remaining) {
+        break;
+      }
+      h = (m->wh - ty - winpad_offset) / (int)remaining;
       resize(c, m->wx + mw, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
@@ -3366,7 +3476,10 @@ layout_tile_right(Monitor *m)
   void
 layout_tile_left(Monitor *m)
 {
-  unsigned int i, n, h, mw, my = 0, ty = 0;
+  unsigned int i, masters, n;
+  int h, mw, my = 0, ty = 0;
+  int topbar_offset = topbar ? 1 : 0;
+  int winpad_offset = topbar_offset * winpad;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3374,20 +3487,22 @@ layout_tile_left(Monitor *m)
 
   if (n == 0) return;
 
-  mw = (n > m->nmaster) ? (m->nmaster ? m->ww * (1 - m->mfact) : 0) : m->ww;
-
-  unsigned int topbar_offset = topbar ? 1 : 0;
-  unsigned int winpad_offset = topbar_offset * winpad;
+  masters = MIN(n, (unsigned int)m->nmaster);
+  mw = (n > masters) ? (masters ? m->ww * (1 - m->mfact) : 0) : m->ww;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      h = (m->wh - my - winpad_offset) / (MIN(n, m->nmaster) - i);
+    if (i < masters) {
+      h = (m->wh - my - winpad_offset) / (int)(masters - i);
       resize(c, m->wx + m->ww - mw, m->wy + my + winpad_offset, mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (my + HEIGHT(c) < m->wh) {
         my += HEIGHT(c);
       }
     } else {
-      h = (m->wh - ty - winpad_offset) / (n - i);
+      unsigned int remaining = n - i;
+      if (!remaining) {
+        break;
+      }
+      h = (m->wh - ty - winpad_offset) / (int)remaining;
       resize(c, m->wx, m->wy + ty + winpad_offset, m->ww - mw - 2 * c->bw - 2, h - 2 * c->bw, False);
       if (ty + HEIGHT(c) < m->wh) {
         ty += HEIGHT(c);
@@ -3400,7 +3515,9 @@ layout_tile_left(Monitor *m)
 layout_stack_hori(Monitor *m)
 {
   int w, mh, mx = 0, tx, ty, th;
-  unsigned int i, n;
+  int topbar_offset = topbar ? 1 : 0;
+  int winpad_offset = topbar_offset * winpad;
+  unsigned int i, masters, n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3408,12 +3525,10 @@ layout_stack_hori(Monitor *m)
 
   if (n == 0) return;
 
-  unsigned int topbar_offset = topbar ? 1 : 0;
-  unsigned int winpad_offset = topbar_offset * winpad;
-
-  if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->hfact) * m->wh : 0;
-    th = (m->wh - mh - winpad_offset) / (n - m->nmaster);
+  masters = MIN(n, (unsigned int)m->nmaster);
+  if (n > masters) {
+    mh = masters ? (1 - m->hfact) * m->wh : 0;
+    th = (m->wh - mh - winpad_offset) / (int)(n - masters);
     ty = m->wy + mh;
   } else {
     th = mh = m->wh - winpad_offset;
@@ -3421,8 +3536,8 @@ layout_stack_hori(Monitor *m)
   }
 
   for (i = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
+    if (i < masters) {
+      w = (m->ww - mx) / (int)(masters - i);
       resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
@@ -3438,7 +3553,9 @@ layout_stack_hori(Monitor *m)
 layout_stack_vert(Monitor *m)
 {
   int w, h, mh, mx = 0, tx, ty, tw;
-  unsigned int i, n;
+  int topbar_offset = topbar ? 1 : 0;
+  int winpad_offset = topbar_offset * winpad;
+  unsigned int i, masters, n;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3446,12 +3563,10 @@ layout_stack_vert(Monitor *m)
 
   if (n == 0) return;
 
-  unsigned int topbar_offset = topbar ? 1 : 0;
-  unsigned int winpad_offset = topbar_offset * winpad;
-
-  if (n > m->nmaster) {
-    mh = m->nmaster ? (1 - m->hfact) * (m->wh - winpad_offset) : 0;
-    tw = m->ww / (n - m->nmaster);
+  masters = MIN(n, (unsigned int)m->nmaster);
+  if (n > masters) {
+    mh = masters ? (1 - m->hfact) * (m->wh - winpad_offset) : 0;
+    tw = m->ww / (int)(n - masters);
     ty = m->wy + mh;
   } else {
     mh = m->wh - winpad_offset;
@@ -3460,8 +3575,8 @@ layout_stack_vert(Monitor *m)
   }
 
   for (i = 0, tx = m->wx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-    if (i < m->nmaster) {
-      w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
+    if (i < masters) {
+      w = (m->ww - mx) / (int)(masters - i);
       resize(c, m->wx + mx, m->wy + winpad_offset, w - 2 * c->bw, mh - 2 * c->bw, False);
       mx += WIDTH(c);
     } else {
@@ -3504,7 +3619,7 @@ layout_hacker(Monitor *m)
     cx = initial_offset_x + (n - i - 1) * offset_x;
     cy = initial_offset_y + (n - i - 1) * offset_y;
 
-    if (cy + ch > m->wh) {
+    if (cy + ch > m->wy + m->wh) {
       cx = center_x;
       cy = center_y;
     }
@@ -3517,11 +3632,9 @@ layout_hacker(Monitor *m)
 layout_grid_gap(Monitor *m)
 {
 
-  unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
-  unsigned int gapoh     = 24;
-  unsigned int gapow     = 32;
-  unsigned int gapih     = 12;
-  unsigned int gapiw     = 16;
+  unsigned int i, n, cols, rows;
+  int cx, cy, cw, ch, aw, ah;
+  int gapoh = 24, gapow = 32, gapih = 12, gapiw = 16;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3562,12 +3675,10 @@ layout_grid_gap(Monitor *m)
   void
 layout_overview(Monitor *m)
 {
-  unsigned int gapoh     = 24;
-  unsigned int gapow     = 32;
-  unsigned int gapih     = 12;
-  unsigned int gapiw     = 16;
+  int gapoh = 24, gapow = 32, gapih = 12, gapiw = 16;
 
-  unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
+  unsigned int i, n, cols, rows;
+  int cx, cy, cw, ch, aw, ah;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3739,7 +3850,8 @@ layout_overview(Monitor *m)
   void
 layout_workflow(Monitor *m)
 {
-  unsigned int i, n, cx, cy, cw, ch;
+  unsigned int i, n;
+  int cx, cy, cw, ch;
   Client *c;
 
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
@@ -3863,7 +3975,12 @@ main(int argc, char *argv[])
   restoresession();
   run();
 
-  if(restart) { execvp(argv[0], argv); }
+  if (restart) {
+    savesession();
+    execvp(argv[0], argv);
+    fprintf(stderr, "dwm: execvp '%s' failed: %s\n", argv[0], strerror(errno));
+    remove(sessionfile);
+  }
 
   cleanup();
   XCloseDisplay(dpy);

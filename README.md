@@ -203,7 +203,6 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 | `SUP+Shift+m`   | Launch/focus NetEase Cloud Music      |
 | `SUP+Shift+n`   | Toggle the Julia scratchpad           |
 | `SUP+Shift+o`   | Launch/focus Obsidian                 |
-| `SUP+Shift+r`   | Launch the terminal mail client       |
 | `SUP+Shift+s`   | Launch/focus Sublime Text             |
 | `SUP+Shift+u`   | Solve a LeetCode screenshot           |
 | `SUP+Shift+w`   | Send to Feishu                        |
