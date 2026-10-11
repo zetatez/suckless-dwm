@@ -102,16 +102,16 @@ Edit `config.h` and recompile. Three color themes are included and switchable at
 
 ### Super Layer – Function Row
 
-| Key            | Action                                                  |
-| ---            | ---                                                     |
-| `SUP+F1/F2/F3` | Toggle, lower, or raise system volume (`sys_volume_*`)  |
-| `SUP+F4`       | Toggle microphone mute (`sys_micro_toggle`)             |
-| `SUP+F5/F6`    | Dim or brighten the panel (`sys_display_light_*`)       |
-| `SUP+F7`       | Launch display controls (`sys_display`)                 |
-| `SUP+F8`       | Open Wi-Fi helper (`sys_wifi_connect`)                  |
-| `SUP+F9`       | Open Bluetooth helper (`sys_bluetooth_connect`)         |
-| `SUP+F10/F11`  | Adjust microphone levels down/up (`sys_micro_down/up`)  |
-| `SUP+F12`      | Toggle keyboard backlight (`sys_toggle_keyboard_light`) |
+| Key            | Action                                                              |
+| ---            | ---                                                                 |
+| `SUP+F1/F2/F3` | Toggle, lower, or raise system volume (`sys-volume-toggle/down/up`) |
+| `SUP+F4`       | Toggle microphone mute (`sys-micro-toggle`)                         |
+| `SUP+F5/F6`    | Dim or brighten the panel (`sys-display-light-down/up`)             |
+| `SUP+F7`       | Launch display controls (`sys-display`)                             |
+| `SUP+F8`       | Open Wi-Fi helper (`sys-wifi-connect`)                              |
+| `SUP+F9`       | Open Bluetooth helper (`sys-bluetooth-connect`)                     |
+| `SUP+F10/F11`  | Adjust microphone levels down/up (`sys-micro-down/up`)              |
+| `SUP+F12`      | Toggle keyboard backlight (`sys-keyboard-light`)                    |
 
 ### Super Layer – Browser Presets
 
@@ -168,8 +168,8 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 
 ### Super Layer – Question Helper
 
-| Key     | Function   | Purpose                                                                           |
-| ---     | ---        | ---                                                                               |
+| Key     | Function         | Purpose                                   |
+| ---     | ---              | ---                                       |
 | `SUP+e` | `solve-question` | Solve a question from the current context |
 
 ### Super Layer – Floating Window Controls
@@ -182,36 +182,38 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 
 ### Super Layer – Shifted Shortcuts
 
-| Key           | Action                                 |
-| ---           | ---                                    |
-| `SUP+Shift+1` | Open Google Gemini in qutebrowser      |
-| `SUP+Shift+2` | Open GitHub in qutebrowser             |
-| `SUP+Shift+3` | Open Gmail in qutebrowser              |
-| `SUP+Shift+4` | Open Google Translate in qutebrowser   |
-| `SUP+Shift+5` | Open CCTV5 in qutebrowser              |
-| `SUP+Shift+6` | Open Web WeChat in qutebrowser         |
-| `SUP+Shift+7` | Open YouTube in qutebrowser            |
-| `SUP+Shift+8` | Open Bilibili in qutebrowser           |
-| `SUP+Shift+9` | Open LeetCode in qutebrowser           |
-| `SUP+Shift+0` | Open Doubao in qutebrowser             |
-| `SUP+Shift+/` | Toggle opencode                        |
-| `SUP+Shift+b/g` | Launch qutebrowser                    |
-| `SUP+Shift+d`   | Launch/focus DingTalk                 |
-| `SUP+Shift+e`   | Solve a question from a screenshot    |
-| `SUP+Shift+f`   | Launch/focus Feishu                   |
-| `SUP+Shift+i`   | Launch/focus Inkscape                 |
-| `SUP+Shift+m`   | Launch/focus NetEase Cloud Music      |
-| `SUP+Shift+n`   | Toggle the Julia scratchpad           |
-| `SUP+Shift+o`   | Launch/focus Obsidian                 |
-| `SUP+Shift+s`   | Launch/focus Sublime Text             |
-| `SUP+Shift+u`   | Solve a LeetCode screenshot           |
-| `SUP+Shift+w`   | Send to Feishu                        |
-| `SUP+Shift+x`   | Launch/focus Xournal++                |
-| `SUP+Shift+y`   | Toggle the terminal mail client       |
-| `SUP+Shift+z`   | Launch/focus Zoom                     |
-| `SUP+Shift+'`   | Toggle Screenkey overlay              |
-| `SUP+Shift+,`   | Toggle audio recording                |
-| `SUP+Shift+.`   | Toggle screen recording               |
+| Key             | Action                               |
+| ---             | ---                                  |
+| `SUP+Shift+1`   | Open Google Gemini in qutebrowser    |
+| `SUP+Shift+2`   | Open GitHub in qutebrowser           |
+| `SUP+Shift+3`   | Open Gmail in qutebrowser            |
+| `SUP+Shift+4`   | Open Google Translate in qutebrowser |
+| `SUP+Shift+5`   | Open CCTV5 in qutebrowser            |
+| `SUP+Shift+6`   | Open Web WeChat in qutebrowser       |
+| `SUP+Shift+7`   | Open YouTube in qutebrowser          |
+| `SUP+Shift+8`   | Open Bilibili in qutebrowser         |
+| `SUP+Shift+9`   | Open LeetCode in qutebrowser         |
+| `SUP+Shift+0`   | Open Doubao in qutebrowser           |
+| `SUP+Shift+/`   | Open the URL frequency helper        |
+| `SUP+Shift+b/g` | Launch qutebrowser                   |
+| `SUP+Shift+d`   | Launch/focus DingTalk                |
+| `SUP+Shift+e`   | Solve a question from a screenshot   |
+| `SUP+Shift+f`   | Launch/focus Feishu                  |
+| `SUP+Shift+i`   | Launch/focus VectorCraft             |
+| `SUP+Shift+m`   | Launch/focus NetEase Cloud Music     |
+| `SUP+Shift+n`   | Toggle the Julia scratchpad          |
+| `SUP+Shift+o`   | Launch/focus Obsidian                |
+| `SUP+Shift+p`   | Launch/focus PhotoCraft              |
+| `SUP+Shift+s`   | Launch/focus Sublime Text            |
+| `SUP+Shift+u`   | Solve a LeetCode screenshot          |
+| `SUP+Shift+v`   | Launch/focus LightCraft              |
+| `SUP+Shift+w`   | Send to Feishu                       |
+| `SUP+Shift+x`   | Launch/focus Xournal++               |
+| `SUP+Shift+y`   | Toggle the terminal mail client      |
+| `SUP+Shift+z`   | Launch/focus Zoom                    |
+| `SUP+Shift+'`   | Toggle Screenkey overlay             |
+| `SUP+Shift+,`   | Toggle audio recording               |
+| `SUP+Shift+.`   | Toggle screen recording              |
 
 ### Alt Layer – Core Controls
 
@@ -230,7 +232,7 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 | `MOD+p`            | Launch the rofi application launcher                                                                             |
 | `MOD+q`            | Lock the session via `slock`                                                                                     |
 | `MOD+s`            | Reset layouts and factors (`reset`, also syncs mfact/hfact/nmaster to pertag so tag switching won't revert them) |
-| `MOD+u`            | Jump to the selected client in the stack                                                                         |
+| `MOD+u`            | Exit overview and jump to the selected client's tag (`jump_to_sel`)                                              |
 | `MOD+Shift+Return` | Spawn a vanilla `st` terminal                                                                                    |
 | `MOD+Shift+'`      | Move any scratchpad back to normal tiling                                                                        |
 | `MOD+Shift+c`      | Kill the focused client                                                                                          |
@@ -239,7 +241,7 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 | `MOD+Shift+q`      | Quit dwm (`quit 0`)                                                                                              |
 | `MOD+Shift+s`      | Toggle sticky state                                                                                              |
 | `MOD+Shift+Space`  | Focus the master area                                                                                            |
-| `MOD+Shift+u`      | Restore the previous layout (temporary switch)                                                                   |
+| `MOD+Shift+u`      | Switch to this tag's alternate layout (toggle primary/secondary slot)                                            |
 | `MOD+Shift+Ctrl+c` | Kill every unfocused client                                                                                      |
 
 ### Alt Layer – Layout Selection
@@ -262,26 +264,26 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 
 ### Alt Layer – Window & Stack Management
 
-| Key                           | Action                                         |
-| ---                           | ---                                            |
-| `MOD+d` / `MOD+i`             | Decrease/increase the number of master clients |
-| `MOD+h` / `MOD+l`             | Move the focused client within the stack       |
-| `MOD+,` / `MOD+.`             | Cycle layouts backward/forward                 |
-| `MOD+Shift+,` / `MOD+Shift+.` | Shift the visible tag set backward/forward     |
-| `MOD+k` / `MOD+j`             | Focus the previous/next client in the stack    |
-| `MOD+Shift+h` / `MOD+Shift+l` | Shrink/grow master width factor (`mfact`)      |
-| `MOD+Shift+j` / `MOD+Shift+k` | Shrink/grow stack height factor (`hfact`)      |
+| Key                           | Action                                                    |
+| ---                           | ---                                                       |
+| `MOD+d` / `MOD+i`             | Decrease/increase the number of master clients            |
+| `MOD+Ctrl+h` / `MOD+Ctrl+l`   | Move the focused client backward/forward within the stack |
+| `MOD+,` / `MOD+.`             | Cycle layouts backward/forward                            |
+| `MOD+Shift+,` / `MOD+Shift+.` | Shift the visible tag set backward/forward                |
+| `MOD+k` / `MOD+j`             | Focus the previous/next client in the stack               |
+| `MOD+Shift+h` / `MOD+Shift+l` | Shrink/grow master width factor (`mfact`)                 |
+| `MOD+Shift+j` / `MOD+Shift+k` | Shrink/grow stack height factor (`hfact`)                 |
 
 ### Alt Layer – Tag Management
 
-| Key                   | Action                                         |
-| ---                   | ---                                            |
-| `MOD+1..9`            | View the corresponding tag                     |
-| `MOD+0`               | View every tag (all workspace preview)         |
-| `MOD+Shift+1..9`      | Move the focused client to a tag               |
-| `MOD+Shift+0`         | Tag the client with every tag                  |
-| `MOD+Ctrl+1..9`       | Toggle the visibility of individual tags       |
-| `MOD+Shift+Ctrl+1..9` | Preview a tag without switching (`previewtag`) |
+| Key                   | Action                                                                                   |
+| ---                   | ---                                                                                      |
+| `MOD+1..9`            | View the corresponding tag                                                               |
+| `MOD+0`               | View every tag (all workspace preview)                                                   |
+| `MOD+Shift+1..9`      | Move the focused client to a tag                                                         |
+| `MOD+Shift+0`         | Tag the client with every tag                                                            |
+| `MOD+Ctrl+1..9`       | Toggle the visibility of individual tags                                                 |
+| `MOD+Shift+Ctrl+1..9` | Toggle the focused client's tag and its visibility together (`toggletag` + `toggleview`) |
 
 ### Monitor Focus & Tag Transfer
 
@@ -292,11 +294,14 @@ The number row opens curated URLs in Chrome via `open-url-chrome`; holding `Shif
 
 ### Mouse Bindings
 
-| Target                     | Button                | Action                                                       |
-| ---                        | ---                   | ---                                                          |
-| Tag bar                    | Left click            | View the clicked tag                                         |
-| Tag bar                    | Right click           | Toggle the tag visibility                                    |
-| Tag bar (`MOD` held)       | Left / right          | Assign the focused client to the tag / toggle tag assignment |
-| Client window (`MOD` held) | Left / middle / right | Move / toggle floating / resize the client                   |
+`buttons[]` is defined in `config.h`. Client-window gestures need `SUPKEY` (Super) held.
+
+| Target                     | Button                | Action                       |
+| ---                        | ---                   | ---                          |
+| Tag bar                    | Left click            | View the clicked tag         |
+| Tag bar                    | Right click           | Toggle the tag's visibility  |
+| Client window (`SUP` held) | Left drag             | Move the client              |
+| Client window (`SUP` held) | Middle click          | Toggle floating              |
+| Client window (`SUP` held) | Right drag            | Resize the client            |
 
 This list mirrors the current `keys[]` and `buttons[]` definitions; update it whenever `config.h` changes so the README stays authoritative.
