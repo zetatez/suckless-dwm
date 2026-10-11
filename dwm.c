@@ -37,7 +37,7 @@ static void clientmessage(XEvent *e);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
-static void cyclelayout(const Arg *arg);
+static void shiftlayout(const Arg *arg);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
@@ -53,16 +53,15 @@ static void focusstack(const Arg *arg);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
-static void jump_to_sel(const Arg *arg);
+static void overview_sel(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
-static void killclient_unsel(const Arg *arg);
 static void freeclasshints(XClassHint *ch);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
-static void movestack(const Arg *arg);
+static void shiftstack(const Arg *arg);
 static void movewin(const Arg *arg);
 static void next_theme(const Arg *arg);
 static void pointerfocuswin(Client *c);
@@ -88,7 +87,7 @@ static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
-static void shiftview(const Arg *arg);
+// static void shiftview(const Arg *arg);
 static void showhide(Client *c);
 static void sighup(int unused);
 static void sigterm(int unused);
@@ -1155,7 +1154,7 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 #endif
 
   void
-jump_to_sel(const Arg *arg)
+overview_sel(const Arg *arg)
 {
   Client *c = selmon->sel;
   if (!c) { return; }
@@ -1197,29 +1196,6 @@ killclient(const Arg *arg)
     XSync(dpy, False);
     XSetErrorHandler(xerror);
     XUngrabServer(dpy);
-  }
-}
-
-  void
-killclient_unsel(const Arg *arg)
-{
-  Client *c;
-  if (!selmon->sel) {
-    return;
-  }
-  for (c = selmon->clients; c; c = c->next) {
-    if (!ISVISIBLE(c) || (c == selmon->sel)) {
-      continue;
-    }
-    if (!sendevent(c, wmatom[WMDelete])) {
-      XGrabServer(dpy);
-      XSetErrorHandler(xerrordummy);
-      XSetCloseDownMode(dpy, DestroyAll);
-      XKillClient(dpy, c->win);
-      XSync(dpy, False);
-      XSetErrorHandler(xerror);
-      XUngrabServer(dpy);
-    }
   }
 }
 
@@ -3021,7 +2997,7 @@ zoom(const Arg *arg)
 }
 
   void
-cyclelayout(const Arg *arg)
+shiftlayout(const Arg *arg)
 {
   Layout *l;
   for(l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++)
@@ -3161,11 +3137,11 @@ restoresession(void)
 }
 
   void
-movestack(const Arg *arg)
+shiftstack(const Arg *arg)
 {
   Client *c = NULL, *p = NULL, *pc = NULL, *i;
 
-  /* early exit if no selected client. panic if not check. fix movestack patch bug */
+  /* early exit if no selected client. panic if not check. fix shiftstack patch bug */
   if (!selmon->sel) return;
 
   if(arg->i > 0) {
@@ -3226,6 +3202,7 @@ movestack(const Arg *arg)
   }
 }
 
+/********************
   static void
 shiftview(const Arg *arg)
 {
@@ -3239,6 +3216,7 @@ shiftview(const Arg *arg)
 
   view(&shifted);
 }
+********************/
 
 /* layout begin */
   void
