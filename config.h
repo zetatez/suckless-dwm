@@ -179,6 +179,7 @@ static const Key keys[] = {
    { SUPKEY,                       XK_backslash,    spawn,             { .v = SpawnShellCmd("sys-reset")                                            } },
    { SUPKEY,                       XK_bracketleft,  toggle,            { .v = CmdClass("st -c cls-cal -e nvim +':Calendar -view=month'", "cls-cal") } },
    { SUPKEY,                       XK_bracketright, toggle,            { .v = CmdClass("st -c cls-cal -e nvim +':Calendar -view=day'"  , "cls-cal") } },
+   { MODKEY,                       XK_space,        spawn,             { .v = SpawnShellCmd("vim-edit-input")                                       } },
 
    { SUPKEY|ShiftMask,             XK_k,            resizewin,         { .ui = VECINC                                                               } },
    { SUPKEY|ShiftMask,             XK_j,            resizewin,         { .ui = VECDEC                                                               } },
@@ -223,7 +224,6 @@ static const Key keys[] = {
 
    { MODKEY,                       XK_b,            togglebar,            { 0                                            } },
    { MODKEY,                       XK_f,            togglefullscreen,     { 0                                            } },
-   { MODKEY,                       XK_space,        togglefloating,       { 0                                            } },
    { MODKEY|ShiftMask,             XK_f,            togglefloating,       { 0                                            } },
    { MODKEY|ShiftMask,             XK_s,            togglesticky,         { 0                                            } },
    { MODKEY,                       XK_Return,       zoom,                 { 0                                            } },
